@@ -1,0 +1,40 @@
+<div class="section" id="build-security-a11y">
+  <h2>Build, Security & A11y</h2>
+  <p class="section-desc">Advanced compilation toolchain, security mechanisms, and accessibility standards.</p>
+
+  <div class="card">
+    <div class="card-title">Esbuild & Application Builder (v17+)</div>
+    <div class="card-content">
+      <p>Modern Angular uses the `@angular-devkit/build-angular:application` builder, driven by <b>Esbuild</b> and <b>Vite</b>.</p>
+      <ul>
+        <li><b>Esbuild:</b> Replaces Webpack for JS/TS compilation and bundling. Written in Go, it is 2x to 4x faster during builds.</li>
+        <li><b>Vite:</b> Powers the local dev server (`ng serve`), providing rapid HMR (Hot Module Replacement) and optimized dev-time caching.</li>
+        <li><b>Bundle Optimization:</b> Angular ensures aggressive <b>Tree-Shaking</b> (removing unused code). Standalone components drastically improve tree-shaking by removing the "heavy" `NgModule` closures.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Security (DomSanitizer & CSRF)</div>
+    <div class="card-content">
+      <p>Angular is secure by default, treating all injected values as untrusted.</p>
+      <ul>
+        <li><b>Contextual Escaping:</b> Angular recognizes the context of a binding (HTML, Style, Resource URL) and automatically escapes or cleanses the string to prevent XSS (Cross-Site Scripting).</li>
+        <li><b>DomSanitizer:</b> If you mathematically know a string is safe (e.g., an iframe URL you control), you can bypass security using `sanitizer.bypassSecurityTrustHtml(value)`. <i>Use with extreme caution.</i></li>
+        <li><b>CSRF Protection:</b> `HttpClient` has built-in XSRF (CSRF) protection. If the server sends an `XSRF-TOKEN` cookie, Angular automatically attaches it as an `X-XSRF-TOKEN` HTTP header to all mutation requests (POST/PUT/DELETE).</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Accessibility (A11y)</div>
+    <div class="card-content">
+      <p>Building for all users requires using ARIA attributes and focus management correctly.</p>
+      <ul>
+        <li><b>ARIA in Templates:</b> Use attribute bindings for ARIA state `[attr.aria-expanded]="isOpen"`. Warning: you must use the `attr.` prefix for ARIA attributes because they are HTML attributes, not DOM properties.</li>
+        <li><b>CDK LiveAnnouncer:</b> A service to announce messages for screen-reader users (perfect for dynamic updates like "Item saved" or "Notification received").</li>
+        <li><b>CDK FocusTrap:</b> Crucial for modals. Prevents keyboard navigation (Tab key) from leaving the modal while it is open.</li>
+      </ul>
+    </div>
+  </div>
+</div>

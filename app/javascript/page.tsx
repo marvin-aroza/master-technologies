@@ -1,6 +1,5 @@
 import { EncyclopediaPage } from "@/components/EncyclopediaPage";
 import conceptsContent from "@/content/frontend-concepts.json";
-import qaContent from "@/content/frontend-qa.json";
 
 export const metadata = {
   title: "JavaScript — Mastery Bible & 95 Interview Q&A",
@@ -9,14 +8,12 @@ export const metadata = {
 };
 
 export default function JavaScriptPage() {
-  // The frontend-concepts file has the JS deep-dive content
-  // The frontend-qa file has the 294+ Q&A (JS section = 95 questions)
-  // We render the Q&A version since it's the richer, more comprehensive file
+  // We render the concepts version since it contains BOTH deep-dives and Q&As
   return (
     <EncyclopediaPage
-      css={qaContent.css}
-      body={qaContent.body}
-      scripts={qaContent.scripts}
+      css={conceptsContent.css}
+      body={conceptsContent.body}
+      scripts={conceptsContent.scripts}
       scopeId="javascript"
     />
   );

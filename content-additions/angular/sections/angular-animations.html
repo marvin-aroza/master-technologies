@@ -1,0 +1,62 @@
+<div class="section" id="angular-animations">
+  <h2>Animations</h2>
+  <p class="section-desc">Building rich, performant UI motion using Angular's DSL on top of the Web Animations API.</p>
+
+  <div class="card">
+    <div class="card-title">Animation DSL API</div>
+    <div class="card-content">
+      <p>Angular provides a domain-specific language (DSL) for defining animations inside component metadata. It uses `BrowserAnimationsModule` behind the scenes.</p>
+      <ul>
+        <li><b>trigger():</b> Defines an animation name that binds to an element via `[@myTrigger]`.</li>
+        <li><b>state():</b> Defines specific styling points (e.g., "open", "closed").</li>
+        <li><b>transition():</b> Defines how to animate between states (e.g., `'open => closed'`). Special states include `void` (not attached to DOM) and `*` (any state). Fast syntax: `':enter'` (`void => *`) and `':leave'` (`* => void`).</li>
+        <li><b>animate():</b> Specifies duration, delay, and easing (e.g., `animate('200ms ease-out')`).</li>
+        <li><b>style():</b> Specifies the CSS properties to animate.</li>
+      </ul>
+      <div class="code-block">
+<pre><code>import { trigger, state, style, animate, transition } from '@angular/animations';
+
+@Component({
+  template: `<div [@openClose]="isOpen ? 'open' : 'closed'">Toggle Me</div>`,
+  animations: [
+    trigger('openClose', [
+      state('open', style({ height: '200px', opacity: 1, backgroundColor: 'yellow' })),
+      state('closed', style({ height: '100px', opacity: 0.5, backgroundColor: 'green' })),
+      transition('open => closed', [ animate('1s') ]),
+      transition('closed => open', [ animate('0.5s') ]),
+    ]),
+  ]
+})
+export class AnimatedComponent { isOpen = true; }
+</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Advanced Animation Control</div>
+    <div class="card-content">
+      <p>For more complex orchestrations, Angular animations provide grouping and querying:</p>
+      <ul>
+        <li><b>query():</b> Finds inner elements to animate them inside the parent's transition.</li>
+        <li><b>stagger():</b> Delays the start time of multiple queried items (great for animating lists).</li>
+        <li><b>group():</b> Runs multiple animation steps in parallel.</li>
+        <li><b>sequence():</b> Runs steps sequentially (default behavior of arrays).</li>
+        <li><b>animateChild():</b> Tells Angular to execute child component animations, which would otherwise be blocked by the parent animation.</li>
+      </ul>
+      <div class="code-block">
+<pre><code>trigger('listAnimation', [
+  transition('* => *', [
+    query(':enter', [
+      style({ opacity: 0, transform: 'translateY(-15px)' }),
+      stagger('50ms', [
+        animate('300ms ease-out', style({ opacity: 1, transform: 'none' }))
+      ])
+    ], { optional: true })
+  ])
+])
+</code></pre>
+      </div>
+    </div>
+  </div>
+</div>

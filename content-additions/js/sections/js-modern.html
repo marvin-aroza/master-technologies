@@ -1,0 +1,48 @@
+<div class="sc" id="js-modern">
+  <h2>Modern JS & Web APIs</h2>
+  <p class="section-desc">Harnessing the latest ECMAScript features and modern browser APIs.</p>
+
+  <div class="card">
+    <div class="card-title">ECMAScript 2024+ (ES15)</div>
+    <div class="card-content">
+      <ul>
+        <li><b>Object.groupBy / Map.groupBy:</b> Natively groups an array of objects into an object (or Map) based on a string returned by a callback. Replaces the need for Lodash `_.groupBy`.</li>
+        <li><b>Promise.withResolvers:</b> Returns an object containing a new Promise and its `resolve` and `reject` functions. Fixes the old awkward pattern of extracting resolvers from the Promise constructor.</li>
+        <li><b>Array.prototype.with:</b> Safe array mutation. `arr.with(index, value)` returns a *new* array with the element at `index` replaced by `value`, leaving the original array intact. Great for React/Redux!</li>
+        <li><b>Temporal API (Draft):</b> The modern replacement for the broken `Date` object, providing full timezone awareness, calendar math, and immutable date objects.</li>
+      </ul>
+      <div class="code-block">
+<pre><code>// Example of Promise.withResolvers
+const { promise, resolve, reject } = Promise.withResolvers();
+
+setTimeout(() => resolve("Done!"), 1000);
+promise.then(console.log); // "Done!" after 1s
+</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Modern Web APIs</div>
+    <div class="card-content">
+      <ul>
+        <li><b>IntersectionObserver:</b> Asynchronously observe changes in the intersection of a target element with an ancestor or the viewport. Crucial for lazy-loading images and infinite scrolling without hurting performance via massive scroll event listeners.</li>
+        <li><b>ResizeObserver:</b> Reports changes to the dimensions of an element's content or border box. Provides a performant way to build truly responsive elements independently of the viewport (container queries in JS).</li>
+        <li><b>MutationObserver:</b> Watches the DOM tree for changes (nodes added/removed, attributes modified) and fires a callback. Used internally by frameworks, but vital for writing extensions or observing 3rd party injects.</li>
+        <li><b>Web Workers:</b> Runs scripts in background threads. The worker thread can perform computations without interfering with the user interface (main thread). Cannot access the DOM directly.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">JS Design Patterns</div>
+    <div class="card-content">
+      <ul>
+        <li><b>Singleton:</b> Ensures a class has only one single instance and provides a global access point to it (e.g., establishing a single database connection or global store).</li>
+        <li><b>Observer / Pub-Sub:</b> A subject maintains a list of dependents (observers) and notifies them automatically of state changes (e.g., Redux, RxJS Subjects, DOM Event listeners).</li>
+        <li><b>Factory:</b> A function or method that creates objects without specifying the exact class of object that will be created. Simplifies complex object initialization.</li>
+        <li><b>Proxy:</b> The modern ES6 `Proxy` object lets you wrap an object and intercept fundamental operations (reading/writing properties). Used extensively by Vue 3 and Zustand to track reactive state dependencies.</li>
+      </ul>
+    </div>
+  </div>
+</div>

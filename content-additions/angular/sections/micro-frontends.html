@@ -1,0 +1,29 @@
+<div class="section" id="micro-frontends">
+  <h2>Micro-Frontends</h2>
+  <p class="section-desc">Scaling applications across multiple independent teams and codebases.</p>
+
+  <div class="card">
+    <div class="card-title">Module Federation (Webpack) / Native Federation (Vite/Esbuild)</div>
+    <div class="card-content">
+      <p>Micro-frontends allow you to split a monolithic Angular app into smaller, independently deployable applications. These applications load each other's compiled code at runtime.</p>
+      <ul>
+        <li><b>Host Application (Shell):</b> The main app that boots up, handles global routing, and loads remote modules.</li>
+        <li><b>Remote Application:</b> A standalone application that exposes parts of itself (components or routes) to be consumed.</li>
+        <li><b>Shared Dependencies:</b> Federation allows you to declare dependencies (like `@angular/core` or RxJS) as singletons, so the browser doesn't download the Angular framework 5 times.</li>
+      </ul>
+      <p>Because Angular 17+ moved away from Webpack towards Esbuild/Vite, the standard tool has become <code>@angular-architects/native-federation</code>.</p>
+      <div class="code-block">
+<pre><code>// Host routing loading a remote Micro-Frontend
+export const routes: Routes = [
+  {
+    path: 'flights',
+    loadChildren: () =>
+      loadRemoteModule('flights', './Module')
+        .then(m => m.FlightsRoutes)
+  }
+];
+</code></pre>
+      </div>
+    </div>
+  </div>
+</div>

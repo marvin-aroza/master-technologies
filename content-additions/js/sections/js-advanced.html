@@ -1,0 +1,76 @@
+<div class="sc" id="js-ts">
+  <h2>TypeScript Fundamentals</h2>
+  <p class="section-desc">Extending JavaScript with static typing to build robust, scalable applications.</p>
+
+  <div class="card">
+    <div class="card-title">Types vs Interfaces</div>
+    <div class="card-content">
+      <p>Both are used to define custom structures in TypeScript, but they have subtle differences.</p>
+      <ul>
+        <li><b>Interface:</b> Strictly for object shapes. Can be merged via "Declaration Merging" (if you declare the same interface twice, TS combines their properties). Ideal for public API definitions.</li>
+        <li><b>Type Aliases (`type`):</b> More flexible. Can define primitives, unions, intersections, and mapped types. Cannot be declaration-merged. Ideal for internal component definitions and complex utility types.</li>
+      </ul>
+      <div class="code-block">
+<pre><code>// Interface (Object Shape)
+interface User { id: number; name: string; }
+
+// Type (Union)
+type Status = "idle" | "loading" | "success" | "error";
+
+// Intersection (Combining shapes)
+type AdminUser = User & { role: "admin" | "superadmin" };
+</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Generics & Utility Types</div>
+    <div class="card-content">
+      <p>Generics allow you to write reusable code that works across multiple types.</p>
+      <ul>
+        <li><b>`T` as an Argument:</b> Think of a generic `<T>` like a type variable passed into a function.</li>
+        <li><b>Partial&lt;T&gt;:</b> Makes all properties in T optional. Useful for update/patch payloads.</li>
+        <li><b>Omit&lt;T, K&gt;:</b> Creates a type by removing specific keys `K` from `T`.</li>
+        <li><b>Record&lt;K, T&gt;:</b> Creates an object type where keys are of type `K` and values are of type `T`.</li>
+      </ul>
+      <div class="code-block">
+<pre><code>// Generic Function: infers type T from the input array
+function getFirstItem&lt;T&gt;(items: T[]): T | undefined {
+  return items[0];
+}
+
+const num = getFirstItem([1, 2, 3]); // Hover: num is number
+const str = getFirstItem(["a", "b"]); // Hover: str is string
+</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Discriminated Unions (Tagged Unions)</div>
+    <div class="card-content">
+      <p>A pattern used to safely exhaust all possible variations of a type by sharing a single common literal property (the "discriminator").</p>
+      <div class="code-block">
+<pre><code>type Action = 
+  | { type: "LOADING" } 
+  | { type: "SUCCESS"; payload: string[] } 
+  | { type: "ERROR"; errorMsg: string };
+
+function reducer(action: Action) {
+  // TypeScript knows exactly what properties are available
+  // based on the 'type' property.
+  switch (action.type) {
+    case "LOADING":
+      return 'Loading...';
+    case "SUCCESS":
+      return action.payload.length; // Safe to access payload
+    case "ERROR":
+      return action.errorMsg; // Safe to access errorMsg
+  }
+}
+</code></pre>
+      </div>
+    </div>
+  </div>
+</div>

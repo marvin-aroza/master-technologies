@@ -1,0 +1,75 @@
+<div class="sc" id="n-app">
+  <h2>App Router Deep Dive</h2>
+  <p class="section-desc">The modern standard for Next.js routing, introducing Server Components, Streaming, and layout persistence.</p>
+
+  <div class="card">
+    <div class="card-title">File Conventions</div>
+    <div class="card-content">
+      <ul>
+        <li><b>page.tsx:</b> The unique UI of a route. Makes the route publicly accessible.</li>
+        <li><b>layout.tsx:</b> Shared UI for a segment and its children. Persists across route changes without re-rendering.</li>
+        <li><b>loading.tsx:</b> Optional suspense fallback UI. Next.js automatically wraps `page.tsx` with `<Suspense fallback={<Loading />}>`.</li>
+        <li><b>error.tsx:</b> Error boundary. Must be a Client Component (`"use client"`). Catches unexpected errors in children.</li>
+        <li><b>not-found.tsx:</b> Displayed when a `notFound()` function is thrown or a URL doesn't match any route.</li>
+        <li><b>route.ts:</b> A Server-side API endpoint (Route Handler).</li>
+        <li><b>default.tsx:</b> Used as a fallback for unmatched parallel route slots (like modals or complex dashboards).</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Advanced Routing Patterns</div>
+    <div class="card-content">
+      <ul>
+        <li><b>Parallel Routes (`@folder`):</b> Allows simultaneously or conditionally rendering one or more pages within the same layout (e.g., a dashboard with an `@analytics` slot and a `@team` slot).</li>
+        <li><b>Intercepting Routes (`(.)folder`):</b> Intercepts navigation to a different route and renders its content in the current layout context (e.g., clicking a photo in a feed opens a Modal instead of navigating to the photo's dedicated page URL. If refreshed, it loads the dedicated page).</li>
+        <li><b>Route Groups (`(folder)`):</b> Folders in parentheses are ignored in the URL path. They are used purely to organize files logically or to opt specific routes into a shared `layout.tsx`.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="sc" id="n-mid-auth">
+  <h2>Middleware & Authentication</h2>
+  <p class="section-desc">Securing routes, redirecting traffic, and handling user sessions at the Edge.</p>
+
+  <div class="card">
+    <div class="card-title">Next.js Middleware</div>
+    <div class="card-content">
+      <p>Middleware allows you to run code <i>before</i> a request is completed. Based on the incoming request, you can modify the response by rewriting, redirecting, modifying the request or response headers, or responding directly.</p>
+      <ul>
+        <li><b>Edge Runtime:</b> Middleware runs on the Vercel Edge Network by default. It must be ultra-fast and cannot use standard Node.js APIs (like `fs` or `mongoose`).</li>
+        <li><b>Matcher:</b> Using `export const config = { matcher: ['/dashboard/:path*'] }` ensures middleware only runs on specific routes, saving costs and execution time.</li>
+        <li><b>Common Use Cases:</b> Authentication checks, Geolocation (showing specific country pricing), A/B Testing, Bot protection, and rate limiting.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Authentication Patterns</div>
+    <div class="card-content">
+      <p>Authentication in Next.js App Router usually relies on reading cookies on the server before rendering.</p>
+      <ul>
+        <li><b>NextAuth.js (Auth.js) v5:</b> The de facto standard library. Supports OAuth (Google, GitHub), Email/Passwordless, and Credentials. Integrates perfectly with Middleware to protect routes.</li>
+        <li><b>Server-Side Protection:</b> Wrap protected pages in a check like `const session = await auth(); if (!session) redirect('/login');`.</li>
+        <li><b>Client-Side Protection:</b> Less secure. Relies on `useSession()` hook. The user might see a flash of the protected page before being redirected. Always prefer Server-Side.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="sc" id="n-deploy">
+  <h2>Deployment & Ecosystem</h2>
+  <p class="section-desc">Taking Next.js to production efficiently.</p>
+
+  <div class="card">
+    <div class="card-title">Vercel & Output Types</div>
+    <div class="card-content">
+      <ul>
+        <li><b>Next.js on Vercel:</b> Zero-config deployment. Automatically splits Server Components into Edge Functions, caches static pages on the global CDN, and handles image optimization perfectly.</li>
+        <li><b>output: 'standalone':</b> Set in `next.config.js`. This traces `import` calls and outputs ONLY the necessary files needed to run the app in production. This is absolutely critical for deploying Next.js efficiently via Docker containers on AWS/GCP, reducing image sizes drastically.</li>
+        <li><b>output: 'export':</b> Generates a strictly static site (like plain HTML/CSS). Server Components run at build time. Dynamic server logic (like `cookies()` or `headers()`) will throw errors. Used when deploying to S3, GitHub Pages, or Netlify static hosting.</li>
+      </ul>
+    </div>
+  </div>
+</div>

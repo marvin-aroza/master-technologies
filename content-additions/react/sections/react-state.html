@@ -1,0 +1,58 @@
+<div class="section" id="react-state">
+  <h2>State Management</h2>
+  <p class="section-desc">Ecosystem approaches to managing complex, global state across large React applications.</p>
+
+  <div class="card">
+    <div class="card-title">Zustand</div>
+    <div class="card-content">
+      <p>A small, fast, and scalable bearbones state-management solution using simplified flux principles. It has become the community favorite for new React apps.</p>
+      <ul>
+        <li><b>No Provider Boilerplate:</b> Unlike Context/Redux, Zustand stores are standalone hooks that don't need to wrap your app tree.</li>
+        <li><b>Renders Optimization:</b> Components only re-render if the specific slice of state they select changes.</li>
+        <li><b>Mutations:</b> State is updated immutably using standard object spreading or by integrating Immer middleware.</li>
+      </ul>
+      <div class="code-block">
+<pre><code>import { create } from 'zustand'
+
+const useBearStore = create((set) => ({
+  bears: 0,
+  increasePopulation: () => set((state) => ({ bears: state.bears + 1 })),
+  removeAllBears: () => set({ bears: 0 }),
+}))
+
+// In component:
+function BearCounter() {
+  // Only re-renders when `bears` changes
+  const bears = useBearStore((state) => state.bears)
+  const increasePopulation = useBearStore((state) => state.increasePopulation)
+  return <button onClick={increasePopulation}>{bears} bears</button>
+}
+</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Redux Toolkit (RTK)</div>
+    <div class="card-content">
+      <p>The official, opinionated, batteries-included toolset for efficient Redux development.</p>
+      <ul>
+        <li><b>createSlice:</b> Automatically generates action creators and action types. Includes Immer built-in, so you can write "mutating" logic safely.</li>
+        <li><b>RTK Query:</b> Advanced data fetching and caching tool built specifically for Redux, completely eliminating the need to write thunks/reducers for API calls.</li>
+        <li><b>Best for:</b> Massive enterprise apps requiring strict traceability, offline support syncing, or complex derivation.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">TanStack Query (React Query)</div>
+    <div class="card-content">
+      <p>Not technically "state management" in the traditional sense, but it manages <b>Server State</b>. It dramatically reduces the need for Redux/Zustand.</p>
+      <ul>
+        <li><b>Caching & Deduping:</b> Automatically caches API responses and dedupes multiple identical requests into one.</li>
+        <li><b>Background Fetching:</b> Auto-refreshes data on window focus, reconnect, or interval.</li>
+        <li><b>Mutations:</b> Handles POST/PUT/DELETE requests with Optimistic Updates (updating UI instantly before server confirms).</li>
+      </ul>
+    </div>
+  </div>
+</div>

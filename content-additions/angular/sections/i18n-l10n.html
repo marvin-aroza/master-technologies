@@ -1,0 +1,32 @@
+<div class="section" id="i18n-l10n">
+  <h2>i18n & l10n</h2>
+  <p class="section-desc">Internationalization and localization strategies in Angular.</p>
+
+  <div class="card">
+    <div class="card-title">@angular/localize (Built-in i18n)</div>
+    <div class="card-content">
+      <p>Angular's native approach operates at compile-time (AOT). The compiler generates a completely separate application bundle for each locale. This provides the best performance because there's no runtime translation parsing.</p>
+      <ul>
+        <li><b>i18n attribute:</b> Mark HTML elements for translation: `<h1 i18n="@@homeTitle">Hello</h1>`.</li>
+        <li><b>$localize:</b> Translate strings in TypeScript: `const title = $localize\`:@@homeTitle:Hello\`;`.</li>
+        <li><b>ng extract-i18n:</b> CLI command that generates an XLIFF/XMB file with all extracted messages.</li>
+        <li><b>ICU Expressions:</b> Handle pluralization (`{msgCount, plural, =0 {No msgs} one {1 msg} other {# msgs}}`) and alternate selections (`{gender, select, male {He} female {She} other {They}}`).</li>
+      </ul>
+      <div class="analogy">
+        Think of AOT i18n like <b>publishing a translated book</b>. You print a completely different physical book for English and French. The reader doesn't waste time translating while reading; they just pick up the French book.
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Runtime Translation (ngx-translate / Transloco)</div>
+    <div class="card-content">
+      <p>If you cannot use compile-time translation (e.g., you need users to switch languages instantly without a page reload, or translations come from a database API), you must use a runtime library like <b>Transloco</b> or <b>ngx-translate</b>.</p>
+      <ul>
+        <li>Loads translations asynchronously (JSON files).</li>
+        <li>Uses Pipes to display data: `{{ 'HOME.TITLE' | transloco }}`.</li>
+        <li>Slightly worse performance than AOT because Angular has to watch bindings and evaluate them at runtime.</li>
+      </ul>
+    </div>
+  </div>
+</div>

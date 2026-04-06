@@ -1,0 +1,55 @@
+<div class="section" id="material-cdk">
+  <h2>Angular Material & CDK</h2>
+  <p class="section-desc">Building accessible, high-quality UI components leveraging the Component Dev Kit.</p>
+
+  <div class="card">
+    <div class="card-title">Component Dev Kit (CDK)</div>
+    <div class="card-content">
+      <p>The CDK provides behavior primitives without any visual styling. It's the foundation of Angular Material but can be used to build your own custom design systems.</p>
+      <ul>
+        <li><b>Overlay:</b> Used for rendering floating panels safely (dialogs, tooltips, menus).</li>
+        <li><b>Portal:</b> Dynamically render templates or components anywhere in the DOM.</li>
+        <li><b>A11y:</b> Accessibility utilities like `FocusTrap`, `LiveAnnouncer`, and `ListKeyManager`.</li>
+        <li><b>Drag and Drop:</b> Declarative drag/drop interfaces with custom preview and drop zones.</li>
+        <li><b>Scrolling:</b> Virtual scrolling with `cdk-virtual-scroll-viewport` to render large lists efficiently.</li>
+        <li><b>Layout:</b> `BreakpointObserver` to evaluate media queries with RxJS.</li>
+      </ul>
+      <div class="code-block">
+<pre><code>// Example: Virtual Scrolling for 100k items
+import { ScrollingModule } from '@angular/cdk/scrolling';
+
+@Component({
+  standalone: true,
+  imports: [ScrollingModule],
+  template: `
+    <cdk-virtual-scroll-viewport itemSize="50" class="viewport">
+      <div *cdkVirtualFor="let item of items" class="item">
+        {{item}}
+      </div>
+    </cdk-virtual-scroll-viewport>
+  `,
+  styles: ['.viewport { height: 400px; width: 100%; }']
+})
+export class VirtualList {
+  items = Array.from({length: 100000}).map((_, i) => `Item #${i}`);
+}
+</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Angular Material v17+ (M3)</div>
+    <div class="card-content">
+      <p>Angular Material implements Google's <b>Material Design 3 (M3)</b> specification. It provides fully accessible and themeable components.</p>
+      <ul>
+        <li><b>Design Tokens:</b> M3 relies heavily on CSS variables (custom properties), allowing for dynamic theming at runtime without rebuilding Sass.</li>
+        <li><b>Typography & Density:</b> Fully customizable scales that automatically push down into all components.</li>
+        <li><b>Key Components:</b> `MatTable` (complex data grids), `MatDialog` (modals via Overlay), `MatFormField` (advanced input wrapper with error states).</li>
+      </ul>
+      <div class="tip">
+        <b>Tip:</b> Never use `::ng-deep` to style Material components. Always use the provided CSS variables or design tokens to override styles safely.
+      </div>
+    </div>
+  </div>
+</div>

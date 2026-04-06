@@ -1,0 +1,88 @@
+<div class="section" id="state-management">
+  <h2>State Management</h2>
+  <p class="section-desc">Managing complex state across Angular applications using NgRx, NGXS, and Signal Store.</p>
+
+  <div class="card">
+    <div class="card-title">NgRx Store (Redux Pattern)</div>
+    <div class="card-content">
+      <p>NgRx is the official state management library for Angular, implementing the Redux pattern with RxJS.</p>
+      <ul>
+        <li><b>Store</b>: Single source of truth. Immutable object tree.</li>
+        <li><b>Actions</b>: Unique events that express state changes.</li>
+        <li><b>Reducers</b>: Pure functions that map `(currentState, action) => newState`.</li>
+        <li><b>Selectors</b>: Pure functions to derive/query slice of state from the store.</li>
+        <li><b>Effects</b>: Side-effect model to isolate API calls and async logic from components.</li>
+      </ul>
+      <div class="analogy">
+        Think of NgRx as a <b>Bank</b>. You can't change your balance directly in the database (Store). You have to fill out a deposit slip (Action), hand it to the teller (Reducer), who then calculates the new balance. If you need to verify an out-of-state check first, the manager (Effects) handles the delay before giving the deposit slip back to the teller.
+      </div>
+      <div class="code-block">
+<pre><code>// 1. Action
+export const loadUsers = createAction('[User List] Load Users');
+export const loadUsersSuccess = createAction('[User List] Load Success', props<{users: User[]}>());
+
+// 2. Reducer
+export const userReducer = createReducer(
+  initialState,
+  on(loadUsersSuccess, (state, { users }) => ({ ...state, users }))
+);
+
+// 3. Selector
+export const selectAllUsers = createSelector(selectUserState, (state) => state.users);
+
+// 4. Effect (Service/API side-effects)
+loadUsers$ = createEffect(() => this.actions$.pipe(
+  ofType(loadUsers),
+  exhaustMap(() => this.userService.getAll().pipe(
+    map(users => loadUsersSuccess({ users })),
+    catchError(() => EMPTY)
+  ))
+));
+</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">NgRx SignalStore (Modern State)</div>
+    <div class="card-content">
+      <p>Introduced in Angular 17/18, `SignalStore` provides a reactive, functional state management approach built directly on Angular Signals, replacing RxJS for synchronous reactivity.</p>
+      <ul>
+        <li>Fully functional API (`signalStore()`).</li>
+        <li>No boilerplate (actions, reducers, selectors are merged into state features).</li>
+        <li>First-class TypeScript inference with `withState`, `withMethods`, `withComputed`.</li>
+      </ul>
+      <div class="code-block">
+<pre><code>import { signalStore, withState, withComputed, withMethods } from '@ngrx/signals';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+
+export const UserStore = signalStore(
+  { providedIn: 'root' },
+  withState({ users: [], loading: false }),
+  withComputed(({ users }) => ({
+    activeUsers: computed(() => users().filter(u => u.isActive))
+  })),
+  withMethods((store, userService = inject(UserService)) => ({
+    loadAll: rxMethod<void>(
+      pipe(
+        tap(() => patchState(store, { loading: true })),
+        switchMap(() => userService.getUsers().pipe(
+          tap((users) => patchState(store, { users, loading: false }))
+        ))
+      )
+    )
+  }))
+);
+
+// In Component:
+// store = inject(UserStore);
+// store.loadAll();
+// this.active = store.activeUsers(); // It's a signal!
+</code></pre>
+      </div>
+      <div class="tip">
+        <b>Tip:</b> If you are starting an Angular v17+ project, immediately adopt <b>SignalStore</b> for local component state, and optionally use it for global state. It's much lighter than Redux.
+      </div>
+    </div>
+  </div>
+</div>
