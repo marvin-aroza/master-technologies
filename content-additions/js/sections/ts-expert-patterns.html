@@ -1,0 +1,79 @@
+<div class="section" id="ts-expert">
+  <div class="s-header">
+    <h2>TypeScript Expert Patterns</h2>
+    <p>Advanced type gymnastics, branded types, and sophisticated generic architectures for 100% type safety.</p>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="c-header">
+        <span class="badg expert">EXPERT</span>
+        <h3>Type Gymnastics: Recursion</h3>
+      </div>
+      <p>Using recursive conditional types to create deep, complex object transformations:</p>
+      <pre><code>// Deep Readonly Pattern
+type DeepReadonly&lt;T&gt; = {
+  readonly [P in keyof T]: T[P] extends object 
+    ? DeepReadonly&lt;T[P]&gt; 
+    : T[P];
+};
+
+// JSON Safety Pattern
+type JSONValue =
+  | string | number | boolean | null
+  | { [key: string]: JSONValue }
+  | JSONValue[];</code></pre>
+    </div>
+
+    <div class="card">
+      <div class="c-header">
+        <span class="badg expert">EXPERT</span>
+        <h3>Branded Types (Nominal Simulation)</h3>
+      </div>
+      <p>TS is structural, but branding ensures data integrity for IDs, Emails, and sensitive primitives:</p>
+      <pre><code>type Brand&lt;K, T&gt; = K &amp; { __brand: T };
+
+type UserID = Brand&lt;string, "UserID"&gt;;
+type OrderID = Brand&lt;string, "OrderID"&gt;;
+
+const u: UserID = "123" as UserID;
+const o: OrderID = u; // Error: OrderID !== UserID</code></pre>
+    </div>
+
+    <div class="card">
+      <div class="c-header">
+        <span class="badg expert">EXPERT</span>
+        <h3>Mapped Type Remapping</h3>
+      </div>
+      <p>Using the <code>as</code> clause to dynamically rename keys based on templates:</p>
+      <pre><code>interface User {
+  id: number;
+  name: string;
+}
+
+type Getters&lt;T&gt; = {
+  [K in keyof T as `get${Capitalize&lt;string &amp; K&gt;}`]: () => T[K]
+};
+
+type UserGetters = Getters&lt;User&gt;;
+// { getName: () => string; getId: () => number; }</code></pre>
+    </div>
+
+    <div class="card">
+      <div class="c-header">
+        <span class="badg advanced">ADVANCED</span>
+        <h3>Satisfies vs Explicit Annotations</h3>
+      </div>
+      <p>The <code>satisfies</code> operator (TS 4.9+) allows validation WITHOUT widening inferred types:</p>
+      <pre><code>type Palette = Record&lt;string, string | number[]&gt;;
+
+const colors = {
+  primary: "#00f",
+  secondary: [0, 0, 255]
+} satisfies Palette;
+
+// colors.primary remains "#00f" (literal)
+// NOT widened to string | number[]</code></pre>
+    </div>
+  </div>
+</div>

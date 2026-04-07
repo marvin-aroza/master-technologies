@@ -1,0 +1,78 @@
+<div class="section" id="react-19">
+  <h2>React 19 Deep Dive</h2>
+  <p class="section-desc">The biggest shift in React history: Compiler, Server Components, and native Actions.</p>
+
+  <div class="card">
+    <div class="card-title">React Compiler (Experimental)</div>
+    <div class="card-content">
+      <p>React 19 introduces a build-time compiler that automatically memoizes your code. It ensures that components re-render only when their data truly changes.</p>
+      <ul>
+        <li><b>Goodbye `useMemo` & `useCallback`:</b> The compiler analyzes your dependency graph and adds auto-memoization, making these hooks mostly redundant.</li>
+        <li><b>Zero-Config:</b> Once enabled, it optimizes your entire application without manual intervention.</li>
+        <li><b>Strict Rules:</b> Requires strictly following React's rules (no mutating props or state directly) to work correctly.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Server Components (RSC) & Actions</div>
+    <div class="card-content">
+      <p>RSCs allow components to render on the server, potentially removing all their JavaScript from the client bundle.</p>
+      <ul>
+        <li><b>Server Actions:</b> Use `use server` to define functions that run on the server, callable directly from your client-side forms.</li>
+        <li><b>useFormStatus & useActionState:</b> New hooks to handle the pending state and response of Server Actions without manual `isLoading` trackers.</li>
+        <li><b>Streaming:</b> Components can stream their content to the client as soon as data (like DB queries) is ready.</li>
+      </ul>
+      <div class="code-block">
+<pre><code>// Server Action (actions.js)
+'use server'
+export async function updateUsername(formData) {
+  const name = formData.get('name');
+  await db.user.update({ name });
+}
+
+// Client Component
+function ProfileForm() {
+  const { pending } = useFormStatus();
+  return (
+    &lt;form action={updateUsername}&gt;
+      &lt;input name="name" /&gt;
+      &lt;button disabled={pending}&gt;Update&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}
+</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">The `use()` Hook & useOptimistic</div>
+    <div class="card-content">
+      <p>React 19 makes asynchronous logic feel synchronous within your components.</p>
+      <ul>
+        <li><b>use():</b> Can be used to read a Promise or Context. Unlike standard hooks, it can be used inside `if` statements or loops.</li>
+        <li><b>useOptimistic:</b> Allows you to immediately update the UI with an expected result while a server action is still in flight.</li>
+      </ul>
+      <div class="code-block">
+<pre><code>function MessageList({ messages, sendMessage }) {
+  const [optimisticMessages, addOptimisticMessage] = useOptimistic(
+    messages,
+    (state, newMessage) => [...state, { text: newMessage, sending: true }]
+  );
+
+  return (
+    &lt;div&gt;
+      {optimisticMessages.map(m => &lt;div&gt;{m.text}&lt;/div&gt;)}
+      &lt;button onClick={() => {
+        addOptimisticMessage("Hello!");
+        sendMessage("Hello!");
+      }}&gt;Send&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+      </div>
+    </div>
+  </div>
+</div>

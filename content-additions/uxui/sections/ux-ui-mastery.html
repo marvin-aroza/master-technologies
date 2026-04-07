@@ -1,0 +1,57 @@
+<div class="sc" id="ux-ui-mastery">
+  <h2>UX/UI Architecture & Design Systems</h2>
+  <p class="section-desc">Building resilient, developer-friendly, and accessible design systems for enterprise scale.</p>
+
+  <div class="grid2">
+    <div class="cd">
+      <h3>Design Token Architecture</h3>
+      <p>Decouple styling from components for multi-platform consistency.</p>
+      <ul>
+        <li><b>Tier 1: Global/Core Tokens</b> (e.g., <code>--blue-500: #3b82f6</code>).</li>
+        <li><b>Tier 2: Alias/Semantic Tokens</b> (e.g., <code>--action-primary: var(--blue-500)</code>).</li>
+        <li><b>Tier 3: Component-Specific Tokens</b> (e.g., <code>--btn-bg: var(--action-primary)</code>).</li>
+      </ul>
+    </div>
+    <div class="cd">
+      <h3>Advanced Accessibility (a11y)</h3>
+      <p>Going beyond the basics for a truly inclusive experience.</p>
+      <ul>
+        <li><b>Cognitive Accessibility:</b> Reducing cognitive load with consistent patterns, minimal distractions, and clear multi-modal feedback.</li>
+        <li><b>Focus Management:</b> Capturing focus in modals, correctly using <code>aria-live</code> for dynamic updates, and ensuring logical tab order for keyboard users.</li>
+        <li><b>User Preference Queries:</b> Respecting <code>prefers-reduced-motion</code>, <code>prefers-contrast</code>, and <code>prefers-color-scheme</code>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="cd">
+    <h2>Enterprise Design Systems (Atomic Design)</h2>
+    <p>Managing components as a hierarchy of complexity.</p>
+    <div class="grid2">
+      <div class="an">
+        <h3>Atoms & Molecules</h3>
+        <p>Buttons, inputs, icons (Atoms) combined into Search bars, Cards, or Modals (Molecules). These are the primitives of your system.</p>
+      </div>
+      <div class="an">
+        <h3>Organisms & Templates</h3>
+        <p>Complex reusable sections (Headers, Navigation menus, Data tables) that form the layouts (Templates) where real content is injected.</p>
+      </div>
+    </div>
+    <pre><code><span class="c">// Example of Headless UI pattern for components</span>
+<span class="k">const</span> <span class="f\">Tabs</span> = ({ children }) => {{
+  <span class="k">const</span> [active, setActive] = <span class="f\">useState</span>(0);
+  <span class="c">// Provide state via context, but NO styles.</span>
+  <span class="c">// Consumer brings their own styling (Tailwind, Modules, etc).</span>
+  <span class="k">return</span> <span class="s">&lt;TabsContext.Provider value={{...}}&gt;</span>{{children}}<span class="s">&lt;/TabsContext.Provider&gt;</span>;
+}}</code></pre>
+  </div>
+
+  <div class="cd">
+    <h2>Design for Performance (UX-P)</h2>
+    <p>How UI design choices directly impact modern performance metrics like INP (Interaction to Next Paint).</p>
+    <ul>
+      <li><b>Skeleton Screens:</b> Perceived performance vs real performance. Using CSS transforms rather than width/height for layout-stable loading states.</li>
+      <li><b>Optimistic UI:</b> Instantly updating the UI before server confirmation (e.g., \"liking\" a post). Requires complex error-rollback logic.</li>
+      <li><b>Variable Fonts:</b> Reducing font-weight bloat. Loading one font file for 100-900 weights instead of 5 separate files. Massive LCP win.</li>
+    </ul>
+  </div>
+</div>

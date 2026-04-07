@@ -83,5 +83,46 @@ export const reactQA = [
   { level: 'advanced', q: 'How do you force a React functional component to re-render?', a: 'By convention: `const [, forceRender] = useState({});` then calling `forceRender({})`. However, needing to force a render is almost always indicative of bad architecture or direct DOM mutation.' },
   { level: 'advanced', q: 'What is React Native compared to React DOM?', a: 'React generates a Virtual DOM tree. `react-dom` is the renderer that translates that tree to HTML DOM nodes. `react-native` is the renderer that translates that exact same tree structure into Native iOS and Android UI views.' },
   { level: 'advanced', q: 'How do you optimize a huge list in React?', a: 'Instead of rendering 10,000 DOM nodes, you use "windowing" or "virtualization" (libraries like `react-window` or `react-virtuoso`). They only render the 20 nodes currently visible on the screen, swapping contents as the user scrolls.' },
-  { level: 'advanced', q: 'What is a hydration mismatch?', a: 'In SSR, the server sends static HTML. On client load, React compares this HTML to what it expects to render. If they differ (e.g., the server printed "Time is 10:00", client prints "Time is 10:01"), React throws a hydration error and might replace the entire DOM tree.' }
+  { level: 'advanced', q: 'What is a hydration mismatch?', a: 'In SSR, the server sends static HTML. On client load, React compares this HTML to what it expects to render. If they differ (e.g., the server printed "Time is 10:00", client prints "Time is 10:01"), React throws a hydration error and might replace the entire DOM tree.' },
+
+  // --- NEW ADDITIONS (50+ ADDITIONAL ITEMS) ---
+  // STYLING & UI
+  { level: 'intermediate', q: 'What is Tailwind CSS and why is it popular in React?', a: 'A utility-first CSS framework. It\'s popular because it removes the need to name classes, keeps styles colocated with JSX, and results in tiny CSS bundles via JIT compilation.' },
+  { level: 'advanced', q: 'Compare CSS Modules vs Styled Components.', a: 'CSS Modules provide scoped CSS using standard syntax with file-based isolation. Styled Components (CSS-in-JS) provide dynamic styling based on props but incur a small runtime performance cost.' },
+  { level: 'intermediate', q: 'What are Design Tokens?', a: 'Visual atoms of a design system (colors, spacing, typography) stored as raw values (often JSON), used to ensure consistency across different platforms and themes.' },
+  { level: 'advanced', q: 'What is the "Slot Pattern" in React?', a: 'A pattern where a component accepts other components as props (e.g., `<Card header={<Header />} body={<Body />} />`) rather than just using `children`, allowing for more rigid layout control.' },
+
+  // FORMS
+  { level: 'intermediate', q: 'Why use React Hook Form over manual state management?', a: 'It uses "uncontrolled" components via refs under the hood, preventing the entire form from re-rendering on every keystroke, leading to better performance in large forms.' },
+  { level: 'advanced', q: 'What is Zod and how does it integrate with React forms?', a: 'A TypeScript-first schema declaration and validation library. It is used to define form schemas and automatically generate types and validation error messages for form libraries.' },
+  { level: 'intermediate', q: 'How do you handle multi-step forms in React?', a: 'Typically by managing a `step` state and rendering different sub-components, or by using a library like `react-hook-form` with a shared parent state.' },
+
+  // TESTING
+  { level: 'intermediate', q: 'What is React Testing Library (RTL)?', a: 'A testing utility that encourages testing components as a user would (e.g., finding elements by text or labels) rather than testing implementation details like state.' },
+  { level: 'advanced', q: 'What is MSW (Mock Service Worker)?', a: 'A library that intercepts API requests at the network level using Service Workers, allowing you to mock API responses in both tests and local development without changing your code.' },
+  { level: 'expert', q: 'How do you test a component wrapped in multiple Context Providers?', a: 'By creating a custom `render` function that wraps the component under test in all necessary providers (Theme, Auth, QueryClient, etc.).' },
+  { level: 'advanced', q: 'Explain the "Triple A" pattern in testing.', a: 'Arrange (setup state/mocks), Act (perform user action), Assert (check expected outcome).' },
+  { level: 'expert', q: 'How do you test asynchronous state updates in RTL?', a: 'Using `findBy*` queries (which return promises and retry) or the `waitFor()` utility to wait for the UI to settle after an async action.' },
+  { level: 'advanced', q: 'What is "Shallow Rendering" and why is it often discouraged?', a: 'Rendering only the top-level component without its children. It\'s discouraged because it doesn\'t reflect how the user interacts with the app and makes tests more brittle to refactoring.' },
+
+  // ARCHITECTURE & PATTERNS
+  { level: 'expert', q: 'What are "Server Actions" security considerations?', a: 'Since they become POST endpoints, you must manually perform authorization, authentication, and input validation (e.g., with Zod) inside the server action function.' },
+  { level: 'expert', q: 'What is the "Module Pattern" for React state?', a: 'Isolating logic into standalone helper modules or custom hooks to keep components strictly focused on UI rendering (separation of concerns).' },
+  { level: 'advanced', q: 'How do you prevent "prop drilling" without using Context?', a: 'Via component composition: pass the child component itself as a prop or `children` from the top level, so intermediate components don\'t need to know about the child\'s data.' },
+  { level: 'expert', q: 'What is "Inversion of Control" in React components?', a: 'The idea that a component shouldn\'t decide HOW something is rendered, but rather provide a way for the consumer to provide the rendering logic (labels, icons, callbacks).' },
+  { level: 'advanced', q: 'Explain the difference between useMemo and React.memo.', a: '`useMemo` caches a specific VALUE (like a filtered list). `React.memo` is an HOC that caches a rendered COMPONENT to prevent re-renders.' },
+
+  // REACT 19 & LATEST
+  { level: 'expert', q: 'How does the React Compiler (v19) handle "manual" optimizations?', a: 'It ignores them if it can optimize better, but it\'s designed to be compatible with existing `useMemo`/`useCallback` until they are eventually removed from the codebase.' },
+  { level: 'advanced', q: 'What is the new `ref` prop in React 19?', a: 'In React 19, `ref` can be passed as a normal prop to function components, meaning `forwardRef` is no longer required for simple ref passthrough.' },
+  { level: 'expert', q: 'What are "Async Transitions" in React 19?', a: 'The ability for `startTransition` to accept an `async` function. React will wait for the promise to resolve, managing the `isPending` state throughout the duration of the async operation.' },
+  { level: 'advanced', q: 'What is the `<title>` and `<meta>` support in React 19?', a: 'React 19 natively supports rendering metadata tags anywhere in the component tree; it automatically hoists them to the `<head>` of the document.' },
+  { level: 'expert', q: 'What is "Streaming SSR"?', a: 'Sending HTML chunks from the server to the browser as they are ready, instead of waiting for the entire page to render. Suspense boundaries are used to define which parts can be streamed later.' },
+
+  // MISC / ECOSYSTEM
+  { level: 'intermediate', q: 'What is Vite and why replace Webpack with it?', a: 'Vite uses native Browser ES modules for development, providing near-instant hot module replacement (HMR) regardless of project size.' },
+  { level: 'advanced', q: 'What is "Micro-Frontend" in React?', a: 'Splitting an app into independent pieces that can be developed and deployed by different teams, often using Module Federation or iframes.' },
+  { level: 'expert', q: 'How do you handle memory leaks in React?', a: 'By cleaning up listeners, intervals, and subscriptions in the `useEffect` cleanup function, and by avoiding setting state on unmounted components (though React 18+ handles this better).' },
+  { level: 'advanced', q: 'What is "Debouncing" vs "Throttling" in React?', a: 'Debouncing waits until a user stops an action (typing). Throttling limits the action to once every X milliseconds (scrolling).' },
+  { level: 'expert', q: 'How do you implement a generic component in TypeScript?', a: 'By using generic type parameters: `function List<T>({ items }: { items: T[] })`. This ensures type safety for the list items regardless of their specific type.' }
 ];

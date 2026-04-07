@@ -1,0 +1,80 @@
+<div class="section" id="css-2025">
+  <div class="s-header">
+    <h2>Modern CSS & 2025 Features</h2>
+    <p>CSS Anchor Positioning, View Transitions, Cascade Layers, and the future of native layout.</p>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="c-header">
+        <span class="badg expert">EXPERT</span>
+        <h3>Anchor Positioning API</h3>
+      </div>
+      <p>Position elements relative to any other "anchor" without shared parents or JS libraries:</p>
+      <pre><code>.anchor { anchor-name: --my-btn; }
+
+.popover {
+  position: absolute;
+  position-anchor: --my-btn;
+  bottom: anchor(top);
+  left: anchor(center);
+}</code></pre>
+      <ul>
+        <li><strong>Native Popovers:</strong> Combined with `popover` attribute for top-layer rendering.</li>
+        <li><strong>Fallback Logic:</strong> Use `position-try-options` for safe repositioning.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="c-header">
+        <span class="badg expert">EXPERT</span>
+        <h3>View Transitions API</h3>
+      </div>
+      <p>Seamlessly animate between DOM states (or pages) without complex JS libraries:</p>
+      <pre><code>function updateUI() {
+  document.startViewTransition(() => {
+    // Perform DOM modifications
+    renderNewPage(); 
+  });
+}</code></pre>
+      <ul>
+        <li><strong>Pseudo-elements:</strong> Automatically creates snapshots `::view-transition-group`.</li>
+        <li><strong>Cross-Document:</strong> Supported in 2024/2025 for standard multi-page sites.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="c-header">
+        <span class="badg advanced">ADVANCED</span>
+        <h3>Cascade Layers (@layer)</h3>
+      </div>
+      <p>Architectural control over specificity, solving the 3rd-party override library wars:</p>
+      <pre><code>@layer base, utility, components;
+
+@layer utility {
+  .p-10 { padding: 10px !important; }
+}
+
+@layer base {
+  /* Won't be overridden by higher layers 
+     despite specificity */
+}</code></pre>
+    </div>
+
+    <div class="card">
+      <div class="c-header">
+        <span class="badg expert">EXPERT</span>
+        <h3>Relative Color Syntax (RCS)</h3>
+      </div>
+      <p>Derive dynamic colors natively from existing variables:</p>
+      <pre><code>:root { --primary: #3498db; }
+
+.btn {
+  /* Extract R, G, B and add 50% alpha */
+  background: rgb(from var(--primary) r g b / 0.5);
+  /* Or oklch adjustments */
+  border-color: oklch(from var(--primary) calc(l + 0.1) c h);
+}</code></pre>
+    </div>
+  </div>
+</div>

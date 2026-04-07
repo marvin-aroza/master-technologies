@@ -41,5 +41,40 @@ export const nextQA = [
   { level: 'advanced', q: 'How do you implement i18n (Internationalization) in the App Router?', a: 'Typically by using incredibly dynamic routes like `app/[lang]/page.tsx` and using Middleware to detect the user\'s accept-language header, automatically redirecting them to the correct `/[lang]` path.' },
   { level: 'advanced', q: 'Why shouldn\'t you use React Context if you can avoid it in App Router?', a: 'Because Context boundaries force all components "under" them to become Client Components (if they consume it). This defeats the purpose of Server Components. Pass props, use Server Components, or push Context as deep into the tree as possible.' },
   { level: 'expert', q: 'What is the "poisoning" rule in Server Components?', a: 'If you import a Client Component into a Server Component, that\'s fine. But if you import a Server Component INTO a Client Component directly, it becomes a Client Component. You must pass Server Components as `children` props to bypass this.' },
-  { level: 'expert', q: 'What is the `server-only` package?', a: 'A utility package you can import. If a developer accidentally imports that file into a Client Component, it throws an immediate build error. Vital for files containing database passwords or secret keys.' }
+  { level: 'expert', q: 'What is the `server-only` package?', a: 'A utility package you can import. If a developer accidentally imports that file into a File containing database passwords or secret keys, it throws an immediate build error.' },
+
+  // --- NEW ADDITIONS (40+ ADDITIONAL ITEMS) ---
+  // AUTHENTICATION & SECURITY
+  { level: 'intermediate', q: 'What is Auth.js (NextAuth.js v5)?', a: 'The modern authentication solution for Next.js. It supports OAuth providers, email/password, and integrates directly with the App Router via Server Actions and Middleware.' },
+  { level: 'advanced', q: 'Explain JWT vs. Session strategy in NextAuth.', a: 'JWT (JSON Web Token) is stateless and stored in a cookie. Sessions are stored in a database. JWT is usually faster and can be used on the Edge, while Sessions allow for immediate invalidation.' },
+  { level: 'expert', q: 'How do you protect specific API routes using Middleware?', a: 'By checking for a valid session token in the request cookies inside `middleware.ts` and redirecting the user to `/login` if it is missing before the request even reaches the Route Handler.' },
+  { level: 'advanced', q: 'What is the danger of using `process.env` in Client Components?', a: 'It will be undefined in the browser unless you prefix the variable with `NEXT_PUBLIC_`. However, sensitive keys (like DB passwords) should NEVER be prefixed, as they would be exposed to the user.' },
+  { level: 'expert', q: 'How do you prevent CSRF in Next.js Server Actions?', a: 'Next.js has built-in CSRF protection for Server Actions. It compares the `Origin` header with the `Host` header to ensure the request is coming from your own domain.' },
+
+  // DATABASES & DATA LIFECYCLE
+  { level: 'intermediate', q: 'What is Prisma and why use it with Next.js?', a: 'An ORM (Object-Relational Mapper) that provides a typesafe database client. It makes querying databases like PostgreSQL or MySQL easier and prevents runtime type errors.' },
+  { level: 'advanced', q: 'What is Drizzle ORM and how does it compare to Prisma?', a: 'A "lean" ORM that is zero-runtime and fully typesafe. Unlike Prisma, it doesn\'t require a separate engine binary, making it much more compatible with the Edge Runtime.' },
+  { level: 'expert', q: 'How do you handle database connection pooling in Serverless environments?', a: 'By using a connection pooler like PgBouncer or using an HTTP-based database driver (like Upstash for Redis or Neon for Postgres) to avoid exhausting connection limits during high traffic.' },
+  { level: 'advanced', q: 'What is the purpose of `useFormState` in Next.js 14/15?', a: 'It\'s used to manage the state returned from a Server Action (e.g., validation errors or success messages), allowing the UI to react to the server\'s response without manual state management.' },
+
+  // ARCHITECTURE & ROUTING (DEEP DIVE)
+  { level: 'advanced', q: 'What are Parallel Routes and when to use them?', a: 'Represented by `@folder`. They allow you to render multiple independent pages at the same URL (e.g., a Dashboard with a Sidebar and a Main view that can each have their own loading states).' },
+  { level: 'advanced', q: 'Explain Intercepting Routes (modal pattern).', a: 'Represented by `(.)folder`. This allows you to "intercept" a navigation to a specific route and render it as a modal over the current context, while still allowing a refresh/share to show the target route as a standalone page.' },
+  { level: 'expert', q: 'What is "Route Segment Config" and list 3 options.', a: 'Configuration exported from a page/layout to control its behavior. Options: `dynamic` ("auto", "force-dynamic"), `revalidate` (seconds), `runtime` ("nodejs", "edge").' },
+  { level: 'advanced', q: 'What is the `unstable_cache` API?', a: 'A function that allows you to cache data-fetching results that AREN\'T using the standard `fetch()` API (e.g., direct DB queries via an ORM).' },
+  { level: 'expert', q: 'Explain "Static Metadata" vs "dynamic metadata" hoisting.', a: 'Static is defined as a constant `export const metadata`. Dynamic uses `export async function generateMetadata()`. Both are hoisted to the head, but dynamic allows fetching data for page-specific titles.' },
+
+  // OPTIMIZATION & PERFORMANCE
+  { level: 'intermediate', q: 'What is the "priority" prop in Next.js Image?', a: 'It tells Next.js to preload the image and treat it as a high-priority asset, which is crucial for the LCP (Largest Contentful Paint) image.' },
+  { level: 'advanced', q: 'How does Next.js handle Third-Party Scripts?', a: 'Via the `<Script>` component. It allows strategies like `afterInteractive` (default), `beforeInteractive` (early load), and `worker` (offload to web worker).' },
+  { level: 'expert', q: 'What is Partial Prerendering (PPR)?', a: 'A build-time optimization that static-generates a page\'s "shell" and leaves "holes" for dynamic content that are streamed in at runtime using Suspense boundaries.' },
+  { level: 'advanced', q: 'Explain the difference between `revalidatePath` and `revalidateTag`.', a: '`revalidatePath` purges the entire cache for a specific URL. `revalidateTag` purges all cached requests that were tagged with a specific string, which is more surgical and efficient.' },
+  { level: 'expert', q: 'How do you optimize an app for the Edge Runtime?', a: 'Avoid Node-specific APIs, use Edge-compatible database drivers, and keep bundle sizes small since the Edge runtime has strict memory and CPU limits.' },
+
+  // ECOSYSTEM & DEPLOYMENT
+  { level: 'intermediate', q: 'What is the Vercel Data Cache?', a: 'An global cache that persists the result of `fetch` requests across multiple server executions and even redeploys, unless manually invalidated.' },
+  { level: 'advanced', q: 'How do you deploy Next.js to a VPS (non-Vercel)?', a: 'By building the app with `output: "standalone"` and running the resulting `server.js` file using Node.js, usually managed by PM2 or inside a Docker container.' },
+  { level: 'expert', q: 'What is "Request Memoization" vs "Data Cache"?', a: 'Memoization only lasts for ONE server request (preventing duplicate fetches). Data Cache persists ACROSS requests on the server storage indefinitely until revalidated.' },
+  { level: 'intermediate', q: 'What is the purpose of the `.next` folder?', a: 'It is the build output directory containing compiled JS, cached static pages, RSC payloads, and configuration files used by the Next.js server.' },
+  { level: 'advanced', q: 'How do you handle redirects in the App Router?', a: 'Using the `redirect()` function for server-side redirects, or the `redirects` config in `next.config.js` for permanent path mapping.' }
 ];

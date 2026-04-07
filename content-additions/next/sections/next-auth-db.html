@@ -1,0 +1,39 @@
+<div class="section" id="next-auth-db">
+  <h2>Auth & Database Integration</h2>
+  <p class="section-desc">Building full-stack applications with secure authentication and robust data layers.</p>
+
+  <div class="card">
+    <div class="card-title">Next-Auth / Auth.js (v5)</div>
+    <div class="card-content">
+      <p>Auth.js is the standard for adding authentication to Next.js apps. V5 is designed specifically for the App Router.</p>
+      <ul>
+        <li><b>Edge Compatible:</b> V5 works seamlessly on the Edge, allowing for fast authentication checks in Middleware.</li>
+        <li><b>Simplified Config:</b> Uses a single `auth.ts` file for all your configuration (providers, callbacks, adapters).</li>
+        <li><b>Server Actions:</b> `signIn()` and `signOut()` work directly inside Server Actions without needing API routes.</li>
+      </ul>
+      <div class="code-block">
+<pre><code>// Protecting a Server Action
+export async function deletePost(id) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+  await db.post.delete({ where: { id } });
+}
+</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Modern ORMs: Prisma & Drizzle</div>
+    <div class="card-content">
+      <p>The choice of ORM impacts your application's deployment and runtime performance.</p>
+      <ul>
+        <li><b>Prisma:</b> Provides an intuitive, high-level API. Great for complex schemas and traditional `nodejs` runtimes.</li>
+        <li><b>Drizzle:</b> A TypeScript-first, zero-runtime overhead ORM. It's essentially "SQL with types," making it perfect for the `edge` runtime and projects requiring maximum performance.</li>
+      </ul>
+      <div class="tip">
+        <b>Tip:</b> If you are deploying to Vercel Edge, prefer <b>Drizzle</b> with a serverless driver like <b>Neon</b> or <b>Upstash</b>.
+      </div>
+    </div>
+  </div>
+</div>

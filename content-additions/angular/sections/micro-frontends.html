@@ -11,19 +11,43 @@
         <li><b>Remote Application:</b> A standalone application that exposes parts of itself (components or routes) to be consumed.</li>
         <li><b>Shared Dependencies:</b> Federation allows you to declare dependencies (like `@angular/core` or RxJS) as singletons, so the browser doesn't download the Angular framework 5 times.</li>
       </ul>
-      <p>Because Angular 17+ moved away from Webpack towards Esbuild/Vite, the standard tool has become <code>@angular-architects/native-federation</code>.</p>
+      <p>Because Angular 17+ moved away from Webpack towards Esbuild/Vite, the standard tool has become <b>Native Federation</b>, which uses browser-native Import Maps rather than Webpack-specific logic.</p>
       <div class="code-block">
-<pre><code>// Host routing loading a remote Micro-Frontend
+<pre><code>// Host routing loading a remote Micro-Frontend via Native Federation
 export const routes: Routes = [
   {
     path: 'flights',
     loadChildren: () =>
-      loadRemoteModule('flights', './Module')
-        .then(m => m.FlightsRoutes)
+      loadRemoteModule('flights', './Component')
+        .then(m => m.FlightsComponent)
   }
 ];
 </code></pre>
       </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Angular Elements (Web Components)</div>
+    <div class="card-content">
+      <p>Angular Elements allows you to package an Angular component as a standard <b>Custom Element</b>. This is the ultimate "agnostic" micro-frontend strategy.</p>
+      <ul>
+        <li><b>Interoperability:</b> Can be used in React, Vue, or vanilla JS without the host knowing it's Angular.</li>
+        <li><b>Isolated Styles:</b> Uses Shadow DOM for style encapsulation.</li>
+        <li><b>Challenge:</b> The initial bundle size is larger because it must include the Angular runtime inside each element (unless using shared vendors).</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Shared State in Micro-Frontends</div>
+    <div class="card-content">
+      <p>Sharing state between independent apps is the biggest challenge in MFE architecture.</p>
+      <ul>
+        <li><b>Browser Events:</b> Using `Window.dispatchEvent` for loose coupling.</li>
+        <li><b>Shared Libraries:</b> A shared NgRx/SignalStore library that both apps import (must be configured as a singleton dependency).</li>
+        <li><b>Local Storage / Cookies:</b> For persistent shared data like auth tokens.</li>
+      </ul>
     </div>
   </div>
 </div>

@@ -85,5 +85,81 @@ export const angularQA = [
   { level: 'expert', q: 'What is the purpose of `markForCheck()` vs `detectChanges()`?', a: '`markForCheck()` flags the component and all its ancestors to be checked in the NEXT normal change detection run. `detectChanges()` forces an immediate, synchronous check of the component and its children.' },
   { level: 'expert', q: 'What is `ngDoCheck`?', a: 'A lifecycle hook that triggers on EVERY change detection cycle, regardless of whether inputs changed. Highly dangerous to use because it executes very frequently; only use it for tracking complex internal object mutations if absolutely necessary.' },
   { level: 'advanced', q: 'How do you dynamically load a component at runtime?', a: 'Using `ViewContainerRef.createComponent()`, passing the imported component class. It allows injecting the component into a specific #placeholder in the DOM.' },
-  { level: 'expert', q: 'What is `effect()` in Angular Signals?', a: 'An operation that runs when one or more signals it reads change. Useful for bridging signals to non-signal code (like DOM APIs, logging, or setting up RxJS subjects).' }
+  { level: 'expert', q: 'What is `effect()` in Angular Signals?', a: 'An operation that runs when one or more signals it reads change. Useful for bridging signals to non-signal code (like DOM APIs, logging, or setting up RxJS subjects).' },
+
+  // --- NEW ADDITIONS (80+ ITEMS) ---
+  // BEGINNER GAPS
+  { level: 'basic', q: 'What is the difference between a Component and a Directive?', a: 'A Component is a Directive with a template. It is the building block of the UI, while a Directive (Attribute/Structural) adds behavior/appearance to an existing element.' },
+  { level: 'basic', q: 'What is TypeScript and why does Angular use it?', a: 'TypeScript is a typed superset of JavaScript. Angular uses it for early error detection, better IDE tooling (intellisense), and to handle decorators and interfaces effectively.' },
+  { level: 'basic', q: 'What is the purpose of the `selector` in @Component?', a: 'It defines the CSS selector that identifies this component in a template (e.g., `<app-nav>`).' },
+  { level: 'basic', q: 'What is the `providers` array in a component for?', a: 'It allows registering services at the component level (ElementInjector), creating a separate instance of the service for that component and its children.' },
+  { level: 'basic', q: 'What is the difference between `const` and `let` in TypeScript?', a: '`const` is for values that won\'t be reassigned. `let` is for block-scoped variables that can be reassigned.' },
+  { level: 'basic', q: 'What is an Interface?', a: 'A syntax for defining the structure of an object without implementing it. It exists only at compile-time for type checking.' },
+  { level: 'basic', q: 'What is the `constructor` used for in Angular components?', a: 'Primarily for Dependency Injection. Heavy initialization logic should be moved to `ngOnInit`.' },
+  { level: 'basic', q: 'How do you handle user input in it template?', a: 'Using event binding, e.g., `(input)="onInput($event)"`.' },
+  { level: 'basic', q: 'What is the `ngFor` trackBy function?', a: 'A function that returns a unique identifier for list items, preventing the entire list from re-rendering if only middle items change.' },
+  { level: 'basic', q: 'What is the purpose of `target` in tsconfig.json?', a: 'Specifies the ECMAScript version (e.g., ES2022) that the TypeScript compiler will output.' },
+
+  // NGRX & STATE MANAGEMENT (ADDITIONAL)
+  { level: 'advanced', q: 'What is "Prop Drilling" and how does NgRx solve it?', a: 'Passing data through multiple levels of components just to reach a child. NgRx allows components to "select" data directly from the store, bypassing intermediate parents.' },
+  { level: 'expert', q: 'What is `patchState` in NgRx SignalStore?', a: 'A function that allows updating the state of a SignalStore in a type-safe way, merging the partial state into the current one.' },
+  { level: 'advanced', q: 'How do you handle optimistic updates in NgRx?', a: 'Update the store immediately when an action is dispatched, and if the subsequent API call fails, dispatch a "Failure" action to revert (rollback) the state.' },
+  { level: 'expert', q: 'Compare ComponentStore vs Store vs SignalStore.', a: '`Store` is for global, complex cross-feature state. `ComponentStore` is for complex local state using RxJS. `SignalStore` is the unified modern approach for both, utilizing Signals for performance.' },
+  { level: 'advanced', q: 'What is a "Container" vs "Presentational" component pattern?', a: 'Containers (Smart) know about state/services. Presentational (Dumb) receive data via @Input and emit via @Output, making them highly reusable and testable.' },
+  { level: 'expert', q: 'How do you prevent circular dependencies in NgRx?', a: 'By isolating Actions and Selectors into separate files and using "barrel" imports carefully, or by using "Feature State" slices.' },
+  { level: 'advanced', q: 'What is NGRX Router Store?', a: 'A library that syncs the Angular Router state with the NgRx store, allowing you to use route parameters in your selectors.' },
+  { level: 'expert', q: 'What is state normalization and why do it?', a: 'Storing data as flat objects indexed by IDs (like a database) instead of nested trees. It prevents data duplication and makes updates extremely fast via NgRx Entity.' },
+
+  // TESTING (ADDITIONAL)
+  { level: 'advanced', q: 'What are "Jasmine Marbles"?', a: 'A testing syntax for RxJS observables using visual representations (`-`, `a`, `|`, `#`) to assert timing and values of hot/cold observables.' },
+  { level: 'advanced', q: 'Why is `fixture.whenStable()` used?', a: 'It returns a promise that resolves when all pending asynchronous activities in the Angular Zone have completed.' },
+  { level: 'expert', q: 'How do you test a component that uses `@defer`?', a: 'By using the `ComponentFixture.getComponentDeferInstances()` API to manually trigger the different states (prefetch, loading, error, complete) of the deferred block.' },
+  { level: 'advanced', q: 'What is the difference between `spyOn` and `jasmine.createSpyObj`?', a: '`spyOn` mocks an existing method on a real object. `createSpyObj` generates a completely new mock object with specified methods.' },
+  { level: 'advanced', q: 'How do you mock the `HttpClient`?', a: 'Using `HttpClientTestingModule` and `HttpTestingController` to intercept and flush requests.' },
+  { level: 'expert', q: 'Explain visual regression testing in Angular.', a: 'Taking screenshots of components/pages and comparing them pixel-by-pixel against reference images to detect UI changes (e.g., using Playwright or Applitools).' },
+  { level: 'intermediate', q: 'What is "Integration Testing" in the context of Angular?', a: 'Testing a component and its real child components together, rather than mocking all children (Shallow testing).' },
+
+  // ANIMATIONS
+  { level: 'intermediate', q: 'What is the `trigger()` function in Angular animations?', a: 'It defines the name of the animation and the collection of states and transitions associated with it.' },
+  { level: 'advanced', q: 'What is the `*` and `void` state in animations?', a: '`void` is the state when an element is not in the DOM. `*` is a wildcard represents any state. Transition `void => *` happens when an element enters.' },
+  { level: 'advanced', q: 'How do you create staggered animations?', a: 'Using the `stagger()` function within a `query()` to introduce a delay between multiple elements animating in a sequence.' },
+  { level: 'intermediate', q: 'Can you use CSS variables in Angular animations?', a: 'Yes, they can be accessed via `style({ transform: "var(--my-var)" })` within transitions.' },
+  { level: 'expert', q: 'How do you disable animations globally for tests?', a: 'By providing `NoopAnimationsModule` instead of `BrowserAnimationsModule` in the test setup.' },
+
+  // i18n & L10N
+  { level: 'intermediate', q: 'What is the `i18n` attribute in templates?', a: 'A built-in attribute used to mark static text for translation. The Angular CLI extracts these into XLIFF files.' },
+  { level: 'advanced', q: 'What are ICU expressions in Angular i18n?', a: 'Syntax used to handle pluralization (`plural`) and selection (`select`) based on variable values within a translation.' },
+  { level: 'expert', q: 'How do you swap languages at runtime?', a: 'Angular\'s built-in i18n is compile-time. For runtime translation, libraries like `@ngx-translate` or modern `@angular/localize` runtime strategies are used.' },
+
+  // PWA & SERVICE WORKERS
+  { level: 'intermediate', q: 'What is a Manifest file in a PWA?', a: 'A JSON file (`manifest.webmanifest`) that tells the browser how the app should behave when installed (icons, theme color, splash screen).' },
+  { level: 'advanced', q: 'How does `@angular/service-worker` handle updates?', a: 'It checks for a new `ngsw.json` file. If a new version is found, it downloads all assets in the background and prompts the user via `SwUpdate` service.' },
+  { level: 'advanced', q: 'What is "Safety Worker" in Angular PWA?', a: 'A tiny fallback service worker used to unregister old, problematic workers if a corruption is detected.' },
+
+  // MICRO-FRONTENDS
+  { level: 'expert', q: 'What is Module Federation?', a: 'A Webpack/Esbuild feature that allows a host application to dynamically load compiled modules from a remote application at runtime.' },
+  { level: 'expert', q: 'What are Angular Elements?', a: 'Angular components packaged as custom elements (Web Components), allowing them to be used in any HTML environment (React, Vue, plain HTML).' },
+
+  // SECURITY & BUILD
+  { level: 'advanced', q: 'What is Content Security Policy (CSP)?', a: 'A security header that tells the browser which sources of scripts, styles, and images are trusted, preventing XSS attacks.' },
+  { level: 'expert', q: 'What is the difference between JIT and AOT compilation?', a: 'JIT (Just-In-Time) compiles in the browser at runtime. AOT (Ahead-Of-Time) compiles during the build process. AOT is default and much faster/secure.' },
+  { level: 'advanced', q: 'What is "PurgeCSS" for Angular?', a: 'A tool that analyzes templates at build time to remove unused global CSS, reducing bundle size (often used with Tailwind).' },
+  { level: 'expert', q: 'What is "Differential Loading"?', a: 'Generating two sets of bundles: ES2015+ for modern browsers and ES5 for legacy ones, ensuring everyone gets the smallest possible code.' },
+
+  // ACCESSIBILITY (A11Y)
+  { level: 'intermediate', q: 'What is the `cdk/a11y` FocusTrap?', a: 'A utility that traps keyboard focus within a specific element (like a Dialog), preventing the user from tabbing out of it.' },
+  { level: 'advanced', q: 'How do you handle Live Regions in Angular?', a: 'By using the `LiveAnnouncer` service from Angular CDK to announce dynamic changes (like errors or success messages) to screen readers.' },
+  { level: 'intermediate', q: 'What is the purpose of ARIA labels?', a: 'Accessible Rich Internet Applications labels provide descriptive text for elements that don\'t have a visible label (like icon-only buttons) for screen readers.' },
+
+  // MISC / v22+
+  { level: 'expert', q: 'What is "Selectorless Components"?', a: 'Proposed features where components don\'t require a tag name and can be instantiated strictly via code or routes.' },
+  { level: 'advanced', q: 'What is the `linkedSignal()`?', a: 'A signal whose value is derived from another signal but can also be manually updated (writable computed signal).' },
+  { level: 'expert', q: 'What is "Partial Hydration" in Angular SSR?', a: 'A technique where only specific interactive parts of the page are hydrated, while static parts remain pure HTML to save JS execution time.' },
+  { level: 'advanced', q: 'What is the `output()` function in v18+?', a: 'A signal-safe replacement for the `@Output()` decorator, using the new `output()` API for cleaner event emission.' },
+  { level: 'basic', q: 'What is the difference between `npm install` and `npm ci`?', a: '`install` can update the lockfile. `ci` (Clean Install) is for automated environments; it requires a lockfile and deletes `node_modules` before fresh install.' },
+  { level: 'intermediate', q: 'What is an "Injection Context"?', a: 'A period during execution where `inject()` can be used (e.g., in a constructor or a factory function).' },
+  { level: 'advanced', q: 'How do you optimize an Angular app for the "First Contentful Paint" (FCP)?', a: 'Using SSR, critical CSS inlining, image lazy-loading, and route-based code splitting.' },
+  { level: 'advanced', q: 'What is "Hydration Mismatch"?', a: 'An error when the server-rendered HTML doesn\'t match the client-side initial state, causing Angular to destroy and recreate the DOM.' },
+  { level: 'expert', q: 'How do you implement a "Micro-Frontend" using Native Federation?', a: 'By using the `@angular-architects/native-federation` package, which uses standard browser import maps instead of Webpack-specific logic.' },
+  { level: 'intermediate', q: 'What is the purpose of `ngSrc` directive?', a: 'A directive for optimized image loading that automatically handles lazy loading, priority, and responsive sizing.' }
 ];

@@ -1,0 +1,66 @@
+<div class="section" id="js-memory">
+  <div class="s-header">
+    <h2>Memory & Performance Mastery</h2>
+    <p>Architecture of the V8 engine, Garbage Collection internals, and high-performance threading.</p>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="c-header">
+        <span class="badg expert">EXPERT</span>
+        <h3>V8 Engine Architecture</h3>
+      </div>
+      <p>Modern JS engines like V8 (Chrome/Node) use a sophisticated pipeline to achieve near-native speeds:</p>
+      <ul>
+        <li><strong>Ignition:</strong> A baseline bytecode interpreter that executes code quickly with minimal overhead.</li>
+        <li><strong>TurboFan:</strong> The optimizing JIT compiler. It uses profiling data from Ignition to compile "Hot" functions into highly optimized machine code.</li>
+        <li><strong>Speculative Optimization:</strong> V8 assumes types based on previous execution. If a function always receives integers, it stays optimized; if a string is suddenly passed, it triggers a "Deoptimization" (bailout).</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="c-header">
+        <span class="badg expert">EXPERT</span>
+        <h3>Garbage Collection Internals</h3>
+      </div>
+      <p>V8 uses a <strong>Generational GC</strong> strategy based on the "Infant Mortality" hypothesis (most objects die young):</p>
+      <ul>
+        <li><strong>Young Generation (New Space):</strong> Small (1-64MB), fast area for new objects. Uses "Scavenge" algorithm with parallel processing.</li>
+        <li><strong>Old Generation (Old Space):</strong> Where long-lived objects are moved. Uses "Mark-Sweep-Compact" which is more thorough but slower.</li>
+        <li><strong>Orinoco:</strong> The modern parallel/incremental/concurrent engine that performs GC work on background threads to minimize main-thread "Stop-the-World" pauses.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="c-header">
+        <span class="badg advanced">ADVANCED</span>
+        <h3>Memory Management Tools</h3>
+      </div>
+      <p>Strategies for handling large data sets without memory leaks:</p>
+      <pre><code>// WeakRef: Reference without preventing GC
+let heavyObj = { data: new Array(1000000) };
+const ref = new WeakRef(heavyObj);
+
+// FinalizationRegistry: Cleanup callback
+const registry = new FinalizationRegistry((heldValue) => {
+  console.log(`${heldValue} was collected!`);
+});
+registry.register(heavyObj, "Big Data");
+
+heavyObj = null; // Eligible for GC</code></pre>
+    </div>
+
+    <div class="card">
+      <div class="c-header">
+        <span class="badg expert">EXPERT</span>
+        <h3>Advanced Threading: Workers</h3>
+      </div>
+      <p>Moving heavy computation off the main thread to ensure 60fps responsiveness:</p>
+      <ul>
+        <li><strong>Web Workers:</strong> Truly parallel execution using separate OS threads. Communicates via structured cloning.</li>
+        <li><strong>SharedArrayBuffer:</strong> Allows memory sharing between threads. Must be used with <strong>Atomics</strong> to prevent race conditions.</li>
+        <li><strong>SharedWorkers:</strong> Accessible from multiple windows/tabs from the same origin, ideal for coordinating state across tabs.</li>
+      </ul>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,57 @@
+<div class="sc" id="sd-mastery">
+  <h2>System Design Mastery 2026</h2>
+  <p class="section-desc">Mastering distributed systems, scalability patterns, and high-level architectural trade-offs for technical lead positions.</p>
+
+  <div class="grid2">
+    <div class="cd">
+      <h3>Distribution & Availability</h3>
+      <p>Modern architectures prioritize resilience and global distribution.</p>
+      <ul>
+        <li><b>CAP Theorem:</b> Consistency, Availability, Partition Tolerance. You can only guarantee two in a distributed system during a network partition.</li>
+        <li><b>PACELC Theorem:</b> An extension of CAP. If there's a partition (P), trade-off between availability (A) and consistency (C). Else (E), trade-off between latency (L) and consistency (C).</li>
+        <li><b>Global Replication:</b> Active-Active vs Active-Passive. Use <b>Conflict-free Replicated Data Types (CRDTs)</b> or <b>Last-Writer-Wins (LWW)</b> for conflict resolution.</li>
+      </ul>
+    </div>
+    <div class="cd">
+      <h3>Advanced Scaling & Resilience</h3>
+      <ul>
+        <li><b>Backpressure:</b> Mechanism to signal a producer that the consumer is overwhelmed. Prevents service crashes under load.</li>
+        <li><b>Circuit Breaker:</b> Prevents a service from attempting a failing operation, allowing it to recover instead of being hammered by retries.</li>
+        <li><b>Saga Pattern:</b> Managing data consistency across microservices in distributed transactions via a sequence of local transactions and compensating actions.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="cd">
+    <h2>Micro-Frontend Architectures</h2>
+    <p>Scaling frontend development across large, decoupled teams.</p>
+    <div class="grid2">
+      <div class="dp">
+        <h3>Module Federation</h3>
+        <p>The industry standard for MFEs. Allows dynamic loading of code from other independently deployed applications at runtime, sharing dependencies to avoid bloat.</p>
+      </div>
+      <div class="dp">
+        <h3>Islands Architecture</h3>
+        <p>Popularized by Astro. Sending static HTML with specific "islands" of interactivity (React/Vue/Angular) that hydrate independently. Massive LCP/INP wins.</p>
+      </div>
+    </div>
+    <pre><code><span class="c">// Webpack Module Federation example</span>
+<span class="k">new</span> <span class="f\">ModuleFederationPlugin</span>({
+  name: <span class="s">'app1'</span>,
+  remotes: {
+    app2: <span class="s">'app2@http://localhost:3002/remoteEntry.js'</span>,
+  },
+  shared: { react: { singleton: <span class="k">true</span> }, <span class="s">'react-dom'</span>: { singleton: <span class="k">true</span> } },
+});</code></pre>
+  </div>
+
+  <div class="cd">
+    <h2>Real-time & Event-Driven Systems</h2>
+    <p>Using Event Sourcing and CQRS (Command Query Responsibility Segregation) for complex state management.</p>
+    <ul>
+      <li><b>Event Sourcing:</b> Storing the state of an application as a sequence of immutable events rather than just the current state. Enables infinite \"undo\" and historical auditing.</li>
+      <li><b>Change Data Capture (CDC):</b> Observing database logs to stream changes to downstream consumers (elastic search, caches, other services) in real-time.</li>
+      <li><b>WebSockets vs Server-Sent Events (SSE):</b> Use WebSockets for full-duplex (chat, games). Use SSE for one-way server-to-client updates (stock tickers, notifications) as it's more lightweight and has native auto-reconnect.</li>
+    </ul>
+  </div>
+</div>

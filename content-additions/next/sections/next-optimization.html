@@ -1,0 +1,41 @@
+<div class="section" id="next-optimization">
+  <h2>Optimization & Scale</h2>
+  <p class="section-desc">Pushing Next.js performance to the limit with advanced architecture and infrastructure patterns.</p>
+
+  <div class="card">
+    <div class="card-title">Partial Prerendering (PPR)</div>
+    <div class="card-content">
+      <p>PPR is the ultimate optimization for dynamic pages. It combines the speed of static generation with the flexibility of dynamic rendering.</p>
+      <ul>
+        <li><b>The Concept:</b> Next.js prerenders the static shell of your page at build time. When a request comes in, the shell is served immediately, and the dynamic "holes" (wrapped in Suspense) start streaming in.</li>
+        <li><b>User Experience:</b> Near-zero TTFB (Time to First Byte) and instant visual load, even for highly personalized pages.</li>
+      </ul>
+      <div class="analogy">
+        Think of PPR like <b>pre-cooking a meal</b>. You have the base ready (Static Shell), and when a customer orders, you just add the custom toppings and serve (Dynamic Holes). This is much faster than cooking the entire meal from scratch for every customer.
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Turbopack & Build Optimization</div>
+    <div class="card-content">
+      <p>Scaling a project means dealing with massive bundle sizes and long build times. Next.js solves this with Rust-based tooling.</p>
+      <ul>
+        <li><b>Turbopack:</b> The Rust-written successor to Webpack. It uses incremental compilation to ensure that your dev server stays fast, even in codebases with thousands of files.</li>
+        <li><b>Standalone Output:</b> Reduces the production bundle size significantly by only including the necessary code to run on a Node.js server, making Docker images much smaller.</li>
+        <li><b>Bundle Analysis:</b> Always use the `@next/bundle-analyzer` to track identify "heavy" libraries (like `moment` or `lodash`) and replace them with lighter alternatives or native JS.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Edge Runtime vs Node.js</div>
+    <div class="card-content">
+      <p>Next.js allows you to choose the runtime for every specific route.</p>
+      <ul>
+        <li><b>Edge:</b> Best for simple, global logic like A/B testing, redirects, or personalization. Has zero cold starts but restricted APIs.</li>
+        <li><b>Node.js:</b> Traditional runtime with access to the full Node ecosystem (file system, complex crypto, etc.). Best for heavy backend operations.</li>
+      </ul>
+    </div>
+  </div>
+</div>

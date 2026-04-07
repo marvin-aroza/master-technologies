@@ -26,7 +26,7 @@ function writePayload(filename, title, subtitle, bodyHtml, css) {
   const dom = new JSDOM(bodyHtml);
   const doc = dom.window.document;
   const secs = doc.querySelectorAll('.section, .sc, .tech, .ts').length;
-  const navs = doc.querySelectorAll('.nav-btn, .snav, .sn, .tab, .top-tab').length;
+  const navs = doc.querySelectorAll('.sn, .nav-btn, .snav, .tab, .top-tab').length;
   const qas = doc.querySelectorAll('.qa').length;
   console.log(`  ✓ ${filename} — ${secs} sections, ${navs} nav buttons, ${qas} QAs, ${bodyHtml.length} chars`);
 }
@@ -44,8 +44,8 @@ const reactBody = extractBody(reactRaw);
   const dom = new JSDOM(reactBody);
   const doc = dom.window.document;
   
-  // Remove Next.js nav buttons (classes: snav, nav-btn)
-  doc.querySelectorAll('.snav, .nav-btn').forEach(btn => {
+  // Remove Next.js nav buttons (classes: sn, snav, nav-btn)
+  doc.querySelectorAll('.sn, .snav, .nav-btn').forEach(btn => {
     const s = btn.getAttribute('data-s') || '';
     if (s.startsWith('n-') || s === 'iq-next') btn.remove();
   });
@@ -58,9 +58,9 @@ const reactBody = extractBody(reactRaw);
   
   // Ensure the first React section is active
   doc.querySelectorAll('.section, .sc').forEach(s => s.classList.remove('active'));
-  doc.querySelectorAll('.snav, .nav-btn').forEach(b => b.classList.remove('active'));
+  doc.querySelectorAll('.sn, .snav, .nav-btn').forEach(b => b.classList.remove('active'));
   
-  const firstNav = doc.querySelector('.snav, .nav-btn');
+  const firstNav = doc.querySelector('.sn, .snav, .nav-btn');
   if (firstNav) {
     firstNav.classList.add('active');
     const sid = firstNav.getAttribute('data-s');
@@ -82,7 +82,7 @@ const reactBody = extractBody(reactRaw);
   const doc = dom.window.document;
   
   // Remove React nav buttons
-  doc.querySelectorAll('.snav, .nav-btn').forEach(btn => {
+  doc.querySelectorAll('.sn, .snav, .nav-btn').forEach(btn => {
     const s = btn.getAttribute('data-s') || '';
     if (s.startsWith('r-') || s === 'iq-react') btn.remove();
   });
@@ -95,9 +95,9 @@ const reactBody = extractBody(reactRaw);
   
   // Activate first Next.js section
   doc.querySelectorAll('.section, .sc').forEach(s => s.classList.remove('active'));
-  doc.querySelectorAll('.snav, .nav-btn').forEach(b => b.classList.remove('active'));
+  doc.querySelectorAll('.sn, .snav, .nav-btn').forEach(b => b.classList.remove('active'));
   
-  const firstNav = doc.querySelector('.snav, .nav-btn');
+  const firstNav = doc.querySelector('.sn, .snav, .nav-btn');
   if (firstNav) {
     firstNav.classList.add('active');
     const sid = firstNav.getAttribute('data-s');
@@ -127,9 +127,9 @@ const angBody = extractBody(angRaw);
   
   // Standardize activate first section
   doc.querySelectorAll('.section, .sc').forEach(s => s.classList.remove('active'));
-  doc.querySelectorAll('.nav-btn, .snav').forEach(b => b.classList.remove('active'));
+  doc.querySelectorAll('.sn, .nav-btn, .snav').forEach(b => b.classList.remove('active'));
   
-  const firstNav = doc.querySelector('.nav-btn, .snav');
+  const firstNav = doc.querySelector('.sn, .nav-btn, .snav');
   if (firstNav) {
     firstNav.classList.add('active');
     const sid = firstNav.getAttribute('data-s');
@@ -175,9 +175,9 @@ for (const m of tabMappings) {
   
   // Normalize sub-sections in this tech area
   techSection.querySelectorAll('.section, .sc').forEach(s => s.classList.remove('active'));
-  techSection.querySelectorAll('.snav, .sn, .nav-btn, .tab').forEach(b => b.classList.remove('active'));
+  techSection.querySelectorAll('.sn, .snav, .nav-btn, .tab').forEach(b => b.classList.remove('active'));
 
-  const firstNav = techSection.querySelector('.snav, .sn, .nav-btn, .tab');
+  const firstNav = techSection.querySelector('.sn, .snav, .nav-btn, .tab');
   if (firstNav) {
     firstNav.classList.add('active');
     const sid = firstNav.getAttribute('data-s');
