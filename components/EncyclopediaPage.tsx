@@ -26,73 +26,40 @@ export function EncyclopediaPage({
     // Use Event Delegation for completely stable binding over injected HTML
     const clickHandler = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      
-      // 1. Top tabs
-      const tab = target.closest('.top-tab, .tab') as HTMLElement;
-      if (tab && container.contains(tab)) {
-        e.preventDefault(); // Stop anchor jump
-        container.querySelectorAll('.top-tab, .tab').forEach(x => x.classList.remove('active'));
-        tab.classList.add('active');
+
+      // 1. Navigation buttons (Supports .nav-btn, .snav, .sn, .tab, .top-tab)
+      const navBtn = target.closest('.nav-btn, .snav, .sn, .tab, .top-tab') as HTMLElement;
+      if (navBtn && container.contains(navBtn)) {
+        if (!navBtn.dataset.s) return; // Only handle buttons that target a section
+        e.preventDefault();
+
+        // Deactivate all possible button class variants in this nav group
+        const navGroup = navBtn.closest('.nav, .sub-nav, .tabs, .top-tabs') || container;
+        navGroup.querySelectorAll('.nav-btn, .snav, .sn, .tab, .top-tab').forEach(x => x.classList.remove('active'));
         
-        const targetId = tab.dataset.t;
-        container.querySelectorAll('.tech-section, .tech, .ts').forEach(x => x.classList.remove('active'));
+        // Deactivate all possible section class variants in the scope
+        const scope = navBtn.closest('.tech-section, .ts, .tech') || container;
+        scope.querySelectorAll('.section, .sc, .tech, .ts').forEach(x => x.classList.remove('active'));
         
-        if (targetId) {
-          const sectionTarget = container.querySelector(`#ts-${targetId}`) || container.querySelector(`#${targetId}`);
-          if (sectionTarget) {
-            sectionTarget.classList.add('active');
-            const firstSubNav = sectionTarget.querySelector('.snav.active, .sn.active') as HTMLElement;
-            if (firstSubNav) firstSubNav.click(); // This will trigger delegation below recursively or directly
+        navBtn.classList.add('active');
+        const sTarget = container.querySelector(`#${navBtn.dataset.s}`);
+        if (sTarget) {
+          sTarget.classList.add('active');
+          // Smooth scroll to target if it's the main nav
+          if (navBtn.classList.contains('nav-btn') && !navBtn.classList.contains('sn')) {
+             window.scrollTo({ top: sTarget.getBoundingClientRect().top + window.scrollY - 100, behavior: 'smooth' });
           }
         }
       }
 
-      // 2. Nav buttons (main nav)
-      const navBtn = target.closest('.nav-btn:not(.tab):not(.top-tab)') as HTMLElement;
-      if (navBtn && container.contains(navBtn)) {
-        e.preventDefault();
-        container.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
-        container.querySelectorAll('.section').forEach(x => x.classList.remove('active'));
-        navBtn.classList.add('active');
-        const sTarget = container.querySelector(`#${navBtn.dataset.s}`);
-        if (sTarget) sTarget.classList.add('active');
-        const nav = navBtn.closest('.nav, .sub-nav') as HTMLElement;
-        if (nav) window.scrollTo({ top: nav.offsetTop, behavior: 'smooth' });
-      }
-
-      // 3. Sub Nav
-      const subNav = target.closest('.snav, .sn') as HTMLElement;
-      if (subNav && container.contains(subNav)) {
-        e.preventDefault();
-        const navContainer = subNav.closest('.sub-nav, nav');
-        if (navContainer) {
-          navContainer.querySelectorAll('.snav, .sn').forEach(x => x.classList.remove('active'));
-        }
-        subNav.classList.add('active');
-        
-        const sectionId = subNav.dataset.s;
-        if (sectionId) {
-          const parent = subNav.closest('.tech-section, .ts') || container;
-          parent.querySelectorAll('.sc, .section').forEach((x: Element) => {
-            if (x.id && x.closest('.tech-section, .ts') === subNav.closest('.tech-section, .ts')) {
-              x.classList.remove('active');
-            }
-          });
-          const targetSection = parent.querySelector(`#${sectionId}`);
-          if (targetSection) targetSection.classList.add('active');
-        }
-        const nav = subNav.closest('.nav, .sub-nav') as HTMLElement;
-        if (nav) window.scrollTo({ top: nav.offsetTop, behavior: 'smooth' });
-      }
-
-      // 4. Q&A toggle
+      // 2. Q&A toggle (handled by .qh or .qa-h)
       const qaH = target.closest('.qa-h, .qh') as HTMLElement;
       if (qaH && container.contains(qaH)) {
         const qa = qaH.closest('.qa');
         if (qa) qa.classList.toggle('open');
       }
 
-      // 5. Filters
+      // 3. Filters
       const fBtn = target.closest('.fbtn, .ft') as HTMLElement;
       if (fBtn && container.contains(fBtn)) {
         const filterBar = fBtn.closest('.fbar, .fb');
@@ -121,30 +88,41 @@ export function EncyclopediaPage({
     container.addEventListener('click', clickHandler);
 
     // Initialize counts on boot
-    container.querySelectorAll('.counter, .ct').forEach((el) => {
-      const section = el.closest('.section, .sc, .tech, .ts, .tech-section') || container;
-      const total = section.querySelectorAll('.qa').length;
-      const b = el.querySelector('b');
-      if (b && total > 0) b.textContent = String(total);
-    });
+    const initCounts = () => {
+      container.querySelectorAll('.counter, .ct').forEach((el) => {
+        const section = el.closest('.section, .sc, .tech, .ts, .tech-section') || container;
+        const total = section.querySelectorAll('.qa').length;
+        const b = el.querySelector('b');
+        if (b && total > 0) b.textContent = String(total);
+      });
 
-    // Auto trigger tab
-    let tabTargetId = null;
-    if (scopeId === 'system-design') tabTargetId = 't-fsd';
-    else if (scopeId === 'ui-ux') tabTargetId = 't-ux';
-    else if (scopeId === 'html-css') tabTargetId = 't-html';
-    
-    if (tabTargetId) {
-       setTimeout(() => { // slight delay for paint guarantees
-           const tabEl = container.querySelector(`.tab[data-t="${tabTargetId}"], .top-tab[data-t="${tabTargetId}"]`) as HTMLElement;
-           if (tabEl && !tabEl.classList.contains('active')) {
-             tabEl.click();
-           }
-       }, 50);
-    }
+      // Update the main hero subtitle if it has a count placeholder
+      const totalQa = container.querySelectorAll('.qa').length;
+      if (totalQa > 0) {
+        const subHeader = container.querySelector('.hero .sub');
+        if (subHeader && subHeader.textContent) {
+          subHeader.textContent = subHeader.textContent.replace(
+            /\d+\/800\+ interview questions/,
+            `${totalQa}/800+ interview questions`
+          );
+        }
+      }
+    };
+    initCounts();
 
+    // Auto-activate first nav/section if none are active
+    const activateFirst = () => {
+      const hasActiveSection = container.querySelector('.section.active, .sc.active, .tech.active, .ts.active');
+      if (!hasActiveSection) {
+        const firstNav = container.querySelector('.nav-btn, .snav, .sn, .tab') as HTMLElement;
+        if (firstNav) firstNav.click();
+      }
+    };
+    setTimeout(activateFirst, 100);
+
+    // Mouse wheel → horizontal scroll for navs
     const scrollableNavs = container.querySelectorAll(
-      ".nav, .nav-inner, .sub-nav, .sub-nav-inner, .sni, .top-tabs, .tabs"
+      ".nav, .nav-inner, .sub-nav, .sub-nav-inner, .sni, .top-tabs, .tabs, .tab-bar"
     );
     const wheelHandlers: Array<[Element, EventListener]> = [];
     scrollableNavs.forEach((nav) => {

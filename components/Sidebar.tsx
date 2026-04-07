@@ -8,16 +8,17 @@ const topics = [
   {
     label: "Frameworks",
     items: [
-      { href: "/angular", icon: "🅰️", name: "Angular", badge: "115+ Q&A" },
-      { href: "/react", icon: "⚛️", name: "React", badge: "58+ Q&A" },
-      { href: "/nextjs", icon: "▲", name: "Next.js", badge: "53+ Q&A" },
+      { href: "/angular", icon: "🅰️", name: "Angular", badge: "195 Q&A" },
+      { href: "/react", icon: "⚛️", name: "React", badge: "138 Q&A" },
+      { href: "/nextjs", icon: "▲", name: "Next.js", badge: "93 Q&A" },
     ],
   },
   {
     label: "Core Technologies",
     items: [
-      { href: "/javascript", icon: "📜", name: "JavaScript", badge: "95 Q&A" },
-      { href: "/html-css", icon: "🎨", name: "HTML & CSS", badge: "112+ Q&A" },
+      { href: "/javascript", icon: "📜", name: "JavaScript", badge: "155 Q&A" },
+      { href: "/html", icon: "📄", name: "HTML", badge: "62 Q&A" },
+      { href: "/css", icon: "🎨", name: "CSS", badge: "70 Q&A" },
     ],
   },
   {
@@ -27,9 +28,9 @@ const topics = [
         href: "/system-design",
         icon: "🏗️",
         name: "System Design",
-        badge: "42 Q&A",
+        badge: "62 Q&A",
       },
-      { href: "/ui-ux", icon: "✨", name: "UX/UI Design", badge: "28 Q&A" },
+      { href: "/ui-ux", icon: "✨", name: "UX/UI Design", badge: "48 Q&A" },
     ],
   },
 ];

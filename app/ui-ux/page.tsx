@@ -1,15 +1,12 @@
 import { EncyclopediaPage } from "@/components/EncyclopediaPage";
-import content from "@/content/html-css-sd-full.json";
+import content from "@/content/standalone-uxui.json";
 
 export const metadata = {
-  title: "UX/UI Design — 28 Interview Q&A",
-  description:
-    "Design principles, user research, interaction patterns, accessibility, design systems and 28 interview Q&A.",
+  title: "UX/UI Design — The Complete Mastery Encyclopedia",
+  description: "Gestalt principles, accessibility, design tokens, and 48+ interview Q&A.",
 };
 
-export default function UiUxPage() {
-  // Uses the same source as HTML/CSS page since they share the file
-  // The tab navigation within the page lets users switch to UX/UI
+export default function UxUiPage() {
   return (
     <EncyclopediaPage
       css={content.css}

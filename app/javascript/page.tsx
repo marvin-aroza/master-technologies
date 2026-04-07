@@ -1,19 +1,17 @@
 import { EncyclopediaPage } from "@/components/EncyclopediaPage";
-import conceptsContent from "@/content/frontend-concepts.json";
+import content from "@/content/standalone-javascript.json";
 
 export const metadata = {
-  title: "JavaScript — Mastery Bible & 95 Interview Q&A",
-  description:
-    "Core JavaScript, functions & scope, async patterns, prototypes, DOM, ES6+ and 95 interview questions from basic to advanced.",
+  title: "JavaScript — The Complete Mastery Encyclopedia",
+  description: "ES2025, async patterns, core foundations, and 155+ interview Q&A.",
 };
 
-export default function JavaScriptPage() {
-  // We render the concepts version since it contains BOTH deep-dives and Q&As
+export default function JavascriptPage() {
   return (
     <EncyclopediaPage
-      css={conceptsContent.css}
-      body={conceptsContent.body}
-      scripts={conceptsContent.scripts}
+      css={content.css}
+      body={content.body}
+      scripts={content.scripts}
       scopeId="javascript"
     />
   );
