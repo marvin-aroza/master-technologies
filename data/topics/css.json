@@ -4,8 +4,28 @@
   "subtitle": "Grid, Flexbox, animations & modern CSS",
   "tabs": [
     {
-      "id": "web-perf",
-      "label": "Advanced Web Performance"
+      "id": "css-box",
+      "label": "Box Model & Layout"
+    },
+    {
+      "id": "css-selectors",
+      "label": "Selectors Deep Dive"
+    },
+    {
+      "id": "css-modern",
+      "label": "Modern CSS"
+    },
+    {
+      "id": "css-2025",
+      "label": "Modern CSS & 2025 Features"
+    },
+    {
+      "id": "css-tricks",
+      "label": "Advanced Techniques"
+    },
+    {
+      "id": "css-arch",
+      "label": "Architecture & Perf"
     },
     {
       "id": "hc-modern",
@@ -16,28 +36,8 @@
       "label": "Web Accessibility (A11y) & Core"
     },
     {
-      "id": "css-2025",
-      "label": "Modern CSS & 2025 Features"
-    },
-    {
-      "id": "css-box",
-      "label": "Box Model & Layout"
-    },
-    {
-      "id": "css-modern",
-      "label": "Modern CSS"
-    },
-    {
-      "id": "css-arch",
-      "label": "Architecture & Perf"
-    },
-    {
-      "id": "css-selectors",
-      "label": "Selectors Deep Dive"
-    },
-    {
-      "id": "css-tricks",
-      "label": "Advanced Techniques"
+      "id": "web-perf",
+      "label": "Advanced Web Performance"
     },
     {
       "id": "css-props",
@@ -49,78 +49,6 @@
     }
   ],
   "sections": [
-    {
-      "id": "web-perf",
-      "intro": "Core Web Vitals (INP, LCP, CLS), Resource Prioritization, and Interaction to Next Paint.",
-      "cards": [
-        {
-          "title": "Interaction to Next Paint (INP)",
-          "contentHtml": "<p>The modern metric representing total interaction latency. INP tracks every click, tap, and keyboard interaction throughout the entire session:</p>\n      <ul>\n        <li><strong>Input Delay:</strong> Time between user interaction and event handler start (minimize main thread blocking).</li>\n        <li><strong>Processing Time:</strong> Time spent inside the event handler (optimize logic, use `setTimeout(0)` or `isInputPending`).</li>\n        <li><strong>Presentation Delay:</strong> Time spent painting the frame (avoid layout thrashing / heavy CSS).</li>\n      </ul>"
-        },
-        {
-          "title": "Resource Prioritization",
-          "contentHtml": "<p>Telling the browser what strictly matters for the Critical Rendering Path:</p>\n      <pre><code><!-- High Priority LCP Image -->\n&lt;img src=\"hero.avif\" \n  fetchpriority=\"high\" \n  loading=\"eager\" \n  decoding=\"async\" \n  alt=\"LCP Hero\"&gt;\n\n<!-- Speculative Pre-rendering -->\n&lt;script type=\"speculationrules\"&gt;\n{\n  \"prerender\": [\n    { \"source\": \"list\", \"urls\": [\"/next-page\"] }\n  ]\n}\n&lt;/script&gt;</code></pre>"
-        },
-        {
-          "title": "Image & Asset Optimization",
-          "contentHtml": "<p>Modern formats and strategies for minimizing cumulative layout shifts:</p>\n      <ul>\n        <li><strong>AVIF &amp; WebP:</strong> Native compression over 50% better than JPEG.</li>\n        <li><strong>Aspect Ratio:</strong> Reserve space before images load to prevent layout shifts.</li>\n        <li><strong>Source Set:</strong> Use `srcset` and `sizes` to deliver the perfect pixel density for the device.</li>\n      </ul>"
-        },
-        {
-          "title": "Core Web Vital Thresholds",
-          "contentHtml": "<table style=\"width:100%; border-collapse:collapse;\">\n        <tbody><tr>\n          <th style=\"text-align:left; padding:8px;\">Metric</th>\n          <th style=\"text-align:left; padding:8px;\">Good</th>\n          <th style=\"text-align:left; padding:8px;\">Poor</th>\n        </tr>\n        <tr>\n          <td style=\"padding:8px;\"><strong>LCP</strong> (Paint)</td>\n          <td style=\"padding:8px; color:#27ae60;\">&lt; 2.5s</td>\n          <td style=\"padding:8px; color:#e74c3c;\">&gt; 4.0s</td>\n        </tr>\n        <tr>\n          <td style=\"padding:8px;\"><strong>INP</strong> (Latency)</td>\n          <td style=\"padding:8px; color:#27ae60;\">&lt; 200ms</td>\n          <td style=\"padding:8px; color:#e74c3c;\">&gt; 500ms</td>\n        </tr>\n        <tr>\n          <td style=\"padding:8px;\"><strong>CLS</strong> (Shift)</td>\n          <td style=\"padding:8px; color:#27ae60;\">&lt; 0.1</td>\n          <td style=\"padding:8px; color:#e74c3c;\">&gt; 0.25</td>\n        </tr>\n      </tbody></table>"
-        }
-      ]
-    },
-    {
-      "id": "hc-modern",
-      "intro": "Recent CSS evolutions drastically reduce the need for preprocessors and complex JS logic.",
-      "cards": [
-        {
-          "title": "Game-Changing Selectors",
-          "contentHtml": "<ul>\n        <li><b>:has() (The Parent Selector):</b> Selects an element if it contains a certain descendent. Ex: `figure:has(figcaption)` selects only figures that have captions. It completely changes CSS architecture.</li>\n        <li><b>:is() and :where():</b> Groups selectors succinctly. `:is(h1, h2, h3) span` instead of writing them all out. `:where()` is identical but has zero specificity, perfect for library resets.</li>\n        <li><b>Native Nesting:</b> CSS now natively supports standard nesting (similar to SCSS/LESS) without build tools. `nav { ul { padding: 0; } }`</li>\n      </ul>"
-        },
-        {
-          "title": "Layout & Responsiveness",
-          "contentHtml": "<ul>\n        <li><b>Container Queries (@container):</b> Instead of styling based on viewport width (`@media`), style based on the parent wrapper's width. This allows reusable components (like cards) to look totally different inside a tight sidebar vs a massive main grid.</li>\n        <li><b>CSS Subgrid:</b> Allows nested elements to perfectly align to their parent's grid tracks. If a Card has a Grid layout, `grid-template-rows: subgrid` allows headers and text across multiple sibling cards to perfectly align with each other.</li>\n        <li><b>text-wrap: balance / pretty:</b> Improves typography natively. `balance` prevents massive headlines with a single \"widow\" word on the final line by mathematically balancing the text block width.</li>\n      </ul>"
-        }
-      ]
-    },
-    {
-      "id": "hc-a11y",
-      "intro": "Building the web for everyone. Accessibility is not an afterthought; it is fundamental to modern markup.",
-      "cards": [
-        {
-          "title": "Semantic HTML Boundaries",
-          "contentHtml": "<p>Semantic HTML natively provides meaning and keyboard functionality that plain `&lt;div&gt;`s lack.</p>\n      <ul>\n        <li><b>&lt;main&gt;:</b> The dominant content of the page. Only one visible per document.</li>\n        <li><b>&lt;article&gt; vs &lt;section&gt;:</b> An `article` is independently distributable (a blog post). A `section` groups related content structurally but isn't necessarily standalone.</li>\n        <li><b>&lt;nav&gt;:</b> Wrap major navigation blocks. Provide an `aria-label` like \"Main\" or \"Footer\" if multiple exist.</li>\n        <li><b>&lt;button&gt; vs &lt;a&gt;:</b> `&lt;a href&gt;` navigates. `&lt;button&gt;` performs an action on the page. Never use `&lt;div onClick&gt;` without adding `tabindex=\"0\"`, `role=\"button\"`, and handling the `Enter/Space` keys manually.</li>\n      </ul>"
-        },
-        {
-          "title": "ARIA (Accessible Rich Internet Applications)",
-          "contentHtml": "<p>ARIA bridges the gap for complex interactive UI (tabs, modals, comboboxes) where native HTML falls short.</p>\n      <ul>\n        <li><b>First Rule of ARIA:</b> No ARIA is better than bad ARIA. Native elements are always preferred.</li>\n        <li><b>aria-hidden=\"true\":</b> Hides decorative elements (like SVG icons) from screen readers.</li>\n        <li><b>aria-label / aria-labelledby:</b> Provides an invisible text label for icon-only buttons (like a search magnifying glass).</li>\n        <li><b>aria-live:</b> Used on dynamically updated areas (e.g. error messages, toast notifications). Screen readers will interrupt and read `\"assertive\"` updates immediately, or wait for pauses for `\"polite\"` updates.</li>\n      </ul>"
-        }
-      ]
-    },
-    {
-      "id": "css-2025",
-      "intro": "CSS Anchor Positioning, View Transitions, Cascade Layers, and the future of native layout.",
-      "cards": [
-        {
-          "title": "Anchor Positioning API",
-          "contentHtml": "<p>Position elements relative to any other \"anchor\" without shared parents or JS libraries:</p>\n      <pre><code>.anchor { anchor-name: --my-btn; }\n\n.popover {\n  position: absolute;\n  position-anchor: --my-btn;\n  bottom: anchor(top);\n  left: anchor(center);\n}</code></pre>\n      <ul>\n        <li><strong>Native Popovers:</strong> Combined with `popover` attribute for top-layer rendering.</li>\n        <li><strong>Fallback Logic:</strong> Use `position-try-options` for safe repositioning.</li>\n      </ul>"
-        },
-        {
-          "title": "View Transitions API",
-          "contentHtml": "<p>Seamlessly animate between DOM states (or pages) without complex JS libraries:</p>\n      <pre><code>function updateUI() {\n  document.startViewTransition(() =&gt; {\n    // Perform DOM modifications\n    renderNewPage(); \n  });\n}</code></pre>\n      <ul>\n        <li><strong>Pseudo-elements:</strong> Automatically creates snapshots `::view-transition-group`.</li>\n        <li><strong>Cross-Document:</strong> Supported in 2024/2025 for standard multi-page sites.</li>\n      </ul>"
-        },
-        {
-          "title": "Cascade Layers (@layer)",
-          "contentHtml": "<p>Architectural control over specificity, solving the 3rd-party override library wars:</p>\n      <pre><code>@layer base, utility, components;\n\n@layer utility {\n  .p-10 { padding: 10px !important; }\n}\n\n@layer base {\n  /* Won't be overridden by higher layers \n     despite specificity */\n}</code></pre>"
-        },
-        {
-          "title": "Relative Color Syntax (RCS)",
-          "contentHtml": "<p>Derive dynamic colors natively from existing variables:</p>\n      <pre><code>:root { --primary: #3498db; }\n\n.btn {\n  /* Extract R, G, B and add 50% alpha */\n  background: rgb(from var(--primary) r g b / 0.5);\n  /* Or oklch adjustments */\n  border-color: oklch(from var(--primary) calc(l + 0.1) c h);\n}</code></pre>"
-        }
-      ]
-    },
     {
       "id": "css-box",
       "intro": "CSS controls how everything looks. Master the box model, layout, and modern features.",
@@ -201,6 +129,24 @@
       ]
     },
     {
+      "id": "css-selectors",
+      "intro": "Advanced selectors, combinators, and pseudo-elements — the tools of CSS mastery.",
+      "cards": [
+        {
+          "title": "All CSS Selectors — Complete Reference",
+          "contentHtml": "<pre><code><span class=\"c\">/* SIMPLE */</span>\n*                  <span class=\"c\">/* Universal — all elements */</span>\ndiv                <span class=\"c\">/* Type — all divs */</span>\n.class             <span class=\"c\">/* Class */</span>\n#id                <span class=\"c\">/* ID */</span>\n[attr]             <span class=\"c\">/* Has attribute */</span>\n[attr=<span class=\"s\">\"val\"</span>]       <span class=\"c\">/* Exact match */</span>\n[attr^=<span class=\"s\">\"val\"</span>]      <span class=\"c\">/* Starts with */</span>\n[attr$=<span class=\"s\">\"val\"</span>]      <span class=\"c\">/* Ends with */</span>\n[attr*=<span class=\"s\">\"val\"</span>]      <span class=\"c\">/* Contains */</span>\n[attr~=<span class=\"s\">\"val\"</span>]      <span class=\"c\">/* Word in space-separated list */</span>\n[attr|=<span class=\"s\">\"val\"</span>]      <span class=\"c\">/* Starts with val or val- */</span>\n[attr=<span class=\"s\">\"val\"</span> i]     <span class=\"c\">/* Case insensitive */</span>\n\n<span class=\"c\">/* COMBINATORS */</span>\ndiv p              <span class=\"c\">/* Descendant (any depth) */</span>\ndiv &gt; p            <span class=\"c\">/* Direct child only */</span>\nh2 + p             <span class=\"c\">/* Adjacent sibling (immediately after) */</span>\nh2 ~ p             <span class=\"c\">/* General sibling (any after) */</span>\n\n<span class=\"c\">/* PSEUDO-CLASSES — state based */</span>\n:hover :focus :active :visited\n:focus-visible       <span class=\"c\">/* Keyboard focus only (not mouse) */</span>\n:focus-within        <span class=\"c\">/* Parent has focused child */</span>\n:first-child :last-child :only-child\n:nth-child(<span class=\"n\">2n</span>)      <span class=\"c\">/* Even children */</span>\n:nth-child(<span class=\"n\">3n+1</span>)    <span class=\"c\">/* Every 3rd starting from 1st */</span>\n:nth-of-type(<span class=\"n\">2</span>)     <span class=\"c\">/* 2nd of its type */</span>\n:not(.class)         <span class=\"c\">/* Negation */</span>\n:empty               <span class=\"c\">/* No children/text */</span>\n:checked :disabled :required :valid :invalid\n:target              <span class=\"c\">/* Element matching URL hash */</span>\n:is(h1, h2, h3)     <span class=\"c\">/* Matches any (specificity = highest) */</span>\n:where(h1, h2, h3)  <span class=\"c\">/* Same but ZERO specificity */</span>\n:has(.child)         <span class=\"c\">/* Parent selector! */</span>\n\n<span class=\"c\">/* PSEUDO-ELEMENTS — generated content */</span>\n::before ::after       <span class=\"c\">/* Require content property */</span>\n::first-line ::first-letter\n::placeholder          <span class=\"c\">/* Input placeholder text */</span>\n::selection            <span class=\"c\">/* User-selected text */</span>\n::marker               <span class=\"c\">/* List bullet/number */</span>\n::backdrop             <span class=\"c\">/* Dialog/fullscreen overlay */</span>\n::file-selector-button <span class=\"c\">/* File input button */</span></code></pre>"
+        },
+        {
+          "title": "The :has() Selector — Deep Dive",
+          "contentHtml": "<pre><code><span class=\"c\">/* Style parent based on children */</span>\n.card:has(img) {{ display: grid; grid-template-rows: auto <span class=\"n\">1fr</span>; }}\n.card:has(.badge) {{ border-color: gold; }}\n\n<span class=\"c\">/* Form validation without JS */</span>\nform:has(:invalid) .submit-btn {{ opacity: <span class=\"n\">0.5</span>; pointer-events: none; }}\n.field:has(:invalid:not(:placeholder-shown)) .error {{ display: block; }}\n\n<span class=\"c\">/* Sibling relationships */</span>\nh2:has(+ p) {{ margin-bottom: <span class=\"n\">0.5rem</span>; }}  <span class=\"c\">/* h2 followed by p */</span>\nli:has(+ li) {{ border-bottom: <span class=\"n\">1px</span> solid; }}  <span class=\"c\">/* all li except last */</span>\n\n<span class=\"c\">/* Complex conditions */</span>\nbody:has(dialog[open]) {{ overflow: hidden; }}  <span class=\"c\">/* prevent scroll when modal open */</span>\n.grid:has(&gt; :nth-child(4)) {{ grid-template-columns: repeat(<span class=\"n\">2</span>, <span class=\"n\">1fr</span>); }}\n<span class=\"c\">/* 2-column grid ONLY when 4+ children exist */</span></code></pre>\n<div class=\"an\">:has() replaces SO much JavaScript. Form validation styling, conditional layouts, parent styling based on state — all pure CSS now. It's the most impactful CSS selector since flexbox.</div>"
+        },
+        {
+          "title": "Pseudo-Elements — Advanced Patterns",
+          "contentHtml": "<pre><code><span class=\"c\">/* Decorative line */</span>\nh2::after {{\n  content: <span class=\"s\">''</span>;\n  display: block;\n  width: <span class=\"n\">60px</span>; height: <span class=\"n\">3px</span>;\n  background: var(--color-primary);\n  margin-top: <span class=\"n\">0.5rem</span>;\n}}\n\n<span class=\"c\">/* Required field indicator */</span>\nlabel:has(+ input:required)::after {{\n  content: <span class=\"s\">'*'</span>;\n  color: var(--color-error);\n  margin-inline-start: <span class=\"n\">0.25rem</span>;\n}}\n\n<span class=\"c\">/* Custom checkbox */</span>\ninput[type=<span class=\"s\">\"checkbox\"</span>] {{ appearance: none; width: <span class=\"n\">20px</span>; height: <span class=\"n\">20px</span>; border: <span class=\"n\">2px</span> solid; border-radius: <span class=\"n\">4px</span>; }}\ninput[type=<span class=\"s\">\"checkbox\"</span>]:checked {{ background: var(--primary); }}\ninput[type=<span class=\"s\">\"checkbox\"</span>]:checked::after {{\n  content: <span class=\"s\">'✓'</span>;\n  display: grid; place-content: center;\n  color: white; font-size: <span class=\"n\">14px</span>;\n}}\n\n<span class=\"c\">/* Tooltip with ::after */</span>\n[data-tooltip]:hover::after {{\n  content: attr(data-tooltip);\n  position: absolute; bottom: <span class=\"n\">100%</span>;\n  background: <span class=\"s\">#333</span>; color: white;\n  padding: <span class=\"n\">4px 8px</span>; border-radius: <span class=\"n\">4px</span>;\n  white-space: nowrap; font-size: <span class=\"n\">0.8rem</span>;\n}}</code></pre>"
+        }
+      ]
+    },
+    {
       "id": "css-modern",
       "intro": "Modern CSS features that have changed how we write styles in 2025-2026.",
       "cards": [
@@ -227,38 +173,24 @@
       ]
     },
     {
-      "id": "css-arch",
-      "intro": "CSS architecture, methodologies, performance, and the modern tooling landscape.",
+      "id": "css-2025",
+      "intro": "CSS Anchor Positioning, View Transitions, Cascade Layers, and the future of native layout.",
       "cards": [
         {
-          "title": "CSS Specificity — The Rules",
-          "contentHtml": "<pre><code><span class=\"c\">/* Specificity: (inline, IDs, classes, elements) */</span>\n*                    <span class=\"c\">/* 0,0,0,0 */</span>\np                    <span class=\"c\">/* 0,0,0,1 */</span>\n.class               <span class=\"c\">/* 0,0,1,0 */</span>\n#id                  <span class=\"c\">/* 0,1,0,0 */</span>\nstyle=\"...\"          <span class=\"c\">/* 1,0,0,0 */</span>\n!important           <span class=\"c\">/* overrides everything (avoid!) */</span>\n\np.intro              <span class=\"c\">/* 0,0,1,1 (element + class) */</span>\n#nav .link:hover     <span class=\"c\">/* 0,1,2,0 (ID + class + pseudo-class) */</span>\n\n<span class=\"c\">/* :where() has ZERO specificity */</span>\n:where(.card) p {{ }} <span class=\"c\">/* 0,0,0,1 (only p counts) */</span>\n\n<span class=\"c\">/* :is() takes HIGHEST specificity of its arguments */</span>\n:is(#id, .class) p {{ }} <span class=\"c\">/* 0,1,0,1 (#id wins) */</span>\n\n<span class=\"c\">/* @layer lowers entire layer priority */</span>\n@layer base {{ #id {{ color: red; }} }} <span class=\"c\">/* loses to un-layered .class */</span></code></pre>\n<div class=\"an\">Specificity is NOT a single number. It's a tuple: (inline, IDs, classes, elements). (0,1,0,0) ALWAYS beats (0,0,99,99) — one ID beats 99 classes. This is why <code>!important</code> and inline styles are hard to override.</div>"
+          "title": "Anchor Positioning API",
+          "contentHtml": "<p>Position elements relative to any other \"anchor\" without shared parents or JS libraries:</p>\n      <pre><code>.anchor { anchor-name: --my-btn; }\n\n.popover {\n  position: absolute;\n  position-anchor: --my-btn;\n  bottom: anchor(top);\n  left: anchor(center);\n}</code></pre>\n      <ul>\n        <li><strong>Native Popovers:</strong> Combined with `popover` attribute for top-layer rendering.</li>\n        <li><strong>Fallback Logic:</strong> Use `position-try-options` for safe repositioning.</li>\n      </ul>"
         },
         {
-          "title": "CSS Architecture & Methodologies",
-          "contentHtml": "<h3>BEM (Block Element Modifier)</h3>\n<pre><code><span class=\"c\">/* Block: standalone component */</span>\n.card {{ }}\n<span class=\"c\">/* Element: part of block (double underscore) */</span>\n.card__title {{ }}\n.card__body {{ }}\n<span class=\"c\">/* Modifier: variation (double dash) */</span>\n.card--featured {{ }}\n.card__title--large {{ }}</code></pre>\n<h3>Modern Approaches</h3>\n<p><strong>CSS Modules:</strong> <code>.module.css</code> files with locally-scoped classes (auto-generated unique names). <strong>Tailwind CSS:</strong> Utility-first — <code>class=\"flex items-center gap-4 p-6 rounded-lg\"</code>. <strong>CSS-in-JS:</strong> styled-components, Emotion — co-locate styles with components. <strong>Vanilla Extract:</strong> Type-safe, zero-runtime CSS-in-TS. <strong>Open Props:</strong> Design tokens as custom properties.</p>\n<div class=\"tp\">In 2026, <strong>Tailwind CSS</strong> is the dominant approach for React/Next.js apps. <strong>CSS Modules</strong> are the safe, framework-agnostic option. CSS-in-JS (styled-components) has fallen out of favor due to runtime overhead and RSC incompatibility.</div>"
+          "title": "View Transitions API",
+          "contentHtml": "<p>Seamlessly animate between DOM states (or pages) without complex JS libraries:</p>\n      <pre><code>function updateUI() {\n  document.startViewTransition(() =&gt; {\n    // Perform DOM modifications\n    renderNewPage(); \n  });\n}</code></pre>\n      <ul>\n        <li><strong>Pseudo-elements:</strong> Automatically creates snapshots `::view-transition-group`.</li>\n        <li><strong>Cross-Document:</strong> Supported in 2024/2025 for standard multi-page sites.</li>\n      </ul>"
         },
         {
-          "title": "Performance Optimization",
-          "contentHtml": "<h3>Critical Rendering Path</h3>\n<p>HTML parsing → DOM tree + CSSOM → Render tree → Layout → Paint → Composite. CSS blocks rendering — the browser won't paint until ALL CSS is parsed. JS blocks HTML parsing (unless defer/async).</p>\n<h3>Optimization Techniques</h3>\n<p><strong>Critical CSS:</strong> Inline above-fold styles in <code>&lt;head&gt;</code>, lazy-load the rest. <strong>content-visibility: auto:</strong> Skip rendering offscreen content. <strong>contain:</strong> Isolate layout/paint/style recalculation. <strong>will-change:</strong> Hint browser about upcoming animations (use sparingly). <strong>Avoid layout thrashing:</strong> batch reads before writes. <strong>Prefer transform/opacity:</strong> Only these two properties are GPU-composited — avoid animating width/height/top/left.</p>\n<pre><code><span class=\"c\">/* content-visibility: skip rendering offscreen sections */</span>\n.section {{ content-visibility: auto; contain-intrinsic-size: auto <span class=\"n\">500px</span>; }}\n\n<span class=\"c\">/* contain: isolate recalculation */</span>\n.card {{ contain: layout style paint; }}\n\n<span class=\"c\">/* Only animate compositable properties */</span>\n.animate {{ \n  transform: translateX(<span class=\"n\">0</span>);  <span class=\"c\">/* ✅ GPU composited */</span>\n  opacity: <span class=\"n\">1</span>;                <span class=\"c\">/* ✅ GPU composited */</span>\n  <span class=\"c\">/* ❌ Avoid: width, height, top, left, margin, padding */</span>\n}}</code></pre>"
-        }
-      ]
-    },
-    {
-      "id": "css-selectors",
-      "intro": "Advanced selectors, combinators, and pseudo-elements — the tools of CSS mastery.",
-      "cards": [
-        {
-          "title": "All CSS Selectors — Complete Reference",
-          "contentHtml": "<pre><code><span class=\"c\">/* SIMPLE */</span>\n*                  <span class=\"c\">/* Universal — all elements */</span>\ndiv                <span class=\"c\">/* Type — all divs */</span>\n.class             <span class=\"c\">/* Class */</span>\n#id                <span class=\"c\">/* ID */</span>\n[attr]             <span class=\"c\">/* Has attribute */</span>\n[attr=<span class=\"s\">\"val\"</span>]       <span class=\"c\">/* Exact match */</span>\n[attr^=<span class=\"s\">\"val\"</span>]      <span class=\"c\">/* Starts with */</span>\n[attr$=<span class=\"s\">\"val\"</span>]      <span class=\"c\">/* Ends with */</span>\n[attr*=<span class=\"s\">\"val\"</span>]      <span class=\"c\">/* Contains */</span>\n[attr~=<span class=\"s\">\"val\"</span>]      <span class=\"c\">/* Word in space-separated list */</span>\n[attr|=<span class=\"s\">\"val\"</span>]      <span class=\"c\">/* Starts with val or val- */</span>\n[attr=<span class=\"s\">\"val\"</span> i]     <span class=\"c\">/* Case insensitive */</span>\n\n<span class=\"c\">/* COMBINATORS */</span>\ndiv p              <span class=\"c\">/* Descendant (any depth) */</span>\ndiv &gt; p            <span class=\"c\">/* Direct child only */</span>\nh2 + p             <span class=\"c\">/* Adjacent sibling (immediately after) */</span>\nh2 ~ p             <span class=\"c\">/* General sibling (any after) */</span>\n\n<span class=\"c\">/* PSEUDO-CLASSES — state based */</span>\n:hover :focus :active :visited\n:focus-visible       <span class=\"c\">/* Keyboard focus only (not mouse) */</span>\n:focus-within        <span class=\"c\">/* Parent has focused child */</span>\n:first-child :last-child :only-child\n:nth-child(<span class=\"n\">2n</span>)      <span class=\"c\">/* Even children */</span>\n:nth-child(<span class=\"n\">3n+1</span>)    <span class=\"c\">/* Every 3rd starting from 1st */</span>\n:nth-of-type(<span class=\"n\">2</span>)     <span class=\"c\">/* 2nd of its type */</span>\n:not(.class)         <span class=\"c\">/* Negation */</span>\n:empty               <span class=\"c\">/* No children/text */</span>\n:checked :disabled :required :valid :invalid\n:target              <span class=\"c\">/* Element matching URL hash */</span>\n:is(h1, h2, h3)     <span class=\"c\">/* Matches any (specificity = highest) */</span>\n:where(h1, h2, h3)  <span class=\"c\">/* Same but ZERO specificity */</span>\n:has(.child)         <span class=\"c\">/* Parent selector! */</span>\n\n<span class=\"c\">/* PSEUDO-ELEMENTS — generated content */</span>\n::before ::after       <span class=\"c\">/* Require content property */</span>\n::first-line ::first-letter\n::placeholder          <span class=\"c\">/* Input placeholder text */</span>\n::selection            <span class=\"c\">/* User-selected text */</span>\n::marker               <span class=\"c\">/* List bullet/number */</span>\n::backdrop             <span class=\"c\">/* Dialog/fullscreen overlay */</span>\n::file-selector-button <span class=\"c\">/* File input button */</span></code></pre>"
+          "title": "Cascade Layers (@layer)",
+          "contentHtml": "<p>Architectural control over specificity, solving the 3rd-party override library wars:</p>\n      <pre><code>@layer base, utility, components;\n\n@layer utility {\n  .p-10 { padding: 10px !important; }\n}\n\n@layer base {\n  /* Won't be overridden by higher layers \n     despite specificity */\n}</code></pre>"
         },
         {
-          "title": "The :has() Selector — Deep Dive",
-          "contentHtml": "<pre><code><span class=\"c\">/* Style parent based on children */</span>\n.card:has(img) {{ display: grid; grid-template-rows: auto <span class=\"n\">1fr</span>; }}\n.card:has(.badge) {{ border-color: gold; }}\n\n<span class=\"c\">/* Form validation without JS */</span>\nform:has(:invalid) .submit-btn {{ opacity: <span class=\"n\">0.5</span>; pointer-events: none; }}\n.field:has(:invalid:not(:placeholder-shown)) .error {{ display: block; }}\n\n<span class=\"c\">/* Sibling relationships */</span>\nh2:has(+ p) {{ margin-bottom: <span class=\"n\">0.5rem</span>; }}  <span class=\"c\">/* h2 followed by p */</span>\nli:has(+ li) {{ border-bottom: <span class=\"n\">1px</span> solid; }}  <span class=\"c\">/* all li except last */</span>\n\n<span class=\"c\">/* Complex conditions */</span>\nbody:has(dialog[open]) {{ overflow: hidden; }}  <span class=\"c\">/* prevent scroll when modal open */</span>\n.grid:has(&gt; :nth-child(4)) {{ grid-template-columns: repeat(<span class=\"n\">2</span>, <span class=\"n\">1fr</span>); }}\n<span class=\"c\">/* 2-column grid ONLY when 4+ children exist */</span></code></pre>\n<div class=\"an\">:has() replaces SO much JavaScript. Form validation styling, conditional layouts, parent styling based on state — all pure CSS now. It's the most impactful CSS selector since flexbox.</div>"
-        },
-        {
-          "title": "Pseudo-Elements — Advanced Patterns",
-          "contentHtml": "<pre><code><span class=\"c\">/* Decorative line */</span>\nh2::after {{\n  content: <span class=\"s\">''</span>;\n  display: block;\n  width: <span class=\"n\">60px</span>; height: <span class=\"n\">3px</span>;\n  background: var(--color-primary);\n  margin-top: <span class=\"n\">0.5rem</span>;\n}}\n\n<span class=\"c\">/* Required field indicator */</span>\nlabel:has(+ input:required)::after {{\n  content: <span class=\"s\">'*'</span>;\n  color: var(--color-error);\n  margin-inline-start: <span class=\"n\">0.25rem</span>;\n}}\n\n<span class=\"c\">/* Custom checkbox */</span>\ninput[type=<span class=\"s\">\"checkbox\"</span>] {{ appearance: none; width: <span class=\"n\">20px</span>; height: <span class=\"n\">20px</span>; border: <span class=\"n\">2px</span> solid; border-radius: <span class=\"n\">4px</span>; }}\ninput[type=<span class=\"s\">\"checkbox\"</span>]:checked {{ background: var(--primary); }}\ninput[type=<span class=\"s\">\"checkbox\"</span>]:checked::after {{\n  content: <span class=\"s\">'✓'</span>;\n  display: grid; place-content: center;\n  color: white; font-size: <span class=\"n\">14px</span>;\n}}\n\n<span class=\"c\">/* Tooltip with ::after */</span>\n[data-tooltip]:hover::after {{\n  content: attr(data-tooltip);\n  position: absolute; bottom: <span class=\"n\">100%</span>;\n  background: <span class=\"s\">#333</span>; color: white;\n  padding: <span class=\"n\">4px 8px</span>; border-radius: <span class=\"n\">4px</span>;\n  white-space: nowrap; font-size: <span class=\"n\">0.8rem</span>;\n}}</code></pre>"
+          "title": "Relative Color Syntax (RCS)",
+          "contentHtml": "<p>Derive dynamic colors natively from existing variables:</p>\n      <pre><code>:root { --primary: #3498db; }\n\n.btn {\n  /* Extract R, G, B and add 50% alpha */\n  background: rgb(from var(--primary) r g b / 0.5);\n  /* Or oklch adjustments */\n  border-color: oklch(from var(--primary) calc(l + 0.1) c h);\n}</code></pre>"
         }
       ]
     },
@@ -285,6 +217,74 @@
         {
           "title": "accent-color, color-scheme & System Integration",
           "contentHtml": "<pre><code><span class=\"c\">/* accent-color: theme form controls with one line */</span>\n:root {{ accent-color: <span class=\"s\">#6366f1</span>; }}\n<span class=\"c\">/* Applies to: checkbox, radio, range, progress */</span>\n<span class=\"c\">/* Automatic contrast text color for checked state */</span>\n\n<span class=\"c\">/* color-scheme: tell browser about supported themes */</span>\n:root {{ color-scheme: light dark; }}\n<span class=\"c\">/* Browser auto-styles: scrollbars, form controls, */</span>\n<span class=\"c\">/* default backgrounds and text colors per theme */</span>\n\n<span class=\"c\">/* @media queries for user preferences */</span>\n@media (prefers-color-scheme: dark) {{ }}\n@media (prefers-reduced-motion: reduce) {{ }}\n@media (prefers-contrast: more) {{ }}\n@media (forced-colors: active) {{ <span class=\"c\">/* Windows High Contrast */</span> }}\n@media (prefers-reduced-data: reduce) {{ <span class=\"c\">/* limit data usage */</span> }}\n@media (scripting: none) {{ <span class=\"c\">/* JS disabled */</span> }}</code></pre>\n<div class=\"tp\"><code>accent-color</code> is the easiest design win in CSS — one line colors ALL native form controls to match your brand. No more ugly default blue checkboxes.</div>"
+        }
+      ]
+    },
+    {
+      "id": "css-arch",
+      "intro": "CSS architecture, methodologies, performance, and the modern tooling landscape.",
+      "cards": [
+        {
+          "title": "CSS Specificity — The Rules",
+          "contentHtml": "<pre><code><span class=\"c\">/* Specificity: (inline, IDs, classes, elements) */</span>\n*                    <span class=\"c\">/* 0,0,0,0 */</span>\np                    <span class=\"c\">/* 0,0,0,1 */</span>\n.class               <span class=\"c\">/* 0,0,1,0 */</span>\n#id                  <span class=\"c\">/* 0,1,0,0 */</span>\nstyle=\"...\"          <span class=\"c\">/* 1,0,0,0 */</span>\n!important           <span class=\"c\">/* overrides everything (avoid!) */</span>\n\np.intro              <span class=\"c\">/* 0,0,1,1 (element + class) */</span>\n#nav .link:hover     <span class=\"c\">/* 0,1,2,0 (ID + class + pseudo-class) */</span>\n\n<span class=\"c\">/* :where() has ZERO specificity */</span>\n:where(.card) p {{ }} <span class=\"c\">/* 0,0,0,1 (only p counts) */</span>\n\n<span class=\"c\">/* :is() takes HIGHEST specificity of its arguments */</span>\n:is(#id, .class) p {{ }} <span class=\"c\">/* 0,1,0,1 (#id wins) */</span>\n\n<span class=\"c\">/* @layer lowers entire layer priority */</span>\n@layer base {{ #id {{ color: red; }} }} <span class=\"c\">/* loses to un-layered .class */</span></code></pre>\n<div class=\"an\">Specificity is NOT a single number. It's a tuple: (inline, IDs, classes, elements). (0,1,0,0) ALWAYS beats (0,0,99,99) — one ID beats 99 classes. This is why <code>!important</code> and inline styles are hard to override.</div>"
+        },
+        {
+          "title": "CSS Architecture & Methodologies",
+          "contentHtml": "<h3>BEM (Block Element Modifier)</h3>\n<pre><code><span class=\"c\">/* Block: standalone component */</span>\n.card {{ }}\n<span class=\"c\">/* Element: part of block (double underscore) */</span>\n.card__title {{ }}\n.card__body {{ }}\n<span class=\"c\">/* Modifier: variation (double dash) */</span>\n.card--featured {{ }}\n.card__title--large {{ }}</code></pre>\n<h3>Modern Approaches</h3>\n<p><strong>CSS Modules:</strong> <code>.module.css</code> files with locally-scoped classes (auto-generated unique names). <strong>Tailwind CSS:</strong> Utility-first — <code>class=\"flex items-center gap-4 p-6 rounded-lg\"</code>. <strong>CSS-in-JS:</strong> styled-components, Emotion — co-locate styles with components. <strong>Vanilla Extract:</strong> Type-safe, zero-runtime CSS-in-TS. <strong>Open Props:</strong> Design tokens as custom properties.</p>\n<div class=\"tp\">In 2026, <strong>Tailwind CSS</strong> is the dominant approach for React/Next.js apps. <strong>CSS Modules</strong> are the safe, framework-agnostic option. CSS-in-JS (styled-components) has fallen out of favor due to runtime overhead and RSC incompatibility.</div>"
+        },
+        {
+          "title": "Performance Optimization",
+          "contentHtml": "<h3>Critical Rendering Path</h3>\n<p>HTML parsing → DOM tree + CSSOM → Render tree → Layout → Paint → Composite. CSS blocks rendering — the browser won't paint until ALL CSS is parsed. JS blocks HTML parsing (unless defer/async).</p>\n<h3>Optimization Techniques</h3>\n<p><strong>Critical CSS:</strong> Inline above-fold styles in <code>&lt;head&gt;</code>, lazy-load the rest. <strong>content-visibility: auto:</strong> Skip rendering offscreen content. <strong>contain:</strong> Isolate layout/paint/style recalculation. <strong>will-change:</strong> Hint browser about upcoming animations (use sparingly). <strong>Avoid layout thrashing:</strong> batch reads before writes. <strong>Prefer transform/opacity:</strong> Only these two properties are GPU-composited — avoid animating width/height/top/left.</p>\n<pre><code><span class=\"c\">/* content-visibility: skip rendering offscreen sections */</span>\n.section {{ content-visibility: auto; contain-intrinsic-size: auto <span class=\"n\">500px</span>; }}\n\n<span class=\"c\">/* contain: isolate recalculation */</span>\n.card {{ contain: layout style paint; }}\n\n<span class=\"c\">/* Only animate compositable properties */</span>\n.animate {{ \n  transform: translateX(<span class=\"n\">0</span>);  <span class=\"c\">/* ✅ GPU composited */</span>\n  opacity: <span class=\"n\">1</span>;                <span class=\"c\">/* ✅ GPU composited */</span>\n  <span class=\"c\">/* ❌ Avoid: width, height, top, left, margin, padding */</span>\n}}</code></pre>"
+        }
+      ]
+    },
+    {
+      "id": "hc-modern",
+      "intro": "Recent CSS evolutions drastically reduce the need for preprocessors and complex JS logic.",
+      "cards": [
+        {
+          "title": "Game-Changing Selectors",
+          "contentHtml": "<ul>\n        <li><b>:has() (The Parent Selector):</b> Selects an element if it contains a certain descendent. Ex: `figure:has(figcaption)` selects only figures that have captions. It completely changes CSS architecture.</li>\n        <li><b>:is() and :where():</b> Groups selectors succinctly. `:is(h1, h2, h3) span` instead of writing them all out. `:where()` is identical but has zero specificity, perfect for library resets.</li>\n        <li><b>Native Nesting:</b> CSS now natively supports standard nesting (similar to SCSS/LESS) without build tools. `nav { ul { padding: 0; } }`</li>\n      </ul>"
+        },
+        {
+          "title": "Layout & Responsiveness",
+          "contentHtml": "<ul>\n        <li><b>Container Queries (@container):</b> Instead of styling based on viewport width (`@media`), style based on the parent wrapper's width. This allows reusable components (like cards) to look totally different inside a tight sidebar vs a massive main grid.</li>\n        <li><b>CSS Subgrid:</b> Allows nested elements to perfectly align to their parent's grid tracks. If a Card has a Grid layout, `grid-template-rows: subgrid` allows headers and text across multiple sibling cards to perfectly align with each other.</li>\n        <li><b>text-wrap: balance / pretty:</b> Improves typography natively. `balance` prevents massive headlines with a single \"widow\" word on the final line by mathematically balancing the text block width.</li>\n      </ul>"
+        }
+      ]
+    },
+    {
+      "id": "hc-a11y",
+      "intro": "Building the web for everyone. Accessibility is not an afterthought; it is fundamental to modern markup.",
+      "cards": [
+        {
+          "title": "Semantic HTML Boundaries",
+          "contentHtml": "<p>Semantic HTML natively provides meaning and keyboard functionality that plain `&lt;div&gt;`s lack.</p>\n      <ul>\n        <li><b>&lt;main&gt;:</b> The dominant content of the page. Only one visible per document.</li>\n        <li><b>&lt;article&gt; vs &lt;section&gt;:</b> An `article` is independently distributable (a blog post). A `section` groups related content structurally but isn't necessarily standalone.</li>\n        <li><b>&lt;nav&gt;:</b> Wrap major navigation blocks. Provide an `aria-label` like \"Main\" or \"Footer\" if multiple exist.</li>\n        <li><b>&lt;button&gt; vs &lt;a&gt;:</b> `&lt;a href&gt;` navigates. `&lt;button&gt;` performs an action on the page. Never use `&lt;div onClick&gt;` without adding `tabindex=\"0\"`, `role=\"button\"`, and handling the `Enter/Space` keys manually.</li>\n      </ul>"
+        },
+        {
+          "title": "ARIA (Accessible Rich Internet Applications)",
+          "contentHtml": "<p>ARIA bridges the gap for complex interactive UI (tabs, modals, comboboxes) where native HTML falls short.</p>\n      <ul>\n        <li><b>First Rule of ARIA:</b> No ARIA is better than bad ARIA. Native elements are always preferred.</li>\n        <li><b>aria-hidden=\"true\":</b> Hides decorative elements (like SVG icons) from screen readers.</li>\n        <li><b>aria-label / aria-labelledby:</b> Provides an invisible text label for icon-only buttons (like a search magnifying glass).</li>\n        <li><b>aria-live:</b> Used on dynamically updated areas (e.g. error messages, toast notifications). Screen readers will interrupt and read `\"assertive\"` updates immediately, or wait for pauses for `\"polite\"` updates.</li>\n      </ul>"
+        }
+      ]
+    },
+    {
+      "id": "web-perf",
+      "intro": "Core Web Vitals (INP, LCP, CLS), Resource Prioritization, and Interaction to Next Paint.",
+      "cards": [
+        {
+          "title": "Interaction to Next Paint (INP)",
+          "contentHtml": "<p>The modern metric representing total interaction latency. INP tracks every click, tap, and keyboard interaction throughout the entire session:</p>\n      <ul>\n        <li><strong>Input Delay:</strong> Time between user interaction and event handler start (minimize main thread blocking).</li>\n        <li><strong>Processing Time:</strong> Time spent inside the event handler (optimize logic, use `setTimeout(0)` or `isInputPending`).</li>\n        <li><strong>Presentation Delay:</strong> Time spent painting the frame (avoid layout thrashing / heavy CSS).</li>\n      </ul>"
+        },
+        {
+          "title": "Resource Prioritization",
+          "contentHtml": "<p>Telling the browser what strictly matters for the Critical Rendering Path:</p>\n      <pre><code><!-- High Priority LCP Image -->\n&lt;img src=\"hero.avif\" \n  fetchpriority=\"high\" \n  loading=\"eager\" \n  decoding=\"async\" \n  alt=\"LCP Hero\"&gt;\n\n<!-- Speculative Pre-rendering -->\n&lt;script type=\"speculationrules\"&gt;\n{\n  \"prerender\": [\n    { \"source\": \"list\", \"urls\": [\"/next-page\"] }\n  ]\n}\n&lt;/script&gt;</code></pre>"
+        },
+        {
+          "title": "Image & Asset Optimization",
+          "contentHtml": "<p>Modern formats and strategies for minimizing cumulative layout shifts:</p>\n      <ul>\n        <li><strong>AVIF &amp; WebP:</strong> Native compression over 50% better than JPEG.</li>\n        <li><strong>Aspect Ratio:</strong> Reserve space before images load to prevent layout shifts.</li>\n        <li><strong>Source Set:</strong> Use `srcset` and `sizes` to deliver the perfect pixel density for the device.</li>\n      </ul>"
+        },
+        {
+          "title": "Core Web Vital Thresholds",
+          "contentHtml": "<table style=\"width:100%; border-collapse:collapse;\">\n        <tbody><tr>\n          <th style=\"text-align:left; padding:8px;\">Metric</th>\n          <th style=\"text-align:left; padding:8px;\">Good</th>\n          <th style=\"text-align:left; padding:8px;\">Poor</th>\n        </tr>\n        <tr>\n          <td style=\"padding:8px;\"><strong>LCP</strong> (Paint)</td>\n          <td style=\"padding:8px; color:#27ae60;\">&lt; 2.5s</td>\n          <td style=\"padding:8px; color:#e74c3c;\">&gt; 4.0s</td>\n        </tr>\n        <tr>\n          <td style=\"padding:8px;\"><strong>INP</strong> (Latency)</td>\n          <td style=\"padding:8px; color:#27ae60;\">&lt; 200ms</td>\n          <td style=\"padding:8px; color:#e74c3c;\">&gt; 500ms</td>\n        </tr>\n        <tr>\n          <td style=\"padding:8px;\"><strong>CLS</strong> (Shift)</td>\n          <td style=\"padding:8px; color:#27ae60;\">&lt; 0.1</td>\n          <td style=\"padding:8px; color:#e74c3c;\">&gt; 0.25</td>\n        </tr>\n      </tbody></table>"
         }
       ]
     },

@@ -4,14 +4,6 @@
   "subtitle": "Gestalt principles, accessibility & design tokens",
   "tabs": [
     {
-      "id": "ux-ui-mastery",
-      "label": "UX/UI Architecture & Design Systems"
-    },
-    {
-      "id": "ux-comp",
-      "label": "Micro-Interactions & Component Design"
-    },
-    {
       "id": "ux-gestalt",
       "label": "UX Fundamentals & Gestalt Principles"
     },
@@ -28,47 +20,19 @@
       "label": "Patterns & Best Practices"
     },
     {
+      "id": "ux-comp",
+      "label": "Micro-Interactions & Component Design"
+    },
+    {
+      "id": "ux-ui-mastery",
+      "label": "UX/UI Architecture & Design Systems"
+    },
+    {
       "id": "ux-iq",
       "label": "Interview Q&A (61)"
     }
   ],
   "sections": [
-    {
-      "id": "ux-ui-mastery",
-      "intro": "Building resilient, developer-friendly, and accessible design systems for enterprise scale.",
-      "cards": [
-        {
-          "title": "Enterprise Design Systems (Atomic Design)",
-          "contentHtml": "<p>Managing components as a hierarchy of complexity.</p>\n    <div class=\"grid2\">\n      <div class=\"an\">\n        <h3>Atoms &amp; Molecules</h3>\n        <p>Buttons, inputs, icons (Atoms) combined into Search bars, Cards, or Modals (Molecules). These are the primitives of your system.</p>\n      </div>\n      <div class=\"an\">\n        <h3>Organisms &amp; Templates</h3>\n        <p>Complex reusable sections (Headers, Navigation menus, Data tables) that form the layouts (Templates) where real content is injected.</p>\n      </div>\n    </div>\n    <pre><code><span class=\"c\">// Example of Headless UI pattern for components</span>\n<span class=\"k\">const</span> <span class=\"f\\\">Tabs</span> = ({ children }) =&gt; {{\n  <span class=\"k\">const</span> [active, setActive] = <span class=\"f\\\">useState</span>(0);\n  <span class=\"c\">// Provide state via context, but NO styles.</span>\n  <span class=\"c\">// Consumer brings their own styling (Tailwind, Modules, etc).</span>\n  <span class=\"k\">return</span> <span class=\"s\">&lt;TabsContext.Provider value={{...}}&gt;</span>{{children}}<span class=\"s\">&lt;/TabsContext.Provider&gt;</span>;\n}}</code></pre>"
-        },
-        {
-          "title": "Design for Performance (UX-P)",
-          "contentHtml": "<p>How UI design choices directly impact modern performance metrics like INP (Interaction to Next Paint).</p>\n    <ul>\n      <li><b>Skeleton Screens:</b> Perceived performance vs real performance. Using CSS transforms rather than width/height for layout-stable loading states.</li>\n      <li><b>Optimistic UI:</b> Instantly updating the UI before server confirmation (e.g., \\\"liking\\\" a post). Requires complex error-rollback logic.</li>\n      <li><b>Variable Fonts:</b> Reducing font-weight bloat. Loading one font file for 100-900 weights instead of 5 separate files. Massive LCP win.</li>\n    </ul>"
-        },
-        {
-          "title": "Design Token Architecture",
-          "contentHtml": "<p>Decouple styling from components for multi-platform consistency.</p>\n      <ul>\n        <li><b>Tier 1: Global/Core Tokens</b> (e.g., <code>--blue-500: #3b82f6</code>).</li>\n        <li><b>Tier 2: Alias/Semantic Tokens</b> (e.g., <code>--action-primary: var(--blue-500)</code>).</li>\n        <li><b>Tier 3: Component-Specific Tokens</b> (e.g., <code>--btn-bg: var(--action-primary)</code>).</li>\n      </ul>"
-        },
-        {
-          "title": "Advanced Accessibility (a11y)",
-          "contentHtml": "<p>Going beyond the basics for a truly inclusive experience.</p>\n      <ul>\n        <li><b>Cognitive Accessibility:</b> Reducing cognitive load with consistent patterns, minimal distractions, and clear multi-modal feedback.</li>\n        <li><b>Focus Management:</b> Capturing focus in modals, correctly using <code>aria-live</code> for dynamic updates, and ensuring logical tab order for keyboard users.</li>\n        <li><b>User Preference Queries:</b> Respecting <code>prefers-reduced-motion</code>, <code>prefers-contrast</code>, and <code>prefers-color-scheme</code>.</li>\n      </ul>"
-        }
-      ]
-    },
-    {
-      "id": "ux-comp",
-      "intro": "The tiny details that separate merely functional apps from premium, delightful experiences.",
-      "cards": [
-        {
-          "title": "Designing State",
-          "contentHtml": "<p>A button isn't just a rectangle; it is a state machine. Every interactive component must account for at least 5 states:</p>\n      <ul>\n        <li><b>Default:</b> The baseline appearance.</li>\n        <li><b>Hover:</b> Visual feedback that the element is interactive (cursor changes, slight shadow, color shift). <i>Note: Hover does not exist on mobile.</i></li>\n        <li><b>Focus:</b> Critical for keyboard accessibility. Must have a high-contrast outline indicating this is the keyboard target.</li>\n        <li><b>Active / Pressed:</b> Physical feedback that the click is registering (a physical push-down effect or ripple).</li>\n        <li><b>Disabled:</b> Indicates the action is currently unachievable, usually via low opacity and a `not-allowed` cursor. <i>Pro UX tip: Avoid disabled buttons if possible; instead, leave them enabled and show a helpful error explaining *why* it failed when clicked.</i></li>\n      </ul>"
-        },
-        {
-          "title": "Color Theory & Contrast",
-          "contentHtml": "<ul>\n        <li><b>The 60-30-10 Rule:</b> A classic design rule. 60% of the UI should be the dominant color (usually white/dark gray background), 30% a secondary color (cards, sidebars), and 10% an accent color (primary buttons, links).</li>\n        <li><b>WCAG Contrast Ratio:</b> Text must have a contrast ratio of at least <b>4.5:1</b> against its background for normal text (WCAG AA). Never use medium-gray text on a light-gray background, it is physically inaccessible to millions.</li>\n        <li><b>Meaningful Color:</b> Never use color <i>alone</i> to convey meaning. Colorblind users cannot differentiate a red error state from a green success state easily—always include a supporting icon (✅ or ❌).</li>\n      </ul>"
-        }
-      ]
-    },
     {
       "id": "ux-gestalt",
       "intro": "Understanding human psychology to create intuitive, frictionless interfaces.",
@@ -154,6 +118,42 @@
         {
           "title": "Micro-Interactions & Empty States",
           "contentHtml": "<h3>Micro-Interactions</h3>\n<p>Small animations that acknowledge user actions: button press (scale down 98%), toggle slide, checkbox bounce, ripple effect, hover lift (translateY -2px + shadow). They add personality and feel 'real.'</p>\n\n<h3>Empty States</h3>\n<p>Never show a blank page. When content is empty, show: <strong>1)</strong> What this section is for. <strong>2)</strong> Why it's empty. <strong>3)</strong> A clear CTA to fix it.</p>\n<p>Example: \"No projects yet\" + illustration + \"Create your first project\" button. Empty states are onboarding opportunities — guide the user to their first action.</p>\n\n<h3>Error States</h3>\n<p><strong>404 page:</strong> Helpful message + search + link to home. Not just \"Page not found.\" <strong>500 page:</strong> Apologize + suggest retry + status page link. <strong>Offline state:</strong> Show cached content with \"You're offline\" banner + retry button.</p>"
+        }
+      ]
+    },
+    {
+      "id": "ux-comp",
+      "intro": "The tiny details that separate merely functional apps from premium, delightful experiences.",
+      "cards": [
+        {
+          "title": "Designing State",
+          "contentHtml": "<p>A button isn't just a rectangle; it is a state machine. Every interactive component must account for at least 5 states:</p>\n      <ul>\n        <li><b>Default:</b> The baseline appearance.</li>\n        <li><b>Hover:</b> Visual feedback that the element is interactive (cursor changes, slight shadow, color shift). <i>Note: Hover does not exist on mobile.</i></li>\n        <li><b>Focus:</b> Critical for keyboard accessibility. Must have a high-contrast outline indicating this is the keyboard target.</li>\n        <li><b>Active / Pressed:</b> Physical feedback that the click is registering (a physical push-down effect or ripple).</li>\n        <li><b>Disabled:</b> Indicates the action is currently unachievable, usually via low opacity and a `not-allowed` cursor. <i>Pro UX tip: Avoid disabled buttons if possible; instead, leave them enabled and show a helpful error explaining *why* it failed when clicked.</i></li>\n      </ul>"
+        },
+        {
+          "title": "Color Theory & Contrast",
+          "contentHtml": "<ul>\n        <li><b>The 60-30-10 Rule:</b> A classic design rule. 60% of the UI should be the dominant color (usually white/dark gray background), 30% a secondary color (cards, sidebars), and 10% an accent color (primary buttons, links).</li>\n        <li><b>WCAG Contrast Ratio:</b> Text must have a contrast ratio of at least <b>4.5:1</b> against its background for normal text (WCAG AA). Never use medium-gray text on a light-gray background, it is physically inaccessible to millions.</li>\n        <li><b>Meaningful Color:</b> Never use color <i>alone</i> to convey meaning. Colorblind users cannot differentiate a red error state from a green success state easily—always include a supporting icon (✅ or ❌).</li>\n      </ul>"
+        }
+      ]
+    },
+    {
+      "id": "ux-ui-mastery",
+      "intro": "Building resilient, developer-friendly, and accessible design systems for enterprise scale.",
+      "cards": [
+        {
+          "title": "Enterprise Design Systems (Atomic Design)",
+          "contentHtml": "<p>Managing components as a hierarchy of complexity.</p>\n    <div class=\"grid2\">\n      <div class=\"an\">\n        <h3>Atoms &amp; Molecules</h3>\n        <p>Buttons, inputs, icons (Atoms) combined into Search bars, Cards, or Modals (Molecules). These are the primitives of your system.</p>\n      </div>\n      <div class=\"an\">\n        <h3>Organisms &amp; Templates</h3>\n        <p>Complex reusable sections (Headers, Navigation menus, Data tables) that form the layouts (Templates) where real content is injected.</p>\n      </div>\n    </div>\n    <pre><code><span class=\"c\">// Example of Headless UI pattern for components</span>\n<span class=\"k\">const</span> <span class=\"f\\\">Tabs</span> = ({ children }) =&gt; {{\n  <span class=\"k\">const</span> [active, setActive] = <span class=\"f\\\">useState</span>(0);\n  <span class=\"c\">// Provide state via context, but NO styles.</span>\n  <span class=\"c\">// Consumer brings their own styling (Tailwind, Modules, etc).</span>\n  <span class=\"k\">return</span> <span class=\"s\">&lt;TabsContext.Provider value={{...}}&gt;</span>{{children}}<span class=\"s\">&lt;/TabsContext.Provider&gt;</span>;\n}}</code></pre>"
+        },
+        {
+          "title": "Design for Performance (UX-P)",
+          "contentHtml": "<p>How UI design choices directly impact modern performance metrics like INP (Interaction to Next Paint).</p>\n    <ul>\n      <li><b>Skeleton Screens:</b> Perceived performance vs real performance. Using CSS transforms rather than width/height for layout-stable loading states.</li>\n      <li><b>Optimistic UI:</b> Instantly updating the UI before server confirmation (e.g., \\\"liking\\\" a post). Requires complex error-rollback logic.</li>\n      <li><b>Variable Fonts:</b> Reducing font-weight bloat. Loading one font file for 100-900 weights instead of 5 separate files. Massive LCP win.</li>\n    </ul>"
+        },
+        {
+          "title": "Design Token Architecture",
+          "contentHtml": "<p>Decouple styling from components for multi-platform consistency.</p>\n      <ul>\n        <li><b>Tier 1: Global/Core Tokens</b> (e.g., <code>--blue-500: #3b82f6</code>).</li>\n        <li><b>Tier 2: Alias/Semantic Tokens</b> (e.g., <code>--action-primary: var(--blue-500)</code>).</li>\n        <li><b>Tier 3: Component-Specific Tokens</b> (e.g., <code>--btn-bg: var(--action-primary)</code>).</li>\n      </ul>"
+        },
+        {
+          "title": "Advanced Accessibility (a11y)",
+          "contentHtml": "<p>Going beyond the basics for a truly inclusive experience.</p>\n      <ul>\n        <li><b>Cognitive Accessibility:</b> Reducing cognitive load with consistent patterns, minimal distractions, and clear multi-modal feedback.</li>\n        <li><b>Focus Management:</b> Capturing focus in modals, correctly using <code>aria-live</code> for dynamic updates, and ensuring logical tab order for keyboard users.</li>\n        <li><b>User Preference Queries:</b> Respecting <code>prefers-reduced-motion</code>, <code>prefers-contrast</code>, and <code>prefers-color-scheme</code>.</li>\n      </ul>"
         }
       ]
     },

@@ -4,24 +4,24 @@
   "subtitle": "Scalable architectures & frontend patterns",
   "tabs": [
     {
-      "id": "sd-mastery",
-      "label": "System Design Mastery 2026"
-    },
-    {
-      "id": "sd-data",
-      "label": "Data Storage & Scaling"
+      "id": "fsd-core",
+      "label": "Core Concepts"
     },
     {
       "id": "sd-arch",
       "label": "Scalable Architecture Fundamentals"
     },
     {
-      "id": "fsd-core",
-      "label": "Core Concepts"
+      "id": "sd-data",
+      "label": "Data Storage & Scaling"
     },
     {
       "id": "fsd-examples",
       "label": "Design Examples"
+    },
+    {
+      "id": "sd-mastery",
+      "label": "System Design Mastery 2026"
     },
     {
       "id": "fsd-iq",
@@ -29,64 +29,6 @@
     }
   ],
   "sections": [
-    {
-      "id": "sd-mastery",
-      "intro": "Mastering distributed systems, scalability patterns, and high-level architectural trade-offs for technical lead positions.",
-      "cards": [
-        {
-          "title": "Micro-Frontend Architectures",
-          "contentHtml": "<p>Scaling frontend development across large, decoupled teams.</p>\n    <div class=\"grid2\">\n      <div class=\"dp\">\n        <h3>Module Federation</h3>\n        <p>The industry standard for MFEs. Allows dynamic loading of code from other independently deployed applications at runtime, sharing dependencies to avoid bloat.</p>\n      </div>\n      <div class=\"dp\">\n        <h3>Islands Architecture</h3>\n        <p>Popularized by Astro. Sending static HTML with specific \"islands\" of interactivity (React/Vue/Angular) that hydrate independently. Massive LCP/INP wins.</p>\n      </div>\n    </div>\n    <pre><code><span class=\"c\">// Webpack Module Federation example</span>\n<span class=\"k\">new</span> <span class=\"f\\\">ModuleFederationPlugin</span>({\n  name: <span class=\"s\">'app1'</span>,\n  remotes: {\n    app2: <span class=\"s\">'app2@http://localhost:3002/remoteEntry.js'</span>,\n  },\n  shared: { react: { singleton: <span class=\"k\">true</span> }, <span class=\"s\">'react-dom'</span>: { singleton: <span class=\"k\">true</span> } },\n});</code></pre>"
-        },
-        {
-          "title": "Real-time & Event-Driven Systems",
-          "contentHtml": "<p>Using Event Sourcing and CQRS (Command Query Responsibility Segregation) for complex state management.</p>\n    <ul>\n      <li><b>Event Sourcing:</b> Storing the state of an application as a sequence of immutable events rather than just the current state. Enables infinite \\\"undo\\\" and historical auditing.</li>\n      <li><b>Change Data Capture (CDC):</b> Observing database logs to stream changes to downstream consumers (elastic search, caches, other services) in real-time.</li>\n      <li><b>WebSockets vs Server-Sent Events (SSE):</b> Use WebSockets for full-duplex (chat, games). Use SSE for one-way server-to-client updates (stock tickers, notifications) as it's more lightweight and has native auto-reconnect.</li>\n    </ul>"
-        },
-        {
-          "title": "Distribution & Availability",
-          "contentHtml": "<p>Modern architectures prioritize resilience and global distribution.</p>\n      <ul>\n        <li><b>CAP Theorem:</b> Consistency, Availability, Partition Tolerance. You can only guarantee two in a distributed system during a network partition.</li>\n        <li><b>PACELC Theorem:</b> An extension of CAP. If there's a partition (P), trade-off between availability (A) and consistency (C). Else (E), trade-off between latency (L) and consistency (C).</li>\n        <li><b>Global Replication:</b> Active-Active vs Active-Passive. Use <b>Conflict-free Replicated Data Types (CRDTs)</b> or <b>Last-Writer-Wins (LWW)</b> for conflict resolution.</li>\n      </ul>"
-        },
-        {
-          "title": "Advanced Scaling & Resilience",
-          "contentHtml": "<ul>\n        <li><b>Backpressure:</b> Mechanism to signal a producer that the consumer is overwhelmed. Prevents service crashes under load.</li>\n        <li><b>Circuit Breaker:</b> Prevents a service from attempting a failing operation, allowing it to recover instead of being hammered by retries.</li>\n        <li><b>Saga Pattern:</b> Managing data consistency across microservices in distributed transactions via a sequence of local transactions and compensating actions.</li>\n      </ul>"
-        }
-      ]
-    },
-    {
-      "id": "sd-data",
-      "intro": "Managing state when data becomes too large for a single machine.",
-      "cards": [
-        {
-          "title": "Relational (SQL) vs Non-Relational (NoSQL)",
-          "contentHtml": "<ul>\n        <li><b>SQL (PostgreSQL, MySQL):</b> Structured schemas, ACID compliance, complex joins. Perfect for highly structured, predictable data where consistency is critical (e.g., Financial transactions). Hard to horizontally scale.</li>\n        <li><b>NoSQL (MongoDB, DynamoDB, Cassandra):</b> Flexible schemas, eventual consistency, no complex joins. Designed specifically to be horizontally partitioned from day one. Perfect for massive volume, unstructured data, or rapid prototyping (e.g., Social media feeds, IoT sensor logs).</li>\n      </ul>"
-        },
-        {
-          "title": "Database Scaling Techniques",
-          "contentHtml": "<ul>\n        <li><b>Read Replicas:</b> One \"Master\" database handles all writes. Multiple \"Slave\" databases copy the master and handle all reads. Fixes read-heavy bottlenecks.</li>\n        <li><b>Sharding (Data Partitioning):</b> Splitting a single large database across multiple smaller databases based on a Shard Key (e.g., User ID). If `ID &lt; 1000` goes to DB_A, `ID &gt; 1000` goes to DB_B. Extremely fast, but makes cross-shard joins nearly impossible.</li>\n        <li><b>Indexing:</b> Creating a specific data structure (like a B-Tree) on a database column to allow O(log n) lookups instead of O(n) full table scans. Speeds up reads massively, but slows down writes (because the index must be updated on every write).</li>\n      </ul>"
-        },
-        {
-          "title": "Caching Strategies",
-          "contentHtml": "<p>Storing expensive computations or database queries in ultra-fast, in-memory stores like Redis or Memcached.</p>\n      <ul>\n        <li><b>Cache-Aside:</b> App queries Cache. If miss, app queries DB, then writes to Cache, then returns to user. Best generic strategy.</li>\n        <li><b>Write-Through:</b> App writes immediately to Cache AND DB at the same time. Cache is always perfectly consistent with DB. Slower writes.</li>\n        <li><b>Write-Back:</b> App writes ONLY to Cache and returns success immediately. Cache asynchronously syncs to the DB later. Insanely fast writes, but high risk of absolute data loss if the cache node crashes before syncing.</li>\n      </ul>"
-        }
-      ]
-    },
-    {
-      "id": "sd-arch",
-      "intro": "The core principles of designing systems that handle massive traffic and data without failing.",
-      "cards": [
-        {
-          "title": "Vertical vs Horizontal Scaling",
-          "contentHtml": "<ul>\n        <li><b>Vertical Scaling (Scale Up):</b> Adding more power (CPU, RAM) to a single existing machine. \n          <br><i>Pros:</i> Extremely simple, no distributed system complexity. \n          <br><i>Cons:</i> Hard hardware limits, single point of failure (SPOF), requires downtime to upgrade.</li>\n        <li><b>Horizontal Scaling (Scale Out):</b> Adding more machines into your pool of resources.\n          <br><i>Pros:</i> Infinite scalability, fault tolerance, no hardware limits. \n          <br><i>Cons:</i> Data inconsistency risks, complex routing (Load Balancers needed), difficult state management.</li>\n      </ul>"
-        },
-        {
-          "title": "Load Balancing",
-          "contentHtml": "<p>A load balancer sits between clients and servers, distributing incoming traffic across multiple healthy servers.</p>\n      <ul>\n        <li><b>Algorithms:</b> Round Robin (sequential), Least Connections (send to server with fewest connections), IP Hash (ensures a specific user always hits the same server).</li>\n        <li><b>Layer 4 vs Layer 7:</b> L4 balances based strictly on IP and TCP ports (fast, dumb). L7 balances based on HTTP headers, URLs, and cookies (slower, smart).</li>\n        <li><b>Health Checks:</b> The LB actively pings servers. If a server dies, the LB stops sending traffic to it automatically.</li>\n      </ul>"
-        },
-        {
-          "title": "CAP Theorem",
-          "contentHtml": "<p>In a distributed data store, you can only mathematically guarantee exactly two of the following three traits:</p>\n      <ul>\n        <li><b>Consistency:</b> Every read receives the most recent write or an error.</li>\n        <li><b>Availability:</b> Every request receives a (non-error) response, without the guarantee that it contains the most recent write.</li>\n        <li><b>Partition Tolerance:</b> The system continues to operate despite an arbitrary number of messages being dropped/delayed by the network between nodes.</li>\n      </ul>\n      <p class=\"section-desc mt-2\"><i>Note: Because network partitions (P) are a physical reality of the internet and cannot be avoided, real-world systems must choose between AP (Availability) or CP (Consistency).</i></p>"
-        }
-      ]
-    },
     {
       "id": "fsd-core",
       "intro": "Frontend system design is the #1 topic that separates senior engineers from mid-level. These questions test your ability to architect entire applications.",
@@ -188,6 +130,42 @@
       ]
     },
     {
+      "id": "sd-arch",
+      "intro": "The core principles of designing systems that handle massive traffic and data without failing.",
+      "cards": [
+        {
+          "title": "Vertical vs Horizontal Scaling",
+          "contentHtml": "<ul>\n        <li><b>Vertical Scaling (Scale Up):</b> Adding more power (CPU, RAM) to a single existing machine. \n          <br><i>Pros:</i> Extremely simple, no distributed system complexity. \n          <br><i>Cons:</i> Hard hardware limits, single point of failure (SPOF), requires downtime to upgrade.</li>\n        <li><b>Horizontal Scaling (Scale Out):</b> Adding more machines into your pool of resources.\n          <br><i>Pros:</i> Infinite scalability, fault tolerance, no hardware limits. \n          <br><i>Cons:</i> Data inconsistency risks, complex routing (Load Balancers needed), difficult state management.</li>\n      </ul>"
+        },
+        {
+          "title": "Load Balancing",
+          "contentHtml": "<p>A load balancer sits between clients and servers, distributing incoming traffic across multiple healthy servers.</p>\n      <ul>\n        <li><b>Algorithms:</b> Round Robin (sequential), Least Connections (send to server with fewest connections), IP Hash (ensures a specific user always hits the same server).</li>\n        <li><b>Layer 4 vs Layer 7:</b> L4 balances based strictly on IP and TCP ports (fast, dumb). L7 balances based on HTTP headers, URLs, and cookies (slower, smart).</li>\n        <li><b>Health Checks:</b> The LB actively pings servers. If a server dies, the LB stops sending traffic to it automatically.</li>\n      </ul>"
+        },
+        {
+          "title": "CAP Theorem",
+          "contentHtml": "<p>In a distributed data store, you can only mathematically guarantee exactly two of the following three traits:</p>\n      <ul>\n        <li><b>Consistency:</b> Every read receives the most recent write or an error.</li>\n        <li><b>Availability:</b> Every request receives a (non-error) response, without the guarantee that it contains the most recent write.</li>\n        <li><b>Partition Tolerance:</b> The system continues to operate despite an arbitrary number of messages being dropped/delayed by the network between nodes.</li>\n      </ul>\n      <p class=\"section-desc mt-2\"><i>Note: Because network partitions (P) are a physical reality of the internet and cannot be avoided, real-world systems must choose between AP (Availability) or CP (Consistency).</i></p>"
+        }
+      ]
+    },
+    {
+      "id": "sd-data",
+      "intro": "Managing state when data becomes too large for a single machine.",
+      "cards": [
+        {
+          "title": "Relational (SQL) vs Non-Relational (NoSQL)",
+          "contentHtml": "<ul>\n        <li><b>SQL (PostgreSQL, MySQL):</b> Structured schemas, ACID compliance, complex joins. Perfect for highly structured, predictable data where consistency is critical (e.g., Financial transactions). Hard to horizontally scale.</li>\n        <li><b>NoSQL (MongoDB, DynamoDB, Cassandra):</b> Flexible schemas, eventual consistency, no complex joins. Designed specifically to be horizontally partitioned from day one. Perfect for massive volume, unstructured data, or rapid prototyping (e.g., Social media feeds, IoT sensor logs).</li>\n      </ul>"
+        },
+        {
+          "title": "Database Scaling Techniques",
+          "contentHtml": "<ul>\n        <li><b>Read Replicas:</b> One \"Master\" database handles all writes. Multiple \"Slave\" databases copy the master and handle all reads. Fixes read-heavy bottlenecks.</li>\n        <li><b>Sharding (Data Partitioning):</b> Splitting a single large database across multiple smaller databases based on a Shard Key (e.g., User ID). If `ID &lt; 1000` goes to DB_A, `ID &gt; 1000` goes to DB_B. Extremely fast, but makes cross-shard joins nearly impossible.</li>\n        <li><b>Indexing:</b> Creating a specific data structure (like a B-Tree) on a database column to allow O(log n) lookups instead of O(n) full table scans. Speeds up reads massively, but slows down writes (because the index must be updated on every write).</li>\n      </ul>"
+        },
+        {
+          "title": "Caching Strategies",
+          "contentHtml": "<p>Storing expensive computations or database queries in ultra-fast, in-memory stores like Redis or Memcached.</p>\n      <ul>\n        <li><b>Cache-Aside:</b> App queries Cache. If miss, app queries DB, then writes to Cache, then returns to user. Best generic strategy.</li>\n        <li><b>Write-Through:</b> App writes immediately to Cache AND DB at the same time. Cache is always perfectly consistent with DB. Slower writes.</li>\n        <li><b>Write-Back:</b> App writes ONLY to Cache and returns success immediately. Cache asynchronously syncs to the DB later. Insanely fast writes, but high risk of absolute data loss if the cache node crashes before syncing.</li>\n      </ul>"
+        }
+      ]
+    },
+    {
       "id": "fsd-examples",
       "intro": "Common system design interview questions with solution frameworks.",
       "cards": [
@@ -206,6 +184,28 @@
         {
           "title": "Design: Chat Application (Slack/Discord)",
           "contentHtml": "<h3>Key Challenges</h3>\n<p>Real-time messaging, channels/DMs, message history, typing indicators, file uploads, notifications.</p>\n<h3>Solution Architecture</h3>\n<p><strong>Transport:</strong> WebSocket (Socket.io or native WS) for real-time messages, typing indicators, presence. REST/Server Actions for: message history, file uploads, channel management.</p>\n<p><strong>Message List:</strong> Virtualized list (bottom-anchored). Load older messages on scroll up (reverse pagination). Optimistic send: show message immediately with 'pending' state.</p>\n<p><strong>State:</strong> TanStack Query for message history (cached per channel). Zustand for UI state (active channel, sidebar, compose). WebSocket events update TanStack Query cache directly.</p>\n<p><strong>Notifications:</strong> Service Worker + Push API for background notifications. Badge count via shared state. Permission request UX.</p>\n<p><strong>File Uploads:</strong> Presigned URLs to S3/R2. Client uploads directly (no server proxy). Progress bar with XMLHttpRequest or fetch + ReadableStream.</p>"
+        }
+      ]
+    },
+    {
+      "id": "sd-mastery",
+      "intro": "Mastering distributed systems, scalability patterns, and high-level architectural trade-offs for technical lead positions.",
+      "cards": [
+        {
+          "title": "Micro-Frontend Architectures",
+          "contentHtml": "<p>Scaling frontend development across large, decoupled teams.</p>\n    <div class=\"grid2\">\n      <div class=\"dp\">\n        <h3>Module Federation</h3>\n        <p>The industry standard for MFEs. Allows dynamic loading of code from other independently deployed applications at runtime, sharing dependencies to avoid bloat.</p>\n      </div>\n      <div class=\"dp\">\n        <h3>Islands Architecture</h3>\n        <p>Popularized by Astro. Sending static HTML with specific \"islands\" of interactivity (React/Vue/Angular) that hydrate independently. Massive LCP/INP wins.</p>\n      </div>\n    </div>\n    <pre><code><span class=\"c\">// Webpack Module Federation example</span>\n<span class=\"k\">new</span> <span class=\"f\\\">ModuleFederationPlugin</span>({\n  name: <span class=\"s\">'app1'</span>,\n  remotes: {\n    app2: <span class=\"s\">'app2@http://localhost:3002/remoteEntry.js'</span>,\n  },\n  shared: { react: { singleton: <span class=\"k\">true</span> }, <span class=\"s\">'react-dom'</span>: { singleton: <span class=\"k\">true</span> } },\n});</code></pre>"
+        },
+        {
+          "title": "Real-time & Event-Driven Systems",
+          "contentHtml": "<p>Using Event Sourcing and CQRS (Command Query Responsibility Segregation) for complex state management.</p>\n    <ul>\n      <li><b>Event Sourcing:</b> Storing the state of an application as a sequence of immutable events rather than just the current state. Enables infinite \\\"undo\\\" and historical auditing.</li>\n      <li><b>Change Data Capture (CDC):</b> Observing database logs to stream changes to downstream consumers (elastic search, caches, other services) in real-time.</li>\n      <li><b>WebSockets vs Server-Sent Events (SSE):</b> Use WebSockets for full-duplex (chat, games). Use SSE for one-way server-to-client updates (stock tickers, notifications) as it's more lightweight and has native auto-reconnect.</li>\n    </ul>"
+        },
+        {
+          "title": "Distribution & Availability",
+          "contentHtml": "<p>Modern architectures prioritize resilience and global distribution.</p>\n      <ul>\n        <li><b>CAP Theorem:</b> Consistency, Availability, Partition Tolerance. You can only guarantee two in a distributed system during a network partition.</li>\n        <li><b>PACELC Theorem:</b> An extension of CAP. If there's a partition (P), trade-off between availability (A) and consistency (C). Else (E), trade-off between latency (L) and consistency (C).</li>\n        <li><b>Global Replication:</b> Active-Active vs Active-Passive. Use <b>Conflict-free Replicated Data Types (CRDTs)</b> or <b>Last-Writer-Wins (LWW)</b> for conflict resolution.</li>\n      </ul>"
+        },
+        {
+          "title": "Advanced Scaling & Resilience",
+          "contentHtml": "<ul>\n        <li><b>Backpressure:</b> Mechanism to signal a producer that the consumer is overwhelmed. Prevents service crashes under load.</li>\n        <li><b>Circuit Breaker:</b> Prevents a service from attempting a failing operation, allowing it to recover instead of being hammered by retries.</li>\n        <li><b>Saga Pattern:</b> Managing data consistency across microservices in distributed transactions via a sequence of local transactions and compensating actions.</li>\n      </ul>"
         }
       ]
     },

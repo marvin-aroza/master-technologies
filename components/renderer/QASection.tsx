@@ -40,6 +40,7 @@ export function QASection({ items, accentColor }: QASectionProps) {
 
   return (
     <div className="qa-section" style={{ "--accent": accentColor } as React.CSSProperties}>
+      <h2 className="qa-section-heading">Interview Questions</h2>
       <div className="qa-filter-bar">
         {activeFilters.map((f) => (
           <button

@@ -4,34 +4,6 @@
   "subtitle": "Signals, state, SSR & 15 deep chapters",
   "tabs": [
     {
-      "id": "state-management",
-      "label": "State Management"
-    },
-    {
-      "id": "pwa-sw",
-      "label": "PWA & Service Workers"
-    },
-    {
-      "id": "micro-frontends",
-      "label": "Micro-Frontends"
-    },
-    {
-      "id": "material-cdk",
-      "label": "Angular Material & CDK"
-    },
-    {
-      "id": "i18n-l10n",
-      "label": "i18n & l10n"
-    },
-    {
-      "id": "build-security-a11y",
-      "label": "Build, Security & A11y"
-    },
-    {
-      "id": "angular-animations",
-      "label": "Animations"
-    },
-    {
       "id": "core",
       "label": "Core & Architecture"
     },
@@ -84,6 +56,34 @@
       "label": "SSR & Hydration"
     },
     {
+      "id": "state-management",
+      "label": "State Management"
+    },
+    {
+      "id": "material-cdk",
+      "label": "Angular Material & CDK"
+    },
+    {
+      "id": "angular-animations",
+      "label": "Animations"
+    },
+    {
+      "id": "i18n-l10n",
+      "label": "i18n & l10n"
+    },
+    {
+      "id": "build-security-a11y",
+      "label": "Build, Security & A11y"
+    },
+    {
+      "id": "pwa-sw",
+      "label": "PWA & Service Workers"
+    },
+    {
+      "id": "micro-frontends",
+      "label": "Micro-Frontends"
+    },
+    {
       "id": "v21",
       "label": "Angular 19+ (v21 Prep)"
     },
@@ -93,108 +93,6 @@
     }
   ],
   "sections": [
-    {
-      "id": "state-management",
-      "intro": "Managing complex state across Angular applications using NgRx, NGXS, and Signal Store.",
-      "cards": [
-        {
-          "title": "NgRx Store (Redux Pattern)",
-          "contentHtml": "<p>NgRx is the official state management library for Angular, implementing the Redux pattern with RxJS.</p>\n      <ul>\n        <li><b>Store</b>: Single source of truth. Immutable object tree.</li>\n        <li><b>Actions</b>: Unique events that express state changes.</li>\n        <li><b>Reducers</b>: Pure functions that map `(currentState, action) =&gt; newState`.</li>\n        <li><b>Selectors</b>: Pure functions to derive/query slice of state from the store.</li>\n        <li><b>Effects</b>: Side-effect model to isolate API calls and async logic from components.</li>\n      </ul>\n      <div class=\"analogy\">\n        Think of NgRx as a <b>Bank</b>. You can't change your balance directly in the database (Store). You have to fill out a deposit slip (Action), hand it to the teller (Reducer), who then calculates the new balance. If you need to verify an out-of-state check first, the manager (Effects) handles the delay before giving the deposit slip back to the teller.\n      </div>\n      <div class=\"code-block\">\n<pre><code>// 1. Action\nexport const loadUsers = createAction('[User List] Load Users');\nexport const loadUsersSuccess = createAction('[User List] Load Success', props&lt;{users: User[]}&gt;());\n\n// 2. Reducer\nexport const userReducer = createReducer(\n  initialState,\n  on(loadUsersSuccess, (state, { users }) =&gt; ({ ...state, users }))\n);\n\n// 3. Selector\nexport const selectAllUsers = createSelector(selectUserState, (state) =&gt; state.users);\n\n// 4. Effect (Service/API side-effects)\nloadUsers$ = createEffect(() =&gt; this.actions$.pipe(\n  ofType(loadUsers),\n  exhaustMap(() =&gt; this.userService.getAll().pipe(\n    map(users =&gt; loadUsersSuccess({ users })),\n    catchError(() =&gt; EMPTY)\n  ))\n));\n</code></pre>\n      </div>"
-        },
-        {
-          "title": "NgRx SignalStore (Modern State)",
-          "contentHtml": "<p>Introduced in Angular 17/18, `SignalStore` provides a reactive, functional state management approach built directly on Angular Signals, replacing RxJS for synchronous reactivity.</p>\n      <ul>\n        <li>Fully functional API (`signalStore()`).</li>\n        <li>No boilerplate (actions, reducers, selectors are merged into state features).</li>\n        <li>First-class TypeScript inference with `withState`, `withMethods`, `withComputed`.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>import { signalStore, withState, withComputed, withMethods } from '@ngrx/signals';\nimport { rxMethod } from '@ngrx/signals/rxjs-interop';\n\nexport const UserStore = signalStore(\n  { providedIn: 'root' },\n  withState({ users: [], loading: false }),\n  withComputed(({ users }) =&gt; ({\n    activeUsers: computed(() =&gt; users().filter(u =&gt; u.isActive))\n  })),\n  withMethods((store, userService = inject(UserService)) =&gt; ({\n    loadAll: rxMethod&lt;void&gt;(\n      pipe(\n        tap(() =&gt; patchState(store, { loading: true })),\n        switchMap(() =&gt; userService.getUsers().pipe(\n          tap((users) =&gt; patchState(store, { users, loading: false }))\n        ))\n      )\n    )\n  }))\n);\n\n// In Component:\n// store = inject(UserStore);\n// store.loadAll();\n// this.active = store.activeUsers(); // It's a signal!\n</code></pre>\n      </div>\n      <div class=\"tip\">\n        <b>Tip:</b> If you are starting an Angular v17+ project, immediately adopt <b>SignalStore</b> for local component state, and optionally use it for global state. It's much lighter than Redux.\n      </div>"
-        }
-      ]
-    },
-    {
-      "id": "pwa-sw",
-      "intro": "Turning Angular apps into installable, offline-capable Progressive Web Apps.",
-      "cards": [
-        {
-          "title": "@angular/pwa",
-          "contentHtml": "<p>Adding `ng add @angular/pwa` instantly configures your Angular app with a Web App Manifest and an optimized Service Worker (`ngsw-worker.js`).</p>\n      <ul>\n        <li><b>ngsw-config.json:</b> The configuration file controlling cache policies.</li>\n        <li><b>assetGroups:</b> Caches app shell resources (JS, CSS, initial HTML, icons). Can be `installMode: 'prefetch'` (download immediately) or `'lazy'` (download on demand).</li>\n        <li><b>dataGroups:</b> Caches API requests. Strategies include `performance` (cache-first, network-fallback) and `freshness` (network-first, cache-fallback with timeouts).</li>\n        <li><b>SwUpdate:</b> Angular service to communicate with the service worker. Checks for updates (`checkForUpdate()`) and tells the SW to activate new versions so the app can prompt the user to refresh.</li>\n        <li><b>SwPush:</b> Service for subscribing to and receiving Web Push Notifications payload data.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>// ngsw-config.json (Data Caching)\n\"dataGroups\": [{\n  \"name\": \"api-freshness\",\n  \"urls\": [\"/api/live-data/**\"],\n  \"cacheConfig\": {\n    \"strategy\": \"freshness\",\n    \"maxSize\": 100,\n    \"maxAge\": \"3d\",\n    \"timeout\": \"5s\" // If network takes &gt;5s, serve cached!\n  }\n}]\n</code></pre>\n      </div>"
-        }
-      ]
-    },
-    {
-      "id": "micro-frontends",
-      "intro": "Scaling applications across multiple independent teams and codebases.",
-      "cards": [
-        {
-          "title": "Module Federation (Webpack) / Native Federation (Vite/Esbuild)",
-          "contentHtml": "<p>Micro-frontends allow you to split a monolithic Angular app into smaller, independently deployable applications. These applications load each other's compiled code at runtime.</p>\n      <ul>\n        <li><b>Host Application (Shell):</b> The main app that boots up, handles global routing, and loads remote modules.</li>\n        <li><b>Remote Application:</b> A standalone application that exposes parts of itself (components or routes) to be consumed.</li>\n        <li><b>Shared Dependencies:</b> Federation allows you to declare dependencies (like `@angular/core` or RxJS) as singletons, so the browser doesn't download the Angular framework 5 times.</li>\n      </ul>\n      <p>Because Angular 17+ moved away from Webpack towards Esbuild/Vite, the standard tool has become <b>Native Federation</b>, which uses browser-native Import Maps rather than Webpack-specific logic.</p>\n      <div class=\"code-block\">\n<pre><code>// Host routing loading a remote Micro-Frontend via Native Federation\nexport const routes: Routes = [\n  {\n    path: 'flights',\n    loadChildren: () =&gt;\n      loadRemoteModule('flights', './Component')\n        .then(m =&gt; m.FlightsComponent)\n  }\n];\n</code></pre>\n      </div>"
-        },
-        {
-          "title": "Angular Elements (Web Components)",
-          "contentHtml": "<p>Angular Elements allows you to package an Angular component as a standard <b>Custom Element</b>. This is the ultimate \"agnostic\" micro-frontend strategy.</p>\n      <ul>\n        <li><b>Interoperability:</b> Can be used in React, Vue, or vanilla JS without the host knowing it's Angular.</li>\n        <li><b>Isolated Styles:</b> Uses Shadow DOM for style encapsulation.</li>\n        <li><b>Challenge:</b> The initial bundle size is larger because it must include the Angular runtime inside each element (unless using shared vendors).</li>\n      </ul>"
-        },
-        {
-          "title": "Shared State in Micro-Frontends",
-          "contentHtml": "<p>Sharing state between independent apps is the biggest challenge in MFE architecture.</p>\n      <ul>\n        <li><b>Browser Events:</b> Using `Window.dispatchEvent` for loose coupling.</li>\n        <li><b>Shared Libraries:</b> A shared NgRx/SignalStore library that both apps import (must be configured as a singleton dependency).</li>\n        <li><b>Local Storage / Cookies:</b> For persistent shared data like auth tokens.</li>\n      </ul>"
-        }
-      ]
-    },
-    {
-      "id": "material-cdk",
-      "intro": "Building accessible, high-quality UI components leveraging the Component Dev Kit.",
-      "cards": [
-        {
-          "title": "Component Dev Kit (CDK)",
-          "contentHtml": "<p>The CDK provides behavior primitives without any visual styling. It's the foundation of Angular Material but can be used to build your own custom design systems.</p>\n      <ul>\n        <li><b>Overlay:</b> Used for rendering floating panels safely (dialogs, tooltips, menus).</li>\n        <li><b>Portal:</b> Dynamically render templates or components anywhere in the DOM.</li>\n        <li><b>A11y:</b> Accessibility utilities like `FocusTrap`, `LiveAnnouncer`, and `ListKeyManager`.</li>\n        <li><b>Drag and Drop:</b> Declarative drag/drop interfaces with custom preview and drop zones.</li>\n        <li><b>Scrolling:</b> Virtual scrolling with `cdk-virtual-scroll-viewport` to render large lists efficiently.</li>\n        <li><b>Layout:</b> `BreakpointObserver` to evaluate media queries with RxJS.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>// Example: Virtual Scrolling for 100k items\nimport { ScrollingModule } from '@angular/cdk/scrolling';\n\n@Component({\n  standalone: true,\n  imports: [ScrollingModule],\n  template: `\n    &lt;cdk-virtual-scroll-viewport itemSize=\"50\" class=\"viewport\"&gt;\n      &lt;div *cdkVirtualFor=\"let item of items\" class=\"item\"&gt;\n        {{item}}\n      &lt;/div&gt;\n    &lt;/cdk-virtual-scroll-viewport&gt;\n  `,\n  styles: ['.viewport { height: 400px; width: 100%; }']\n})\nexport class VirtualList {\n  items = Array.from({length: 100000}).map((_, i) =&gt; `Item #${i}`);\n}\n</code></pre>\n      </div>"
-        },
-        {
-          "title": "Angular Material v17+ (M3)",
-          "contentHtml": "<p>Angular Material implements Google's <b>Material Design 3 (M3)</b> specification. It provides fully accessible and themeable components.</p>\n      <ul>\n        <li><b>Design Tokens:</b> M3 relies heavily on CSS variables (custom properties), allowing for dynamic theming at runtime without rebuilding Sass.</li>\n        <li><b>Typography &amp; Density:</b> Fully customizable scales that automatically push down into all components.</li>\n        <li><b>Key Components:</b> `MatTable` (complex data grids), `MatDialog` (modals via Overlay), `MatFormField` (advanced input wrapper with error states).</li>\n      </ul>\n      <div class=\"tip\">\n        <b>Tip:</b> Never use `::ng-deep` to style Material components. Always use the provided CSS variables or design tokens to override styles safely.\n      </div>"
-        }
-      ]
-    },
-    {
-      "id": "i18n-l10n",
-      "intro": "Internationalization and localization strategies in Angular.",
-      "cards": [
-        {
-          "title": "@angular/localize (Built-in i18n)",
-          "contentHtml": "<p>Angular's native approach operates at compile-time (AOT). The compiler generates a completely separate application bundle for each locale. This provides the best performance because there's no runtime translation parsing.</p>\n      <ul>\n        <li><b>i18n attribute:</b> Mark HTML elements for translation: `&lt;h1 i18n=\"@@homeTitle\"&gt;Hello`.</li>\n        <li><b>$localize:</b> Translate strings in TypeScript: `const title = $localize\\`:@@homeTitle:Hello\\`;`.</li>\n        <li><b>ng extract-i18n:</b> CLI command that generates an XLIFF/XMB file with all extracted messages.</li>\n        <li><b>ICU Expressions:</b> Handle pluralization (`{msgCount, plural, =0 {No msgs} one {1 msg} other {# msgs}}`) and alternate selections (`{gender, select, male {He} female {She} other {They}}`).</li>\n      </ul>\n      <div class=\"analogy\">\n        Think of AOT i18n like <b>publishing a translated book</b>. You print a completely different physical book for English and French. The reader doesn't waste time translating while reading; they just pick up the French book.\n      </div>"
-        },
-        {
-          "title": "Runtime Translation (ngx-translate / Transloco)",
-          "contentHtml": "<p>If you cannot use compile-time translation (e.g., you need users to switch languages instantly without a page reload, or translations come from a database API), you must use a runtime library like <b>Transloco</b> or <b>ngx-translate</b>.</p>\n      <ul>\n        <li>Loads translations asynchronously (JSON files).</li>\n        <li>Uses Pipes to display data: `{{ 'HOME.TITLE' | transloco }}`.</li>\n        <li>Slightly worse performance than AOT because Angular has to watch bindings and evaluate them at runtime.</li>\n      </ul>"
-        }
-      ]
-    },
-    {
-      "id": "build-security-a11y",
-      "intro": "Advanced compilation toolchain, security mechanisms, and accessibility standards.",
-      "cards": [
-        {
-          "title": "Esbuild & Application Builder (v17+)",
-          "contentHtml": "<p>Modern Angular uses the `@angular-devkit/build-angular:application` builder, driven by <b>Esbuild</b> and <b>Vite</b>.</p>\n      <ul>\n        <li><b>Esbuild:</b> Replaces Webpack for JS/TS compilation and bundling. Written in Go, it is 2x to 4x faster during builds.</li>\n        <li><b>Vite:</b> Powers the local dev server (`ng serve`), providing rapid HMR (Hot Module Replacement) and optimized dev-time caching.</li>\n        <li><b>Bundle Optimization:</b> Angular ensures aggressive <b>Tree-Shaking</b> (removing unused code). Standalone components drastically improve tree-shaking by removing the \"heavy\" `NgModule` closures.</li>\n      </ul>"
-        },
-        {
-          "title": "Security (DomSanitizer & CSRF)",
-          "contentHtml": "<p>Angular is secure by default, treating all injected values as untrusted.</p>\n      <ul>\n        <li><b>Contextual Escaping:</b> Angular recognizes the context of a binding (HTML, Style, Resource URL) and automatically escapes or cleanses the string to prevent XSS (Cross-Site Scripting).</li>\n        <li><b>DomSanitizer:</b> If you mathematically know a string is safe (e.g., an iframe URL you control), you can bypass security using `sanitizer.bypassSecurityTrustHtml(value)`. <i>Use with extreme caution.</i></li>\n        <li><b>CSRF Protection:</b> `HttpClient` has built-in XSRF (CSRF) protection. If the server sends an `XSRF-TOKEN` cookie, Angular automatically attaches it as an `X-XSRF-TOKEN` HTTP header to all mutation requests (POST/PUT/DELETE).</li>\n      </ul>"
-        },
-        {
-          "title": "Accessibility (A11y)",
-          "contentHtml": "<p>Building for all users requires using ARIA attributes and focus management correctly.</p>\n      <ul>\n        <li><b>ARIA in Templates:</b> Use attribute bindings for ARIA state `[attr.aria-expanded]=\"isOpen\"`. Warning: you must use the `attr.` prefix for ARIA attributes because they are HTML attributes, not DOM properties.</li>\n        <li><b>CDK LiveAnnouncer:</b> A service to announce messages for screen-reader users (perfect for dynamic updates like \"Item saved\" or \"Notification received\").</li>\n        <li><b>CDK FocusTrap:</b> Crucial for modals. Prevents keyboard navigation (Tab key) from leaving the modal while it is open.</li>\n      </ul>"
-        }
-      ]
-    },
-    {
-      "id": "angular-animations",
-      "intro": "Building rich, performant UI motion using Angular's DSL on top of the Web Animations API.",
-      "cards": [
-        {
-          "title": "Animation DSL API",
-          "contentHtml": "<p>Angular provides a domain-specific language (DSL) for defining animations inside component metadata. It uses `BrowserAnimationsModule` behind the scenes.</p>\n      <ul>\n        <li><b>trigger():</b> Defines an animation name that binds to an element via `[@myTrigger]`.</li>\n        <li><b>state():</b> Defines specific styling points (e.g., \"open\", \"closed\").</li>\n        <li><b>transition():</b> Defines how to animate between states (e.g., `'open =&gt; closed'`). Special states include `void` (not attached to DOM) and `*` (any state). Fast syntax: `':enter'` (`void =&gt; *`) and `':leave'` (`* =&gt; void`).</li>\n        <li><b>animate():</b> Specifies duration, delay, and easing (e.g., `animate('200ms ease-out')`).</li>\n        <li><b>style():</b> Specifies the CSS properties to animate.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>import { trigger, state, style, animate, transition } from '@angular/animations';\n\n@Component({\n  template: `&lt;div [@openClose]=\"isOpen ? 'open' : 'closed'\"&gt;Toggle Me&lt;/div&gt;`,\n  animations: [\n    trigger('openClose', [\n      state('open', style({ height: '200px', opacity: 1, backgroundColor: 'yellow' })),\n      state('closed', style({ height: '100px', opacity: 0.5, backgroundColor: 'green' })),\n      transition('open =&gt; closed', [ animate('1s') ]),\n      transition('closed =&gt; open', [ animate('0.5s') ]),\n    ]),\n  ]\n})\nexport class AnimatedComponent { isOpen = true; }\n</code></pre>\n      </div>"
-        },
-        {
-          "title": "Advanced Animation Control",
-          "contentHtml": "<p>For more complex orchestrations, Angular animations provide grouping and querying:</p>\n      <ul>\n        <li><b>query():</b> Finds inner elements to animate them inside the parent's transition.</li>\n        <li><b>stagger():</b> Delays the start time of multiple queried items (great for animating lists).</li>\n        <li><b>group():</b> Runs multiple animation steps in parallel.</li>\n        <li><b>sequence():</b> Runs steps sequentially (default behavior of arrays).</li>\n        <li><b>animateChild():</b> Tells Angular to execute child component animations, which would otherwise be blocked by the parent animation.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>trigger('listAnimation', [\n  transition('* =&gt; *', [\n    query(':enter', [\n      style({ opacity: 0, transform: 'translateY(-15px)' }),\n      stagger('50ms', [\n        animate('300ms ease-out', style({ opacity: 1, transform: 'none' }))\n      ])\n    ], { optional: true })\n  ])\n])\n</code></pre>\n      </div>"
-        }
-      ]
-    },
     {
       "id": "core",
       "intro": "The foundation everything else builds on. Understand these perfectly before touching anything else.",
@@ -478,6 +376,108 @@
         {
           "title": "Design Patterns for Large Apps",
           "contentHtml": "<p><strong>Smart/Dumb Components</strong> — Separate data from presentation. <strong>Facade Pattern</strong> — A service sits between components and complex state, simplifying the interface. <strong>Repository Pattern</strong> — Abstract data access behind interfaces for testability. <strong>Adapter Pattern</strong> — Transform API responses into internal models at the service layer. <strong>Strategy Pattern</strong> — Use InjectionTokens to swap implementations at runtime.</p>"
+        }
+      ]
+    },
+    {
+      "id": "state-management",
+      "intro": "Managing complex state across Angular applications using NgRx, NGXS, and Signal Store.",
+      "cards": [
+        {
+          "title": "NgRx Store (Redux Pattern)",
+          "contentHtml": "<p>NgRx is the official state management library for Angular, implementing the Redux pattern with RxJS.</p>\n      <ul>\n        <li><b>Store</b>: Single source of truth. Immutable object tree.</li>\n        <li><b>Actions</b>: Unique events that express state changes.</li>\n        <li><b>Reducers</b>: Pure functions that map `(currentState, action) =&gt; newState`.</li>\n        <li><b>Selectors</b>: Pure functions to derive/query slice of state from the store.</li>\n        <li><b>Effects</b>: Side-effect model to isolate API calls and async logic from components.</li>\n      </ul>\n      <div class=\"analogy\">\n        Think of NgRx as a <b>Bank</b>. You can't change your balance directly in the database (Store). You have to fill out a deposit slip (Action), hand it to the teller (Reducer), who then calculates the new balance. If you need to verify an out-of-state check first, the manager (Effects) handles the delay before giving the deposit slip back to the teller.\n      </div>\n      <div class=\"code-block\">\n<pre><code>// 1. Action\nexport const loadUsers = createAction('[User List] Load Users');\nexport const loadUsersSuccess = createAction('[User List] Load Success', props&lt;{users: User[]}&gt;());\n\n// 2. Reducer\nexport const userReducer = createReducer(\n  initialState,\n  on(loadUsersSuccess, (state, { users }) =&gt; ({ ...state, users }))\n);\n\n// 3. Selector\nexport const selectAllUsers = createSelector(selectUserState, (state) =&gt; state.users);\n\n// 4. Effect (Service/API side-effects)\nloadUsers$ = createEffect(() =&gt; this.actions$.pipe(\n  ofType(loadUsers),\n  exhaustMap(() =&gt; this.userService.getAll().pipe(\n    map(users =&gt; loadUsersSuccess({ users })),\n    catchError(() =&gt; EMPTY)\n  ))\n));\n</code></pre>\n      </div>"
+        },
+        {
+          "title": "NgRx SignalStore (Modern State)",
+          "contentHtml": "<p>Introduced in Angular 17/18, `SignalStore` provides a reactive, functional state management approach built directly on Angular Signals, replacing RxJS for synchronous reactivity.</p>\n      <ul>\n        <li>Fully functional API (`signalStore()`).</li>\n        <li>No boilerplate (actions, reducers, selectors are merged into state features).</li>\n        <li>First-class TypeScript inference with `withState`, `withMethods`, `withComputed`.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>import { signalStore, withState, withComputed, withMethods } from '@ngrx/signals';\nimport { rxMethod } from '@ngrx/signals/rxjs-interop';\n\nexport const UserStore = signalStore(\n  { providedIn: 'root' },\n  withState({ users: [], loading: false }),\n  withComputed(({ users }) =&gt; ({\n    activeUsers: computed(() =&gt; users().filter(u =&gt; u.isActive))\n  })),\n  withMethods((store, userService = inject(UserService)) =&gt; ({\n    loadAll: rxMethod&lt;void&gt;(\n      pipe(\n        tap(() =&gt; patchState(store, { loading: true })),\n        switchMap(() =&gt; userService.getUsers().pipe(\n          tap((users) =&gt; patchState(store, { users, loading: false }))\n        ))\n      )\n    )\n  }))\n);\n\n// In Component:\n// store = inject(UserStore);\n// store.loadAll();\n// this.active = store.activeUsers(); // It's a signal!\n</code></pre>\n      </div>\n      <div class=\"tip\">\n        <b>Tip:</b> If you are starting an Angular v17+ project, immediately adopt <b>SignalStore</b> for local component state, and optionally use it for global state. It's much lighter than Redux.\n      </div>"
+        }
+      ]
+    },
+    {
+      "id": "material-cdk",
+      "intro": "Building accessible, high-quality UI components leveraging the Component Dev Kit.",
+      "cards": [
+        {
+          "title": "Component Dev Kit (CDK)",
+          "contentHtml": "<p>The CDK provides behavior primitives without any visual styling. It's the foundation of Angular Material but can be used to build your own custom design systems.</p>\n      <ul>\n        <li><b>Overlay:</b> Used for rendering floating panels safely (dialogs, tooltips, menus).</li>\n        <li><b>Portal:</b> Dynamically render templates or components anywhere in the DOM.</li>\n        <li><b>A11y:</b> Accessibility utilities like `FocusTrap`, `LiveAnnouncer`, and `ListKeyManager`.</li>\n        <li><b>Drag and Drop:</b> Declarative drag/drop interfaces with custom preview and drop zones.</li>\n        <li><b>Scrolling:</b> Virtual scrolling with `cdk-virtual-scroll-viewport` to render large lists efficiently.</li>\n        <li><b>Layout:</b> `BreakpointObserver` to evaluate media queries with RxJS.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>// Example: Virtual Scrolling for 100k items\nimport { ScrollingModule } from '@angular/cdk/scrolling';\n\n@Component({\n  standalone: true,\n  imports: [ScrollingModule],\n  template: `\n    &lt;cdk-virtual-scroll-viewport itemSize=\"50\" class=\"viewport\"&gt;\n      &lt;div *cdkVirtualFor=\"let item of items\" class=\"item\"&gt;\n        {{item}}\n      &lt;/div&gt;\n    &lt;/cdk-virtual-scroll-viewport&gt;\n  `,\n  styles: ['.viewport { height: 400px; width: 100%; }']\n})\nexport class VirtualList {\n  items = Array.from({length: 100000}).map((_, i) =&gt; `Item #${i}`);\n}\n</code></pre>\n      </div>"
+        },
+        {
+          "title": "Angular Material v17+ (M3)",
+          "contentHtml": "<p>Angular Material implements Google's <b>Material Design 3 (M3)</b> specification. It provides fully accessible and themeable components.</p>\n      <ul>\n        <li><b>Design Tokens:</b> M3 relies heavily on CSS variables (custom properties), allowing for dynamic theming at runtime without rebuilding Sass.</li>\n        <li><b>Typography &amp; Density:</b> Fully customizable scales that automatically push down into all components.</li>\n        <li><b>Key Components:</b> `MatTable` (complex data grids), `MatDialog` (modals via Overlay), `MatFormField` (advanced input wrapper with error states).</li>\n      </ul>\n      <div class=\"tip\">\n        <b>Tip:</b> Never use `::ng-deep` to style Material components. Always use the provided CSS variables or design tokens to override styles safely.\n      </div>"
+        }
+      ]
+    },
+    {
+      "id": "angular-animations",
+      "intro": "Building rich, performant UI motion using Angular's DSL on top of the Web Animations API.",
+      "cards": [
+        {
+          "title": "Animation DSL API",
+          "contentHtml": "<p>Angular provides a domain-specific language (DSL) for defining animations inside component metadata. It uses `BrowserAnimationsModule` behind the scenes.</p>\n      <ul>\n        <li><b>trigger():</b> Defines an animation name that binds to an element via `[@myTrigger]`.</li>\n        <li><b>state():</b> Defines specific styling points (e.g., \"open\", \"closed\").</li>\n        <li><b>transition():</b> Defines how to animate between states (e.g., `'open =&gt; closed'`). Special states include `void` (not attached to DOM) and `*` (any state). Fast syntax: `':enter'` (`void =&gt; *`) and `':leave'` (`* =&gt; void`).</li>\n        <li><b>animate():</b> Specifies duration, delay, and easing (e.g., `animate('200ms ease-out')`).</li>\n        <li><b>style():</b> Specifies the CSS properties to animate.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>import { trigger, state, style, animate, transition } from '@angular/animations';\n\n@Component({\n  template: `&lt;div [@openClose]=\"isOpen ? 'open' : 'closed'\"&gt;Toggle Me&lt;/div&gt;`,\n  animations: [\n    trigger('openClose', [\n      state('open', style({ height: '200px', opacity: 1, backgroundColor: 'yellow' })),\n      state('closed', style({ height: '100px', opacity: 0.5, backgroundColor: 'green' })),\n      transition('open =&gt; closed', [ animate('1s') ]),\n      transition('closed =&gt; open', [ animate('0.5s') ]),\n    ]),\n  ]\n})\nexport class AnimatedComponent { isOpen = true; }\n</code></pre>\n      </div>"
+        },
+        {
+          "title": "Advanced Animation Control",
+          "contentHtml": "<p>For more complex orchestrations, Angular animations provide grouping and querying:</p>\n      <ul>\n        <li><b>query():</b> Finds inner elements to animate them inside the parent's transition.</li>\n        <li><b>stagger():</b> Delays the start time of multiple queried items (great for animating lists).</li>\n        <li><b>group():</b> Runs multiple animation steps in parallel.</li>\n        <li><b>sequence():</b> Runs steps sequentially (default behavior of arrays).</li>\n        <li><b>animateChild():</b> Tells Angular to execute child component animations, which would otherwise be blocked by the parent animation.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>trigger('listAnimation', [\n  transition('* =&gt; *', [\n    query(':enter', [\n      style({ opacity: 0, transform: 'translateY(-15px)' }),\n      stagger('50ms', [\n        animate('300ms ease-out', style({ opacity: 1, transform: 'none' }))\n      ])\n    ], { optional: true })\n  ])\n])\n</code></pre>\n      </div>"
+        }
+      ]
+    },
+    {
+      "id": "i18n-l10n",
+      "intro": "Internationalization and localization strategies in Angular.",
+      "cards": [
+        {
+          "title": "@angular/localize (Built-in i18n)",
+          "contentHtml": "<p>Angular's native approach operates at compile-time (AOT). The compiler generates a completely separate application bundle for each locale. This provides the best performance because there's no runtime translation parsing.</p>\n      <ul>\n        <li><b>i18n attribute:</b> Mark HTML elements for translation: `&lt;h1 i18n=\"@@homeTitle\"&gt;Hello`.</li>\n        <li><b>$localize:</b> Translate strings in TypeScript: `const title = $localize\\`:@@homeTitle:Hello\\`;`.</li>\n        <li><b>ng extract-i18n:</b> CLI command that generates an XLIFF/XMB file with all extracted messages.</li>\n        <li><b>ICU Expressions:</b> Handle pluralization (`{msgCount, plural, =0 {No msgs} one {1 msg} other {# msgs}}`) and alternate selections (`{gender, select, male {He} female {She} other {They}}`).</li>\n      </ul>\n      <div class=\"analogy\">\n        Think of AOT i18n like <b>publishing a translated book</b>. You print a completely different physical book for English and French. The reader doesn't waste time translating while reading; they just pick up the French book.\n      </div>"
+        },
+        {
+          "title": "Runtime Translation (ngx-translate / Transloco)",
+          "contentHtml": "<p>If you cannot use compile-time translation (e.g., you need users to switch languages instantly without a page reload, or translations come from a database API), you must use a runtime library like <b>Transloco</b> or <b>ngx-translate</b>.</p>\n      <ul>\n        <li>Loads translations asynchronously (JSON files).</li>\n        <li>Uses Pipes to display data: `{{ 'HOME.TITLE' | transloco }}`.</li>\n        <li>Slightly worse performance than AOT because Angular has to watch bindings and evaluate them at runtime.</li>\n      </ul>"
+        }
+      ]
+    },
+    {
+      "id": "build-security-a11y",
+      "intro": "Advanced compilation toolchain, security mechanisms, and accessibility standards.",
+      "cards": [
+        {
+          "title": "Esbuild & Application Builder (v17+)",
+          "contentHtml": "<p>Modern Angular uses the `@angular-devkit/build-angular:application` builder, driven by <b>Esbuild</b> and <b>Vite</b>.</p>\n      <ul>\n        <li><b>Esbuild:</b> Replaces Webpack for JS/TS compilation and bundling. Written in Go, it is 2x to 4x faster during builds.</li>\n        <li><b>Vite:</b> Powers the local dev server (`ng serve`), providing rapid HMR (Hot Module Replacement) and optimized dev-time caching.</li>\n        <li><b>Bundle Optimization:</b> Angular ensures aggressive <b>Tree-Shaking</b> (removing unused code). Standalone components drastically improve tree-shaking by removing the \"heavy\" `NgModule` closures.</li>\n      </ul>"
+        },
+        {
+          "title": "Security (DomSanitizer & CSRF)",
+          "contentHtml": "<p>Angular is secure by default, treating all injected values as untrusted.</p>\n      <ul>\n        <li><b>Contextual Escaping:</b> Angular recognizes the context of a binding (HTML, Style, Resource URL) and automatically escapes or cleanses the string to prevent XSS (Cross-Site Scripting).</li>\n        <li><b>DomSanitizer:</b> If you mathematically know a string is safe (e.g., an iframe URL you control), you can bypass security using `sanitizer.bypassSecurityTrustHtml(value)`. <i>Use with extreme caution.</i></li>\n        <li><b>CSRF Protection:</b> `HttpClient` has built-in XSRF (CSRF) protection. If the server sends an `XSRF-TOKEN` cookie, Angular automatically attaches it as an `X-XSRF-TOKEN` HTTP header to all mutation requests (POST/PUT/DELETE).</li>\n      </ul>"
+        },
+        {
+          "title": "Accessibility (A11y)",
+          "contentHtml": "<p>Building for all users requires using ARIA attributes and focus management correctly.</p>\n      <ul>\n        <li><b>ARIA in Templates:</b> Use attribute bindings for ARIA state `[attr.aria-expanded]=\"isOpen\"`. Warning: you must use the `attr.` prefix for ARIA attributes because they are HTML attributes, not DOM properties.</li>\n        <li><b>CDK LiveAnnouncer:</b> A service to announce messages for screen-reader users (perfect for dynamic updates like \"Item saved\" or \"Notification received\").</li>\n        <li><b>CDK FocusTrap:</b> Crucial for modals. Prevents keyboard navigation (Tab key) from leaving the modal while it is open.</li>\n      </ul>"
+        }
+      ]
+    },
+    {
+      "id": "pwa-sw",
+      "intro": "Turning Angular apps into installable, offline-capable Progressive Web Apps.",
+      "cards": [
+        {
+          "title": "@angular/pwa",
+          "contentHtml": "<p>Adding `ng add @angular/pwa` instantly configures your Angular app with a Web App Manifest and an optimized Service Worker (`ngsw-worker.js`).</p>\n      <ul>\n        <li><b>ngsw-config.json:</b> The configuration file controlling cache policies.</li>\n        <li><b>assetGroups:</b> Caches app shell resources (JS, CSS, initial HTML, icons). Can be `installMode: 'prefetch'` (download immediately) or `'lazy'` (download on demand).</li>\n        <li><b>dataGroups:</b> Caches API requests. Strategies include `performance` (cache-first, network-fallback) and `freshness` (network-first, cache-fallback with timeouts).</li>\n        <li><b>SwUpdate:</b> Angular service to communicate with the service worker. Checks for updates (`checkForUpdate()`) and tells the SW to activate new versions so the app can prompt the user to refresh.</li>\n        <li><b>SwPush:</b> Service for subscribing to and receiving Web Push Notifications payload data.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>// ngsw-config.json (Data Caching)\n\"dataGroups\": [{\n  \"name\": \"api-freshness\",\n  \"urls\": [\"/api/live-data/**\"],\n  \"cacheConfig\": {\n    \"strategy\": \"freshness\",\n    \"maxSize\": 100,\n    \"maxAge\": \"3d\",\n    \"timeout\": \"5s\" // If network takes &gt;5s, serve cached!\n  }\n}]\n</code></pre>\n      </div>"
+        }
+      ]
+    },
+    {
+      "id": "micro-frontends",
+      "intro": "Scaling applications across multiple independent teams and codebases.",
+      "cards": [
+        {
+          "title": "Module Federation (Webpack) / Native Federation (Vite/Esbuild)",
+          "contentHtml": "<p>Micro-frontends allow you to split a monolithic Angular app into smaller, independently deployable applications. These applications load each other's compiled code at runtime.</p>\n      <ul>\n        <li><b>Host Application (Shell):</b> The main app that boots up, handles global routing, and loads remote modules.</li>\n        <li><b>Remote Application:</b> A standalone application that exposes parts of itself (components or routes) to be consumed.</li>\n        <li><b>Shared Dependencies:</b> Federation allows you to declare dependencies (like `@angular/core` or RxJS) as singletons, so the browser doesn't download the Angular framework 5 times.</li>\n      </ul>\n      <p>Because Angular 17+ moved away from Webpack towards Esbuild/Vite, the standard tool has become <b>Native Federation</b>, which uses browser-native Import Maps rather than Webpack-specific logic.</p>\n      <div class=\"code-block\">\n<pre><code>// Host routing loading a remote Micro-Frontend via Native Federation\nexport const routes: Routes = [\n  {\n    path: 'flights',\n    loadChildren: () =&gt;\n      loadRemoteModule('flights', './Component')\n        .then(m =&gt; m.FlightsComponent)\n  }\n];\n</code></pre>\n      </div>"
+        },
+        {
+          "title": "Angular Elements (Web Components)",
+          "contentHtml": "<p>Angular Elements allows you to package an Angular component as a standard <b>Custom Element</b>. This is the ultimate \"agnostic\" micro-frontend strategy.</p>\n      <ul>\n        <li><b>Interoperability:</b> Can be used in React, Vue, or vanilla JS without the host knowing it's Angular.</li>\n        <li><b>Isolated Styles:</b> Uses Shadow DOM for style encapsulation.</li>\n        <li><b>Challenge:</b> The initial bundle size is larger because it must include the Angular runtime inside each element (unless using shared vendors).</li>\n      </ul>"
+        },
+        {
+          "title": "Shared State in Micro-Frontends",
+          "contentHtml": "<p>Sharing state between independent apps is the biggest challenge in MFE architecture.</p>\n      <ul>\n        <li><b>Browser Events:</b> Using `Window.dispatchEvent` for loose coupling.</li>\n        <li><b>Shared Libraries:</b> A shared NgRx/SignalStore library that both apps import (must be configured as a singleton dependency).</li>\n        <li><b>Local Storage / Cookies:</b> For persistent shared data like auth tokens.</li>\n      </ul>"
         }
       ]
     },

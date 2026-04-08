@@ -28,15 +28,19 @@ export function QAItem({ item }: QAItemProps) {
         <span className={`qa-level-badge level-${item.level}`}>{label}</span>
         <span className="qa-question">{item.question}</span>
         <span className="qa-toggle" aria-hidden>
-          {open ? "−" : "+"}
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 5L7 10L12 5" stroke="currentColor" strokeWidth="1.8"
+              strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </span>
       </button>
-      {open && (
+      {/* Always rendered — CSS grid animates height */}
+      <div className="qa-answer-wrap">
         <div
           className="qa-answer prose"
           dangerouslySetInnerHTML={{ __html: item.answerHtml }}
         />
-      )}
+      </div>
     </div>
   );
 }

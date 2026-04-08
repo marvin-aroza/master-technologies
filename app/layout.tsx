@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "@/components/renderer/renderer.css";
-import { Sidebar } from "@/components/Sidebar";
+import { TopNav } from "@/components/TopNav";
 
 export const metadata: Metadata = {
   title: "Web Mastery Encyclopedia",
@@ -17,10 +17,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <div className="app-shell">
-          <Sidebar />
-          <main className="main-content">{children}</main>
-        </div>
+        <TopNav />
+        <main className="main-content">{children}</main>
       </body>
     </html>
   );
