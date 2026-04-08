@@ -88,6 +88,10 @@
       "label": "Angular 19+ (v21 Prep)"
     },
     {
+      "id": "cs",
+      "label": "Interview Cheat Sheet (Fast Recall)"
+    },
+    {
       "id": "iq",
       "label": "Interview Q&A (195)"
     }
@@ -106,8 +110,8 @@
           "contentHtml": "<p>Angular apps are built from these core concepts, in order of importance:</p>\n<h3>1. Components</h3>\n<p>A TypeScript class + HTML template + optional CSS. The <code>@Component()</code> decorator tells Angular what selector to use, what template to render, and what styles to apply. Components form a <strong>tree</strong> — like the DOM itself.</p>\n\n<h3>2. Templates</h3>\n<p>HTML enhanced with Angular syntax: interpolation <code>{{ }}</code>, property binding <code>[ ]</code>, event binding <code>( )</code>, two-way binding <code>[( )]</code>, structural directives, and the new control flow (<code>@if</code>, <code>@for</code>, <code>@switch</code>).</p>\n\n<h3>3. Services &amp; DI</h3>\n<p>Services are classes decorated with <code>@Injectable()</code>. They hold reusable logic (API calls, state, business rules). Angular's DI system creates and provides them automatically.</p>\n\n<h3>4. Modules (Legacy) → Standalone</h3>\n<p><code>NgModule</code> was the original grouping mechanism. Since Angular 14, <strong>standalone components</strong> are the default. They declare their own imports and don't need a module. New projects should be 100% standalone.</p>\n\n<h3>5. Directives</h3>\n<p>Classes that modify DOM elements. Three types: <strong>Component directives</strong> (components ARE directives with templates), <strong>Structural directives</strong> (add/remove DOM: <code>*ngIf</code>, <code>*ngFor</code>), <strong>Attribute directives</strong> (change behavior: <code>ngClass</code>, <code>ngStyle</code>).</p>\n\n<h3>6. Pipes</h3>\n<p>Transform display values in templates. Built-in: <code>date</code>, <code>currency</code>, <code>percent</code>, <code>uppercase</code>, <code>lowercase</code>, <code>json</code>, <code>async</code>, <code>slice</code>, <code>keyvalue</code>, <code>titlecase</code>.</p>"
         },
         {
-          "title": "How Angular Bootstraps",
-          "contentHtml": "<pre><code><span class=\"cm\">// main.ts — the entry point</span>\n<span class=\"kw\">import</span> { bootstrapApplication } <span class=\"kw\">from</span> <span class=\"st\">'@angular/platform-browser'</span>;\n<span class=\"kw\">import</span> { AppComponent } <span class=\"kw\">from</span> <span class=\"st\">'./app/app.component'</span>;\n<span class=\"kw\">import</span> { appConfig } <span class=\"kw\">from</span> <span class=\"st\">'./app/app.config'</span>;\n\n<span class=\"fn\">bootstrapApplication</span>(AppComponent, appConfig)\n  .catch(err =&gt; console.error(err));</code></pre>\n\n<pre><code><span class=\"cm\">// app.config.ts — global providers</span>\n<span class=\"kw\">export const</span> appConfig: ApplicationConfig = {\n  providers: [\n    <span class=\"fn\">provideRouter</span>(routes, <span class=\"fn\">withComponentInputBinding</span>()),\n    <span class=\"fn\">provideHttpClient</span>(<span class=\"fn\">withInterceptors</span>([authInterceptor])),\n    <span class=\"fn\">provideAnimationsAsync</span>(),\n  ]\n};</code></pre>\n<div class=\"deep\">When Angular bootstraps: <strong>1)</strong> It reads <code>main.ts</code> and calls <code>bootstrapApplication</code>. <strong>2)</strong> Creates the root injector with providers from <code>appConfig</code>. <strong>3)</strong> Creates the root component (AppComponent). <strong>4)</strong> Renders AppComponent's template into the <code>&lt;app-root&gt;</code> element in <code>index.html</code>. <strong>5)</strong> Zone.js starts monitoring for async events to trigger change detection.</div>"
+          "title": "How Angular Bootstraps (Under the Hood)",
+          "contentHtml": "<p>Angular's bootstrap process has evolved from <code>NgModule</code> to the modern <strong>Standalone</strong> approach. Understanding this sequence is a common Senior Interview question.</p>\n<pre><code><span class=\"cm\">// 1. main.ts — The Entry Point</span>\n<span class=\"kw\">import</span> { bootstrapApplication } <span class=\"kw\">from</span> <span class=\"st\">'@angular/platform-browser'</span>;\n<span class=\"kw\">import</span> { AppComponent } <span class=\"kw\">from</span> <span class=\"st\">'./app/app.component'</span>;\n<span class=\"kw\">import</span> { appConfig } <span class=\"kw\">from</span> <span class=\"st\">'./app/app.config'</span>;\n\n<span class=\"fn\">bootstrapApplication</span>(AppComponent, appConfig)\n  .catch(err =&gt; console.error(err));</code></pre>\n\n<pre><code><span class=\"cm\">// 2. app.config.ts — Global Configuration</span>\n<span class=\"kw\">export const</span> appConfig: ApplicationConfig = {\n  providers: [\n    <span class=\"fn\">provideRouter</span>(routes, <span class=\"fn\">withComponentInputBinding</span>()),\n    <span class=\"fn\">provideHttpClient</span>(<span class=\"fn\">withInterceptors</span>([authInterceptor])),\n    <span class=\"fn\">provideAnimationsAsync</span>(),\n  ]\n};</code></pre>\n<div class=\"deep\">\n  <h4>The 5 Steps of Bootstrapping:</h4>\n  <ol>\n    <li><b>Platform Initialization:</b> Angular initializes the platform (usually <code>platformBrowser</code>) which bridges the framework to the browser DOM.</li>\n    <li><b>Environment Injector Creation:</b> It creates the <code>EnvironmentInjector</code> (formerly Module Injector) using providers from <code>appConfig</code>. This is where global singletons like Router and HttpClient live.</li>\n    <li><b>Root Component Factory:</b> It resolves the <code>AppComponent</code> and creates its factory.</li>\n    <li><b>Mounting:</b> It finds the <code>&lt;app-root&gt;</code> element in <code>index.html</code> and renders the <code>AppComponent</code> template inside it.</li>\n    <li><b>Change Detection Start:</b> <code>Zone.js</code> (or the new <code>ExperimentalZoneless</code> scheduler) starts tracking asynchronous tasks to trigger the initial change detection cycle.</li>\n  </ol>\n</div>"
         },
         {
           "title": "Angular CLI — Every Command You Need",
@@ -524,6 +528,52 @@
         {
           "title": "Critical Security CVEs (Late 2025)",
           "contentHtml": "<p>Three CVEs were disclosed across the Angular platform — know these for interviews:</p>\n<ul>\n<li><strong>CVE-2025-59052</strong> (CVSS 7.1): Race condition in SSR pipeline that could leak request-scoped data between concurrent requests</li>\n<li><strong>CVE-2025-66035</strong> (CVSS 7.7): HttpClient could leak XSRF tokens via protocol-relative URLs</li>\n<li><strong>CVE-2025-66412</strong> (CVSS High): Stored XSS vulnerability in the template compiler related to SVG and MathML attribute sanitisation</li>\n</ul>\n<p>All patched in v19.2+, v20.x, and v21. This is why running EOL versions is dangerous.</p>"
+        }
+      ]
+    },
+    {
+      "id": "cs",
+      "intro": "The 'Cheat Sheet' for clearing your Angular interview. Master these 10 points and you are in the top 1%.",
+      "cards": [
+        {
+          "title": "Signals Internals & Dependency Graph",
+          "contentHtml": "<ul><li><b>Producer/Consumer Model:</b> Signals are nodes in a reactive graph. Consumers (templates, effects) subscribe to Producers.</li><li><b>Glitch-Free:</b> Prevents the 'diamond problem' (incorrect intermediate states) by using a push-pull mechanism—notifying downstream nodes of a change but only recalculating when read.</li><li><b>Lazy Evaluation:</b> Computed signals only execute when accessed, minimizing CPU cycles for background state.</li></ul>"
+        },
+        {
+          "title": "Zoneless Reactivity & Scheduler",
+          "contentHtml": "<ul><li><b>Bypassing Notification:</b> Without Zone.js, Angular uses the <code>NotificationRegistry</code>. Signals notify the scheduler directly that a component is 'dirty'.</li><li><b>Coalescing:</b> Multiple signal updates are batched into a single microtask, preventing excessive DOM thrashing.</li><li><b>INP Optimization:</b> Zoneless removes the overhead of monkey-patched global 'task' tracking, leading to significantly lower Interaction to Next Paint (INP) latency.</li></ul>"
+        },
+        {
+          "title": "Dependency Injection (DI) Mastery",
+          "contentHtml": "<ul><li><b>Resolution Modifiers:</b> <code>@Host</code> (search ends at host element), <code>@Self</code> (current element only), <code>@SkipSelf</code> (parent onwards), <code>@Optional</code> (no error if missing).</li><li><b>Multi-Providers:</b> Using <code>multi: true</code> allows registering multiple implementations (Interceptors, Validators) under one token.</li><li><b>Injection Context:</b> Using <code>inject()</code> outside the constructor (factory functions, field initializers) requires an active <code>EnvironmentInjector</code> or <code>NodeInjector</code>.</li></ul>"
+        },
+        {
+          "title": "SSR & Non-Destructive Hydration",
+          "contentHtml": "<ul><li><b>Evolution:</b> Moving from 'Destructive' (wipe DOM and redraw) to 'Non-Destructive' (reusing existing server-rendered nodes).</li><li><b>Selective Hydration:</b> (v18+) Specific parts of the page hydrate only on interaction or viewport entry, reducing the main-thread block.</li><li><b>Streaming:</b> Server sends HTML chunks as they are ready, enabling 'Time to First Byte' (TTFB) improvements.</li></ul>"
+        },
+        {
+          "title": "Change Detection (OnPush Strategy)",
+          "contentHtml": "<ul><li><b>Mental Model:</b> OnPush turns the component tree from a 'scanned' tree (O(n)) into a 'branching' structure where only changed paths are evaluated.</li><li><b>Trigger Conditions:</b> 1) Input reference change, 2) Event emitted from inside, 3) <code>AsyncPipe</code> emission, 4) Signal node value change.</li><li><b>Micro-Optimization:</b> Use <code>ChangeDetectorRef.detach()</code> for heavy visual updates (Canvas/WebGL) to completely bypass the Angular loop.</li></ul>"
+        },
+        {
+          "title": "Ivy Compiler & Tree-Shaking",
+          "contentHtml": "<ul><li><b>Incremental DOM:</b> Unlike React's Virtual DOM, Ivy compiles templates into instructions that manipulate the DOM directly without a middle-man comparison object.</li><li><b>Template Type Checking:</b> Stricter checking (<code>strictTemplates</code>) catches 80% of UI bugs at build time.</li><li><b>Tree-Shakable Providers:</b> <code>providedIn: 'root'</code> ensures the compiler drops the service if no component imports it, regardless of the 'providers' array.</li></ul>"
+        },
+        {
+          "title": "Advanced RxJS Orchestration",
+          "contentHtml": "<ul><li><b>Higher-Order Operators:</b> <code>switchMap</code> (cancel old, start new), <code>mergeMap</code> (parallel), <code>concatMap</code> (sequential), <code>exhaustMap</code> (ignore until done).</li><li><b>Subject Selection:</b> <code>BehaviorSubject</code> (needs initial), <code>ReplaySubject</code> (buffer size), <code>AsyncSubject</code> (only on completion).</li><li><b>Memory Leak Prevention:</b> Prefer <code>takeUntilDestroyed()</code> or <code>AsyncPipe</code> over manual <code>.unsubscribe()</code>.</li></ul>"
+        },
+        {
+          "title": "Security: XSS & CSP",
+          "contentHtml": "<ul><li><b>Sanitization:</b> <code>DomSanitizer</code> automatically escapes values based on context (HTML, Style, URL).</li><li><b>Trusted Types:</b> Angular supports browser-level 'Trusted Types' to prevent string-based XSS injections at the root.</li><li><b>CSP:</b> Use <code>nonce</code>-based content security policies for inline styles/scripts generated by the Angular build.</li></ul>"
+        },
+        {
+          "title": "Testing in v21 (The Vitest Era)",
+          "contentHtml": "<ul><li><b>Zoneless Testing:</b> Signals make state updates synchronous, removing the need for <code>tick()</code> or <code>fakeAsync</code> in 90% of unit tests.</li><li><b>Component Harnesses:</b> Use Official CDK Harnesses to test UI behavior (e.g., <code>matSelect.open()</code>) without worrying about DOM implementation details.</li><li><b>Mocking:</b> Leverage <code>provideInputBinding()</code> and experimental router testing APIs for deeper integration tests.</li></ul>"
+        },
+        {
+          "title": "Performance: LCP & INP Mastery",
+          "contentHtml": "<ul><li><b>Deferrable Views:</b> Using <code>@defer</code> with triggers (<code>on viewport</code>, <code>on idle</code>) to chunk-load non-critical components.</li><li><b>Image Optimization:</b> <code>NgSrc</code> directive enforces proper priority, lazy-loading, and responsive aspect ratios to nail LCP metrics.</li><li><b>Build Performance:</b> The Esbuild/Vite application builder reduces cold-start build times by ~80% compared to Webpack.</li></ul>"
         }
       ]
     },

@@ -48,6 +48,10 @@
       "label": "Next.js 16 — Major Features"
     },
     {
+      "id": "ncs",
+      "label": "Interview Cheat Sheet (Fast Recall)"
+    },
+    {
       "id": "iq-next",
       "label": "Next.js Q&A (53)"
     }
@@ -220,6 +224,36 @@
         {
           "title": "CVE-2025-55182 — React2Shell (CRITICAL)",
           "contentHtml": "<p>In November 2025, a vulnerability was reported allowing <strong>unauthenticated remote code execution</strong> through a flaw in React Server Component deserialization. CVSS score: <strong>10.0</strong> (maximum). Next.js 15.x and 16.x were affected. A fix was published December 3rd. Exploitation attempts were observed within hours of disclosure.</p>\n<div class=\"warn\">Always keep React and Next.js updated. Pin exact versions in production. Monitor security advisories. This CVE demonstrates that server-side rendering introduces server-side attack surfaces.</div>"
+        }
+      ]
+    },
+    {
+      "id": "ncs",
+      "intro": "The Next.js 'Cheat Sheet' for clearing your interview. Master these high-density recall points and you are in the top 1% of candidates globally.",
+      "cards": [
+        {
+          "title": "Caching in v16: The Explicit Model",
+          "contentHtml": "<ul>\n    <li><b>Old (v15):</b> fetch() was cached by default. Confusing for fresh data.</li>\n    <li><b>New (v16):</b> Everything is dynamic by default.</li>\n    <li><b>Mechanism:</b> Use the <code>'use cache'</code> directive. You explicitly choose what goes in the 'fridge'.</li>\n    <li><b>Control:</b> Use <code>cacheLife('hours')</code> to control TTL perfectly. It works with PPR to create static shells.</li>\n  </ul>"
+        },
+        {
+          "title": "Partial Prerendering (PPR) Mastery",
+          "contentHtml": "<ul>\n    <li><b>What:</b> Combines Static Shell (CDN fast) with Dynamic Holes (Streaming) in one page.</li>\n    <li><b>Mechanism:</b> Wrap dynamic components in <code>Suspense</code>. The rest becomes static automatically at build time.</li>\n    <li><b>Benefit:</b> Zero TTFB for the shell + real-time data for the content. It is the final answer to SSR vs SSG.</li>\n  </ul>"
+        },
+        {
+          "title": "Streaming & Rendering Performance",
+          "contentHtml": "<ul>\n    <li><b>RSC Payload:</b> Next.js 16.2 rendering is 50% faster due to <code>JSON.parse</code> reviver callback optimization.</li>\n    <li><b>Streaming SSR:</b> Send HTML in chunks. User sees content progressively. Enabled via <code>loading.tsx</code>.</li>\n    <li><b>Hydration:</b> Selective hydration only hydrates the components the user interacts with first (via Suspense).</li>\n  </ul>"
+        },
+        {
+          "title": "Deployment: Adapter API & Runtimes",
+          "contentHtml": "<ul>\n    <li><b>Adapter API:</b> Stable interface in v16 allowing any host (AWS, Cloudflare) to support ISR/Middleware.</li>\n    <li><b>Edge Runtime:</b> Lightweight, zero cold starts, restricted APIs (No fs/child_process).</li>\n    <li><b>Node.js Runtime:</b> Full access but slower startup. Use <code>export const runtime = 'edge'</code> to switch.</li>\n    <li><b>Standalone Mode:</b> <code>output: 'standalone'</code> reduces Docker image sizes by ~90% by tracing dependencies.</li>\n  </ul>"
+        },
+        {
+          "title": "Security: RSC & Server Actions",
+          "contentHtml": "<ul>\n    <li><b>Server-only:</b> Use <code>import 'server-only'</code> to prevent leaking secret keys to client components.</li>\n    <li><b>CSRF:</b> Next.js compares <code>Origin</code> vs <code>Host</code> headers automatically for all Server Actions.</li>\n    <li><b>Validation:</b> Always use Zod inside Server Actions; never trust client-side inputs.</li>\n  </ul>"
+        },
+        {
+          "title": "Middleware Logic (Edge)",
+          "contentHtml": "<ul>\n    <li><b>Pipeline:</b> Runs before <i>any</i> rendering. Can redirect, rewrite, or set cookies.</li>\n    <li><b>Matcher:</b> Always use <code>config.matcher</code> to prevent middleware running on static assets (performance drain).</li>\n    <li><b>Context:</b> Next.js 16 <code>proxy.ts</code> handles network proxies that previously bloated middleware.</li>\n  </ul>"
         }
       ]
     },

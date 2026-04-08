@@ -44,11 +44,61 @@
       "label": "Tag Reference"
     },
     {
+      "id": "hcs",
+      "label": "Interview Cheat Sheet (Fast Recall)"
+    },
+    {
       "id": "html-iq",
       "label": "Interview Q&A (160)"
     }
   ],
   "sections": [
+    {
+      "id": "hcs",
+      "intro": "The HTML 'Cheat Sheet' for clearing your interview. Master these semantic and performance basics.",
+      "cards": [
+        {
+          "title": "Rendering Pipeline & Critical Path",
+          "contentHtml": "<ul><li><b>DOM + CSSOM = Render Tree:</b> The browser parses HTML (DOM) and CSS (CSSOM). Nodes only appear in the Render Tree if they are visible (<code>display: none</code> removes them).</li><li><b>Layout (Reflow):</b> Calculating exact geometry/position of every node.</li><li><b>Painting:</b> Filling in pixels. Compositing happens on the GPU.</li><li><b>Mastery Tip:</b> Optimize <b>Cumulative Layout Shift (CLS)</b> by setting explicit <code>width/height</code> on media to reserve space in the Layout phase.</li></ul>"
+        },
+        {
+          "title": "Resource Prioritization Mastery",
+          "contentHtml": "<ul><li><b>Preconnect:</b> DNS + TCP + TLS handshake. Use for critical 3rd party domains (CDNs).</li><li><b>Preload:</b> Mandatory high-priority fetch for local critical assets (Fonts, Hero images).</li><li><b>Fetchpriority:</b> (Attribute) <code>fetchpriority=\"high\"</code> on an <code>&lt;img&gt;</code> tells the browser to bump it to the front of the queue even if it's below the fold.</li><li><b>Decoding=\"async\":</b> Offloads image decoding from the main thread during the Paint phase.</li></ul>"
+        },
+        {
+          "title": "Modern SEO & Metadata Architecture",
+          "contentHtml": "<ul><li><b>JSON-LD:</b> Google's preferred structured data format. Lives in a <code>&lt;script type=\"application/ld+json\"&gt;</code>.</li><li><b>Canonical URL:</b> Not just a hint—it prevents duplicate content penalties by explicitly defining the 'source of truth' URL.</li><li><b>Noindex/Nofollow:</b> Controlled via <code>&lt;meta name=\"robots\"&gt;</code> to keep staging or private routes out of the index.</li></ul>"
+        },
+        {
+          "title": "Form Validation & ValidityState API",
+          "contentHtml": "<ul><li><b>Constraint Validation:</b> Native validation using <code>pattern</code>, <code>required</code>, <code>min/max</code>.</li><li><b>ValidityState Object:</b> Access via <code>input.validity</code>. Check properties like <code>valueMissing</code>, <code>patternMismatch</code>, or <code>typeMismatch</code> for custom error UI.</li><li><b>setCustomValidity():</b> A native method to set a custom string that blocks form submission until cleared.</li></ul>"
+        },
+        {
+          "title": "Accessibility (A11y) Tree & Relationships",
+          "contentHtml": "<ul><li><b>A11y Tree:</b> A subset of the DOM containing only information relevant to assistive technology.</li><li><b>aria-labelledby vs aria-describedby:</b> <code>labelledby</code> sets the 'Name' (short label); <code>describedby</code> sets the 'Description' (long hint).</li><li><b>aria-live:</b> <code>polite</code> (wait for silence), <code>assertive</code> (interrupt). Use for dynamic notifications.</li></ul>"
+        },
+        {
+          "title": "Containment & Rendering Performance",
+          "contentHtml": "<ul><li><b>content-visibility: auto:</b> (CSS/HTML hybrid) Skips rendering/painting of offscreen elements. Use for heavy landing pages.</li><li><b>contain-intrinsic-size:</b> Reserves space for elements that aren't rendered yet, preventing scrollbar jumping (CLS).</li><li><b>will-change:</b> Informs the browser to promote an element to its own GPU layer. Use sparingly to avoid memory bloat.</li></ul>"
+        },
+        {
+          "title": "Web Components & Component Model",
+          "contentHtml": "<ul><li><b>Custom Elements:</b> Extending <code>HTMLElement</code> to create native reusable tags.</li><li><b>Shadow DOM:</b> Provides style and DOM scoping (encapsulation). Styles inside cannot leak out; global styles cannot leak in (mostly).</li><li><b>HTML Templates/Slots:</b> <code>&lt;template&gt;</code> is inert until cloned. <code>&lt;slot&gt;</code> allows for content projection (similar to React children).</li></ul>"
+        },
+        {
+          "title": "HTML Security Architecture",
+          "contentHtml": "<ul><li><b>Subresource Integrity (SRI):</b> <code>integrity=\"hash\"</code> on scripts ensures the browser only executes the file if it hasn't been tampered with on the CDN.</li><li><b>CSP (Content Security Policy):</b> Prevents XSS by restricting which domains can execute scripts or load styles.</li><li><b>Trusted Types:</b> A browser API that requires 'wrapping' strings in a trusted object before injecting into sinks like <code>innerHTML</code>.</li></ul>"
+        },
+        {
+          "title": "Storage & State Persistence",
+          "contentHtml": "<ul><li><b>IndexedDB:</b> High-capacity, asynchronous client-side storage for binary data/objects. The 'database' of the web.</li><li><b>LocalStorage:</b> 5MB limit, synchronous, persists until cleared. Blocking - use sparingly.</li><li><b>SameSite Cookie Attribute:</b> <code>Lax</code> (default), <code>Strict</code>, <code>None</code>. Critical for preventing CSRF attacks.</li></ul>"
+        },
+        {
+          "title": "Modern Media & Asset Loading",
+          "contentHtml": "<ul><li><b>picture > source:</b> Enables 'Art Direction' (changing images based on viewport) and format fallback (AVIF/WebP/JPG).</li><li><b>srcset & sizes:</b> Enables 'Resolution Switching'—browser picks the smallest file that fits the screen density.</li><li><b>VTT Tracks:</b> Native <code>&lt;track&gt;</code> for subtitles and captions, critical for WCAG compliance.</li></ul>"
+        }
+      ]
+    },
     {
       "id": "html-sem",
       "intro": "HTML is the skeleton of every web page. Semantic HTML is the foundation of accessibility, SEO, and maintainable code.",

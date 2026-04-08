@@ -24,6 +24,10 @@
       "label": "System Design Mastery 2026"
     },
     {
+      "id": "sd-cs",
+      "label": "Interview Cheat Sheet (Fast Recall)"
+    },
+    {
       "id": "fsd-iq",
       "label": "Interview Q&A (76)"
     }
@@ -206,6 +210,52 @@
         {
           "title": "Advanced Scaling & Resilience",
           "contentHtml": "<ul>\n        <li><b>Backpressure:</b> Mechanism to signal a producer that the consumer is overwhelmed. Prevents service crashes under load.</li>\n        <li><b>Circuit Breaker:</b> Prevents a service from attempting a failing operation, allowing it to recover instead of being hammered by retries.</li>\n        <li><b>Saga Pattern:</b> Managing data consistency across microservices in distributed transactions via a sequence of local transactions and compensating actions.</li>\n      </ul>"
+        }
+      ]
+    },
+    {
+      "id": "sd-cs",
+      "intro": "The Frontend System Design 'Cheat Sheet'. Follow this mental model to clear senior/staff interviews.",
+      "cards": [
+        {
+          "title": "Concurrency Control Mastery",
+          "contentHtml": "<ul><li><b>Pessimistic:</b> Locks records before update (blocks others). Use for high-conflict, low-latency financial systems.</li><li><b>Optimistic:</b> Uses version/timestamp; fails on conflict. Use for low-conflict web systems (scale better).</li><li><b>MVCC (Multi-Version Concurrency Control):</b> PostgreSQL's approach—readers don't block writers, and writers don't block readers by keeping multiple versions of a row.</li></ul>"
+        },
+        {
+          "title": "Distributed Consistency Levels",
+          "contentHtml": "<ul><li><b>Linearizability:</b> Strongest. Every operation appears instantaneous to all nodes. (Expensive, slow).</li><li><b>Serializability:</b> Transactions behave as if executed sequentially (Standard for strict ACID).</li><li><b>Eventual Consistency:</b> System converges over time. (Fast, high availability). Used by DynamoDB/Cassandra.</li></ul>"
+        },
+        {
+          "title": "Global Scaling: Anycast & Geo-DNS",
+          "contentHtml": "<ul><li><b>Anycast:</b> Multiple servers share the same IP; the network routes you to the physically closest one. used by CDNs (Cloudflare).</li><li><b>Geo-DNS:</b> DNS server returns different IP addresses based on the user's geographic location.</li><li><b>Multi-Region Active-Active:</b> Traffic is served from all regions simultaneously; requires complex conflict resolution (CRDTs).</li></ul>"
+        },
+        {
+          "title": "Cache Failure Patterns & Mitigation",
+          "contentHtml": "<ul><li><b>Cache Breakdown (Hotspot):</b> Popular key expires, slamming the DB. Mitigation: <i>Mutex locking</i> or <i>Logical expiration</i>.</li><li><b>Cache Penetration:</b> Querying non-existent keys to bypass cache. Mitigation: <i>Bloom Filters</i> or <i>Caching nulls</i>.</li><li><b>Cache Avalanche:</b> Many keys expire at once. Mitigation: <i>Randomized TTL jitter</i>.</li></ul>"
+        },
+        {
+          "title": "Event-Driven Mastery: CQRS & Event Sourcing",
+          "contentHtml": "<ul><li><b>CQRS:</b> Separate models for reading (Queries) and writing (Commands). Allows independent scaling of read/write loads.</li><li><b>Event Sourcing:</b> State is a sequence of events. No 'UPDATE' operations—only 'APPEND'. Perfect for auditing and infinite undo.</li><li><b>CDC (Change Data Capture):</b> Streaming DB logs into Kafka to sync caches/search indices in real-time.</li></ul>"
+        },
+        {
+          "title": "Resilience: Circuit Breakers & Backpressure",
+          "contentHtml": "<ul><li><b>Circuit Breaker:</b> Stops calling a failing downstream service to allow it to recover (Prevents cascading failure).</li><li><b>Bulkhead:</b> Isolates resources (thread pools/memory) per service so one failure doesn't tank the whole system.</li><li><b>Backpressure:</b> Consumer signals producer to slow down. Essential in streaming systems (Kafka).</li></ul>"
+        },
+        {
+          "title": "Modern Edge Architecture (ISR/PPR)",
+          "contentHtml": "<ul><li><b>ISR (Incremental Static Regeneration):</b> Updates static pages in the background without a full rebuild.</li><li><b>PPR (Partial Prerendering):</b> Serves a static shell immediately and streams dynamic 'islands' as they resolve.</li><li><b>Edge Functions:</b> Running logic (Auth, Redirects) physically close to the user on CDN nodes.</li></ul>"
+        },
+        {
+          "title": "Storage Engines: B-Trees vs LSM Trees",
+          "contentHtml": "<ul><li><b>B-Trees:</b> Balanced trees. Optimized for <b>Reads</b>. Standard for SQL (PostgreSQL/MySQL).</li><li><b>LSM Trees (Log-Structured Merge):</b> Appends to logs, merges later. Optimized for <b>Writes</b>. Used by NoSQL (Cassandra/LevelDB).</li><li><b>WAL (Write-Ahead Log):</b> Changes written to log before data files to ensure durability after crashes.</li></ul>"
+        },
+        {
+          "title": "Modern Auth Architecture",
+          "contentHtml": "<ul><li><b>OAuth2/OIDC:</b> Delegation (OAuth) vs Identity (OIDC). ID Tokens for identity; Access Tokens for resources.</li><li><b>JWT Security:</b> Use <code>httpOnly</code> cookies to prevent XSS theft. Use short-lived Access Tokens + long-lived Refresh Tokens.</li><li><b>WebAuthn/Passkeys:</b> Phishing-resistant auth using hardware-backed private keys.</li></ul>"
+        },
+        {
+          "title": "The Unified Design Interview Framework",
+          "contentHtml": "<ol><li><b>Requirement Clarity:</b> Ask for scale (DAU), read/write ratio, and latency targets.</li><li><b>API Design:</b> Define REST/GraphQL endpoints first.</li><li><b>Data Schema:</b> Choose SQL vs NoSQL based on relationship complexity.</li><li><b>Deep Dive:</b> Bottlenecks, Caching, Load Balancing, and Trade-offs.</li></ol>"
         }
       ]
     },

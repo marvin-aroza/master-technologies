@@ -20,6 +20,10 @@
       "label": "Memory & Performance Mastery"
     },
     {
+      "id": "jcs",
+      "label": "Interview Cheat Sheet (Fast Recall)"
+    },
+    {
       "id": "js-iq",
       "label": "Interview Q&A (194)"
     }
@@ -98,6 +102,36 @@
         {
           "title": "Advanced Threading: Workers",
           "contentHtml": "<p>Moving heavy computation off the main thread to ensure 60fps responsiveness:</p>\n      <ul>\n        <li><strong>Web Workers:</strong> Truly parallel execution using separate OS threads. Communicates via structured cloning.</li>\n        <li><strong>SharedArrayBuffer:</strong> Allows memory sharing between threads. Must be used with <strong>Atomics</strong> to prevent race conditions.</li>\n        <li><strong>SharedWorkers:</strong> Accessible from multiple windows/tabs from the same origin, ideal for coordinating state across tabs.</li>\n      </ul>"
+        }
+      ]
+    },
+    {
+      "id": "jcs",
+      "intro": "The JavaScript 'Cheat Sheet' for clearing your interview. Master these high-density recall points and you are in the top 1% of candidates globally.",
+      "cards": [
+        {
+          "title": "V8 Engine Mastery",
+          "contentHtml": "<ul>\n    <li><b>Ignition (Interpreter):</b> Generates bytecode for instant execution.</li>\n    <li><b>TurboFan (JIT Compiler):</b> Compiles 'Hot' functions to machine code. It uses 'Speculative Optimization' based on types.</li>\n    <li><b>Deoptimization:</b> If a function's argument type changes suddenly, V8 'bails out' and reverts to the interpreter (huge perf hit).</li>\n    <li><b>Hidden Classes:</b> V8 optimizes object property access by sharing static 'hidden classes' between identical objects. Avoid changing property order to benefit.</li>\n  </ul>"
+        },
+        {
+          "title": "Garbage Collection Internals",
+          "contentHtml": "<ul>\n    <li><b>Generational Hypotheses:</b> Most objects die young. V8 uses <b>New Space</b> (Scavenge) and <b>Old Space</b> (Mark-Sweep).</li>\n    <li><b>Scavenge:</b> Moving GC for the Young Generation. Fast but requires double the memory.</li>\n    <li><b>Mark-Sweep-Compact:</b> For long-lived objects. Compacts memory to prevent fragmentation.</li>\n    <li><b>Orinoco:</b> The modern concurrent GC engine that runs on background threads to minimize 'Stop-the-World' pauses.</li>\n  </ul>"
+        },
+        {
+          "title": "Event Loop & Priority Tasks",
+          "contentHtml": "<ul>\n    <li><b>Microtasks (P1):</b> <code>Promise.then</code>, <code>queueMicrotask</code>, <code>MutationObserver</code>. Emptied fully before macrotasks.</li>\n    <li><b>Macrotasks (P2):</b> <code>setTimeout</code>, <code>setInterval</code>, <code>setImmediate</code> (Node), I/O.</li>\n    <li><b>Node.js Specific:</b> <code>process.nextTick</code> has higher priority than Promise microtasks. The 'Timers' phase is distinct from 'Poll'.</li>\n    <li><b>Expert Point:</b> JS is single-threaded, but the libuv (Node) or browser APIs handle concurrency via OS threads.</li>\n  </ul>"
+        },
+        {
+          "title": "Closures & Memory Leaks",
+          "contentHtml": "<ul>\n    <li><b>The Closure Trap:</b> Closures retain the <i>entire</i> lexical scope, not just the used variables. This can prevent garbage collection of large objects.</li>\n    <li><b>Detached DOM:</b> Referencing a DOM element in JS prevents it from being GC'd even if removed from the tree.</li>\n    <li><b>Fixes:</b> Use <code>WeakMap</code> for caches, <code>WeakRef</code> for non-essential references, and always <code>clearTimeout</code>.</li>\n  </ul>"
+        },
+        {
+          "title": "State of JS (ES2024 - 2026)",
+          "contentHtml": "<ul>\n    <li><b>Temporal API:</b> Immutable, timezone-aware dates. No more 0-indexed months or leap-year bugs.</li>\n    <li><b>Promise.withResolvers:</b> Eliminates the 'extraction' boilerplate for manual promise control.</li>\n    <li><b>Type Annotations (Proposal):</b> 'Type Stripping' where native engines ignore TS-like syntax (Stage 3).</li>\n    <li><b>SharedArrayBuffer + Atomics:</b> For high-performance synchronization between Web Workers.</li>\n  </ul>"
+        },
+        {
+          "title": "The Prototype Chain (Recall)",
+          "contentHtml": "<ul>\n    <li><b>Chain:</b> Lookup order: Instance -> Prototype -> Object.prototype -> null.</li>\n    <li><b>Object.create(null):</b> Creates an object with NO prototype (no <code>toString</code>, <code>hasOwnProperty</code>). Safe for dictionaries.</li>\n    <li><b>Shadowing:</b> Adding a property to an instance hides the prototype's property; removing it reveals the prototype one back.</li>\n  </ul>"
         }
       ]
     },

@@ -28,11 +28,61 @@
       "label": "UX/UI Architecture & Design Systems"
     },
     {
+      "id": "ux-cs",
+      "label": "Interview Cheat Sheet (Fast Recall)"
+    },
+    {
       "id": "ux-iq",
       "label": "Interview Q&A (61)"
     }
   ],
   "sections": [
+    {
+      "id": "ux-cs",
+      "intro": "The UX/UI 'Cheat Sheet' for clearing your interview. Master these principles to speak the language of designers.",
+      "cards": [
+        {
+          "title": "Core UX Laws (Mastery Recall)",
+          "contentHtml": "<ul><li><b>Fitts's Law:</b> Larger/closer targets = faster interaction. (Impact: Floating Action Buttons).</li><li><b>Hick's Law:</b> More choices = exponential decision time. (Solution: Progressive Disclosure).</li><li><b>Jakob's Law:</b> Users expect your site to work like others. (Standardize your patterns).</li><li><b>Miller's Law:</b> Humans can hold 7±2 items in working memory.</li></ul>"
+        },
+        {
+          "title": "Gestalt Principles of Perception",
+          "contentHtml": "<ul><li><b>Proximity:</b> Related things belong together (use white space).</li><li><b>Similarity:</b> Like-designed elements have like-functions (buttons vs secondary links).</li><li><b>Continuity:</b> Eyes follow lines—use for carousels and list flows.</li><li><b>Closure:</b> The brain completes unfinished shapes (icons/skeletons).</li></ul>"
+        },
+        {
+          "title": "Accessibility (WCAG 2.2) Mastery",
+          "contentHtml": "<ul><li><b>Contrast:</b> 4.5:1 for body, 3:1 for large/graphical.</li><li><b>Focus Management:</b> Never suppress <code>:focus-visible</code>. Manage focus in modals and route changes.</li><li><b>Non-Text:</b> Use <code>aria-label</code> for icon-only buttons.</li><li><b>Color:</b> Never use color alone to convey meaning (add secondary indicators).</li></ul>"
+        },
+        {
+          "title": "Design System Architecture",
+          "contentHtml": "<ul><li><b>Atomic Tokens:</b> Raw values (Blue-500).</li><li><b>Alias (Semantic) Tokens:</b> Intent values (Action-Primary).</li><li><b>Component Tokens:</b> Specific overrides (Button-Bg-Hover).</li><li><b>Multi-mode:</b> Logic for Dark/Light mode and High-Contrast swaps.</li></ul>"
+        },
+        {
+          "title": "Visual Hierarchy & Layout",
+          "contentHtml": "<ul><li><b>Typographic Scale:</b> Using size and weight to guide the eye (Header vs Body).</li><li><b>Scanning Patterns:</b> F-Pattern for text-heavy; Z-Pattern for landing pages.</li><li><b>Reading Rhythm:</b> Consistent vertical rhythm (4px/8px grid).</li></ul>"
+        },
+        {
+          "title": "Micro-Interactions & Motion",
+          "contentHtml": "<ul><li><b>Feedback:</b> Every action must have a reaction (Haptic, Visual, Auditory).</li><li><b>Duration:</b> UI transitions should be 200ms-400ms. &lt;100ms is too fast; &gt;500ms feels sluggish.</li><li><b>Easing:</b> <code>cubic-bezier</code> (Ease-In-Out) feels natural; Linear feels robotic.</li></ul>"
+        },
+        {
+          "title": "Interaction Design (IxD) Principles",
+          "contentHtml": "<ul><li><b>Mental Model:</b> How the user <i>expects</i> the system to work.</li><li><b>Affordance:</b> Visual clues that show how to use something (A button shadow implies clickability).</li><li><b>Signifier:</b> Explicit indicators (labels, arrows).</li></ul>"
+        },
+        {
+          "title": "Modern UI Architectures",
+          "contentHtml": "<ul><li><b>Bento Grid:</b> Card-based layouts with varying sizes (Dashboard/SaaS style).</li><li><b>Glassmorphism:</b> Using background-blur and semi-transparency for depth.</li><li><b>Dark Mode 2.0:</b> Using subtle surface elevations (tinted greys) rather than pure black.</li></ul>"
+        },
+        {
+          "title": "User Research & Evaluation",
+          "contentHtml": "<ul><li><b>A/B Testing:</b> Comparing two versions based on a single metric (Conversion).</li><li><b>Heuristic Evaluation:</b> Auditing a UI against Nielsen's 10 principles.</li><li><b>Cognitive Walkthrough:</b> Stepping through a task to find friction.</li></ul>"
+        },
+        {
+          "title": "Error Recovery & Prevention",
+          "contentHtml": "<ul><li><b>Forgiveness:</b> Provide Undo/Redo for all destructive actions.</li><li><b>Instructional Errors:</b> Don't just show 'Error'; tell the user exactly how to fix it.</li><li><b>Native Patterns:</b> Use <code>inputmode=\"numeric\"</code> for easier keyboard entry.</li></ul>"
+        }
+      ]
+    },
     {
       "id": "ux-gestalt",
       "intro": "Understanding human psychology to create intuitive, frictionless interfaces.",

@@ -44,11 +44,61 @@
       "label": "Property Reference"
     },
     {
+      "id": "css-cs",
+      "label": "Interview Cheat Sheet (Fast Recall)"
+    },
+    {
       "id": "css-iq",
       "label": "Interview Q&A (91)"
     }
   ],
   "sections": [
+    {
+      "id": "css-cs",
+      "intro": "The CSS 'Cheat Sheet' for fast recall. Focus on these to clear technical rounds with confidence.",
+      "cards": [
+        {
+          "title": "Browser Rendering: Layout vs Paint vs Composite",
+          "contentHtml": "<ul><li><b>Layout (Reflow):</b> Calculating geometry. Triggered by <code>width</code>, <code>height</code>, <code>top/left</code>. Expensive.</li><li><b>Paint:</b> Filling in pixels. Triggered by <code>color</code>, <code>box-shadow</code>.</li><li><b>Composite:</b> Combining layers on the GPU. Triggered by <code>transform</code> and <code>opacity</code>.</li><li><b>Mastery Tip:</b> Always animate with <b>Transform</b> and <b>Opacity</b> to avoid the main thread and ensure 60fps.</li></ul>"
+        },
+        {
+          "title": "CSS Logical Properties & Writing Modes",
+          "contentHtml": "<ul><li><b>Physical vs Logical:</b> <code>margin-left</code> vs <code>margin-inline-start</code>.</li><li><b>Purpose:</b> Automatically adjusts layout for Right-to-Left (RTL) languages or vertical writing modes without extra CSS.</li><li><b>Modern Standard:</b> Use <code>inline</code> (horizontal) and <code>block</code> (vertical) instead of top/bottom/left/right.</li></ul>"
+        },
+        {
+          "title": "Advanced Selectors: :is(), :where(), :has()",
+          "contentHtml": "<ul><li><b>:is():</b> Reduces repetition (<code>:is(h1, h2, h3):hover</code>). Matches the specificity of its highest selector.</li><li><b>:where():</b> Same as <code>:is()</code> but with <b>Zero Specificity</b>. Perfect for CSS resets.</li><li><b>:has() (The Parent Selector):</b> Enables styling an element based on its children (e.g., <code>.card:has(img) { padding: 0; }</code>).</li></ul>"
+        },
+        {
+          "title": "Container Queries (@container)",
+          "contentHtml": "<ul><li><b>Mental Model:</b> Querying the <b>Parent's Width</b> instead of the Viewport Width.</li><li><b>Use Case:</b> A component that looks different when placed in a narrow sidebar vs a wide main content area.</li><li><b>Units:</b> <code>cqw</code> (container query width), <code>cqh</code>, <code>cqmin</code>, <code>cqmax</code>.</li></ul>"
+        },
+        {
+          "title": "CSS Variables (Custom Properties) Mastery",
+          "contentHtml": "<ul><li><b>Scope:</b> Variables follow the cascade. Defining in <code>:root</code> makes them global; defining in a class makes them local/scoped.</li><li><b>Runtime Updates:</b> Can be updated via JavaScript (<code>element.style.setProperty()</code>) for dynamic theming.</li><li><b>Fallback:</b> Support defaults like <code>var(--main-color, #000)</code>.</li></ul>"
+        },
+        {
+          "title": "Modern Color Architecture (OKLCH)",
+          "contentHtml": "<ul><li><b>OKLCH:</b> A perceptually uniform color space. Lightness (L) feels the same across all hues.</li><li><b>P3 Gamut:</b> Modern monitors (Macs/iPhones) support 50% more colors than standard sRGB.</li><li><b>Relative Colors:</b> (v2024+) <code>color: rgb(from var(--primary) r g b / 0.5)</code>—modify colors on the fly.</li></ul>"
+        },
+        {
+          "title": "Grid vs Flexbox: The Layout Algorithm",
+          "contentHtml": "<ul><li><b>Flexbox (1D):</b> Content-driven. Items define their own size; the container distributes. Best for menus/toolbars.</li><li><b>Grid (2D):</b> Container-driven. The container defines the tracks; items are placed in them. Best for page layouts.</li><li><b>Subgrid:</b> Allows child items to align perfectly with the parent's grid tracks.</li></ul>"
+        },
+        {
+          "title": "Performance: Containment & Will-Change",
+          "contentHtml": "<ul><li><b>Contain:</b> Tells the browser that an element's subtree is isolated from the rest of the page. High performance win for complex DOMs.</li><li><b>Will-change:</b> Tells the browser to promote a layer to the GPU <i>before</i> the animation starts. Only use for frequently changing elements to avoid memory bloat.</li></ul>"
+        },
+        {
+          "title": "Modern 2025 Features: Anchor Positioning",
+          "contentHtml": "<ul><li><b>Anchor Positioning:</b> Tethering one element to another without JavaScript (e.g., a tooltip to its button).</li><li><b>Scroll-Driven Animations:</b> Native CSS animations that trigger based on scroll progress (<code>scroll-timeline</code>) instead of time.</li><li><b>Light-Dismiss:</b> Combining native POP-OVER with CSS for zero-JS modals.</li></ul>"
+        },
+        {
+          "title": "Architecture & Methodology Trade-offs",
+          "contentHtml": "<ul><li><b>BEM:</b> High predictability, verbose classes, prevents specificity wars.</li><li><b>Utility-First (Tailwind):</b> Fast development, tiny CSS bundles, move styling into the HTML.</li><li><b>CSS-in-JS:</b> Dynamic styling based on props, but comes with runtime performance overhead and bundle bloat.</li></ul>"
+        }
+      ]
+    },
     {
       "id": "css-box",
       "intro": "CSS controls how everything looks. Master the box model, layout, and modern features.",

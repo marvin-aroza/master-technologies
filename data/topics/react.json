@@ -56,6 +56,10 @@
       "label": "React 19 Deep Dive"
     },
     {
+      "id": "rcs",
+      "label": "Interview Cheat Sheet (Fast Recall)"
+    },
+    {
       "id": "iq-react",
       "label": "React Q&A (58)"
     }
@@ -300,6 +304,36 @@
         {
           "title": "The `use()` Hook & useOptimistic",
           "contentHtml": "<p>React 19 makes asynchronous logic feel synchronous within your components.</p>\n      <ul>\n        <li><b>use():</b> Can be used to read a Promise or Context. Unlike standard hooks, it can be used inside `if` statements or loops.</li>\n        <li><b>useOptimistic:</b> Allows you to immediately update the UI with an expected result while a server action is still in flight.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>function MessageList({ messages, sendMessage }) {\n  const [optimisticMessages, addOptimisticMessage] = useOptimistic(\n    messages,\n    (state, newMessage) =&gt; [...state, { text: newMessage, sending: true }]\n  );\n\n  return (\n    &lt;div&gt;\n      {optimisticMessages.map(m =&gt; &lt;div&gt;{m.text}&lt;/div&gt;)}\n      &lt;button onClick={() =&gt; {\n        addOptimisticMessage(\"Hello!\");\n        sendMessage(\"Hello!\");\n      }}&gt;Send&lt;/button&gt;\n    &lt;/div&gt;\n  );\n}\n</code></pre>\n      </div>"
+        }
+      ]
+    },
+    {
+      "id": "rcs",
+      "intro": "The 'Cheat Sheet' for clearing your React interview. Master these high-density recall points and you are in the top 1% of candidates globally.",
+      "cards": [
+        {
+          "title": "React 19 Compiler (The 'Forget' Pipeline)",
+          "contentHtml": "<ul>\n    <li><b>What:</b> A build-time tool that auto-memoizes components and values.</li>\n    <li><b>Benefit:</b> <code>useMemo</code>, <code>useCallback</code>, and <code>React.memo</code> are largely redundant.</li>\n    <li><b>Mechanics:</b> It analysis the 'dependency graph' of your JS. If a variable doesn't change, the component doesn't re-render. It enforces strict 'Rules of React' (purity).</li>\n    <li><b>Interview Point:</b> It effectively moves the cost of memoization from runtime to build-time.</li>\n  </ul>"
+        },
+        {
+          "title": "Reconciliation & Fiber Architecture",
+          "contentHtml": "<ul>\n    <li><b>Virtual DOM:</b> A lightweight copy of the real DOM used for diffing.</li>\n    <li><b>Fiber:</b> The 'work unit' in React's engine. It allows React to pause, resume, or abort rendering work (Concurrent Mode).</li>\n    <li><b>Lane-based Prioritization:</b> React 18+ uses 'Lanes' to prioritize updates (e.g., typing is higher priority than data fetching).</li>\n    <li><b>Point:</b> Reconciliation is the <code>diff()</code> algorithm (O(n) complexity due to keys and component types).</li>\n  </ul>"
+        },
+        {
+          "title": "State Management Trade-offs",
+          "contentHtml": "<ul>\n    <li><b>Context API:</b> Best for low-frequency updates (Theme, Auth). Causes O(N) re-renders for all consumers unless split.</li>\n    <li><b>Signals (Zustand/Valtio):</b> Direct subscription model. Components only re-render if the specific leaf node they use changes.</li>\n    <li><b>Flux (Redux):</b> Best for complex, traceable state with middleware. Overuse leads to boilerplate; RTK Query is the modern standard.</li>\n    <li><b>State Location:</b> Always keep state as local as possible to minimize the 're-render blast radius'.</li>\n  </ul>"
+        },
+        {
+          "title": "Performance: Hydration & Rendering",
+          "contentHtml": "<ul>\n    <li><b>Hydration Mismatch:</b> Occurs when Server HTML != Client Initial Render (e.g., Dates, Math.random). Triggers full component re-mount.</li>\n    <li><b>Selective Hydration:</b> (Suspense) React hydrates high-priority parts of the page first while other parts are still loading.</li>\n    <li><b>Lazy Loading:</b> Use <code>React.lazy</code> + <code>Suspense</code> to split bundles. Reduces initial JS payload (TBT/LCP win).</li>\n    <li><b>Virtualization:</b> Mandatory for 1000+ item lists (React Window/Virtuoso) to keep DOM nodes minimal.</li>\n  </ul>"
+        },
+        {
+          "title": "React 19 Hooks (The Recall List)",
+          "contentHtml": "<ul>\n    <li><b>useActionState:</b> Handles form transitions, pending state, and server errors automatically.</li>\n    <li><b>useFormStatus:</b> Access pending state of a parent form without prop drilling.</li>\n    <li><b>useOptimistic:</b> Instant UI updates that rollback if the server action fails.</li>\n    <li><b>use():</b> Reads Promises/Context conditionally. It is the only hook that can be called inside loops or 'if' blocks.</li>\n  </ul>"
+        },
+        {
+          "title": "Advanced Patterns (Recall)",
+          "contentHtml": "<ul>\n    <li><b>Compound Components:</b> Implicit state sharing (Context) between related components (Tabs, Select).</li>\n    <li><b>Render Props:</b> Passing a function as a child to share logic (mostly replaced by hooks).</li>\n    <li><b>HOCs:</b> Wrapping components for cross-cutting concerns (logging, auth). Preferred in class-heavy legacy apps.</li>\n    <li><b>Slots Pattern:</b> Passing components as props (header={&lt;Nav /&gt;}) to control layout independently of content.</li>\n  </ul>"
         }
       ]
     },
