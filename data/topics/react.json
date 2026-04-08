@@ -1,0 +1,950 @@
+{
+  "id": "react",
+  "title": "React Mastery Bible",
+  "subtitle": "React 19 — every hook, pattern, and concept",
+  "tabs": [
+    {
+      "id": "react-testing-routing",
+      "label": "Testing & Routing"
+    },
+    {
+      "id": "react-styling-forms",
+      "label": "Styling & Forms"
+    },
+    {
+      "id": "react-state",
+      "label": "State Management"
+    },
+    {
+      "id": "react-testing",
+      "label": "Testing & Patterns"
+    },
+    {
+      "id": "react-forms",
+      "label": "Forms & Routing"
+    },
+    {
+      "id": "react-patterns",
+      "label": "Advanced Patterns"
+    },
+    {
+      "id": "react-19",
+      "label": "React 19 Deep Dive"
+    },
+    {
+      "id": "r-fundamentals",
+      "label": "React Core & V19"
+    },
+    {
+      "id": "r-hooks",
+      "label": "Hooks Mastery"
+    },
+    {
+      "id": "r-state",
+      "label": "State Management"
+    },
+    {
+      "id": "r-perf",
+      "label": "Performance & Render"
+    },
+    {
+      "id": "r-patterns",
+      "label": "Advanced Patterns"
+    },
+    {
+      "id": "iq-react",
+      "label": "React Q&A (58)"
+    },
+    {
+      "id": "r-19",
+      "label": "React Compiler (\"React Forget\")"
+    }
+  ],
+  "sections": [
+    {
+      "id": "react-testing-routing",
+      "intro": "Ensuring application reliability and managing complex navigation states.",
+      "cards": [
+        {
+          "title": "Reliable Testing: RTL & MSW",
+          "contentHtml": "<p>Modern React testing focuses on user behavior rather than internal state.</p>\n      <ul>\n        <li><b>React Testing Library (RTL):</b> Provides a way to test components by finding elements the same way a user would (labels, text content).</li>\n        <li><b>MSW (Mock Service Worker):</b> Mocks the network at the API level. This allows your tests to perform real fetch calls that are intercepted and returned with mock data, ensuring your data-fetching logic is actually exercised.</li>\n        <li><b>Playwright:</b> Used for End-to-End (E2E) testing. It launches a real browser to verify that the entire app works from the user's login to the final action.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>// RTL Test Example\nimport { render, screen } from '@testing-library/react';\nimport userEvent from '@testing-library/user-event';\n\ntest('click button increments count', async () =&gt; {\n  render(&lt;Counter /&gt;);\n  const button = screen.getByRole('button', { name: /increment/i });\n  await userEvent.click(button);\n  expect(screen.getByText(/count: 1/i)).toBeInTheDocument();\n});\n</code></pre>\n      </div>"
+        },
+        {
+          "title": "Modern Routing: React Router 7 & TanStack Router",
+          "contentHtml": "<p>Routing has evolved from simple path matching to managing full data lifecycles (loaders and actions).</p>\n      <ul>\n        <li><b>React Router v7:</b> The standard choice. It now integrates features from Remix, allowing you to fetch data *before* the component even renders via \"Loaders.\"</li>\n        <li><b>TanStack Router:</b> A newer, 100% typesafe router. It provides incredible intellisense for your routes, parameters, and search inputs, making it the top choice for complex TypeScript apps.</li>\n      </ul>"
+        }
+      ]
+    },
+    {
+      "id": "react-styling-forms",
+      "intro": "Best practices for building beautiful, validated, and performant user interfaces.",
+      "cards": [
+        {
+          "title": "Modern Styling: Tailwind & CSS Modules",
+          "contentHtml": "<p>Choosing the right styling strategy depends on your team's needs for speed vs. isolation.</p>\n      <ul>\n        <li><b>Tailwind CSS:</b> Utility-first. Results in very fast development and small production bundles. Best for modern startups.</li>\n        <li><b>CSS Modules:</b> Standard CSS scoped to the component. Best for large teams who prefer raw CSS control and standard selectors.</li>\n        <li><b>Design Tokens:</b> Using CSS variables to store your brand's colors, spacing, and typography ensures consistency across both strategies.</li>\n      </ul>\n      <div class=\"tip\">\n        <b>Tip:</b> If you use Tailwind, use the `tailwind-merge` and `clsx` libraries to handle dynamic class merging safely.\n      </div>"
+        },
+        {
+          "title": "Performant Forms: React Hook Form & Zod",
+          "contentHtml": "<p>Manual state management for forms (`useState` on every input) causes unnecessary re-renders. High-performance forms use a specialized library.</p>\n      <ul>\n        <li><b>React Hook Form:</b> Uses \"uncontrolled\" inputs under the hood. Only re-renders the specific input being changed.</li>\n        <li><b>Zod Validation:</b> A schema declaration library. It defines the \"shape\" of your data and provides automatic validation and TypeScript typing.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>import { useForm } from \"react-hook-form\";\nimport { zodResolver } from \"@hookform/resolvers/zod\";\nimport * as z from \"zod\";\n\nconst schema = z.object({\n  email: z.string().email(),\n  password: z.string().min(8)\n});\n\nfunction LoginForm() {\n  const { register, handleSubmit, formState: { errors } } = useForm({\n    resolver: zodResolver(schema)\n  });\n\n  return (\n    &lt;form onSubmit={handleSubmit(d =&gt; console.log(d))}&gt;\n      &lt;input {...register(\"email\")} /&gt;\n      {errors.email &amp;&amp; &lt;span&gt;{errors.email.message}&lt;/span&gt;}\n      \n      &lt;input type=\"password\" {...register(\"password\")} /&gt;\n      &lt;button&gt;Login&lt;/button&gt;\n    &lt;/form&gt;\n  );\n}\n</code></pre>\n      </div>"
+        }
+      ]
+    },
+    {
+      "id": "react-state",
+      "intro": "Ecosystem approaches to managing complex, global state across large React applications.",
+      "cards": [
+        {
+          "title": "Zustand",
+          "contentHtml": "<p>A small, fast, and scalable bearbones state-management solution using simplified flux principles. It has become the community favorite for new React apps.</p>\n      <ul>\n        <li><b>No Provider Boilerplate:</b> Unlike Context/Redux, Zustand stores are standalone hooks that don't need to wrap your app tree.</li>\n        <li><b>Renders Optimization:</b> Components only re-render if the specific slice of state they select changes.</li>\n        <li><b>Mutations:</b> State is updated immutably using standard object spreading or by integrating Immer middleware.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>import { create } from 'zustand'\n\nconst useBearStore = create((set) =&gt; ({\n  bears: 0,\n  increasePopulation: () =&gt; set((state) =&gt; ({ bears: state.bears + 1 })),\n  removeAllBears: () =&gt; set({ bears: 0 }),\n}))\n\n// In component:\nfunction BearCounter() {\n  // Only re-renders when `bears` changes\n  const bears = useBearStore((state) =&gt; state.bears)\n  const increasePopulation = useBearStore((state) =&gt; state.increasePopulation)\n  return &lt;button onClick={increasePopulation}&gt;{bears} bears&lt;/button&gt;\n}\n</code></pre>\n      </div>"
+        },
+        {
+          "title": "Redux Toolkit (RTK)",
+          "contentHtml": "<p>The official, opinionated, batteries-included toolset for efficient Redux development.</p>\n      <ul>\n        <li><b>createSlice:</b> Automatically generates action creators and action types. Includes Immer built-in, so you can write \"mutating\" logic safely.</li>\n        <li><b>RTK Query:</b> Advanced data fetching and caching tool built specifically for Redux, completely eliminating the need to write thunks/reducers for API calls.</li>\n        <li><b>Best for:</b> Massive enterprise apps requiring strict traceability, offline support syncing, or complex derivation.</li>\n      </ul>"
+        },
+        {
+          "title": "TanStack Query (React Query)",
+          "contentHtml": "<p>Not technically \"state management\" in the traditional sense, but it manages <b>Server State</b>. It dramatically reduces the need for Redux/Zustand.</p>\n      <ul>\n        <li><b>Caching &amp; Deduping:</b> Automatically caches API responses and dedupes multiple identical requests into one.</li>\n        <li><b>Background Fetching:</b> Auto-refreshes data on window focus, reconnect, or interval.</li>\n        <li><b>Mutations:</b> Handles POST/PUT/DELETE requests with Optimistic Updates (updating UI instantly before server confirms).</li>\n      </ul>"
+        }
+      ]
+    },
+    {
+      "id": "react-testing",
+      "intro": "Ensuring application reliability and architecting scalable, reusable code.",
+      "cards": [
+        {
+          "title": "React Testing Library (RTL)",
+          "contentHtml": "<p>RTL guides you to test software the way a user interacts with it (finding buttons by text, checking what's visible) rather than testing implementation details (like component state).</p>\n      <ul>\n        <li><b>Roles &amp; Accessibility:</b> `screen.getByRole('button', { name: /submit/i })` enforces accessibility while making tests resilient to DOM changes.</li>\n        <li><b>user-event:</b> A companion library (`@testing-library/user-event`) that accurately simulates full browser interactions (e.g., firing focus, keydown, keypress, input, keyup events just from typing).</li>\n        <li><b>Mocking:</b> In modern testing, instead of mocking React components, we mock the <b>Network</b> using Mock Service Worker (MSW). MSW intercepts fetch/axios requests at the network level.</li>\n      </ul>"
+        },
+        {
+          "title": "Advanced React Patterns",
+          "contentHtml": "<ul>\n        <li><b>Compound Components:</b> A pattern where multiple components work together by sharing implicit state (via Context) to form a complete UI (e.g., `&lt;Select&gt;`, `&lt;Select.Option&gt;`). This allows users to restructure the HTML layout without passing complex configuration objects.</li>\n        <li><b>Render Props / Functions as Children:</b> Passing a function down as a prop so the parent component can dictate the rendering logic while the child component handles the state logic. (Largely replaced by Custom Hooks, but still used when UI mapping is strictly coupled to internal layout loops).</li>\n        <li><b>Controlled vs. Uncontrolled:</b> Controlled components derive their value blindly from props and bubble changes up via callbacks. Uncontrolled components manage their own DOM state using Refs.</li>\n      </ul>"
+        }
+      ]
+    },
+    {
+      "id": "react-forms",
+      "intro": "Handling user inputs effectively and navigating across complex application flows.",
+      "cards": [
+        {
+          "title": "React Hook Form (RHF)",
+          "contentHtml": "<p>The standard choice for performant, flexible, and extensible forms with easy-to-use validation. Unlike controlled components, RHF uses <b>uncontrolled inputs</b> via refs to prevent expensive UI re-renders on every keystroke.</p>\n      <ul>\n        <li><b>register():</b> Registers an input element into RHF and applies its validation rules.</li>\n        <li><b>handleSubmit():</b> Wraps your submit handler. It automatically passes the validated data or handles preventing submission if there are validation errors.</li>\n        <li><b>Zod Integration:</b> Strongly recommended to use `@hookform/resolvers/zod` to declare a TypeScript-first schema for validating form shapes.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>import { useForm } from \"react-hook-form\";\nimport { zodResolver } from \"@hookform/resolvers/zod\";\nimport * as z from \"zod\";\n\nconst schema = z.object({ name: z.string().min(2, \"Too short\") });\n\nfunction MyForm() {\n  const { register, handleSubmit, formState: { errors } } = useForm({\n    resolver: zodResolver(schema)\n  });\n\n  return (\n    &lt;form onSubmit={handleSubmit((data) =&gt; console.log(data))}&gt;\n      &lt;input {...register(\"name\")} /&gt;\n      {errors.name &amp;&amp; &lt;p&gt;{errors.name.message}&lt;/p&gt;}\n      &lt;button type=\"submit\"&gt;Submit&lt;/button&gt;\n    &lt;/form&gt;\n  );\n}\n</code></pre>\n      </div>"
+        },
+        {
+          "title": "React Router v7",
+          "contentHtml": "<p>React Router has evolved from a pure component-based router into a full <b>framework-level</b> routing architecture (merging with Remix concepts).</p>\n      <ul>\n        <li><b>Data Loaders:</b> Move data fetching OUT of your components. Loaders run before the route renders, eliminating \"spinner hell\" and waterfall fetches.</li>\n        <li><b>Actions:</b> Data mutations (POST/PUT/DELETE) are handled natively through form submissions routed to specialized Action functions.</li>\n        <li><b>createBrowserRouter:</b> The modern DOM-based routing setup required to enable loaders, actions, and advanced error boundaries.</li>\n      </ul>\n      <div class=\"tip\">\n        <b>Tip:</b> If you are using Next.js App Router, you don't use React Router. But if you are building an SPA (e.g., with Vite), React Router v7 is mandatory for modern data-loading patterns.\n      </div>"
+        }
+      ]
+    },
+    {
+      "id": "react-patterns",
+      "intro": "Design patterns for building scalable, reusable, and type-safe components.",
+      "cards": [
+        {
+          "title": "Component Composition & Slot Pattern",
+          "contentHtml": "<p>Instead of passing dozens of props to a component, use composition to keep components clean and flexible.</p>\n      <ul>\n        <li><b>Composition:</b> Pass components as `children` or explicit props.</li>\n        <li><b>Slots:</b> Define specific \"plugs\" where child components can be inserted, allowing the parent to control the layout while the consumer controls the content.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>// Slot Pattern\nfunction Modal({ header, body, footer }) {\n  return (\n    &lt;div class=\"modal\"&gt;\n      &lt;div class=\"h\"&gt;{header}&lt;/div&gt;\n      &lt;div class=\"b\"&gt;{body}&lt;/div&gt;\n      &lt;div class=\"f\"&gt;{footer}&lt;/div&gt;\n    &lt;/div&gt;\n  );\n}\n\n// Usage\n&lt;Modal \n  header={&lt;h1&gt;Welcome&lt;/h1&gt;} \n  body={&lt;LoginForm /&gt;} \n  footer={&lt;Button&gt;Close&lt;/Button&gt;} \n/&gt;\n</code></pre>\n      </div>"
+        },
+        {
+          "title": "Compound Components",
+          "contentHtml": "<p>A pattern where a group of components work together to manage shared state implicitly via Context.</p>\n      <ul>\n        <li><b>Example:</b> A `&lt;Select&gt;` component and its `&lt;Option&gt;` children.</li>\n        <li><b>Benefit:</b> The user of the component doesn't need to manually pass state (like `isOpen`) to every single sub-component.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>// Usage\n&lt;Tabs defaultValue=\"tab1\"&gt;\n  &lt;Tabs.List&gt;\n    &lt;Tabs.Trigger value=\"tab1\"&gt;Tab 1&lt;/Tabs.Trigger&gt;\n    &lt;Tabs.Trigger value=\"tab2\"&gt;Tab 2&lt;/Tabs.Trigger&gt;\n  &lt;/Tabs.List&gt;\n  &lt;Tabs.Content value=\"tab1\"&gt;Content 1&lt;/Tabs.Content&gt;\n  &lt;Tabs.Content value=\"tab2\"&gt;Content 2&lt;/Tabs.Content&gt;\n&lt;/Tabs&gt;\n</code></pre>\n      </div>"
+        },
+        {
+          "title": "Inversion of Control (IoC)",
+          "contentHtml": "<p>IoC shifts the responsibility of rendering or logic back to the consumer. Instead of a component having complex internal logic for every edge case, it provides a \"hook\" or a callback.</p>\n      <div class=\"analogy\">\n        Think of IoC like <b>ordering a customized pizza</b>. The pizza place doesn't decide your toppings (internal logic); they just provide the base and the oven (container), and you \"invert control\" by telling them exactly what to put on top (props/render props).\n      </div>"
+        }
+      ]
+    },
+    {
+      "id": "react-19",
+      "intro": "The biggest shift in React history: Compiler, Server Components, and native Actions.",
+      "cards": [
+        {
+          "title": "React Compiler (Experimental)",
+          "contentHtml": "<p>React 19 introduces a build-time compiler that automatically memoizes your code. It ensures that components re-render only when their data truly changes.</p>\n      <ul>\n        <li><b>Goodbye `useMemo` &amp; `useCallback`:</b> The compiler analyzes your dependency graph and adds auto-memoization, making these hooks mostly redundant.</li>\n        <li><b>Zero-Config:</b> Once enabled, it optimizes your entire application without manual intervention.</li>\n        <li><b>Strict Rules:</b> Requires strictly following React's rules (no mutating props or state directly) to work correctly.</li>\n      </ul>"
+        },
+        {
+          "title": "Server Components (RSC) & Actions",
+          "contentHtml": "<p>RSCs allow components to render on the server, potentially removing all their JavaScript from the client bundle.</p>\n      <ul>\n        <li><b>Server Actions:</b> Use `use server` to define functions that run on the server, callable directly from your client-side forms.</li>\n        <li><b>useFormStatus &amp; useActionState:</b> New hooks to handle the pending state and response of Server Actions without manual `isLoading` trackers.</li>\n        <li><b>Streaming:</b> Components can stream their content to the client as soon as data (like DB queries) is ready.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>// Server Action (actions.js)\n'use server'\nexport async function updateUsername(formData) {\n  const name = formData.get('name');\n  await db.user.update({ name });\n}\n\n// Client Component\nfunction ProfileForm() {\n  const { pending } = useFormStatus();\n  return (\n    &lt;form action={updateUsername}&gt;\n      &lt;input name=\"name\" /&gt;\n      &lt;button disabled={pending}&gt;Update&lt;/button&gt;\n    &lt;/form&gt;\n  );\n}\n</code></pre>\n      </div>"
+        },
+        {
+          "title": "The `use()` Hook & useOptimistic",
+          "contentHtml": "<p>React 19 makes asynchronous logic feel synchronous within your components.</p>\n      <ul>\n        <li><b>use():</b> Can be used to read a Promise or Context. Unlike standard hooks, it can be used inside `if` statements or loops.</li>\n        <li><b>useOptimistic:</b> Allows you to immediately update the UI with an expected result while a server action is still in flight.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>function MessageList({ messages, sendMessage }) {\n  const [optimisticMessages, addOptimisticMessage] = useOptimistic(\n    messages,\n    (state, newMessage) =&gt; [...state, { text: newMessage, sending: true }]\n  );\n\n  return (\n    &lt;div&gt;\n      {optimisticMessages.map(m =&gt; &lt;div&gt;{m.text}&lt;/div&gt;)}\n      &lt;button onClick={() =&gt; {\n        addOptimisticMessage(\"Hello!\");\n        sendMessage(\"Hello!\");\n      }}&gt;Send&lt;/button&gt;\n    &lt;/div&gt;\n  );\n}\n</code></pre>\n      </div>"
+        }
+      ]
+    },
+    {
+      "id": "r-fundamentals",
+      "intro": "React is a JavaScript library for building UIs with components. React 19 is the current version. The mental model in 2026: server-first, compiler-optimized, less useEffect.",
+      "cards": [
+        {
+          "title": "What React Actually Is",
+          "contentHtml": "<p>React is a <strong>declarative, component-based library</strong> for building user interfaces. You describe WHAT the UI should look like for given data, and React figures out HOW to update the screen efficiently. It uses a <strong>Virtual DOM</strong> — a lightweight JS representation of the real DOM — to batch and minimize actual DOM updates.</p>\n<p>React is NOT a framework. It handles the <strong>view layer only</strong>. For routing, state management, SSR, and build tooling, you need additional libraries or a framework like Next.js.</p>\n<div class=\"analogy\">React is like a <strong>recipe card system</strong>. Each card (component) describes what to display given certain ingredients (props/state). When ingredients change, React compares the new card with the old one and updates only what's different on the plate (DOM).</div>"
+        },
+        {
+          "title": "JSX — In Depth",
+          "contentHtml": "<p>JSX is syntactic sugar for <code>React.createElement()</code> calls. It looks like HTML but it's JavaScript.</p>\n<pre><code><span class=\"cm\">// This JSX:</span>\n&lt;h1 className=\"title\"&gt;Hello, {name}!&lt;/h1&gt;\n\n<span class=\"cm\">// Compiles to:</span>\nReact.createElement(<span class=\"st\">'h1'</span>, { className: <span class=\"st\">'title'</span> }, <span class=\"st\">'Hello, '</span>, name, <span class=\"st\">'!'</span>);\n\n<span class=\"cm\">// JSX Rules:</span>\n<span class=\"cm\">// 1. Single root element — use Fragment (&lt;&gt;...) to avoid extra divs</span>\n<span class=\"kw\">return</span> (\n  &lt;&gt;\n    &lt;h1&gt;Title&lt;/h1&gt;\n    &lt;p&gt;Body&lt;/p&gt;\n  &lt;/&gt;\n);\n\n<span class=\"cm\">// 2. All tags must close: &lt;img&gt;, <br>, &lt;input&gt;</span>\n\n<span class=\"cm\">// 3. camelCase for attributes:</span>\n<span class=\"cm\">//    class → className</span>\n<span class=\"cm\">//    for → htmlFor</span>\n<span class=\"cm\">//    onclick → onClick</span>\n<span class=\"cm\">//    tabindex → tabIndex</span>\n<span class=\"cm\">//    style takes an OBJECT, not a string:</span>\n&lt;div style={{ color: <span class=\"st\">'red'</span>, fontSize: <span class=\"st\">'16px'</span> }}&gt;\n\n<span class=\"cm\">// 4. Expressions in { } — any valid JS expression</span>\n{isLoggedIn &amp;&amp; &lt;Welcome /&gt;}            <span class=\"cm\">// short-circuit</span>\n{role === <span class=\"st\">'admin'</span> ? &lt;Admin /&gt; : &lt;User /&gt;}  <span class=\"cm\">// ternary</span>\n{items.map(item =&gt; (                    <span class=\"cm\">// map (parentheses for implicit return!)</span>\n  &lt;li key={item.id}&gt;{item.name}&lt;/li&gt;\n))}\n\n<span class=\"cm\">// 5. Spreading props</span>\n<span class=\"kw\">const</span> props = { type: <span class=\"st\">'submit'</span>, disabled: <span class=\"kw\">true</span> };\n&lt;button {...props}&gt;Submit&lt;/button&gt;\n\n<span class=\"cm\">// 6. Rendering nothing: return null, undefined, or false</span>\n{showBanner &amp;&amp; &lt;Banner /&gt;} <span class=\"cm\">// renders nothing if showBanner is false</span></code></pre>\n<div class=\"warn\"><strong>NEVER use index as key in lists</strong>: <code>items.map((item, i) =&gt; &lt;li key={i}&gt;)</code> causes bugs when items are reordered, filtered, or deleted. Always use a stable unique ID like <code>item.id</code>.</div>"
+        },
+        {
+          "title": "Components — The Building Blocks",
+          "contentHtml": "<p>Components are JavaScript functions that return JSX. They can receive <strong>props</strong> (inputs) and manage <strong>state</strong> (internal data).</p>\n<pre><code><span class=\"cm\">// Basic component with props</span>\n<span class=\"kw\">function</span> <span class=\"fn\">Greeting</span>({ name, age = <span class=\"nu\">25</span> }: { name: <span class=\"kw\">string</span>; age?: <span class=\"kw\">number</span> }) {\n  <span class=\"kw\">return</span> &lt;p&gt;Hello, {name}! Age: {age}&lt;/p&gt;;\n}\n\n<span class=\"cm\">// With children prop</span>\n<span class=\"kw\">function</span> <span class=\"fn\">Card</span>({ title, children }: { title: <span class=\"kw\">string</span>; children: React.ReactNode }) {\n  <span class=\"kw\">return</span> (\n    &lt;div className=\"card\"&gt;\n      &lt;h2&gt;{title}&lt;/h2&gt;\n      &lt;div className=\"body\"&gt;{children}&lt;/div&gt;\n    &lt;/div&gt;\n  );\n}\n\n<span class=\"cm\">// Usage: children is whatever you put between the tags</span>\n&lt;Card title=\"Profile\"&gt;\n  &lt;p&gt;This is the card body!&lt;/p&gt;\n  &lt;button&gt;Edit&lt;/button&gt;\n&lt;/Card&gt;</code></pre>\n\n<h3>Props Rules</h3>\n<p><strong>1. Props are read-only</strong> — never modify them. <strong>2. Props flow one way</strong> (parent → child). <strong>3. Default values</strong>: use destructuring defaults <code>({ count = 0 })</code>. <strong>4. TypeScript</strong>: always define prop types with interfaces or types.</p>\n\n<h3>Component Composition vs Inheritance</h3>\n<p>React strongly favours <strong>composition over inheritance</strong>. You never extend component classes. Instead, you compose components by nesting, passing children, or using render props.</p>\n<div class=\"analogy\">Components are like <strong>LEGO blocks</strong>. Small blocks (Button, Input) snap together to form bigger blocks (LoginForm), which snap together to form even bigger structures (AuthPage). You never modify a LEGO piece — you combine them.</div>"
+        },
+        {
+          "title": "State — Making Components Interactive",
+          "contentHtml": "<pre><code><span class=\"kw\">import</span> { useState } <span class=\"kw\">from</span> <span class=\"st\">'react'</span>;\n\n<span class=\"kw\">function</span> <span class=\"fn\">Counter</span>() {\n  <span class=\"cm\">// useState returns [currentValue, setterFunction]</span>\n  <span class=\"kw\">const</span> [count, setCount] = <span class=\"fn\">useState</span>(<span class=\"nu\">0</span>);\n\n  <span class=\"kw\">return</span> (\n    &lt;div&gt;\n      &lt;p&gt;Count: {count}&lt;/p&gt;\n      &lt;button onClick={() =&gt; setCount(count + <span class=\"nu\">1</span>)}&gt;+1&lt;/button&gt;\n      &lt;button onClick={() =&gt; setCount(prev =&gt; prev + <span class=\"nu\">1</span>)}&gt;+1 (safe)&lt;/button&gt;\n      &lt;button onClick={() =&gt; setCount(<span class=\"nu\">0</span>)}&gt;Reset&lt;/button&gt;\n    &lt;/div&gt;\n  );\n}</code></pre>\n\n<h3>Critical State Rules</h3>\n<pre><code><span class=\"cm\">// 1. State updates are ASYNCHRONOUS and BATCHED</span>\nsetCount(<span class=\"nu\">1</span>);\nsetCount(<span class=\"nu\">2</span>);\nsetCount(<span class=\"nu\">3</span>);\n<span class=\"cm\">// React batches these → only ONE re-render with count = 3</span>\n\n<span class=\"cm\">// 2. Use FUNCTIONAL UPDATES for state derived from previous state</span>\n<span class=\"cm\">// ❌ BUG: both read the same stale 'count'</span>\nsetCount(count + <span class=\"nu\">1</span>);\nsetCount(count + <span class=\"nu\">1</span>); <span class=\"cm\">// still just +1 total</span>\n\n<span class=\"cm\">// ✅ CORRECT: each reads the latest pending value</span>\nsetCount(prev =&gt; prev + <span class=\"nu\">1</span>);\nsetCount(prev =&gt; prev + <span class=\"nu\">1</span>); <span class=\"cm\">// +2 total</span>\n\n<span class=\"cm\">// 3. State is IMMUTABLE — never mutate directly</span>\n<span class=\"cm\">// ❌ WRONG: mutating state directly</span>\nuser.name = <span class=\"st\">'Bob'</span>;\nsetUser(user); <span class=\"cm\">// React won't re-render! Same reference.</span>\n\n<span class=\"cm\">// ✅ CORRECT: create a new object</span>\nsetUser({ ...user, name: <span class=\"st\">'Bob'</span> });\n\n<span class=\"cm\">// 4. Updating arrays immutably</span>\nsetItems(prev =&gt; [...prev, newItem]);              <span class=\"cm\">// add</span>\nsetItems(prev =&gt; prev.filter(i =&gt; i.id !== id));   <span class=\"cm\">// remove</span>\nsetItems(prev =&gt; prev.map(i =&gt;                     <span class=\"cm\">// update one</span>\n  i.id === id ? { ...i, done: <span class=\"kw\">true</span> } : i\n));\nsetItems(prev =&gt; prev.toSorted((a, b) =&gt; a.age - b.age)); <span class=\"cm\">// sort (new array)</span>\n\n<span class=\"cm\">// 5. Updating nested objects</span>\nsetPerson(prev =&gt; ({\n  ...prev,\n  address: { ...prev.address, city: <span class=\"st\">'London'</span> }\n}));\n\n<span class=\"cm\">// 6. Lazy initialization (expensive computation)</span>\n<span class=\"kw\">const</span> [data, setData] = <span class=\"fn\">useState</span>(() =&gt; {\n  <span class=\"kw\">return</span> JSON.parse(localStorage.getItem(<span class=\"st\">'data'</span>) || <span class=\"st\">'[]'</span>);\n}); <span class=\"cm\">// function only runs on FIRST render</span></code></pre>\n<div class=\"deep\">When you call <code>setState</code>, React does NOT update the variable immediately. It schedules a re-render. On the next render, the component function runs again and <code>useState</code> returns the new value. This is why <code>count</code> appears \"stale\" immediately after <code>setCount</code> — you're still in the current render's closure.</div>"
+        },
+        {
+          "title": "Event Handling",
+          "contentHtml": "<pre><code><span class=\"cm\">// React events are camelCase and receive SyntheticEvent</span>\n&lt;button onClick={handleClick}&gt;Click&lt;/button&gt;\n&lt;input onChange={handleChange} /&gt;\n&lt;form onSubmit={handleSubmit}&gt;\n\n<span class=\"cm\">// Pass event object</span>\n<span class=\"kw\">function</span> <span class=\"fn\">handleClick</span>(e: React.MouseEvent&lt;HTMLButtonElement&gt;) {\n  e.preventDefault();  <span class=\"cm\">// prevent default behavior</span>\n  e.stopPropagation(); <span class=\"cm\">// stop event bubbling</span>\n  console.log(e.currentTarget); <span class=\"cm\">// the element the handler is on</span>\n  console.log(e.target);        <span class=\"cm\">// the actual element that was clicked</span>\n}\n\n<span class=\"cm\">// Passing arguments to handlers</span>\n<span class=\"cm\">// ❌ BAD: creates new function every render</span>\n&lt;button onClick={() =&gt; deleteItem(id)}&gt;Delete&lt;/button&gt;\n\n<span class=\"cm\">// ✅ BETTER: use data attributes or currying</span>\n&lt;button data-id={id} onClick={handleDelete}&gt;Delete&lt;/button&gt;\n<span class=\"kw\">function</span> <span class=\"fn\">handleDelete</span>(e) {\n  <span class=\"kw\">const</span> id = e.currentTarget.dataset.id;\n}\n\n<span class=\"cm\">// Form handling</span>\n<span class=\"kw\">function</span> <span class=\"fn\">handleSubmit</span>(e: React.FormEvent&lt;HTMLFormElement&gt;) {\n  e.preventDefault();\n  <span class=\"kw\">const</span> formData = <span class=\"kw\">new</span> FormData(e.currentTarget);\n  <span class=\"kw\">const</span> name = formData.get(<span class=\"st\">'name'</span>);\n}</code></pre>"
+        },
+        {
+          "title": "Conditional Rendering — All Patterns",
+          "contentHtml": "<pre><code><span class=\"cm\">// 1. if/else (before return)</span>\n<span class=\"kw\">if</span> (isLoading) <span class=\"kw\">return</span> &lt;Spinner /&gt;;\n<span class=\"kw\">if</span> (error) <span class=\"kw\">return</span> &lt;Error message={error} /&gt;;\n<span class=\"kw\">return</span> &lt;Data /&gt;;\n\n<span class=\"cm\">// 2. Ternary (inline)</span>\n{isLoggedIn ? &lt;Dashboard /&gt; : &lt;Login /&gt;}\n\n<span class=\"cm\">// 3. Short-circuit &amp;&amp; (show or nothing)</span>\n{hasNotifications &amp;&amp; &lt;Badge count={count} /&gt;}\n\n<span class=\"cm\">// ⚠️ GOTCHA: 0 &amp;&amp; &lt;component&gt; renders \"0\" not nothing!&lt;/component&gt;</span>\n{items.length &amp;&amp; &lt;List /&gt;} <span class=\"cm\">// renders \"0\" when empty!</span>\n{items.length &gt; <span class=\"nu\">0</span> &amp;&amp; &lt;List /&gt;} <span class=\"cm\">// ✅ correct</span>\n\n<span class=\"cm\">// 4. Null/undefined — renders nothing</span>\n<span class=\"kw\">return</span> shouldShow ? &lt;Widget /&gt; : <span class=\"kw\">null</span>;\n\n<span class=\"cm\">// 5. Switch-like pattern with object mapping</span>\n<span class=\"kw\">const</span> statusComponents = {\n  loading: &lt;Spinner /&gt;,\n  error: &lt;Error /&gt;,\n  success: &lt;Data /&gt;,\n};\n<span class=\"kw\">return</span> statusComponents[status] ?? &lt;Fallback /&gt;;</code></pre>"
+        },
+        {
+          "title": "Rendering Lists — The Complete Guide",
+          "contentHtml": "<pre><code><span class=\"cm\">// Basic list</span>\n{users.map(user =&gt; (\n  &lt;UserCard key={user.id} user={user} /&gt;\n))}\n\n<span class=\"cm\">// With index (only when items are static + never reordered)</span>\n{staticLabels.map((label, index) =&gt; (\n  &lt;span key={index}&gt;{label}&lt;/span&gt;\n))}\n\n<span class=\"cm\">// Nested lists</span>\n{categories.map(cat =&gt; (\n  &lt;div key={cat.id}&gt;\n    &lt;h2&gt;{cat.name}&lt;/h2&gt;\n    {cat.items.map(item =&gt; (\n      &lt;Item key={item.id} data={item} /&gt;\n    ))}\n  &lt;/div&gt;\n))}\n\n<span class=\"cm\">// Filtering + mapping (chain them!)</span>\n{todos\n  .filter(t =&gt; !t.completed)\n  .map(t =&gt; &lt;TodoItem key={t.id} todo={t} /&gt;)\n}</code></pre>\n<div class=\"deep\"><strong>Why keys matter:</strong> When React re-renders a list, it uses keys to match old elements with new ones. Without keys (or with index keys), React can't tell if item #3 moved to position #5 — it destroys and recreates DOM nodes unnecessarily. With stable keys, React reuses and reorders existing nodes. This is critical for performance AND preserving component state (input values, scroll position).</div>"
+        }
+      ]
+    },
+    {
+      "id": "r-hooks",
+      "intro": "Hooks are functions that let you \"hook into\" React features. Master every hook and you master React.",
+      "cards": [
+        {
+          "title": "useState — Complete Reference",
+          "contentHtml": "<pre><code><span class=\"cm\">// Primitive state</span>\n<span class=\"kw\">const</span> [count, setCount] = <span class=\"fn\">useState</span>(<span class=\"nu\">0</span>);\n<span class=\"kw\">const</span> [name, setName] = <span class=\"fn\">useState</span>(<span class=\"st\">''</span>);\n<span class=\"kw\">const</span> [isOpen, setIsOpen] = <span class=\"fn\">useState</span>(<span class=\"kw\">false</span>);\n\n<span class=\"cm\">// Object state</span>\n<span class=\"kw\">const</span> [user, setUser] = <span class=\"fn\">useState</span>&lt;User | <span class=\"kw\">null</span>&gt;(<span class=\"kw\">null</span>);\n\n<span class=\"cm\">// Lazy initial state (function runs only on first render)</span>\n<span class=\"kw\">const</span> [todos, setTodos] = <span class=\"fn\">useState</span>(() =&gt; {\n  <span class=\"kw\">return</span> JSON.parse(localStorage.getItem(<span class=\"st\">'todos'</span>) ?? <span class=\"st\">'[]'</span>);\n});\n\n<span class=\"cm\">// Common patterns:</span>\nsetIsOpen(prev =&gt; !prev);          <span class=\"cm\">// toggle</span>\nsetItems(prev =&gt; [...prev, item]); <span class=\"cm\">// append</span>\nsetUser(prev =&gt; prev ? { ...prev, name } : prev); <span class=\"cm\">// safe update</span></code></pre>"
+        },
+        {
+          "title": "useEffect — The Most Misunderstood Hook",
+          "contentHtml": "<pre><code><span class=\"cm\">// useEffect synchronizes your component with external systems</span>\n<span class=\"cm\">// It is NOT \"a lifecycle method\" — it's a synchronization tool</span>\n\n<span class=\"cm\">// Pattern 1: Run on EVERY render (no dependency array)</span>\n<span class=\"fn\">useEffect</span>(() =&gt; {\n  console.log(<span class=\"st\">'Runs after every render'</span>);\n});\n\n<span class=\"cm\">// Pattern 2: Run ONCE on mount (empty array)</span>\n<span class=\"fn\">useEffect</span>(() =&gt; {\n  <span class=\"kw\">const</span> ws = <span class=\"kw\">new</span> WebSocket(url);\n  ws.onmessage = handleMessage;\n  <span class=\"kw\">return</span> () =&gt; ws.close(); <span class=\"cm\">// cleanup on unmount</span>\n}, []);\n\n<span class=\"cm\">// Pattern 3: Run when DEPENDENCIES change</span>\n<span class=\"fn\">useEffect</span>(() =&gt; {\n  <span class=\"kw\">const</span> controller = <span class=\"kw\">new</span> AbortController();\n\n  <span class=\"fn\">fetch</span>(<span class=\"st\">`/api/users/${userId}`</span>, { signal: controller.signal })\n    .then(r =&gt; r.json())\n    .then(setUser)\n    .catch(err =&gt; {\n      <span class=\"kw\">if</span> (err.name !== <span class=\"st\">'AbortError'</span>) setError(err);\n    });\n\n  <span class=\"kw\">return</span> () =&gt; controller.abort(); <span class=\"cm\">// cleanup: abort pending request</span>\n}, [userId]); <span class=\"cm\">// re-run when userId changes</span>\n\n<span class=\"cm\">// Pattern 4: Event listeners</span>\n<span class=\"fn\">useEffect</span>(() =&gt; {\n  <span class=\"kw\">const</span> handler = (e: KeyboardEvent) =&gt; {\n    <span class=\"kw\">if</span> (e.key === <span class=\"st\">'Escape'</span>) onClose();\n  };\n  window.addEventListener(<span class=\"st\">'keydown'</span>, handler);\n  <span class=\"kw\">return</span> () =&gt; window.removeEventListener(<span class=\"st\">'keydown'</span>, handler);\n}, [onClose]);</code></pre>\n\n<h3>When NOT to use useEffect</h3>\n<pre><code><span class=\"cm\">// ❌ DON'T: Transform data for rendering (use useMemo or just compute)</span>\nuseEffect(() =&gt; {\n  setFilteredItems(items.filter(i =&gt; i.active));\n}, [items]);\n<span class=\"cm\">// ✅ INSTEAD: derive during render</span>\n<span class=\"kw\">const</span> filteredItems = items.filter(i =&gt; i.active);\n<span class=\"cm\">// or: const filteredItems = useMemo(() =&gt; items.filter(...), [items]);</span>\n\n<span class=\"cm\">// ❌ DON'T: Reset state when props change</span>\nuseEffect(() =&gt; { setComment(''); }, [postId]);\n<span class=\"cm\">// ✅ INSTEAD: use key to remount</span>\n&lt;CommentForm key={postId} /&gt;\n\n<span class=\"cm\">// ❌ DON'T: Handle user events</span>\nuseEffect(() =&gt; {\n  <span class=\"kw\">if</span> (submitted) sendData();\n}, [submitted]);\n<span class=\"cm\">// ✅ INSTEAD: call function from event handler directly</span>\n<span class=\"kw\">const</span> handleSubmit = () =&gt; sendData();</code></pre>\n<div class=\"tip\"><strong>2026 Rule:</strong> \"If you're reaching for useEffect, ask why first.\" The React team says useEffect should be a <strong>last resort</strong>, not the default for data fetching, derived state, or event responses. Use Server Components (fetch on server), event handlers (user interactions), or derived state (compute during render) instead.</div>"
+        },
+        {
+          "title": "useRef — Mutable Container",
+          "contentHtml": "<pre><code><span class=\"cm\">// 1. Access DOM elements</span>\n<span class=\"kw\">const</span> inputRef = <span class=\"fn\">useRef</span>&lt;HTMLInputElement&gt;(<span class=\"kw\">null</span>);\n<span class=\"cm\">// In template: &lt;input ref=\"{inputRef}\"&gt;</span>\n<span class=\"cm\">// Later: inputRef.current?.focus();</span>\n\n<span class=\"cm\">// 2. Store mutable values that DON'T trigger re-renders</span>\n<span class=\"kw\">const</span> intervalRef = <span class=\"fn\">useRef</span>&lt;NodeJS.Timeout&gt;();\n<span class=\"kw\">const</span> prevValueRef = <span class=\"fn\">useRef</span>(value);\n<span class=\"kw\">const</span> renderCountRef = <span class=\"fn\">useRef</span>(<span class=\"nu\">0</span>);\nrenderCountRef.current++; <span class=\"cm\">// no re-render!</span>\n\n<span class=\"cm\">// 3. Store latest callback without stale closure issues</span>\n<span class=\"kw\">const</span> callbackRef = <span class=\"fn\">useRef</span>(callback);\ncallbackRef.current = callback; <span class=\"cm\">// always up to date</span>\n\n<span class=\"cm\">// 4. Callback refs (when you need to know when a ref is set)</span>\n<span class=\"kw\">const</span> measuredRef = <span class=\"fn\">useCallback</span>((node: HTMLDivElement | <span class=\"kw\">null</span>) =&gt; {\n  <span class=\"kw\">if</span> (node) {\n    setHeight(node.getBoundingClientRect().height);\n  }\n}, []);</code></pre>\n<div class=\"analogy\"><code>useRef</code> is like a <strong>sticky note on your desk</strong>. You can write on it, erase it, change it — and nobody else notices. It's your private scratchpad that persists between renders but never causes a re-render when changed.</div>"
+        },
+        {
+          "title": "useContext — Global State Without Prop Drilling",
+          "contentHtml": "<pre><code><span class=\"cm\">// 1. Create context</span>\n<span class=\"kw\">interface</span> ThemeCtx { theme: <span class=\"st\">'light'</span> | <span class=\"st\">'dark'</span>; toggle: () =&gt; <span class=\"kw\">void</span>; }\n<span class=\"kw\">const</span> ThemeContext = <span class=\"fn\">createContext</span>&lt;ThemeCtx | <span class=\"kw\">null</span>&gt;(<span class=\"kw\">null</span>);\n\n<span class=\"cm\">// 2. Create provider component</span>\n<span class=\"kw\">function</span> <span class=\"fn\">ThemeProvider</span>({ children }: { children: React.ReactNode }) {\n  <span class=\"kw\">const</span> [theme, setTheme] = <span class=\"fn\">useState</span>&lt;<span class=\"st\">'light'</span> | <span class=\"st\">'dark'</span>&gt;(<span class=\"st\">'dark'</span>);\n  <span class=\"kw\">const</span> toggle = () =&gt; setTheme(t =&gt; t === <span class=\"st\">'dark'</span> ? <span class=\"st\">'light'</span> : <span class=\"st\">'dark'</span>);\n  <span class=\"kw\">return</span> (\n    &lt;ThemeContext.Provider value={{ theme, toggle }}&gt;\n      {children}\n    &lt;/ThemeContext.Provider&gt;\n  );\n}\n\n<span class=\"cm\">// 3. Custom hook (type-safe, fails fast)</span>\n<span class=\"kw\">function</span> <span class=\"fn\">useTheme</span>() {\n  <span class=\"kw\">const</span> ctx = <span class=\"fn\">useContext</span>(ThemeContext);\n  <span class=\"kw\">if</span> (!ctx) <span class=\"kw\">throw new</span> Error(<span class=\"st\">'useTheme must be used within ThemeProvider'</span>);\n  <span class=\"kw\">return</span> ctx;\n}\n\n<span class=\"cm\">// 4. Consume anywhere</span>\n<span class=\"kw\">function</span> <span class=\"fn\">Header</span>() {\n  <span class=\"kw\">const</span> { theme, toggle } = <span class=\"fn\">useTheme</span>();\n  <span class=\"kw\">return</span> &lt;button onClick={toggle}&gt;Current: {theme}&lt;/button&gt;;\n}</code></pre>\n<div class=\"warn\"><strong>Context limitation:</strong> When the context value changes, ALL consuming components re-render, even if they only use a small part of the value. For frequently changing values (mouse position, real-time data), use external state management (Zustand, Jotai) instead.</div>"
+        },
+        {
+          "title": "useReducer — Complex State Logic",
+          "contentHtml": "<pre><code><span class=\"kw\">interface</span> State { items: Item[]; loading: <span class=\"kw\">boolean</span>; error: <span class=\"kw\">string</span> | <span class=\"kw\">null</span>; }\n<span class=\"kw\">type</span> Action =\n  | { type: <span class=\"st\">'FETCH_START'</span> }\n  | { type: <span class=\"st\">'FETCH_SUCCESS'</span>; payload: Item[] }\n  | { type: <span class=\"st\">'FETCH_ERROR'</span>; payload: <span class=\"kw\">string</span> }\n  | { type: <span class=\"st\">'ADD_ITEM'</span>; payload: Item }\n  | { type: <span class=\"st\">'DELETE_ITEM'</span>; payload: <span class=\"kw\">string</span> };\n\n<span class=\"kw\">function</span> <span class=\"fn\">reducer</span>(state: State, action: Action): State {\n  <span class=\"kw\">switch</span> (action.type) {\n    <span class=\"kw\">case</span> <span class=\"st\">'FETCH_START'</span>:\n      <span class=\"kw\">return</span> { ...state, loading: <span class=\"kw\">true</span>, error: <span class=\"kw\">null</span> };\n    <span class=\"kw\">case</span> <span class=\"st\">'FETCH_SUCCESS'</span>:\n      <span class=\"kw\">return</span> { ...state, loading: <span class=\"kw\">false</span>, items: action.payload };\n    <span class=\"kw\">case</span> <span class=\"st\">'FETCH_ERROR'</span>:\n      <span class=\"kw\">return</span> { ...state, loading: <span class=\"kw\">false</span>, error: action.payload };\n    <span class=\"kw\">case</span> <span class=\"st\">'ADD_ITEM'</span>:\n      <span class=\"kw\">return</span> { ...state, items: [...state.items, action.payload] };\n    <span class=\"kw\">case</span> <span class=\"st\">'DELETE_ITEM'</span>:\n      <span class=\"kw\">return</span> { ...state, items: state.items.filter(i =&gt; i.id !== action.payload) };\n  }\n}\n\n<span class=\"kw\">const</span> [state, dispatch] = <span class=\"fn\">useReducer</span>(reducer, {\n  items: [], loading: <span class=\"kw\">false</span>, error: <span class=\"kw\">null</span>\n});\n\ndispatch({ type: <span class=\"st\">'ADD_ITEM'</span>, payload: newItem });</code></pre>\n<div class=\"tip\">Use <code>useReducer</code> over <code>useState</code> when: state has multiple sub-values, next state depends on previous state, state transitions are complex, or you want to pass <code>dispatch</code> down instead of multiple setter functions.</div>"
+        },
+        {
+          "title": "useMemo & useCallback",
+          "contentHtml": "<pre><code><span class=\"cm\">// useMemo: memoize a COMPUTED VALUE</span>\n<span class=\"kw\">const</span> sortedItems = <span class=\"fn\">useMemo</span>(() =&gt; {\n  <span class=\"kw\">return</span> [...items].sort((a, b) =&gt; a.name.localeCompare(b.name));\n}, [items]); <span class=\"cm\">// only recomputes when items change</span>\n\n<span class=\"cm\">// useCallback: memoize a FUNCTION REFERENCE</span>\n<span class=\"kw\">const</span> handleDelete = <span class=\"fn\">useCallback</span>((id: <span class=\"kw\">string</span>) =&gt; {\n  setItems(prev =&gt; prev.filter(i =&gt; i.id !== id));\n}, []); <span class=\"cm\">// same function reference across renders</span>\n\n<span class=\"cm\">// When to use useCallback:</span>\n<span class=\"cm\">// 1. Passing callbacks to React.memo'd children</span>\n<span class=\"cm\">// 2. As useEffect dependencies</span>\n<span class=\"cm\">// 3. In context values</span>\n\n<span class=\"cm\">// When NOT to use useMemo/useCallback:</span>\n<span class=\"cm\">// 1. Simple computations (overhead &gt; benefit)</span>\n<span class=\"cm\">// 2. With React 19 Compiler (it auto-memoizes!)</span>\n<span class=\"cm\">// 3. Values that always change anyway</span></code></pre>\n<div class=\"deep\">With the <strong>React Compiler</strong> (React 19), useMemo and useCallback are automatically inserted by the compiler where needed. You can write plain code and the compiler optimizes it. These hooks become \"escape hatches\" for rare edge cases, not everyday tools.</div>"
+        },
+        {
+          "title": "React 19 New Hooks",
+          "contentHtml": "<pre><code><span class=\"cm\">// useActionState — form action state management</span>\n<span class=\"kw\">const</span> [state, formAction, isPending] = <span class=\"fn\">useActionState</span>(\n  <span class=\"kw\">async</span> (prevState, formData) =&gt; {\n    <span class=\"kw\">const</span> error = <span class=\"kw\">await</span> createUser(formData);\n    <span class=\"kw\">if</span> (error) <span class=\"kw\">return</span> { error };\n    <span class=\"kw\">return</span> { error: <span class=\"kw\">null</span> };\n  },\n  { error: <span class=\"kw\">null</span> }\n);\n&lt;form action={formAction}&gt;\n  &lt;input name=\"email\" /&gt;\n  {state.error &amp;&amp; &lt;p className=\"error\"&gt;{state.error}&lt;/p&gt;}\n  &lt;button disabled={isPending}&gt;{isPending ? <span class=\"st\">'...'</span> : <span class=\"st\">'Submit'</span>}&lt;/button&gt;\n&lt;/form&gt;\n\n<span class=\"cm\">// useOptimistic — instant UI updates before server confirms</span>\n<span class=\"kw\">const</span> [optimisticTodos, addOptimistic] = <span class=\"fn\">useOptimistic</span>(\n  todos,\n  (current, newTodo) =&gt; [...current, { ...newTodo, pending: <span class=\"kw\">true</span> }]\n);\n\n<span class=\"kw\">async function</span> <span class=\"fn\">handleAdd</span>(formData) {\n  addOptimistic({ text: formData.get(<span class=\"st\">'text'</span>), pending: <span class=\"kw\">true</span> });\n  <span class=\"kw\">await</span> addTodoToServer(formData); <span class=\"cm\">// if fails, optimistic update reverts</span>\n}\n\n<span class=\"cm\">// use() — read Promises and Context in render</span>\n<span class=\"kw\">function</span> <span class=\"fn\">UserProfile</span>({ userPromise }) {\n  <span class=\"kw\">const</span> user = <span class=\"fn\">use</span>(userPromise); <span class=\"cm\">// suspends component until resolved</span>\n  <span class=\"kw\">return</span> &lt;h1&gt;{user.name}&lt;/h1&gt;;\n}\n<span class=\"cm\">// Unlike useContext, use() can be called conditionally!</span>\n<span class=\"kw\">if</span> (showTheme) {\n  <span class=\"kw\">const</span> theme = <span class=\"fn\">use</span>(ThemeContext); <span class=\"cm\">// ✅ valid with use()</span>\n}\n\n<span class=\"cm\">// useTransition — mark updates as non-urgent</span>\n<span class=\"kw\">const</span> [isPending, startTransition] = <span class=\"fn\">useTransition</span>();\nstartTransition(<span class=\"kw\">async</span> () =&gt; {\n  <span class=\"kw\">await</span> saveData(); <span class=\"cm\">// React 19: async transitions!</span>\n  navigate(<span class=\"st\">'/success'</span>);\n});</code></pre>"
+        },
+        {
+          "title": "Custom Hooks — Real-World Examples",
+          "contentHtml": "<pre><code><span class=\"cm\">// useDebounce — delay value changes</span>\n<span class=\"kw\">function</span> <span class=\"fn\">useDebounce</span>&lt;T&gt;(value: T, delay: <span class=\"kw\">number</span>): T {\n  <span class=\"kw\">const</span> [debounced, setDebounced] = <span class=\"fn\">useState</span>(value);\n  <span class=\"fn\">useEffect</span>(() =&gt; {\n    <span class=\"kw\">const</span> t = setTimeout(() =&gt; setDebounced(value), delay);\n    <span class=\"kw\">return</span> () =&gt; clearTimeout(t);\n  }, [value, delay]);\n  <span class=\"kw\">return</span> debounced;\n}\n\n<span class=\"cm\">// useMediaQuery — responsive hooks</span>\n<span class=\"kw\">function</span> <span class=\"fn\">useMediaQuery</span>(query: <span class=\"kw\">string</span>): <span class=\"kw\">boolean</span> {\n  <span class=\"kw\">const</span> [matches, setMatches] = <span class=\"fn\">useState</span>(\n    () =&gt; window.matchMedia(query).matches\n  );\n  <span class=\"fn\">useEffect</span>(() =&gt; {\n    <span class=\"kw\">const</span> mql = window.matchMedia(query);\n    <span class=\"kw\">const</span> handler = (e: MediaQueryListEvent) =&gt; setMatches(e.matches);\n    mql.addEventListener(<span class=\"st\">'change'</span>, handler);\n    <span class=\"kw\">return</span> () =&gt; mql.removeEventListener(<span class=\"st\">'change'</span>, handler);\n  }, [query]);\n  <span class=\"kw\">return</span> matches;\n}\n\n<span class=\"cm\">// useFetch — data fetching with loading/error</span>\n<span class=\"kw\">function</span> <span class=\"fn\">useFetch</span>&lt;T&gt;(url: <span class=\"kw\">string</span>) {\n  <span class=\"kw\">const</span> [data, setData] = <span class=\"fn\">useState</span>&lt;T | <span class=\"kw\">null</span>&gt;(<span class=\"kw\">null</span>);\n  <span class=\"kw\">const</span> [loading, setLoading] = <span class=\"fn\">useState</span>(<span class=\"kw\">true</span>);\n  <span class=\"kw\">const</span> [error, setError] = <span class=\"fn\">useState</span>&lt;<span class=\"kw\">string</span> | <span class=\"kw\">null</span>&gt;(<span class=\"kw\">null</span>);\n\n  <span class=\"fn\">useEffect</span>(() =&gt; {\n    <span class=\"kw\">const</span> ctrl = <span class=\"kw\">new</span> AbortController();\n    setLoading(<span class=\"kw\">true</span>);\n    <span class=\"fn\">fetch</span>(url, { signal: ctrl.signal })\n      .then(r =&gt; { <span class=\"kw\">if</span> (!r.ok) <span class=\"kw\">throw new</span> Error(<span class=\"st\">`HTTP ${r.status}`</span>); <span class=\"kw\">return</span> r.json(); })\n      .then(d =&gt; { setData(d); setError(<span class=\"kw\">null</span>); })\n      .catch(e =&gt; { <span class=\"kw\">if</span> (e.name !== <span class=\"st\">'AbortError'</span>) setError(e.message); })\n      .finally(() =&gt; setLoading(<span class=\"kw\">false</span>));\n    <span class=\"kw\">return</span> () =&gt; ctrl.abort();\n  }, [url]);\n\n  <span class=\"kw\">return</span> { data, loading, error };\n}\n\n<span class=\"cm\">// useOnClickOutside — detect clicks outside an element</span>\n<span class=\"kw\">function</span> <span class=\"fn\">useOnClickOutside</span>(ref: RefObject&lt;HTMLElement&gt;, handler: () =&gt; <span class=\"kw\">void</span>) {\n  <span class=\"fn\">useEffect</span>(() =&gt; {\n    <span class=\"kw\">const</span> listener = (e: MouseEvent) =&gt; {\n      <span class=\"kw\">if</span> (!ref.current || ref.current.contains(e.target <span class=\"kw\">as</span> Node)) <span class=\"kw\">return</span>;\n      handler();\n    };\n    document.addEventListener(<span class=\"st\">'mousedown'</span>, listener);\n    <span class=\"kw\">return</span> () =&gt; document.removeEventListener(<span class=\"st\">'mousedown'</span>, listener);\n  }, [ref, handler]);\n}\n\n<span class=\"cm\">// usePrevious — get previous value of a prop/state</span>\n<span class=\"kw\">function</span> <span class=\"fn\">usePrevious</span>&lt;T&gt;(value: T): T | <span class=\"kw\">undefined</span> {\n  <span class=\"kw\">const</span> ref = <span class=\"fn\">useRef</span>&lt;T&gt;();\n  <span class=\"fn\">useEffect</span>(() =&gt; { ref.current = value; });\n  <span class=\"kw\">return</span> ref.current;\n}</code></pre>"
+        }
+      ]
+    },
+    {
+      "id": "r-state",
+      "intro": "How data flows through your app determines its maintainability. Master these patterns.",
+      "cards": [
+        {
+          "title": "State Management — The Full Spectrum",
+          "contentHtml": "<h3>Level 1: Local State (useState)</h3>\n<p>For state that belongs to a single component. Form inputs, toggles, UI state.</p>\n<h3>Level 2: Lifted State</h3>\n<p>Move state UP to the nearest common parent when siblings need to share it. Pass down via props.</p>\n<h3>Level 3: Context + useReducer</h3>\n<p>For state needed by many components at different depths. Auth state, theme, locale. Combine with useReducer for complex transitions.</p>\n<h3>Level 4: Zustand (Lightweight Store)</h3>\n<pre><code><span class=\"kw\">import</span> { create } <span class=\"kw\">from</span> <span class=\"st\">'zustand'</span>;\n\n<span class=\"kw\">const</span> useStore = <span class=\"fn\">create</span>((set) =&gt; ({\n  count: <span class=\"nu\">0</span>,\n  increment: () =&gt; set(s =&gt; ({ count: s.count + <span class=\"nu\">1</span> })),\n  reset: () =&gt; set({ count: <span class=\"nu\">0</span> }),\n}));\n\n<span class=\"cm\">// Usage — no Provider wrapper needed!</span>\n<span class=\"kw\">function</span> <span class=\"fn\">Counter</span>() {\n  <span class=\"kw\">const</span> { count, increment } = <span class=\"fn\">useStore</span>();\n  <span class=\"kw\">return</span> &lt;button onClick={increment}&gt;{count}&lt;/button&gt;;\n}</code></pre>\n<h3>Level 5: TanStack Query (Server State)</h3>\n<pre><code><span class=\"kw\">import</span> { useQuery, useMutation, useQueryClient } <span class=\"kw\">from</span> <span class=\"st\">'@tanstack/react-query'</span>;\n\n<span class=\"cm\">// Fetch data with caching, refetching, stale-while-revalidate</span>\n<span class=\"kw\">function</span> <span class=\"fn\">UserList</span>() {\n  <span class=\"kw\">const</span> { data, isLoading, error } = <span class=\"fn\">useQuery</span>({\n    queryKey: [<span class=\"st\">'users'</span>],\n    queryFn: () =&gt; fetch(<span class=\"st\">'/api/users'</span>).then(r =&gt; r.json()),\n    staleTime: <span class=\"nu\">60_000</span>, <span class=\"cm\">// consider fresh for 1 min</span>\n  });\n\n  <span class=\"kw\">if</span> (isLoading) <span class=\"kw\">return</span> &lt;Spinner /&gt;;\n  <span class=\"kw\">if</span> (error) <span class=\"kw\">return</span> &lt;Error /&gt;;\n  <span class=\"kw\">return</span> data.map(u =&gt; &lt;UserCard key={u.id} user={u} /&gt;);\n}\n\n<span class=\"cm\">// Mutate data with optimistic updates</span>\n<span class=\"kw\">const</span> queryClient = <span class=\"fn\">useQueryClient</span>();\n<span class=\"kw\">const</span> mutation = <span class=\"fn\">useMutation</span>({\n  mutationFn: (newUser) =&gt; fetch(<span class=\"st\">'/api/users'</span>, { method: <span class=\"st\">'POST'</span>, body: JSON.stringify(newUser) }),\n  onSuccess: () =&gt; queryClient.invalidateQueries({ queryKey: [<span class=\"st\">'users'</span>] }),\n});</code></pre>\n<div class=\"tip\"><strong>2026 best practice:</strong> Use <strong>TanStack Query</strong> for all server state (API data). Use <strong>Zustand</strong> for client state (UI state). This covers 95% of apps without Redux.</div>"
+        },
+        {
+          "title": "Lifting State Up vs Composition",
+          "contentHtml": "<pre><code><span class=\"cm\">// Problem: Two siblings need the same state</span>\n<span class=\"cm\">// Solution: Lift state to their parent</span>\n\n<span class=\"kw\">function</span> <span class=\"fn\">Parent</span>() {\n  <span class=\"kw\">const</span> [selected, setSelected] = <span class=\"fn\">useState</span>&lt;<span class=\"kw\">string</span> | <span class=\"kw\">null</span>&gt;(<span class=\"kw\">null</span>);\n\n  <span class=\"kw\">return</span> (\n    &lt;&gt;\n      &lt;Sidebar items={items} selected={selected} onSelect={setSelected} /&gt;\n      &lt;Detail itemId={selected} /&gt;\n    &lt;/&gt;\n  );\n}\n\n<span class=\"cm\">// Alternative: Composition (children pattern) to avoid prop drilling</span>\n<span class=\"kw\">function</span> <span class=\"fn\">Layout</span>({ sidebar, detail }: { sidebar: ReactNode; detail: ReactNode }) {\n  <span class=\"kw\">return</span> (\n    &lt;div className=\"flex\"&gt;\n      &lt;aside&gt;{sidebar}&lt;/aside&gt;\n      &lt;main&gt;{detail}&lt;/main&gt;\n    &lt;/div&gt;\n  );\n}\n\n<span class=\"cm\">// Parent controls what goes in each slot</span>\n&lt;Layout\n  sidebar={&lt;Sidebar selected={selected} onSelect={setSelected} /&gt;}\n  detail={&lt;Detail itemId={selected} /&gt;}\n/&gt;</code></pre>"
+        }
+      ]
+    },
+    {
+      "id": "r-perf",
+      "intro": "Performance optimization is about understanding WHEN and WHY React re-renders.",
+      "cards": [
+        {
+          "title": "Why Components Re-Render",
+          "contentHtml": "<p>A component re-renders when:</p>\n<ul>\n<li><strong>Its state changes</strong> (setState called)</li>\n<li><strong>Its parent re-renders</strong> (ALL children re-render by default)</li>\n<li><strong>A context value it consumes changes</strong></li>\n</ul>\n<p>A component does NOT re-render when:</p>\n<ul>\n<li>Its props haven't changed AND it's wrapped in React.memo</li>\n<li>A sibling re-renders (siblings are independent)</li>\n<li>A ref changes</li>\n</ul>\n\n<h3>Optimization Strategies (Ranked by Impact)</h3>\n<pre><code><span class=\"cm\">// 1. MOVE STATE DOWN — keep state close to where it's used</span>\n<span class=\"cm\">// Bad: state in App causes EVERYTHING to re-render</span>\n<span class=\"cm\">// Good: state in SearchBar only re-renders SearchBar</span>\n\n<span class=\"cm\">// 2. LIFT CONTENT UP — children as props avoid re-renders</span>\n<span class=\"kw\">function</span> <span class=\"fn\">ExpensiveLayout</span>({ children }) {\n  <span class=\"kw\">const</span> [color, setColor] = <span class=\"fn\">useState</span>(<span class=\"st\">'red'</span>);\n  <span class=\"kw\">return</span> (\n    &lt;div style={{ color }}&gt;\n      &lt;button onClick={() =&gt; setColor(<span class=\"st\">'blue'</span>)}&gt;Change&lt;/button&gt;\n      {children} <span class=\"cm\">{/* children DON'T re-render when color changes! */}</span>\n    &lt;/div&gt;\n  );\n}\n\n<span class=\"cm\">// 3. React.memo — skip re-render if props unchanged</span>\n<span class=\"kw\">const</span> MemoizedList = React.<span class=\"fn\">memo</span>(<span class=\"kw\">function</span> <span class=\"fn\">UserList</span>({ users }) {\n  <span class=\"kw\">return</span> users.map(u =&gt; &lt;p key={u.id}&gt;{u.name}&lt;/p&gt;);\n});\n\n<span class=\"cm\">// 4. React.lazy + Suspense — code-split heavy components</span>\n<span class=\"kw\">const</span> Chart = <span class=\"fn\">lazy</span>(() =&gt; <span class=\"fn\">import</span>(<span class=\"st\">'./Chart'</span>));\n&lt;Suspense fallback={&lt;Skeleton /&gt;}&gt;\n  &lt;Chart data={data} /&gt;\n&lt;/Suspense&gt;\n\n<span class=\"cm\">// 5. Virtualization — only render visible items</span>\n<span class=\"cm\">// Use @tanstack/react-virtual for 1000+ item lists</span>\n\n<span class=\"cm\">// 6. useTransition — defer expensive re-renders</span>\n<span class=\"kw\">const</span> [isPending, startTransition] = <span class=\"fn\">useTransition</span>();\n<span class=\"kw\">const</span> handleSearch = (term) =&gt; {\n  setInput(term);          <span class=\"cm\">// urgent: update input immediately</span>\n  startTransition(() =&gt; {\n    setResults(filter(term)); <span class=\"cm\">// non-urgent: can be interrupted</span>\n  });\n};</code></pre>"
+        }
+      ]
+    },
+    {
+      "id": "r-patterns",
+      "intro": "Architecture patterns that make React apps scalable and maintainable.",
+      "cards": [
+        {
+          "title": "Component Patterns",
+          "contentHtml": "<h3>1. Presentational vs Container</h3>\n<p><strong>Presentational:</strong> Only renders UI. Receives data via props. No side effects. <strong>Container:</strong> Fetches data, manages state, passes to presentational components.</p>\n\n<h3>2. Compound Components</h3>\n<pre><code><span class=\"cm\">// Components that work together, sharing implicit state</span>\n<span class=\"kw\">const</span> TabsContext = <span class=\"fn\">createContext</span>();\n\n<span class=\"kw\">function</span> <span class=\"fn\">Tabs</span>({ children, defaultTab }) {\n  <span class=\"kw\">const</span> [active, setActive] = <span class=\"fn\">useState</span>(defaultTab);\n  <span class=\"kw\">return</span> (\n    &lt;TabsContext.Provider value={{ active, setActive }}&gt;\n      &lt;div className=\"tabs\"&gt;{children}&lt;/div&gt;\n    &lt;/TabsContext.Provider&gt;\n  );\n}\n\nTabs.Tab = <span class=\"kw\">function</span> <span class=\"fn\">Tab</span>({ id, children }) {\n  <span class=\"kw\">const</span> { active, setActive } = <span class=\"fn\">useContext</span>(TabsContext);\n  <span class=\"kw\">return</span> (\n    &lt;button className={active === id ? <span class=\"st\">'active'</span> : <span class=\"st\">''</span>}\n            onClick={() =&gt; setActive(id)}&gt;{children}&lt;/button&gt;\n  );\n};\n\nTabs.Panel = <span class=\"kw\">function</span> <span class=\"fn\">Panel</span>({ id, children }) {\n  <span class=\"kw\">const</span> { active } = <span class=\"fn\">useContext</span>(TabsContext);\n  <span class=\"kw\">return</span> active === id ? &lt;div&gt;{children}&lt;/div&gt; : <span class=\"kw\">null</span>;\n};\n\n<span class=\"cm\">// Clean, intuitive API:</span>\n&lt;Tabs defaultTab=\"profile\"&gt;\n  &lt;Tabs.Tab id=\"profile\"&gt;Profile&lt;/Tabs.Tab&gt;\n  &lt;Tabs.Tab id=\"settings\"&gt;Settings&lt;/Tabs.Tab&gt;\n  &lt;Tabs.Panel id=\"profile\"&gt;&lt;ProfileForm /&gt;&lt;/Tabs.Panel&gt;\n  &lt;Tabs.Panel id=\"settings\"&gt;&lt;SettingsForm /&gt;&lt;/Tabs.Panel&gt;\n&lt;/Tabs&gt;</code></pre>\n\n<h3>3. Render Props (Legacy but still asked in interviews)</h3>\n<pre><code><span class=\"kw\">function</span> <span class=\"fn\">MouseTracker</span>({ render }) {\n  <span class=\"kw\">const</span> [pos, setPos] = <span class=\"fn\">useState</span>({ x: <span class=\"nu\">0</span>, y: <span class=\"nu\">0</span> });\n  <span class=\"kw\">return</span> (\n    &lt;div onMouseMove={e =&gt; setPos({ x: e.clientX, y: e.clientY })}&gt;\n      {render(pos)}\n    &lt;/div&gt;\n  );\n}\n<span class=\"cm\">// Usage:</span>\n&lt;MouseTracker render={({ x, y }) =&gt; &lt;p&gt;{x}, {y}&lt;/p&gt;} /&gt;\n\n<span class=\"cm\">// Modern alternative: custom hook</span>\n<span class=\"kw\">const</span> pos = <span class=\"fn\">useMousePosition</span>(); <span class=\"cm\">// much cleaner</span></code></pre>\n\n<h3>4. Error Boundaries</h3>\n<pre><code><span class=\"cm\">// Still class-based (no hook equivalent yet)</span>\n<span class=\"kw\">class</span> <span class=\"fn\">ErrorBoundary</span> <span class=\"kw\">extends</span> React.Component {\n  state = { hasError: <span class=\"kw\">false</span>, error: <span class=\"kw\">null</span> };\n\n  <span class=\"kw\">static</span> getDerivedStateFromError(error) {\n    <span class=\"kw\">return</span> { hasError: <span class=\"kw\">true</span>, error };\n  }\n\n  componentDidCatch(error, info) {\n    logToService(error, info.componentStack);\n  }\n\n  render() {\n    <span class=\"kw\">if</span> (<span class=\"kw\">this</span>.state.hasError) {\n      <span class=\"kw\">return</span> &lt;Fallback error={<span class=\"kw\">this</span>.state.error} /&gt;;\n    }\n    <span class=\"kw\">return this</span>.props.children;\n  }\n}\n\n<span class=\"cm\">// Usage: wrap around sections that might crash</span>\n&lt;ErrorBoundary&gt;\n  &lt;Dashboard /&gt;\n&lt;/ErrorBoundary&gt;</code></pre>"
+        },
+        {
+          "title": "Project Structure (Feature-Based)",
+          "contentHtml": "<pre><code>src/\n├── app/                    <span class=\"cm\"># Next.js App Router pages</span>\n├── components/\n│   ├── ui/                 <span class=\"cm\"># Reusable primitives (Button, Modal, Input)</span>\n│   └── features/           <span class=\"cm\"># Feature-specific components</span>\n│       ├── auth/\n│       │   ├── LoginForm.tsx\n│       │   ├── useAuth.ts  <span class=\"cm\"># custom hook</span>\n│       │   └── auth.api.ts <span class=\"cm\"># API functions</span>\n│       └── dashboard/\n├── hooks/                  <span class=\"cm\"># Shared custom hooks</span>\n├── lib/                    <span class=\"cm\"># Utilities, helpers, constants</span>\n├── stores/                 <span class=\"cm\"># Zustand stores</span>\n├── types/                  <span class=\"cm\"># TypeScript types/interfaces</span>\n└── styles/                 <span class=\"cm\"># Global styles</span></code></pre>"
+        }
+      ]
+    },
+    {
+      "id": "iq-react",
+      "intro": "React interview questions from beginner to advanced. Click to reveal answers with memorable explanations.",
+      "cards": [],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is React?",
+          "answerHtml": "<p>A declarative, efficient, and flexible JavaScript library for building user interfaces, primarily maintained by Meta (Facebook).</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is a component?",
+          "answerHtml": "<p>Independent and reusable bits of code. They serve the same purpose as JavaScript functions, but work in isolation and return HTML (JSX) via a render function.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What are props?",
+          "answerHtml": "<p>Short for properties. They are read-only components that must be kept pure. They are used to pass data from one component to another.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is state in React?",
+          "answerHtml": "<p>An object that holds some information that may change over the lifetime of the component. When state changes, the component responds by re-rendering.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the Virtual DOM?",
+          "answerHtml": "<p>A lightweight JavaScript representation of the DOM. React updates the Virtual DOM first, compares it to the previous version (diffing), and then applies the minimal necessary changes to the real DOM (reconciliation).</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is reconciliation?",
+          "answerHtml": "<p>The process through which React updates the Browser DOM. When a component’s state changes, React calculates the difference between the new and old Virtual DOMs and only updates the changed nodes.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the \"key\" prop?",
+          "answerHtml": "<p>A special string attribute you need to include when creating lists of elements. Keys help React identify which items have changed, been added, or been removed, optimizing the reconciliation process.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What are React Hooks?",
+          "answerHtml": "<p>Functions that let you \"hook into\" React state and lifecycle features from function components. They do not work inside classes.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What does useState do?",
+          "answerHtml": "<p>It declares a state variable that you can update directly. It returns a pair: the current state value and a function that lets you update it.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What does useEffect do?",
+          "answerHtml": "<p>It lets you perform side effects in function components, such as data fetching, subscriptions, or manually changing the DOM.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is a functional component vs a class component?",
+          "answerHtml": "<p>Function components are simpler, writing UI as pure functions. Class components require extending `React.Component` and using `this`. Hooks made function components the modern standard.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is an event in React?",
+          "answerHtml": "<p>React events are named using camelCase, rather than lowercase. With JSX you pass a function as the event handler, rather than a string.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What are synthetic events?",
+          "answerHtml": "<p>React's cross-browser wrapper around the browser's native event. They have the same interface as native events but work identically across all browsers.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "How do you conventionally name boolean props?",
+          "answerHtml": "<p>They are usually named like an assertion (e.g., `isOpen`, `hasLoaded`, `disabled`). Passing a boolean prop without a value defaults it to `true` (e.g., `<Button disabled />`).</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is children in React?",
+          "answerHtml": "<p>A special prop (`props.children`) that allows you to pass components as data to other components, just like nesting standard HTML elements.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "How do you conditionally render an element?",
+          "answerHtml": "<p>Using JavaScript logical operators like `&&` (if true, render right side) or the ternary operator `condition ? true : false`.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "Why is standard `class` attribute written as `className` in React?",
+          "answerHtml": "<p>Because `class` is a reserved keyword in JavaScript. JSX is transformed into standard JS, requiring the use of the DOM API property `className`.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is a controlled component?",
+          "answerHtml": "<p>A form element whose value is controlled entirely by React state rather than the DOM.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is an uncontrolled component?",
+          "answerHtml": "<p>A component where the form data is handled by the DOM itself. You use a `ref` to access the value from the DOM directly when needed.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What does preventDefault() do?",
+          "answerHtml": "<p>It prevents the default action that belongs to the event from occurring. Usually used in form submissions to stop the browser from reloading the page.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "Why shouldn't you mutate state directly in React?",
+          "answerHtml": "<p>Because React compares objects by reference. If you mutate state directly, the reference stays the same, and React doesn't know it needs to re-render. Always use the setter function.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is prop drilling?",
+          "answerHtml": "<p>The process of passing props from a higher-level component down to a lower-level component through many layers of intermediate components that don't actually need the data.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is React Context?",
+          "answerHtml": "<p>A way to pass data through the component tree without having to pass props down manually at every level. Useful for global data like themes or user authentication.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Explain the dependency array in useEffect.",
+          "answerHtml": "<p>If provided, the effect runs only when one of those dependencies has changed since the last render. If empty `[]`, it runs once on mount. If omitted entirely, it runs after EVERY render.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What happens if you omit a changing variable from the useEffect dependency array?",
+          "answerHtml": "<p>The effect might use stale closures (old values of the variable from a previous render), leading to bugs that are very difficult to track down.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the cleanup function in useEffect?",
+          "answerHtml": "<p>The function returned by the effect. It runs before the component unmounts AND before the effect runs again on a subsequent re-render. Crucial for removing event listeners or clearing timers.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is useCallback?",
+          "answerHtml": "<p>A hook that returns a memoized callback function. It's used to prevent functions from being recreated on every render, which is useful when passing callbacks to optimized child components.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is useMemo?",
+          "answerHtml": "<p>A hook that returns a memoized value. It's used to cache the results of expensive calculations between renders.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When should you NOT use useMemo and useCallback?",
+          "answerHtml": "<p>Don't use them indiscriminately. Memoization has a performance cost (memory allocation and dependency checking). Only use them if the child is wrapped in `React.memo` or if the calculation is genuinely expensive.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is React.memo()?",
+          "answerHtml": "<p>A Higher Order Component (HOC) that memorizes the rendered output of a component, skipping re-renders if its props haven't changed (shallow comparison).</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is useRef?",
+          "answerHtml": "<p>A hook that returns a mutable ref object whose `.current` property is initialized to the passed argument. It persists for the full lifetime of the component and mutating it does NOT cause a re-render.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "List modern ways to manage global state in React.",
+          "answerHtml": "<p>Zustand, Context API (for low-frequency updates), Redux Toolkit, Jotai, Recoil, and using Server State managers like React Query/TanStack Query.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why is using index as a key a bad idea?",
+          "answerHtml": "<p>If the list order changes (sorting, deleting, inserting), the index stays the same for that position in the DOM. React will get confused, potentially matching wrong state to the wrong UI elements or failing to animate.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between element and component in React?",
+          "answerHtml": "<p>An element is a plain object describing what you want to appear on the screen (`<div />` or `<MyComp />`). A component is a function or class that accepts input and returns a React element.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the Custom Hook pattern?",
+          "answerHtml": "<p>Extracting stateful logic from a component into a reusable JavaScript function whose name starts with \"use\". They can call other hooks internally.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is StrictMode in React?",
+          "answerHtml": "<p>A tool for highlighting potential problems in an application. In development mode, it intentionally double-invokes components and lifecycle methods to help find side effects and deprecations.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How do you lazy load a component in React?",
+          "answerHtml": "<p>Using `React.lazy()` combined with `<Suspense fallback={<Spinner />}>`. It allows you to dynamically import a component file only when it is actually needed to be rendered.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What are higher-order components (HOCs)?",
+          "answerHtml": "<p>A function that takes a component and returns a new component, wrapping it with additional injected functionality. Mostly replaced in modern React by custom hooks.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is a render prop?",
+          "answerHtml": "<p>A technique for sharing code between components using a prop whose value is a function. The component uses that function to determine what to render. (e.g. `<Mouse render={mouse => <Cat mouse={mouse} />} />`)</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is a Portal in React?",
+          "answerHtml": "<p>It provides a first-class way to render children into a DOM node that exists entirely outside the DOM hierarchy of the parent component (e.g., `createPortal(child, container)`). Perfect for Modals and Tooltips.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the \"forwardRef\" API?",
+          "answerHtml": "<p>A way to let a component take a `ref` they receive and pass it further down (\"forward\" it) to a child DOM element. Required if a parent needs to measure or focus an inner button of a child component.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is useReducer?",
+          "answerHtml": "<p>An alternative to `useState`. It is usually preferable when you have complex state logic that involves multiple sub-values or when the next state depends heavily on the previous one.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why might a React update be batched?",
+          "answerHtml": "<p>React 18+ automatically batches multiple state updates within the same event loop (even inside promises or timeouts) into a single re-render for better performance.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between shallow rendering and full DOM rendering in testing?",
+          "answerHtml": "<p>Shallow rendering tests a component in isolation without rendering its children. Full DOM rendering mounts the full tree. Modern testing (RTL) strongly prefers full mounting.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How does React Router work under the hood?",
+          "answerHtml": "<p>It listens to changes in the browser's History API. When the URL changes, it calculates which `<Route>` components match the path and renders them, blocking the browser from doing a full page refresh.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the Context Consumer vs useContext?",
+          "answerHtml": "<p>useContext is the modern Hook approach used inside a functional component. Context.Consumer is the older render-prop approach required in class components.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How do you handle API calls in React components natively?",
+          "answerHtml": "<p>You traditionally use fetch/axios inside a `useEffect` with an empty dependency array to call the API on mount, updating state on resolution, while managing `isLoading` and `error` states manually.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why is TanStack Query (React Query) recommended over raw useEffect?",
+          "answerHtml": "<p>It automatically handles caching, background fetching, retries, deduplication, and simplifies loading/error state management significantly over manual useEffects.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is error boundary in React?",
+          "answerHtml": "<p>A classical component (using `componentDidCatch`) that catches JavaScript errors anywhere in its child component tree, logs those errors, and displays a fallback UI instead of crashing the whole app.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What causes the \"Warning: Cannot update a component while rendering a different component\" error?",
+          "answerHtml": "<p>It happens when you try to update the state of a parent component directly synchronously inside the render body of a child component, usually by accidentally invoking a prop function instead of passing it by reference.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How do you handle routing protection (Protected Routes)?",
+          "answerHtml": "<p>By creating a wrapper component that checks an authentication token. If valid, it returns the children. If invalid, it uses `<Navigate>` to redirect to the login page.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is code splitting?",
+          "answerHtml": "<p>Splitting your code into multiple smaller bundles instead of one massive file. React `lazy()` and dynamic imports load those bundles on demand, accelerating initial page load.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is hydration in React?",
+          "answerHtml": "<p>When React boots up on the client and attaches event listeners to the static HTML that was already sent by a server during Server-Side Rendering (SSR).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the React 19 Compiler?",
+          "answerHtml": "<p>An optimizing compiler that automatically memorizes your React code, effectively removing the need for manual `useMemo` and `useCallback` by analyzing component data dependencies at build time.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What are React Server Components (RSC)?",
+          "answerHtml": "<p>A new architecture where components render exclusively on the server at build time or request time. They have ZERO JavaScript sent to the client, cannot use hooks, but can directly access databases.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the difference between a Server Component and SSR?",
+          "answerHtml": "<p>SSR renders HTML on the server, but still sends the JS code to the client to hydrate into interactive components. RSC NEVER sends its JS to the client at all, acting purely as structured data.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What are Server Actions (React 19)?",
+          "answerHtml": "<p>A feature allowing you to define asynchronous functions that execute on the server. You can call these directly from client-side `<form action={myServerAction}>` or event handlers without configuring API routes.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is useOptimistic (React 19)?",
+          "answerHtml": "<p>A hook that lets you eagerly update the UI assuming a server action will succeed, creating instantaneous feedback, while automatically rolling back if the action fails.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What does the use() hook do (React 19)?",
+          "answerHtml": "<p>A hook that lets you read the value of a Promise or Context. Unlike other hooks, `use()` can be called conditionally (inside an if-statement) and integrates deeply with Suspense.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is useFormStatus (React 19)?",
+          "answerHtml": "<p>A hook representing the pending state of an enclosing `<form>`. It replaces the need to manually manage loading state variables when submitting forms via Actions.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is useActionState (React 19)?",
+          "answerHtml": "<p>A hook that manages state returned from a form Action. It takes an action and an initial state, returning the current state, a new action to dispatch, and a pending boolean.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is Suspense for Data Fetching?",
+          "answerHtml": "<p>Allows components to \"pause\" rendering while waiting for an asynchronous operation (like fetching data) to finish, letting a parent `<Suspense>` boundary render a fallback UI until the data is ready.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the useLayoutEffect hook?",
+          "answerHtml": "<p>It's identical to useEffect, but it fires synchronously *after* all DOM mutations but *before* the browser repaints the screen. Used for reading layout dimensions from the DOM to avoid visual flicker.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the useSyncExternalStore hook?",
+          "answerHtml": "<p>A specialized hook designed to let React safely subscribe to external data stores (like Redux or Zustand) in a way that is compatible with React's concurrent rendering features without tearing.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is Concurrent React?",
+          "answerHtml": "<p>A set of architectural changes allowing React to interrupt a heavy rendering task to handle high-priority events (typing), then resume the background rendering. Uses `useTransition` and `useDeferredValue`.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What does useTransition do?",
+          "answerHtml": "<p>It lets you mark certain state updates as non-urgent (transitions). If an urgent update (typing) comes in, React interrupts the transition. The hook provides an `isPending` flag for UI feedback.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What does useDeferredValue do?",
+          "answerHtml": "<p>It lets you defer updating a part of the UI that is not critical. E.g., you immediately update a search input value, but you defer the value passed to an expensive search results list.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Explain tearing in UI frameworks.",
+          "answerHtml": "<p>Tearing happens when a UI framework yields rendering to the main thread, an external state store updates, and the framework resumes rendering with the NEW state, resulting in half the screen using old state and half using new state. `useSyncExternalStore` fixes this.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How does the Virtual DOM reconciliation algorithm actually work?",
+          "answerHtml": "<p>It assumes two rules: 1. Two elements of different types will produce different trees (React tears down the old tree unconditionally). 2. Developers can hint at which child elements may be stable using `key` props.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the danger of Context API causing redundant re-renders?",
+          "answerHtml": "<p>Any component consuming a Context re-renders if ANY value in that Context object changes. If you bundle high-frequency updates with static values, the entire tree re-renders unnecessarily. Solution: Split contexts or use Zustand.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Explain the Compound Component pattern implementation.",
+          "answerHtml": "<p>You create a parent `<Select>` component that holds internal state and provides it via Context. You then create child components like `<Select.Option>` that consume that context. You assign `Select.Option = OptionComponent` to bundle the imports.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How does React ensure event delegation?",
+          "answerHtml": "<p>Instead of attaching an event listener (like click) to every DOM node, React attaches a single event listener at the root of the document. When an event fires, React intercepts it, wraps it in a Synthetic Event, and dispatches it through its virtual tree.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Can you use Hooks inside class components?",
+          "answerHtml": "<p>No, hooks rely on the call stack tracking mechanism of function components. If a class component needs hook functionality, you must wrap it in a function-based HOC that calls the hook and passes the data as props.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a stale closure in React?",
+          "answerHtml": "<p>A situation where a function (like inside useEffect or a setTimeout) references variables from an older render cycle because the function was not updated. Fixed by correctly mapping the dependency array or using a ref.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you force a React functional component to re-render?",
+          "answerHtml": "<p>By convention: `const [, forceRender] = useState({});` then calling `forceRender({})`. However, needing to force a render is almost always indicative of bad architecture or direct DOM mutation.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is React Native compared to React DOM?",
+          "answerHtml": "<p>React generates a Virtual DOM tree. `react-dom` is the renderer that translates that tree to HTML DOM nodes. `react-native` is the renderer that translates that exact same tree structure into Native iOS and Android UI views.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you optimize a huge list in React?",
+          "answerHtml": "<p>Instead of rendering 10,000 DOM nodes, you use \"windowing\" or \"virtualization\" (libraries like `react-window` or `react-virtuoso`). They only render the 20 nodes currently visible on the screen, swapping contents as the user scrolls.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a hydration mismatch?",
+          "answerHtml": "<p>In SSR, the server sends static HTML. On client load, React compares this HTML to what it expects to render. If they differ (e.g., the server printed \"Time is 10:00\", client prints \"Time is 10:01\"), React throws a hydration error and might replace the entire DOM tree.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is Tailwind CSS and why is it popular in React?",
+          "answerHtml": "<p>A utility-first CSS framework. It's popular because it removes the need to name classes, keeps styles colocated with JSX, and results in tiny CSS bundles via JIT compilation.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Compare CSS Modules vs Styled Components.",
+          "answerHtml": "<p>CSS Modules provide scoped CSS using standard syntax with file-based isolation. Styled Components (CSS-in-JS) provide dynamic styling based on props but incur a small runtime performance cost.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What are Design Tokens?",
+          "answerHtml": "<p>Visual atoms of a design system (colors, spacing, typography) stored as raw values (often JSON), used to ensure consistency across different platforms and themes.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the \"Slot Pattern\" in React?",
+          "answerHtml": "<p>A pattern where a component accepts other components as props (e.g., `<Card header={<Header />} body={<Body />} />`) rather than just using `children`, allowing for more rigid layout control.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why use React Hook Form over manual state management?",
+          "answerHtml": "<p>It uses \"uncontrolled\" components via refs under the hood, preventing the entire form from re-rendering on every keystroke, leading to better performance in large forms.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is Zod and how does it integrate with React forms?",
+          "answerHtml": "<p>A TypeScript-first schema declaration and validation library. It is used to define form schemas and automatically generate types and validation error messages for form libraries.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How do you handle multi-step forms in React?",
+          "answerHtml": "<p>Typically by managing a `step` state and rendering different sub-components, or by using a library like `react-hook-form` with a shared parent state.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is React Testing Library (RTL)?",
+          "answerHtml": "<p>A testing utility that encourages testing components as a user would (e.g., finding elements by text or labels) rather than testing implementation details like state.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is MSW (Mock Service Worker)?",
+          "answerHtml": "<p>A library that intercepts API requests at the network level using Service Workers, allowing you to mock API responses in both tests and local development without changing your code.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you test a component wrapped in multiple Context Providers?",
+          "answerHtml": "<p>By creating a custom `render` function that wraps the component under test in all necessary providers (Theme, Auth, QueryClient, etc.).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Explain the \"Triple A\" pattern in testing.",
+          "answerHtml": "<p>Arrange (setup state/mocks), Act (perform user action), Assert (check expected outcome).</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you test asynchronous state updates in RTL?",
+          "answerHtml": "<p>Using `findBy*` queries (which return promises and retry) or the `waitFor()` utility to wait for the UI to settle after an async action.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is \"Shallow Rendering\" and why is it often discouraged?",
+          "answerHtml": "<p>Rendering only the top-level component without its children. It's discouraged because it doesn't reflect how the user interacts with the app and makes tests more brittle to refactoring.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What are \"Server Actions\" security considerations?",
+          "answerHtml": "<p>Since they become POST endpoints, you must manually perform authorization, authentication, and input validation (e.g., with Zod) inside the server action function.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is the \"Module Pattern\" for React state?",
+          "answerHtml": "<p>Isolating logic into standalone helper modules or custom hooks to keep components strictly focused on UI rendering (separation of concerns).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you prevent \"prop drilling\" without using Context?",
+          "answerHtml": "<p>Via component composition: pass the child component itself as a prop or `children` from the top level, so intermediate components don't need to know about the child's data.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is \"Inversion of Control\" in React components?",
+          "answerHtml": "<p>The idea that a component shouldn't decide HOW something is rendered, but rather provide a way for the consumer to provide the rendering logic (labels, icons, callbacks).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Explain the difference between useMemo and React.memo.",
+          "answerHtml": "<p>`useMemo` caches a specific VALUE (like a filtered list). `React.memo` is an HOC that caches a rendered COMPONENT to prevent re-renders.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How does the React Compiler (v19) handle \"manual\" optimizations?",
+          "answerHtml": "<p>It ignores them if it can optimize better, but it's designed to be compatible with existing `useMemo`/`useCallback` until they are eventually removed from the codebase.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the new `ref` prop in React 19?",
+          "answerHtml": "<p>In React 19, `ref` can be passed as a normal prop to function components, meaning `forwardRef` is no longer required for simple ref passthrough.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What are \"Async Transitions\" in React 19?",
+          "answerHtml": "<p>The ability for `startTransition` to accept an `async` function. React will wait for the promise to resolve, managing the `isPending` state throughout the duration of the async operation.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the `` and `` support in React 19?",
+          "answerHtml": "<p>React 19 natively supports rendering metadata tags anywhere in the component tree; it automatically hoists them to the `<head>` of the document.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is \"Streaming SSR\"?",
+          "answerHtml": "<p>Sending HTML chunks from the server to the browser as they are ready, instead of waiting for the entire page to render. Suspense boundaries are used to define which parts can be streamed later.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is Vite and why replace Webpack with it?",
+          "answerHtml": "<p>Vite uses native Browser ES modules for development, providing near-instant hot module replacement (HMR) regardless of project size.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is \"Micro-Frontend\" in React?",
+          "answerHtml": "<p>Splitting an app into independent pieces that can be developed and deployed by different teams, often using Module Federation or iframes.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you handle memory leaks in React?",
+          "answerHtml": "<p>By cleaning up listeners, intervals, and subscriptions in the `useEffect` cleanup function, and by avoiding setting state on unmounted components (though React 18+ handles this better).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is \"Debouncing\" vs \"Throttling\" in React?",
+          "answerHtml": "<p>Debouncing waits until a user stops an action (typing). Throttling limits the action to once every X milliseconds (scrolling).</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you implement a generic component in TypeScript?",
+          "answerHtml": "<p>By using generic type parameters: `function List<T>({ items }: { items: T[] })`. This ensures type safety for the list items regardless of their specific type.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the Virtual DOM and how does it work?",
+          "answerHtml": "<p>A lightweight JavaScript copy of the real DOM. When state changes, React creates a new virtual DOM tree, compares (\"diffs\") it with the previous one, and updates only the changed real DOM nodes. This batched, minimal update approach is much faster than directly manipulating the DOM.</p><div class=\"analogy\">Like editing a document: you make changes in a draft (virtual DOM), then only reprint the pages that changed (DOM updates), rather than reprinting the whole book."
+        },
+        {
+          "level": "basic",
+          "question": "What is JSX?",
+          "answerHtml": "<p>JSX is a syntax extension that lets you write HTML-like code in JavaScript. It compiles to <code>React.createElement()</code> calls. Key differences from HTML: uses <code>className</code> instead of <code>class</code>, <code>htmlFor</code> instead of <code>for</code>, camelCase events (<code>onClick</code>), and JavaScript expressions in curly braces <code>{}</code>.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the difference between state and props?",
+          "answerHtml": "<p><strong>Props</strong>: data passed from parent to child, read-only, flow one direction (down). <strong>State</strong>: data owned and managed by the component itself, mutable via setter functions, triggers re-render when changed. Think of props as function arguments and state as local variables.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "Why are keys important in lists?",
+          "answerHtml": "<p>Keys help React identify which items changed, were added, or removed during re-renders. Without stable keys, React destroys and recreates DOM nodes unnecessarily, losing component state (input values, scroll position). Always use unique, stable IDs — never array indexes (which cause bugs with reordering).</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What are React hooks? Name the core ones.",
+          "answerHtml": "<p>Functions that let you use React features in function components. Core hooks: <code>useState</code> (state), <code>useEffect</code> (side effects), <code>useContext</code> (context), <code>useRef</code> (mutable refs/DOM access), <code>useMemo</code> (memoize values), <code>useCallback</code> (memoize functions), <code>useReducer</code> (complex state). Rules: call only at top level, only inside React functions.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the difference between controlled and uncontrolled components?",
+          "answerHtml": "<p><strong>Controlled</strong>: React state drives the input value. <code>&lt;input value={name} onChange={e =&gt; setName(e.target.value)} /&gt;</code>. React is the \"single source of truth.\" <strong>Uncontrolled</strong>: the DOM manages the input value. Access via ref: <code>&lt;input ref={inputRef} /&gt;</code>. Simpler but less control. Prefer controlled for most cases.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Explain the useEffect dependency array in detail.",
+          "answerHtml": "<p><strong>No array</strong>: effect runs after every render. <strong>Empty array []</strong>: effect runs once on mount, cleanup on unmount. <strong>[dep1, dep2]</strong>: effect runs when any dependency changes (compared with Object.is). Common mistakes: missing dependencies (stale closures), object/array deps that create new references every render (use useMemo or primitives instead).</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When should you NOT use useEffect?",
+          "answerHtml": "<p><strong>1)</strong> Deriving state from props/other state — just compute it during render. <strong>2)</strong> Resetting state on prop change — use the <code>key</code> prop instead. <strong>3)</strong> Handling user events — use event handlers directly. <strong>4)</strong> Data fetching — use Server Components, TanStack Query, or SWR instead. <strong>5)</strong> Updating state based on previous state — use functional updates. useEffect should only be for syncing with external systems (DOM, APIs, subscriptions).</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between useMemo and useCallback?",
+          "answerHtml": "<p><code>useMemo(() =&gt; compute(), [deps])</code> caches a <strong>computed value</strong>. <code>useCallback(fn, [deps])</code> caches a <strong>function reference</strong>. <code>useCallback(fn, deps)</code> is equivalent to <code>useMemo(() =&gt; fn, deps)</code>. Use useMemo for expensive calculations; useCallback for functions passed to memoized children. With the React 19 Compiler, both are auto-inserted — rarely needed manually.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Explain React Context and its performance limitations.",
+          "answerHtml": "<p>Context provides a way to share data across the tree without prop drilling. Create with <code>createContext</code>, provide with <code>&lt;Context.Provider value={...}&gt;</code>, consume with <code>useContext()</code>. <strong>Limitation:</strong> when the context value changes, ALL consumers re-render — even if they only use a small part. Mitigation: split context, use external state for frequently changing values (Zustand), or use the <code>use()</code> hook for conditional reads.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What causes unnecessary re-renders? How do you prevent them?",
+          "answerHtml": "<p><strong>Causes:</strong> parent re-renders (children always re-render by default), new object/array references in props, context value changes, state changes. <strong>Prevention:</strong> 1) Move state down. 2) Lift content up (children as props). 3) React.memo for pure components. 4) React Compiler (auto-memoization). 5) Split context. 6) External state management for frequent updates.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is React.lazy and Suspense?",
+          "answerHtml": "<p><code>React.lazy(() =&gt; import('./Component'))</code> creates a component that's loaded on demand (code-splitting). <code>&lt;Suspense fallback={&lt;Loading/&gt;}&gt;</code> shows a fallback while the lazy component loads. Together they reduce initial bundle size by only loading code when it's actually needed. In Next.js, this pairs with the App Router's <code>loading.tsx</code> for route-level code splitting.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Explain React's reconciliation algorithm.",
+          "answerHtml": "<p>When state changes, React diffs the new virtual DOM with the previous. Algorithm: <strong>1)</strong> Different element types → destroy and rebuild entire subtree. <strong>2)</strong> Same type → update attributes, recurse children. <strong>3)</strong> Lists → use keys to match children across renders, minimizing moves/creates/deletes. This gives O(n) complexity (vs O(n³) naive tree diff). Keys are critical because without them, React can't track which list items moved.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What are Server Components? How do they differ from SSR?",
+          "answerHtml": "<p><strong>SSR:</strong> renders ALL components on server as HTML, hydrates on client — full JS bundle still sent. <strong>Server Components:</strong> run ONLY on server, JS never sent to client, zero bundle impact, can access databases/files directly. Key insight: SSR is about rendering; RSC is about which code runs where. You can have SSR'd Client Components AND Server Components in the same page. Server Components enable a new architectural pattern where the boundary between client and server is at the component level, not the route level.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the React Compiler and how does it change development?",
+          "answerHtml": "<p>The React Compiler (previously \"React Forget\") statically analyses your code at build time and inserts memoization where needed — the equivalent of useMemo, useCallback, and React.memo. It follows the Rules of React (pure renders, no side effects) to determine what's safe to cache. Impact: useMemo/useCallback become rare \"escape hatches\" not everyday tools, less code to write and maintain, fewer re-render bugs, and you just write plain code that the compiler optimizes.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Explain Server Actions in React 19.",
+          "answerHtml": "<p>Async functions marked with <code>'use server'</code> that execute on the server but can be called from client components. Used for data mutations (form submissions, database writes). They work with the <code>&lt;form action={...}&gt;</code> pattern, support progressive enhancement (work without JS), integrate with <code>useActionState</code> for pending/error states, and <code>useOptimistic</code> for instant UI updates. They replace the need for separate API routes for most mutations.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What are the React 19 new hooks and when do you use them?",
+          "answerHtml": "<p><strong>useActionState:</strong> manage form action state (loading, errors, result). Use for any form submission. <strong>useOptimistic:</strong> show optimistic UI updates instantly before server confirms. Use for like buttons, todo toggles, comments. <strong>use():</strong> read Promises or Context in render. Unlike useContext, can be called conditionally. Use for data that should suspend the component. <strong>useTransition (updated):</strong> now supports async functions in startTransition. Use for non-urgent updates that shouldn't block the UI.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between useRef and useState?",
+          "answerHtml": "<p><strong>useState:</strong> changing value triggers re-render. Value is immutable within a render. <strong>useRef:</strong> changing <code>.current</code> does NOT trigger re-render. Value is mutable and always reflects the latest value. Use useState for data that affects the UI. Use useRef for DOM access, mutable values that don't need to trigger renders (timers, previous values, render counts), and avoiding stale closures.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Explain the Fiber architecture.",
+          "answerHtml": "<p>Fiber is React's internal reconciliation engine (since React 16). It breaks rendering into small units of work that can be paused, prioritized, and resumed. Each component becomes a \"fiber node\" in a linked list tree. This enables: <strong>1)</strong> Concurrent rendering — pause expensive work to handle urgent updates. <strong>2)</strong> Priority-based updates — user interactions &gt; data fetching &gt; off-screen renders. <strong>3)</strong> Suspense and startTransition. The key insight: rendering is no longer synchronous and blocking.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How do you handle forms in React? Compare approaches.",
+          "answerHtml": "<p><strong>1. Controlled (useState):</strong> React manages every input value. Full control, easy validation, but verbose. <strong>2. Uncontrolled (useRef + FormData):</strong> DOM manages values. Less code, use for simple forms. <strong>3. React Hook Form:</strong> Uncontrolled by default with validation. Best performance for large forms. <strong>4. Server Actions (React 19):</strong> Form submits to server function. Progressive enhancement, no client JS needed. <strong>5. Zod + Server Actions:</strong> Type-safe validation on server. The modern recommended approach for Next.js.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you architect a large-scale React application?",
+          "answerHtml": "<p><strong>Structure:</strong> Feature-based folders, shared components in ui/, custom hooks, typed API layer. <strong>State:</strong> TanStack Query for server state, Zustand for client state. <strong>Routing:</strong> Next.js App Router with layouts and parallel routes. <strong>Data:</strong> Server Components for reads, Server Actions for writes. <strong>Styling:</strong> Tailwind CSS or CSS Modules. <strong>Testing:</strong> Vitest + Testing Library for units, Playwright for E2E. <strong>Performance:</strong> React Compiler, code splitting with lazy/Suspense, image optimization, ISR/PPR for caching. <strong>Monitoring:</strong> Error boundaries, logging service, Core Web Vitals tracking.</p>"
+        }
+      ],
+      "hasFilterBar": true
+    },
+    {
+      "id": "r-19",
+      "intro": "React 19 is a paradigm shift. Server Components, the Compiler, Actions, and new hooks change how you build apps.",
+      "cards": [
+        {
+          "title": "React Compiler (\"React Forget\")",
+          "contentHtml": "<p>A build-time tool that <strong>automatically memoizes</strong> components and values. It analyses your code and inserts the equivalent of useMemo/useCallback/React.memo where needed.</p>\n<pre><code><span class=\"cm\">// BEFORE React Compiler (React 18 way)</span>\n<span class=\"kw\">const</span> sorted = <span class=\"fn\">useMemo</span>(() =&gt; [...items].sort(compareFn), [items]);\n<span class=\"kw\">const</span> handleClick = <span class=\"fn\">useCallback</span>(() =&gt; onClick(id), [id, onClick]);\n<span class=\"kw\">const</span> MemoChild = React.memo(ExpensiveChild);\n\n<span class=\"cm\">// AFTER React Compiler (React 19 way)</span>\n<span class=\"kw\">const</span> sorted = [...items].sort(compareFn);   <span class=\"cm\">// compiler handles it</span>\n<span class=\"kw\">const</span> handleClick = () =&gt; onClick(id);        <span class=\"cm\">// compiler handles it</span>\n<span class=\"cm\">// No React.memo needed — compiler decides</span></code></pre>\n<div class=\"deep\">The compiler works by statically analysing your code at build time, identifying which values depend on which inputs, and inserting cache checks. It follows the Rules of React (pure render functions, no side effects during render) to determine what's safe to memoize. If your code violates these rules, the compiler emits warnings.</div>"
+        },
+        {
+          "title": "Server Components (RSC) — Deep Dive",
+          "contentHtml": "<pre><code><span class=\"cm\">// SERVER Component (default in Next.js App Router)</span>\n<span class=\"cm\">// ✅ Can: access DB, read files, use secrets, import large libs</span>\n<span class=\"cm\">// ❌ Cannot: useState, useEffect, onClick, browser APIs</span>\n<span class=\"kw\">async function</span> <span class=\"fn\">ProductList</span>() {\n  <span class=\"kw\">const</span> products = <span class=\"kw\">await</span> db.query(<span class=\"st\">'SELECT * FROM products WHERE active = true'</span>);\n  <span class=\"kw\">const</span> formatted = <span class=\"fn\">formatPrices</span>(products); <span class=\"cm\">// heavy lib stays on server</span>\n\n  <span class=\"kw\">return</span> (\n    &lt;div&gt;\n      {formatted.map(p =&gt; (\n        &lt;ProductCard key={p.id} product={p} /&gt; <span class=\"cm\">{/* can be server component */}</span>\n      ))}\n      &lt;AddToCartButton /&gt; <span class=\"cm\">{/* client component for interactivity */}</span>\n    &lt;/div&gt;\n  );\n}\n\n<span class=\"cm\">// CLIENT Component (opt-in with 'use client')</span>\n<span class=\"st\">'use client'</span>;\n<span class=\"kw\">function</span> <span class=\"fn\">AddToCartButton</span>({ productId }) {\n  <span class=\"kw\">const</span> [added, setAdded] = <span class=\"fn\">useState</span>(<span class=\"kw\">false</span>);\n  <span class=\"kw\">return</span> (\n    &lt;button onClick={() =&gt; { addToCart(productId); setAdded(<span class=\"kw\">true</span>); }}&gt;\n      {added ? <span class=\"st\">'✓ Added'</span> : <span class=\"st\">'Add to Cart'</span>}\n    &lt;/button&gt;\n  );\n}</code></pre>\n<div class=\"analogy\">Server Components are the <strong>kitchen</strong> — heavy preparation (data fetching, formatting, large libraries) happens there and never reaches the customer (browser). Client Components are the <strong>dining room experience</strong> — interactive things the customer does (clicking buttons, filling forms, toggling menus).</div>\n\n<h3>Server vs Client — Decision Tree</h3>\n<p><strong>Use Server Component when:</strong> fetching data, accessing backend resources, keeping sensitive info (API keys) on server, reducing client JS bundle, no interactivity needed.</p>\n<p><strong>Use Client Component when:</strong> you need useState, useEffect, event handlers (onClick, onChange), browser APIs (localStorage, geolocation), or third-party libraries that use React state.</p>"
+        },
+        {
+          "title": "Server Actions — Mutations Without API Routes",
+          "contentHtml": "<pre><code><span class=\"cm\">// actions.ts</span>\n<span class=\"st\">'use server'</span>;\n\n<span class=\"kw\">import</span> { revalidatePath } <span class=\"kw\">from</span> <span class=\"st\">'next/cache'</span>;\n<span class=\"kw\">import</span> { redirect } <span class=\"kw\">from</span> <span class=\"st\">'next/navigation'</span>;\n<span class=\"kw\">import</span> { z } <span class=\"kw\">from</span> <span class=\"st\">'zod'</span>;\n\n<span class=\"kw\">const</span> schema = z.object({\n  title: z.string().min(<span class=\"nu\">1</span>).max(<span class=\"nu\">100</span>),\n  content: z.string().min(<span class=\"nu\">10</span>),\n});\n\n<span class=\"kw\">export async function</span> <span class=\"fn\">createPost</span>(prevState: <span class=\"kw\">any</span>, formData: FormData) {\n  <span class=\"kw\">const</span> raw = Object.fromEntries(formData);\n  <span class=\"kw\">const</span> parsed = schema.safeParse(raw);\n\n  <span class=\"kw\">if</span> (!parsed.success) {\n    <span class=\"kw\">return</span> { errors: parsed.error.flatten().fieldErrors };\n  }\n\n  <span class=\"kw\">await</span> db.insert(<span class=\"st\">'posts'</span>, parsed.data);\n  revalidatePath(<span class=\"st\">'/posts'</span>); <span class=\"cm\">// bust cache</span>\n  redirect(<span class=\"st\">'/posts'</span>);        <span class=\"cm\">// navigate</span>\n}\n\n<span class=\"cm\">// Component using the action</span>\n<span class=\"st\">'use client'</span>;\n<span class=\"kw\">import</span> { useActionState } <span class=\"kw\">from</span> <span class=\"st\">'react'</span>;\n<span class=\"kw\">import</span> { createPost } <span class=\"kw\">from</span> <span class=\"st\">'./actions'</span>;\n\n<span class=\"kw\">function</span> <span class=\"fn\">CreatePostForm</span>() {\n  <span class=\"kw\">const</span> [state, action, pending] = <span class=\"fn\">useActionState</span>(createPost, { errors: {} });\n\n  <span class=\"kw\">return</span> (\n    &lt;form action={action}&gt;\n      &lt;input name=\"title\" /&gt;\n      {state.errors?.title &amp;&amp; &lt;p className=\"error\"&gt;{state.errors.title}&lt;/p&gt;}\n      &lt;textarea name=\"content\" /&gt;\n      {state.errors?.content &amp;&amp; &lt;p className=\"error\"&gt;{state.errors.content}&lt;/p&gt;}\n      &lt;button disabled={pending}&gt;{pending ? <span class=\"st\">'Publishing...'</span> : <span class=\"st\">'Publish'</span>}&lt;/button&gt;\n    &lt;/form&gt;\n  );\n}</code></pre>\n<div class=\"tip\">Server Actions work with <strong>progressive enhancement</strong> — forms still work even if JavaScript hasn't loaded yet. The form submits as a standard HTML form, and the server processes it. This is a massive accessibility and performance win.</div>"
+        },
+        {
+          "title": "React 19 Complete Feature List",
+          "contentHtml": "<ul>\n<li><strong>React Compiler</strong> — Auto-memoization at build time</li>\n<li><strong>Server Components</strong> — Components that run only on the server</li>\n<li><strong>Server Actions</strong> — <code>'use server'</code> for data mutations</li>\n<li><strong>Actions (async transitions)</strong> — startTransition can now accept async functions</li>\n<li><strong>useActionState</strong> — Manage form action state (pending, errors)</li>\n<li><strong>useOptimistic</strong> — Optimistic UI updates</li>\n<li><strong>use()</strong> — Read Promises and Context anywhere (conditional calls OK)</li>\n<li><strong>Document Metadata</strong> — &lt;title&gt;, &lt;meta&gt;, &lt;link&gt; directly in components</li>\n<li><strong>Stylesheet support</strong> — Manage CSS precedence in components</li>\n<li><strong>ref as prop</strong> — No more forwardRef needed</li>\n<li><strong>Improved hydration error messages</strong> — Shows exact diff of mismatches</li>\n<li><strong>Owner Stacks</strong> — Better debugging with component ownership in errors</li>\n</ul>"
+        }
+      ]
+    }
+  ]
+}

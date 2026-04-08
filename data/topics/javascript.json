@@ -1,0 +1,1083 @@
+{
+  "id": "javascript",
+  "title": "JavaScript Mastery Bible",
+  "subtitle": "ES2025, async patterns & core foundations",
+  "tabs": [
+    {
+      "id": "ts-expert",
+      "label": "TypeScript Expert Patterns"
+    },
+    {
+      "id": "js-modern",
+      "label": "Modern JS & Web APIs"
+    },
+    {
+      "id": "js-memory",
+      "label": "Memory & Performance Mastery"
+    },
+    {
+      "id": "js-iq",
+      "label": "Interview Q&A (194)"
+    },
+    {
+      "id": "js-ts",
+      "label": "TypeScript Fundamentals"
+    }
+  ],
+  "sections": [
+    {
+      "id": "ts-expert",
+      "intro": "Advanced type gymnastics, branded types, and sophisticated generic architectures for 100% type safety.",
+      "cards": [
+        {
+          "title": "Type Gymnastics: Recursion",
+          "contentHtml": "<p>Using recursive conditional types to create deep, complex object transformations:</p>\n      <pre><code>// Deep Readonly Pattern\ntype DeepReadonly&lt;T&gt; = {\n  readonly [P in keyof T]: T[P] extends object \n    ? DeepReadonly&lt;T[P]&gt; \n    : T[P];\n};\n\n// JSON Safety Pattern\ntype JSONValue =\n  | string | number | boolean | null\n  | { [key: string]: JSONValue }\n  | JSONValue[];</code></pre>"
+        },
+        {
+          "title": "Branded Types (Nominal Simulation)",
+          "contentHtml": "<p>TS is structural, but branding ensures data integrity for IDs, Emails, and sensitive primitives:</p>\n      <pre><code>type Brand&lt;K, T&gt; = K &amp; { __brand: T };\n\ntype UserID = Brand&lt;string, \"UserID\"&gt;;\ntype OrderID = Brand&lt;string, \"OrderID\"&gt;;\n\nconst u: UserID = \"123\" as UserID;\nconst o: OrderID = u; // Error: OrderID !== UserID</code></pre>"
+        },
+        {
+          "title": "Mapped Type Remapping",
+          "contentHtml": "<p>Using the <code>as</code> clause to dynamically rename keys based on templates:</p>\n      <pre><code>interface User {\n  id: number;\n  name: string;\n}\n\ntype Getters&lt;T&gt; = {\n  [K in keyof T as `get${Capitalize&lt;string &amp; K&gt;}`]: () =&gt; T[K]\n};\n\ntype UserGetters = Getters&lt;User&gt;;\n// { getName: () =&gt; string; getId: () =&gt; number; }</code></pre>"
+        },
+        {
+          "title": "Satisfies vs Explicit Annotations",
+          "contentHtml": "<p>The <code>satisfies</code> operator (TS 4.9+) allows validation WITHOUT widening inferred types:</p>\n      <pre><code>type Palette = Record&lt;string, string | number[]&gt;;\n\nconst colors = {\n  primary: \"#00f\",\n  secondary: [0, 0, 255]\n} satisfies Palette;\n\n// colors.primary remains \"#00f\" (literal)\n// NOT widened to string | number[]</code></pre>"
+        }
+      ]
+    },
+    {
+      "id": "js-modern",
+      "intro": "Harnessing the latest ECMAScript features and modern browser APIs.",
+      "cards": [
+        {
+          "title": "ECMAScript 2024+ (ES15)",
+          "contentHtml": "<ul>\n        <li><b>Object.groupBy / Map.groupBy:</b> Natively groups an array of objects into an object (or Map) based on a string returned by a callback. Replaces the need for Lodash `_.groupBy`.</li>\n        <li><b>Promise.withResolvers:</b> Returns an object containing a new Promise and its `resolve` and `reject` functions. Fixes the old awkward pattern of extracting resolvers from the Promise constructor.</li>\n        <li><b>Array.prototype.with:</b> Safe array mutation. `arr.with(index, value)` returns a *new* array with the element at `index` replaced by `value`, leaving the original array intact. Great for React/Redux!</li>\n        <li><b>Temporal API (Draft):</b> The modern replacement for the broken `Date` object, providing full timezone awareness, calendar math, and immutable date objects.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>// Example of Promise.withResolvers\nconst { promise, resolve, reject } = Promise.withResolvers();\n\nsetTimeout(() =&gt; resolve(\"Done!\"), 1000);\npromise.then(console.log); // \"Done!\" after 1s\n</code></pre>\n      </div>"
+        },
+        {
+          "title": "Modern Web APIs",
+          "contentHtml": "<ul>\n        <li><b>IntersectionObserver:</b> Asynchronously observe changes in the intersection of a target element with an ancestor or the viewport. Crucial for lazy-loading images and infinite scrolling without hurting performance via massive scroll event listeners.</li>\n        <li><b>ResizeObserver:</b> Reports changes to the dimensions of an element's content or border box. Provides a performant way to build truly responsive elements independently of the viewport (container queries in JS).</li>\n        <li><b>MutationObserver:</b> Watches the DOM tree for changes (nodes added/removed, attributes modified) and fires a callback. Used internally by frameworks, but vital for writing extensions or observing 3rd party injects.</li>\n        <li><b>Web Workers:</b> Runs scripts in background threads. The worker thread can perform computations without interfering with the user interface (main thread). Cannot access the DOM directly.</li>\n      </ul>"
+        },
+        {
+          "title": "JS Design Patterns",
+          "contentHtml": "<ul>\n        <li><b>Singleton:</b> Ensures a class has only one single instance and provides a global access point to it (e.g., establishing a single database connection or global store).</li>\n        <li><b>Observer / Pub-Sub:</b> A subject maintains a list of dependents (observers) and notifies them automatically of state changes (e.g., Redux, RxJS Subjects, DOM Event listeners).</li>\n        <li><b>Factory:</b> A function or method that creates objects without specifying the exact class of object that will be created. Simplifies complex object initialization.</li>\n        <li><b>Proxy:</b> The modern ES6 `Proxy` object lets you wrap an object and intercept fundamental operations (reading/writing properties). Used extensively by Vue 3 and Zustand to track reactive state dependencies.</li>\n      </ul>"
+        }
+      ]
+    },
+    {
+      "id": "js-memory",
+      "intro": "Architecture of the V8 engine, Garbage Collection internals, and high-performance threading.",
+      "cards": [
+        {
+          "title": "V8 Engine Architecture",
+          "contentHtml": "<p>Modern JS engines like V8 (Chrome/Node) use a sophisticated pipeline to achieve near-native speeds:</p>\n      <ul>\n        <li><strong>Ignition:</strong> A baseline bytecode interpreter that executes code quickly with minimal overhead.</li>\n        <li><strong>TurboFan:</strong> The optimizing JIT compiler. It uses profiling data from Ignition to compile \"Hot\" functions into highly optimized machine code.</li>\n        <li><strong>Speculative Optimization:</strong> V8 assumes types based on previous execution. If a function always receives integers, it stays optimized; if a string is suddenly passed, it triggers a \"Deoptimization\" (bailout).</li>\n      </ul>"
+        },
+        {
+          "title": "Garbage Collection Internals",
+          "contentHtml": "<p>V8 uses a <strong>Generational GC</strong> strategy based on the \"Infant Mortality\" hypothesis (most objects die young):</p>\n      <ul>\n        <li><strong>Young Generation (New Space):</strong> Small (1-64MB), fast area for new objects. Uses \"Scavenge\" algorithm with parallel processing.</li>\n        <li><strong>Old Generation (Old Space):</strong> Where long-lived objects are moved. Uses \"Mark-Sweep-Compact\" which is more thorough but slower.</li>\n        <li><strong>Orinoco:</strong> The modern parallel/incremental/concurrent engine that performs GC work on background threads to minimize main-thread \"Stop-the-World\" pauses.</li>\n      </ul>"
+        },
+        {
+          "title": "Memory Management Tools",
+          "contentHtml": "<p>Strategies for handling large data sets without memory leaks:</p>\n      <pre><code>// WeakRef: Reference without preventing GC\nlet heavyObj = { data: new Array(1000000) };\nconst ref = new WeakRef(heavyObj);\n\n// FinalizationRegistry: Cleanup callback\nconst registry = new FinalizationRegistry((heldValue) =&gt; {\n  console.log(`${heldValue} was collected!`);\n});\nregistry.register(heavyObj, \"Big Data\");\n\nheavyObj = null; // Eligible for GC</code></pre>"
+        },
+        {
+          "title": "Advanced Threading: Workers",
+          "contentHtml": "<p>Moving heavy computation off the main thread to ensure 60fps responsiveness:</p>\n      <ul>\n        <li><strong>Web Workers:</strong> Truly parallel execution using separate OS threads. Communicates via structured cloning.</li>\n        <li><strong>SharedArrayBuffer:</strong> Allows memory sharing between threads. Must be used with <strong>Atomics</strong> to prevent race conditions.</li>\n        <li><strong>SharedWorkers:</strong> Accessible from multiple windows/tabs from the same origin, ideal for coordinating state across tabs.</li>\n      </ul>"
+        }
+      ]
+    },
+    {
+      "id": "js-iq",
+      "intro": "95 core questions — basic to very advanced. Click any question to reveal the answer.",
+      "cards": [],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What are the primitive data types in JavaScript?",
+          "answerHtml": "<p>String, Number, Boolean, BigInt, Symbol, Undefined, and Null. They are immutable and compared by value.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the difference between `==` and `===`?",
+          "answerHtml": "<p>`==` checks for equality with type coercion (e.g. `1 == \"1\"` is true). `===` is strict equality and checks if both the value and the type are identical.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is a closure?",
+          "answerHtml": "<p>A function bundled together with its lexical environment. A closure gives you access to an outer function's scope from an inner function, even after the outer function has returned.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What does \"this\" refer to in JavaScript?",
+          "answerHtml": "<p>`this` refers to the object that is executing the current function. Its value is determined exactly by *how* a function is called, not where it is defined (except for arrow functions).</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the difference between var, let, and const?",
+          "answerHtml": "<p>`var` is function-scoped and can be re-declared. `let` is block-scoped and can be reassigned. `const` is block-scoped and its reference cannot be reassigned (though objects/arrays inside it can be mutated).</p>"
+        },
+        {
+          "level": "basic",
+          "question": "How does the map() array method work?",
+          "answerHtml": "<p>It creates a new array populated with the results of calling a provided function on every element in the calling array. It does not mutate the original array.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "How does the filter() array method work?",
+          "answerHtml": "<p>It creates a new array with all elements that pass the test implemented by the provided function.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What does `async` and `await` do?",
+          "answerHtml": "<p>`async` makes a function return a Promise. `await` makes an async function pause execution and wait for a Promise to resolve, making asynchronous code look synchronous.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "Why do we use strict mode (`\"use strict\"`)?",
+          "answerHtml": "<p>It catches common coding bloopers (like using undeclared variables), disables features that are confusing, and prepares code for future ECMAScript versions.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is an immediately invoked function expression (IIFE)?",
+          "answerHtml": "<p>A function that runs as soon as it is defined: `(function() { ... })();`. Used to create a new, private block scope to avoid polluting the global namespace.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the event loop?",
+          "answerHtml": "<p>The secret behind JavaScript's asynchronous behavior. It continually checks if the call stack is empty. If it is, it takes the first callback from the microtask/macrotask queue and pushes it to the stack for execution.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between macrotasks and microtasks?",
+          "answerHtml": "<p>Microtasks (Promises, `queueMicrotask`, MutationObserver) have higher priority. The event loop empties the entire microtask queue before picking up the next macrotask (setTimeout, setInterval, user events).</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is Debouncing?",
+          "answerHtml": "<p>A pattern ensuring a function is only fired once a certain amount of time has passed since it was last invoked. Useful for search box inputs so you don't hit the API on every keystroke.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is Throttling?",
+          "answerHtml": "<p>A pattern ensuring a function is called at most once in a specified time period. Useful for scroll or resize events so the browser doesn't crash from continuous execution.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Explain `.bind()`, `.call()`, and `.apply()`.",
+          "answerHtml": "<p>They explicitly set the value of `this`. `call` takes comma-separated arguments. `apply` takes an array of arguments. `bind` returns a *new* function with `this` permanently bound without immediately executing it.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why do Arrow Functions behave differently with `this`?",
+          "answerHtml": "<p>Arrow functions do not have their own `this`. They inherit `this` from the surrounding lexical context at the time they are defined. You cannot `bind`, `call`, or `apply` a new `this` to an arrow function.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is prototypal inheritance?",
+          "answerHtml": "<p>In JS, objects inherit properties and methods from a prototype object. If a property isn't found on an object, JS looks up the prototype chain until it finds it or reaches `null`.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What causes memory leaks in JS?",
+          "answerHtml": "<p>Common causes: Accidental global variables, forgotten timers/intervals (`setInterval`), closures holding onto large outer scope variables, and detached DOM elements referenced in JS objects.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a WeakMap or WeakSet?",
+          "answerHtml": "<p>Similar to Map/Set, but JS objects used as keys are held \"weakly\". This means if there are no other references to the object key, it can be garbage collected, preventing memory leaks. They cannot be iterated.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the difference between Deep Copy and Shallow Copy?",
+          "answerHtml": "<p>A shallow copy copies only top-level properties; nested objects share the same reference. A deep copy creates completely new references for all nested objects (e.g., using `structuredClone(obj)`).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Explain the concept of Currying.",
+          "answerHtml": "<p>Converting a function that takes multiple arguments into a sequence of functions that each take a single argument: `f(a,b,c)` becomes `f(a)(b)(c)`. Highly useful in functional composition.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How does Service Worker caching differ from standard HTTP caching?",
+          "answerHtml": "<p>HTTP caching is controlled by server headers. Service Worker caching is controlled programmatically via JavaScript using the Cache API, allowing granular offline-first strategies, bypassing the network completely.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a SharedWorker vs WebWorker?",
+          "answerHtml": "<p>A standard Web Worker is accessible only to the script that spawned it. A SharedWorker can be accessed by multiple scripts, even if they are in different windows, iframes, or tabs on the exact same origin.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is CORS (Cross-Origin Resource Sharing)?",
+          "answerHtml": "<p>A security mechanism where the browser prevents a frontend JS app to make API requests to a different domain, unless the target domain explicitly returns HTTP headers letting the browser know it's permitted.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do JavaScript Generators (`function*`) work?",
+          "answerHtml": "<p>They are functions that can be paused and exited, and later re-entered, preserving context (variable bindings) across re-entrances. They return an Iterator object, progressing only when `.next()` is called. They use the `yield` keyword.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What does `Object.defineProperty()` do?",
+          "answerHtml": "<p>It defines a new property directly on an object, or modifies an existing one, allowing strict configuration of metadata like `enumerable`, `configurable`, `writable`, or setting custom `get` and `set` traps.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How does Proxy essentially work?",
+          "answerHtml": "<p>It allows you to create a wrapper for another object, intercepting and redefining fundamental operations for it like property lookup, assignment, enumeration, and function invocation. `const p = new Proxy(target, handler)`.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the purpose of `Symbol`?",
+          "answerHtml": "<p>A built-in object whose constructor returns a guaranteed unique identifier. Useful to add hidden properties to an object that won't conflict with other keys or show up in standard `for...in` loops.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the spread operator vs rest parameter?",
+          "answerHtml": "<p>Syntax is identical (`...`). Spread EXPANDS an array/object into individual elements (e.g., `let newArr = [...old]`). Rest COLLECTS multiple elements and condenses them into a single array element (e.g., in function args: `function f(...args)`).</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is TypeScript?",
+          "answerHtml": "<p>A structural, strongly typed superset of JavaScript developed by Microsoft. It compiles to plain JavaScript and adds static typing, identifying errors at compile-time instead of runtime.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the difference between implicit and explicit typing?",
+          "answerHtml": "<p>Explicit: You declare the type: `let count: number = 5;`. Implicit (Inference): TypeScript figures it out automatically: `let count = 5;` (TS knows it's a number).</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the \"any\" type?",
+          "answerHtml": "<p>It allows any type of value, effectively opting out of type-checking completely for that variable. It ruins TypeScript's benefits and should be strictly avoided in production code.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the \"unknown\" type?",
+          "answerHtml": "<p>A safer alternative to `any`. You can assign anything to `unknown`, but to operate on it, TS forces you to perform a type check (type narrowing/guard) first to prove you know its structural shape.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the \"void\" vs \"never\" type?",
+          "answerHtml": "<p>`void` is used for a function that returns nothing (implicitly returns undefined). `never` is used for a function that WILL NEVER return anything (e.g., it always throws an Error, or has an infinite `while(true)` loop).</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is Duck Typing / Structural Typing in TS?",
+          "answerHtml": "<p>TypeScript focuses on the SHAPE of data. If an object has all the properties required by an Interface, TS accepts it, regardless of whether it explicitly \"implements\" that interface. \"If it walks like a duck and quacks like a duck...\"</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is an Interface in TypeScript?",
+          "answerHtml": "<p>A way to name an object type. Interfaces can be extended with the `extends` keyword and can be merged automatically if declared twice.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is a Type Alias (`type`)?",
+          "answerHtml": "<p>Creates a new name for any type. Unlike Interfaces, it can describe primitives, unions, and intersections. In modern TS, objects defined via `type` vs `interface` are almost functionally identical.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is a Tuple?",
+          "answerHtml": "<p>An array with a fixed number of elements whose types are known. Example: `let person: [string, number] = [\"Alice\", 25];`</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is an Enum?",
+          "answerHtml": "<p>A way to give more friendly names to sets of numeric or string constants. However, TS Enums actively generate JS runtime code (unlike Interfaces), so string literal unions (`type Status = \"OK\" | \"FAIL\"`) are often heavily preferred instead.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What are Generics?",
+          "answerHtml": "<p>Generics provide a way to make components work over a variety of types rather than a single one. It creates a variable for a type, e.g., `<T>`. `function identity<T>(arg: T): T`.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is a Type Guard (Type Narrowing)?",
+          "answerHtml": "<p>Using standard JS checks (like `typeof x === \"string\"`, `instanceof Array`, or `in` operator) allowing TypeScript to infer the variable's specific type within a narrower conditional block.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a custom Type Predicate?",
+          "answerHtml": "<p>A function that returns a boolean, where the return type is explicitly cast as `parameterName is Type`. It tells the TS compiler to narrow the type if the function evaluates to true. Ex: `function isString(v: any): v is string`.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is Intersection vs Union?",
+          "answerHtml": "<p>Union (`|`): a value that can be one of several types. Intersection (`&`): a value that combines multiple types into one single type, meaning the object must have ALL the properties of the intersected types.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What are Utility Types in TS?",
+          "answerHtml": "<p>Built-in generic tools that transform types. Examples: `Partial<T>` (all props optional), `Readonly<T>` (all props readonly), `Pick<T, K>` (select specific props), `Omit<T, K>` (remove specific props).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is keyof?",
+          "answerHtml": "<p>An operator that returns a Union type composed of the names of the keys of an Object type. E.g., `type Keys = keyof { name: string; age: number }` results in `\"name\" | \"age\"`.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is typeof (in TS type context)?",
+          "answerHtml": "<p>Allows you to extract the TS type from an existing runtime JavaScript variable. `let obj = {x: 1}; type ObjType = typeof obj;`</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What are Conditional Types?",
+          "answerHtml": "<p>They select one of two possible types based on a condition expressed as a type relationship test: `T extends U ? X : Y`. Extremely powerful in building dynamic utility types.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is the `infer` keyword?",
+          "answerHtml": "<p>Used strictly within Conditional Types to pause resolution and declare a new, dynamically inferred type variable. Essential for extracting the return type of a function: `T extends (...args: any[]) => infer R ? R : any`.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What does `strict: true` do in tsconfig.json?",
+          "answerHtml": "<p>It enables a broad suite of strict type-checking behavior (including `noImplicitAny`, `strictNullChecks`, `strictFunctionTypes`, and `strictBindCallApply`). Highly recommended for all enterprise projects.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a Discriminated Union?",
+          "answerHtml": "<p>A pattern combining Union types, type guards, and a common shared property (the discriminator) to guarantee exhaustive structural safety (often used in Redux actions or state machines).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is Declaration Merging?",
+          "answerHtml": "<p>The compiler merges two separate declarations declared with the exact same name into a single definition. This is why Interfaces are the standard for public APIs (consumers can easily augment your `Window` interface, for example).</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is Type Variance (Covariance, Contravariance)?",
+          "answerHtml": "<p>Advanced concepts defining how complex types (like arrays or functions) relate to each other based on their internal structural types. TS functions are contravariant in parameters, but covariant in return types to ensure safety.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is \"Index Signature\"?",
+          "answerHtml": "<p>Syntax allowing you to type objects with dynamic or unknown keys but a specific value type. `interface Dict { [key: string]: number; }`.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What does `as const` do (Const Assertions)?",
+          "answerHtml": "<p>Normally, TS widens string literals. `const obj = { a: \"hello\" }` implies `a` is a `string`. Suffixing it with `as const` implies `a` is specifically the strict read-only literal type `\"hello\"`. Deeply useful for config arrays and objects.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is `Promise.withResolvers()`?",
+          "answerHtml": "<p>A new ES2024 feature that returns an object containing a new Promise and its `resolve` and `reject` functions. It eliminates the need to manually extract those functions from the Promise executor callback.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do `Object.groupBy()` and `Map.groupBy()` work?",
+          "answerHtml": "<p>They allow grouping elements of an iterable based on a string or object key provided by a callback function. `Map.groupBy` is preferred when the keys should be complex objects rather than just strings.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is the \"Task\" vs \"Microtask\" execution order in the Event Loop?",
+          "answerHtml": "<p>The loop executes ONE macrotask, then empties the ENTIRE microtask queue. If a microtask adds more microtasks, they are also executed before the next macrotask. This can lead to \"microtask starvation\" if not careful.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is the difference between `WeakRef` and `FinalizationRegistry`?",
+          "answerHtml": "<p>`WeakRef` lets you hold a reference to an object without preventing it from being garbage collected. `FinalizationRegistry` lets you request a callback when an object has been garbage collected, useful for cleaning up non-JS resources.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How does V8's \"TurboFan\" compiler optimize code?",
+          "answerHtml": "<p>It uses Speculative Optimization. It profiles the types passing through your functions (using \"Inline Caches\"). If types are consistent (monomorphic), it compiles highly optimized machine code. If types change (polymorphic/megamorphic), it de-optimizes back to the \"Ignition\" interpreter.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is \"Temporal Dead Zone\" (TDZ) in depth?",
+          "answerHtml": "<p>The period between a block's entry and the point where a variable is initialized. Accessing `let` or `const` in this zone throws a `ReferenceError`, unlike `var` which would just return `undefined`. This ensures variables are never used before their literal definition.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What are Atomics in JavaScript?",
+          "answerHtml": "<p>A global object providing atomic operations (like `add`, `sub`, `and`, `or`) for `SharedArrayBuffer`. It ensures that multi-threaded data operations in Web Workers are thread-safe and predictable without race conditions.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do decorators work in native JavaScript (TC39)?",
+          "answerHtml": "<p>Native decorators (Stage 3+) allow class, method, and field annotations. They are functions that receive metadata about the target and can wrap or replace it. This differs from legacy \"experimental\" TypeScript decorators which were based on an older proposal.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Explain \"Shadow Realms\" (Proposed).",
+          "answerHtml": "<p>A new global environment that provides a completely isolated JS execution context. It allows running code with its own global object and built-ins, preventing side effects or data leakage into the main execution realm.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is `Array.fromAsync()`?",
+          "answerHtml": "<p>A recent addition that creates a new array from an async iterable, iterable, or array-like object. It awaits each element if necessary, making it superior to `Promise.all(arr.map(async...))` in some sequential scenarios.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you detect memory leaks using Chrome DevTools?",
+          "answerHtml": "<p>Capture a \"Heap Snapshot\". Look for objects that are \"Detached\" (not in DOM but still referenced in JS). Use the \"Allocation Instrumentation\" timeline to see objects allocated but never released during specific interactions.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Explain the \"Pipeline Operator\" (`|>`) proposal.",
+          "answerHtml": "<p>It facilitates functional pipe-lining by piping the result of one expression as an argument to the next function: `val |> f |> g` is equivalent to `g(f(val))`. It significantly improves readability in nested logic.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is \"Explicit Resource Management\" (`using`) in JS?",
+          "answerHtml": "<p>Introduced in ES2024, it allows for scoping resources (like file handles or DB connections) that must be closed or cleaned up. Using the `using` keyword ensures the `[Symbol.dispose]` method is called automatically when leaving scope.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How does the \"Module Preload\" link relation help performance?",
+          "answerHtml": "<p>It tells the browser to fetch and parse a JS module (and its entire dependency tree) early, without executing it immediately, reducing the waterfall effect in large ES Module architectures.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is \"Hydration\" in a JavaScript context?",
+          "answerHtml": "<p>The process where client-side JavaScript attaches event listeners to static HTML sent from the server (SSR), making it interactive. Optimization techniques like \"Resumability\" (Qwik) or \"Progressive Hydration\" aim to reduce this costly step.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is a \"Branded Type\" (Nominal Typing)?",
+          "answerHtml": "<p>TS is structural, but branding simulates nominal typing by adding a unique \"tag\" property: `type Email = string & { __brand: \"Email\" }`. This prevents passing a generic string into a function expecting an Email.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Explain \"Recursive Types\" in TS.",
+          "answerHtml": "<p>A type that references itself. Useful for deep object trees or JSON structures: `type JSONValue = string | number | boolean | null | JSONObject | JSONArray;`. TS 4.1+ improved support for deep recursion limits.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do \"Template Literal Types\" work?",
+          "answerHtml": "<p>They allow building types based on string literals: `type Direction = \"top\" | \"bottom\"; type Padded = `padding-${Direction}`;`. They enable massive type safety for CSS classes, event names, and i18n keys.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is \"Distributive Conditional Types\"?",
+          "answerHtml": "<p>When a conditional type (`T extends U ? X : Y`) is checking a Union type `T`, TS automatically distributes the check over each member of the union. Use `[T] extends [U]` to disable this \"distribution\".</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you extract the return type of a function dynamicallly?",
+          "answerHtml": "<p>Using the `ReturnType<T>` utility, which internally uses the `infer` keyword: `T extends (...args: any) => infer R ? R : any`.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is the `satisfies` operator?",
+          "answerHtml": "<p>Introduced in TS 4.9, it validates that an expression matches a type WITHOUT widening or changing the inferred type. `const colors = { red: \"#f00\" } satisfies Record<string, string>;` keeps the specific key `\"red\"` instead of widening to `string`.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Explain \"Assertion Functions\" in TS.",
+          "answerHtml": "<p>Functions that throw an error if a condition isn't met. By using the `asserts condition` return type, TS knows the condition is guaranteed to be true for the rest of the scope if the function returns normally.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is \"Module Augmentation\"?",
+          "answerHtml": "<p>A way to add declarations to an existing module. Useful when using 3rd party libraries that have missing or outdated types: `declare module \"some-lib\" { ... }`.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What are \"Global Type Declarations\" (`.d.ts`)?",
+          "answerHtml": "<p>Files that provide type information for code that already exists in JavaScript but doesn't have types. They are purely for the compiler and emit no JS code.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How does \"Const Type Parameters\" (``) work?",
+          "answerHtml": "<p>Introduced in TS 5.0, it allows generics to be inferred as literal `const` values by default, avoiding the need for the user to append `as const` manually to arguments.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is \"Exhaustiveness Checking\"?",
+          "answerHtml": "<p>A pattern using the `never` type in a `switch` default case to ensure all possible members of a Union type are handled. If a new member is added to the union, TS will alert you that the code is no longer exhaustive.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Explain \"Covariance\" vs \"Contravariance\" in TS.",
+          "answerHtml": "<p>Covariance: `T` can be replaced by a more specific type (Standard for properties). Contravariance: `T` can be replaced by a more general type (Standard for function parameters). TS enforces these rules to ensure type safety across inheritance.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is the \"Omit\" vs \"Exclude\" utility type?",
+          "answerHtml": "<p>`Exclude<Union, Members>` removes members from a UNION type. `Omit<Object, Keys>` removes specific properties from an OBJECT type.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you handle \"Branded Strings\" with Template Literals?",
+          "answerHtml": "<p>By creating a type that combines a string with a unique intersection: `type UserID = `user_${string}` & { __brand: \"UserID\" }`. This ensures any ID used must match the prefix AND be explicitly cast/verified.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is \"Mapped Type Remapping\"?",
+          "answerHtml": "<p>Using the `as` clause inside a mapped type to change key names: `type Getters<T> = { [K in keyof T as `get${Capitalize<string & K>}`]: () => T[K] }`.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is the purpose of `requestIdleCallback`?",
+          "answerHtml": "<p>It allows scheduling background and low-priority work during the browser's idle periods, without affecting latency-critical events like animation and input response. Ideal for non-essential telemetry or pre-fetching.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How does `Atomics.wait()` and `Atomics.notify()` work?",
+          "answerHtml": "<p>They provide a way for workers to sleep until a value in a `SharedArrayBuffer` changes. `wait` blocks the thread until notified, while `notify` wakes up threads waiting on that specific index. Essential for low-level synchronization.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Explain the \"Same-Origin Policy\" (SOP) vs CORS.",
+          "answerHtml": "<p>SOP is a fundamental browser security policy that prevents scripts on one origin from accessing data on another origin. CORS is a mechanism that allows servers to explicitly opt-in to sharing resources across origins.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is a \"User-Agent Client Hints\" (UA-CH)?",
+          "answerHtml": "<p>A modern, more privacy-preserving alternative to the `User-Agent` string. It allows browsers to selectively share device/browser metadata with servers via HTTP headers or JS API, reducing passive fingerprinting.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do \"Private Class Features\" (#prefix) differ from `private` keyword in TS?",
+          "answerHtml": "<p>`#private` is a native JS feature that provides hard runtime encapsulation; the field is truly inaccessible outside the class. TS `private` is a compile-time check only; the field is still accessible in the emitted JavaScript.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is \"BigInt\" and why can't it be mixed with \"Number\"?",
+          "answerHtml": "<p>`BigInt` handles integers larger than $2^{53}-1$. Mixing them with standard `Number` is prohibited because it would lead to silent precision loss during implicit type conversion.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Explain \"Top-level await\" and its impact on module loading.",
+          "answerHtml": "<p>It allows using `await` at the top level of a module. While convenient, it makes the module (and its importers) wait for the promise to resolve before execution continues, which can delay application startup if used poorly.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is \"Structural\" vs \"Nominal\" typing in depth?",
+          "answerHtml": "<p>Structural (TS): Types are compatible if their members match. Nominal (Java/C#): Types are only compatible if they have the same name/declaration. TS uses structural typing for flexibility, but can simulate nominal typing via branding.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is \"Type Argument Inference\" for functions?",
+          "answerHtml": "<p>The process where TS automatically determines the types for generic parameters based on the values passed to the function. If inference fails, you must provide them explicitly: `f<string>(\"val\")`.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you handle \"Recursive Conditional Types\"?",
+          "answerHtml": "<p>By having a conditional type reference itself in its branches. TS 4.1+ allows this as long as there is a clear base case, enabling complex types like `DeepPartial<T>` or `DeepReadonly<T>`.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is the \"NoInfer\" intrinsic type?",
+          "answerHtml": "<p>Introduced in TS 5.4, it prevents a generic type parameter from being a candidate for type inference in a specific location, forcing TS to use the inference from other locations instead.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Explain \"String Mapping Types\" (Uppercase, Lowercase, etc.).",
+          "answerHtml": "<p>Intrinsic type operators that transform string literal types. Invaluable when used with Template Literal Types to enforce casing conventions across API keys or file paths.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is a \"Global augmentation\" vs \"Module augmentation\"?",
+          "answerHtml": "<p>Module: Adds to a specific exported module. Global: Adds to the global namespace (e.g., adding a new property to the `Window` object or `ProcessEnv`).</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How does \"Discriminated Union\" Exhaustiveness with `default` work?",
+          "answerHtml": "<p>By assigning the `default` case to a variable of type `never`. If a new case is added to the union but not handled in the switch, the assignment `const _exhaustiveCheck: never = member` will cause a compile error.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is \"Metadata Reflection\" (reflect-metadata)?",
+          "answerHtml": "<p>A polyfill/proposal that allows attaching and retrieving metadata at runtime on classes and members. Heavily used in frameworks like NestJS or Angular for dependency injection.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is JavaScript?",
+          "answerHtml": "<p>A high-level, interpreted, dynamically-typed programming language primarily used for web development. It runs in browsers and on servers (Node.js). It's single-threaded but non-blocking via the event loop.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What are the 8 data types in JavaScript?",
+          "answerHtml": "<p><strong>Primitives (7):</strong> string, number, bigint, boolean, undefined, symbol, null. <strong>Non-primitive (1):</strong> object (includes arrays, functions, dates, RegExp, etc.).</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the difference between == and ===?",
+          "answerHtml": "<p><code>==</code> compares after type coercion (<code>'5'==5</code> is true). <code>===</code> compares value AND type (<code>'5'===5</code> is false). Always use <code>===</code> to avoid unexpected bugs.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the difference between null and undefined?",
+          "answerHtml": "<p><code>undefined</code>: declared but not assigned, missing parameter, missing property. <code>null</code>: intentionally empty, explicitly assigned. <code>typeof null</code> is <code>'object'</code> (famous bug). <code>null == undefined</code> is true, <code>null === undefined</code> is false.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What are var, let, and const?",
+          "answerHtml": "<p><code>var</code>: function-scoped, hoisted as undefined, can redeclare. <code>let</code>: block-scoped, TDZ, can reassign. <code>const</code>: block-scoped, must initialize, can't reassign (but object contents ARE mutable). Rule: default to const, use let for reassignment, never use var.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is hoisting?",
+          "answerHtml": "<p>JS moves declarations to the top of their scope before execution. <code>var</code> is hoisted as <code>undefined</code>. <code>let/const</code> are hoisted but NOT initialized (TDZ — ReferenceError if accessed early). Function declarations are fully hoisted. Function expressions are NOT.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What are falsy values?",
+          "answerHtml": "<p>Eight values: <code>false, 0, -0, 0n, \"\", null, undefined, NaN</code>. Everything else is truthy — including <code>\"0\", \"false\", [], {}</code>.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the difference between function declaration and expression?",
+          "answerHtml": "<p>Declaration: <code>function foo(){}</code> — fully hoisted, callable before definition. Expression: <code>const foo = function(){}</code> — NOT hoisted, only callable after assignment. Arrow functions are always expressions.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What are arrow functions?",
+          "answerHtml": "<p>Shorter syntax <code>()=&gt;{}</code>. Key differences: no own <code>this</code> (lexical), no <code>arguments</code> object, can't be used as constructors, no <code>prototype</code>. Use for callbacks; use regular functions for methods and constructors.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the spread operator?",
+          "answerHtml": "<p><code>...</code> expands iterables. Arrays: <code>[...a,...b]</code> merge, <code>[...arr]</code> copy. Objects: <code>{...o1,...o2}</code> merge. Function args: <code>fn(...args)</code>. Rest (collecting): <code>function(...args)</code>, <code>const {a,...rest}=obj</code>.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is destructuring?",
+          "answerHtml": "<p>Extract values from arrays/objects into variables. Object: <code>const {name, age=25} = user</code>. Array: <code>const [first,,third] = arr</code>. Nested: <code>const {address:{city}} = user</code>. Rename: <code>const {name:userName} = user</code>.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is template literal?",
+          "answerHtml": "<p>Backtick strings supporting interpolation <code>`Hello ${name}`</code>, multi-line strings, and tagged templates <code>tag`text ${expr}`</code> where tag is a function.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the typeof operator?",
+          "answerHtml": "<p>Returns type as string: <code>typeof 'hi'→'string'</code>, <code>typeof 42→'number'</code>, <code>typeof true→'boolean'</code>, <code>typeof undefined→'undefined'</code>, <code>typeof null→'object'</code> (bug!), <code>typeof {}→'object'</code>, <code>typeof []→'object'</code>, <code>typeof function(){}→'function'</code>.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is NaN?",
+          "answerHtml": "<p>'Not a Number' — result of invalid math (<code>0/0</code>, <code>parseInt('abc')</code>). <code>typeof NaN</code> is <code>'number'</code>. <code>NaN !== NaN</code> is true (the only value not equal to itself). Check with <code>Number.isNaN(x)</code> (not global <code>isNaN</code> which coerces).</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the difference between for...in and for...of?",
+          "answerHtml": "<p><code>for...in</code>: iterates object <strong>keys</strong> (includes prototype chain — guard with hasOwnProperty). <code>for...of</code>: iterates <strong>values</strong> of iterables (arrays, strings, Maps, Sets — NOT plain objects). Use <code>Object.entries()</code> + <code>for...of</code> for objects.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What are truthy and falsy values used for?",
+          "answerHtml": "<p>Implicit boolean conversion in conditions: <code>if(value)</code>, <code>value &amp;&amp; doSomething()</code>, <code>value || default</code>, ternary <code>value ? a : b</code>. Common gotcha: <code>0</code> and <code>''</code> are falsy but might be valid values — use <code>??</code> for null/undefined only.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is scope in JavaScript?",
+          "answerHtml": "<p>Where variables are accessible. <strong>Global:</strong> everywhere. <strong>Function:</strong> inside the function (var). <strong>Block:</strong> inside <code>{}</code> (let/const). Scope chain: inner functions can access outer scope variables (not vice versa). This creates closures.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is a callback function?",
+          "answerHtml": "<p>A function passed as an argument to another function, to be called later. Examples: <code>setTimeout(callback, 1000)</code>, <code>arr.map(callback)</code>, <code>btn.addEventListener('click', callback)</code>. Callbacks enable async patterns but can lead to 'callback hell' (nested callbacks).</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the DOM?",
+          "answerHtml": "<p>Document Object Model — a tree representation of HTML that JavaScript can manipulate. Methods: <code>getElementById</code>, <code>querySelector</code>, <code>createElement</code>, <code>appendChild</code>, <code>addEventListener</code>. The browser builds the DOM from HTML, then renders it visually.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is JSON?",
+          "answerHtml": "<p>JavaScript Object Notation — a text format for data exchange. <code>JSON.stringify(obj)</code> converts to string. <code>JSON.parse(str)</code> converts back. Limitations: no functions, no undefined, no NaN/Infinity, no circular references, dates become strings.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the difference between slice, splice, and split?",
+          "answerHtml": "<p><code>slice(start,end)</code>: returns new array/string portion, doesn't mutate. <code>splice(start,deleteCount,...items)</code>: modifies original array in-place. <code>split(separator)</code>: string method, splits into array. Modern: use <code>toSpliced()</code> for immutable splice.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What are higher-order functions?",
+          "answerHtml": "<p>Functions that take functions as arguments or return functions. Examples: <code>map</code>, <code>filter</code>, <code>reduce</code>, <code>forEach</code>, <code>sort</code>, <code>find</code>, <code>some</code>, <code>every</code>. They enable functional programming patterns and method chaining.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is map, filter, reduce?",
+          "answerHtml": "<p><code>map(fn)</code>: transforms each element, returns new array of same length. <code>filter(fn)</code>: keeps elements where fn returns true, returns shorter array. <code>reduce(fn, init)</code>: accumulates all elements into single value. All return new arrays (don't mutate original).</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is optional chaining (?.) ?",
+          "answerHtml": "<p>Short-circuits to undefined if a property is null/undefined: <code>user?.address?.city</code> instead of <code>user &amp;&amp; user.address &amp;&amp; user.address.city</code>. Works on properties, arrays <code>arr?.[0]</code>, and methods <code>fn?.()</code>.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is nullish coalescing (??)?",
+          "answerHtml": "<p><code>??</code> returns the right side only when left is <code>null</code> or <code>undefined</code> (not for <code>0</code> or <code>''</code>). Compare: <code>0 || 'default'</code> → <code>'default'</code> (0 is falsy). <code>0 ?? 'default'</code> → <code>0</code> (0 is not null/undefined). Use <code>??</code> when 0 or empty string are valid values.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is a Promise?",
+          "answerHtml": "<p>An object representing eventual completion/failure of an async operation. Three states: pending → fulfilled (resolved) or rejected. Created with <code>new Promise((resolve, reject) =&gt; {})</code>. Consumed with <code>.then()</code>, <code>.catch()</code>, <code>.finally()</code>. Enables cleaner async code than callbacks.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is async/await?",
+          "answerHtml": "<p>Syntactic sugar for Promises. <code>async function</code> always returns a Promise. <code>await</code> pauses execution until Promise resolves. Use <code>try/catch</code> for error handling. Makes async code look synchronous and readable.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the difference between let and const for objects?",
+          "answerHtml": "<p><code>const</code> prevents reassignment of the variable binding, NOT mutation of the value. <code>const obj = {}</code> → <code>obj.name = 'hi'</code> works (mutation). <code>obj = {}</code> fails (reassignment). To truly freeze: <code>Object.freeze(obj)</code> — but it's shallow.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What are default parameters?",
+          "answerHtml": "<p><code>function greet(name = 'World') {}</code> — default used when argument is <code>undefined</code> (not null). Works with destructuring: <code>function({x = 0, y = 0} = {}) {}</code>. Evaluated left-to-right, later params can reference earlier ones.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is event bubbling?",
+          "answerHtml": "<p>When an event fires on an element, it 'bubbles' up through its ancestors: target → parent → grandparent → document. You can stop it with <code>e.stopPropagation()</code>. The opposite (capturing) goes top-down. Default is bubbling phase.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the difference between innerHTML, textContent, and innerText?",
+          "answerHtml": "<p><code>innerHTML</code>: gets/sets HTML markup (parses tags, XSS risk). <code>textContent</code>: gets/sets raw text of all elements (fastest, includes hidden). <code>innerText</code>: gets visible text only (triggers reflow, slower). Prefer <code>textContent</code> for setting text safely.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is Array.isArray()?",
+          "answerHtml": "<p>The reliable way to check if a value is an array. <code>typeof []</code> returns <code>'object'</code> (not helpful). <code>[] instanceof Array</code> fails across frames/iframes. <code>Array.isArray([]) → true</code>, <code>Array.isArray({}) → false</code>.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is a pure function?",
+          "answerHtml": "<p>A function that: 1) always returns the same output for the same inputs, and 2) has no side effects (doesn't modify external state). <code>const add = (a,b) =&gt; a+b</code> is pure. <code>Math.random()</code> and functions that modify global variables are impure.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the rest parameter?",
+          "answerHtml": "<p><code>function sum(...nums) {}</code> collects remaining arguments into an array. Unlike <code>arguments</code> (array-like, not a real array), rest params ARE real arrays. Must be the last parameter. Works in destructuring: <code>const [first, ...rest] = arr</code>.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is String interpolation?",
+          "answerHtml": "<p>Embedding expressions in template literals: <code>`Hello ${name}, you are ${age} years old`</code>. Any valid JS expression works inside <code>${}</code> — function calls, ternaries, arithmetic. Much cleaner than string concatenation with <code>+</code>.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Explain closures with a practical example.",
+          "answerHtml": "<p>A closure is a function that retains access to its outer scope's variables even after the outer function returns. Example: <code>function counter() { let n = 0; return { inc: () =&gt; ++n, get: () =&gt; n }; }</code> — the returned object 'closes over' n, keeping it alive and private. Uses: data privacy, factories, memoization, event handlers with state.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Explain the event loop in detail.",
+          "answerHtml": "<p>JS is single-threaded. The event loop: <strong>1)</strong> Execute sync code on call stack. <strong>2)</strong> When stack is empty, process ALL microtasks (Promise.then, queueMicrotask, MutationObserver). <strong>3)</strong> Process ONE macrotask (setTimeout, setInterval, I/O, UI rendering). <strong>4)</strong> Repeat. Key: microtasks always run before macrotasks. Nested microtasks run immediately too (can starve macrotasks).</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Explain 'this' — all rules with priority.",
+          "answerHtml": "<p>Priority (highest to lowest): <strong>1) new</strong>: this = new object. <strong>2) bind/call/apply</strong>: this = specified object. <strong>3) Object method</strong>: this = calling object. <strong>4) Default</strong>: this = window (or undefined in strict mode). <strong>Arrow functions</strong>: no own this — always inherits from enclosing scope. This is why arrows are perfect for callbacks but wrong for object methods.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the Temporal Dead Zone (TDZ)?",
+          "answerHtml": "<p>The period between entering a block and the let/const declaration. Accessing the variable during TDZ throws ReferenceError. Exists because let/const ARE hoisted (the engine knows about them) but NOT initialized (they have no value yet). var doesn't have TDZ — it's hoisted and initialized as undefined.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is event delegation?",
+          "answerHtml": "<p>Attach ONE listener to a parent instead of listeners on each child. Use <code>e.target</code> to determine which child was clicked. Benefits: works for dynamically added elements, fewer listeners, less memory. Pattern: <code>parent.addEventListener('click', e =&gt; { if(e.target.matches('.item')) handleClick(e.target); })</code>.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is Promise.all vs allSettled vs race vs any?",
+          "answerHtml": "<p><strong>all([p1,p2])</strong>: resolves when ALL resolve, rejects on FIRST rejection. <strong>allSettled</strong>: waits for ALL, returns [{status,value/reason}], never rejects. <strong>race</strong>: returns FIRST to settle (resolve or reject). <strong>any</strong>: returns FIRST to resolve, only rejects if ALL fail (AggregateError). Use all for parallel dependent tasks, allSettled for independent tasks, race for timeouts, any for fastest mirror.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Explain prototypal inheritance.",
+          "answerHtml": "<p>Every object has [[Prototype]] link to another object. Property lookup walks the chain: object → prototype → prototype's prototype → Object.prototype → null. <code>Object.create(proto)</code> creates object with custom prototype. ES6 classes are syntactic sugar — <code>extends</code> sets up the chain, <code>super()</code> calls parent constructor. <code>instanceof</code> checks the chain.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Shallow copy vs deep copy — methods and gotchas.",
+          "answerHtml": "<p><strong>Shallow</strong>: copies first level only. <code>{...obj}</code>, <code>Object.assign({},obj)</code>, <code>[...arr]</code>. Nested objects share references. <strong>Deep</strong>: copies ALL levels. <code>structuredClone(obj)</code> (modern, handles dates/regex/maps/circular refs). <code>JSON.parse(JSON.stringify(obj))</code> loses functions, undefined, dates, Infinity, NaN, circular refs. Always prefer structuredClone.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between call, apply, and bind?",
+          "answerHtml": "<p>All set <code>this</code> explicitly. <code>call(thisArg, a, b)</code>: invokes immediately, individual args. <code>apply(thisArg, [a,b])</code>: invokes immediately, array args. <code>bind(thisArg, a)</code>: returns NEW function with bound this (doesn't invoke). Bind is for creating callbacks with specific context. Fun fact: <code>Math.max.apply(null, arr)</code> was the old way to spread — now use <code>Math.max(...arr)</code>.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is a closure and how does it cause memory leaks?",
+          "answerHtml": "<p>A closure retains references to outer variables. Memory leak: if a closure references a large object that's no longer needed, the GC can't collect it because the closure keeps it alive. Example: event listener closures that aren't removed. Fix: remove listeners on cleanup, null out references, use WeakRef for caches.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Explain the classic for loop + var + setTimeout problem.",
+          "answerHtml": "<p><code>for(var i=0;i&lt;3;i++) setTimeout(()=&gt;console.log(i),100)</code> prints 3,3,3. Why: var is function-scoped — all callbacks share the SAME i, which is 3 after the loop finishes. Fixes: <strong>1)</strong> Use <code>let</code> (block-scoped, new binding per iteration). <strong>2)</strong> IIFE: <code>((j)=&gt;setTimeout(()=&gt;console.log(j),100))(i)</code>. <strong>3)</strong> <code>setTimeout(console.log, 100, i)</code> (third arg).</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What are Map and Set? When use over Object/Array?",
+          "answerHtml": "<p><strong>Map</strong>: any key type, ordered, iterable, .size, no prototype pollution. Use when: keys are objects/functions, you need ordered iteration, frequent add/delete. <strong>Set</strong>: unique values only, .has() is O(1). Use for: deduplication <code>[...new Set(arr)]</code>, membership testing. Object/Array are still better for JSON data and simple cases.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is debounce vs throttle?",
+          "answerHtml": "<p><strong>Debounce</strong>: waits until user STOPS doing something for N ms. Use: search input, resize handler. <strong>Throttle</strong>: executes at most once every N ms. Use: scroll handler, rate-limiting API calls. Debounce delays, throttle caps. Both use closures + setTimeout internally.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between Object.keys, values, entries?",
+          "answerHtml": "<p><code>Object.keys(obj)</code>: array of own enumerable string keys. <code>Object.values(obj)</code>: array of own enumerable values. <code>Object.entries(obj)</code>: array of [key, value] pairs. None include Symbol keys or prototype properties. For Maps: use <code>map.keys()</code>, <code>map.values()</code>, <code>map.entries()</code>.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is a generator function?",
+          "answerHtml": "<p><code>function* gen() { yield 1; yield 2; }</code> — can pause and resume. Returns an iterator with <code>.next()</code> → <code>{value, done}</code>. Use cases: lazy evaluation, infinite sequences, implementing custom iterables, controlled async flow. <code>yield*</code> delegates to another generator.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Explain async iteration (for await...of).",
+          "answerHtml": "<p><code>for await (const item of asyncIterable) {}</code> — iterates over async iterables (streams, paginated APIs). The iterable's <code>[Symbol.asyncIterator]()</code> returns objects with async <code>next()</code> methods. Use with async generators: <code>async function* fetchPages() { while(hasMore) { yield await fetchPage(); } }</code></p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is memoization?",
+          "answerHtml": "<p>Caching function results based on inputs to avoid redundant computation. Implementation: <code>function memoize(fn) { const cache = new Map(); return (...args) =&gt; { const key = JSON.stringify(args); if(cache.has(key)) return cache.get(key); const result = fn(...args); cache.set(key, result); return result; }; }</code> Uses closures to persist the cache.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What are tagged template literals?",
+          "answerHtml": "<p><code>tag`text ${expr}`</code> where tag is a function receiving strings array and interpolated values. Used by: styled-components (<code>css`color: red`</code>), GraphQL (<code>gql`query{}`</code>), i18n, SQL sanitization. The tag function can transform or validate the template. You can return anything, not just strings.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between Error types?",
+          "answerHtml": "<p><code>Error</code>: base class. <code>TypeError</code>: wrong type (<code>null.prop</code>). <code>ReferenceError</code>: undeclared variable. <code>SyntaxError</code>: parse error. <code>RangeError</code>: value out of range. <code>URIError</code>: bad URI. Custom: <code>class AppError extends Error { constructor(msg,code) { super(msg); this.code=code; } }</code></p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is Symbol and when do you use it?",
+          "answerHtml": "<p>Unique, immutable identifier: <code>const id = Symbol('description')</code>. Every Symbol() is unique. Not visible in <code>for...in</code>, <code>Object.keys()</code>, <code>JSON.stringify()</code>. Use cases: private-ish object keys, avoiding name collisions in libraries, well-known symbols (<code>Symbol.iterator</code>, <code>Symbol.toPrimitive</code>).</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Explain Object.freeze, seal, preventExtensions.",
+          "answerHtml": "<p><code>Object.freeze()</code>: no add, no delete, no modify — completely locked (shallow). <code>Object.seal()</code>: no add, no delete, CAN modify existing. <code>Object.preventExtensions()</code>: no add, CAN delete and modify. All are shallow — nested objects remain mutable. <code>Object.isFrozen/isSealed/isExtensible</code> to check.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the arguments object?",
+          "answerHtml": "<p>Array-like object available in regular functions containing all passed arguments. NOT available in arrow functions. NOT a real array (no map/filter). Convert: <code>[...arguments]</code> or <code>Array.from(arguments)</code>. Modern replacement: rest parameters <code>(...args)</code> — always use rest instead.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is strict mode?",
+          "answerHtml": "<p>Enabled with <code>'use strict'</code>. Effects: prevents accidental globals (undeclared = error), disables with statement, makes eval safer, prevents duplicate params, this is undefined (not window) in regular functions, prohibits deleting non-configurable properties. Modules and classes are always strict.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is currying?",
+          "answerHtml": "<p>Transforming <code>f(a,b,c)</code> into <code>f(a)(b)(c)</code>. Each call returns a new function until all arguments are collected. Use: partial application <code>const add5 = curry(add)(5)</code>, creating reusable utilities, point-free programming. Libraries like lodash/ramda provide curry helpers.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the Proxy object?",
+          "answerHtml": "<p>Intercepts operations on objects: get, set, delete, has, apply, construct, etc. <code>new Proxy(target, handler)</code>. Real uses: validation (reject invalid values), reactive systems (Vue.js), logging/debugging, access control, default values for missing properties, negative array indexing.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is Reflect?",
+          "answerHtml": "<p>Built-in object with methods matching Proxy trap names: <code>Reflect.get()</code>, <code>Reflect.set()</code>, <code>Reflect.has()</code>, etc. Provides the default behavior that Proxy traps can call. More reliable than direct operations — <code>Reflect.defineProperty()</code> returns boolean instead of throwing like <code>Object.defineProperty()</code>.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How does garbage collection work in JavaScript?",
+          "answerHtml": "<p>JS uses <strong>mark-and-sweep</strong>: the GC starts from roots (global, stack), marks all reachable objects, then sweeps (frees) unreachable ones. Common leak patterns: forgotten timers/intervals, detached DOM references in closures, growing arrays/maps never cleaned, circular references (handled by modern GC but still add pressure).</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What are WeakMap and WeakSet?",
+          "answerHtml": "<p><strong>WeakMap</strong>: keys must be objects, weakly held — GC can collect keys if no other references exist. Not iterable, no .size. Use: private data per object, caching without leaks. <strong>WeakSet</strong>: objects only, weakly held. Use: tracking visited objects, tagging objects without preventing GC.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between synchronous and asynchronous iteration?",
+          "answerHtml": "<p><strong>Sync</strong>: <code>for...of</code> with <code>[Symbol.iterator]</code>, yields values immediately. <strong>Async</strong>: <code>for await...of</code> with <code>[Symbol.asyncIterator]</code>, yields Promises. Async iterators are created with <code>async function*</code> generators. Use for: reading streams, paginated APIs, processing data as it arrives.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the new keyword doing under the hood?",
+          "answerHtml": "<p><strong>1)</strong> Creates a new empty object. <strong>2)</strong> Sets its [[Prototype]] to the constructor's .prototype. <strong>3)</strong> Calls the constructor with <code>this</code> = the new object. <strong>4)</strong> Returns the object (unless constructor explicitly returns an object). That's why arrow functions can't be constructors — they have no .prototype and can't bind this.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is structuredClone?",
+          "answerHtml": "<p>Modern deep cloning: <code>structuredClone(obj)</code>. Handles: nested objects, arrays, Maps, Sets, Dates, RegExp, ArrayBuffers, circular references. Does NOT handle: functions, DOM nodes, Error objects, property descriptors, prototype chain. Available in all modern browsers and Node.js 17+.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Explain Promise chaining vs async/await.",
+          "answerHtml": "<p><code>fetchUser().then(u =&gt; fetchPosts(u.id)).then(posts =&gt; render(posts)).catch(handleError)</code> vs <code>try { const u = await fetchUser(); const posts = await fetchPosts(u.id); render(posts); } catch(e) { handleError(e); }</code> — async/await is cleaner for sequential operations. Promise.all + await is best for parallel operations.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is Object.defineProperty?",
+          "answerHtml": "<p>Defines or modifies a property with fine-grained control: <code>Object.defineProperty(obj, 'name', { value: 'Alice', writable: false, enumerable: true, configurable: false })</code>. Also supports getter/setter: <code>{ get() { return this._name; }, set(v) { this._name = v; } }</code>. Foundation for Vue 2's reactivity system.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What are Iterables and Iterators?",
+          "answerHtml": "<p><strong>Iterable</strong>: object with <code>[Symbol.iterator]()</code> method (strings, arrays, Maps, Sets). <strong>Iterator</strong>: object with <code>.next()</code> → <code>{value, done}</code>. Custom: <code>const iterable = { [Symbol.iterator]() { let i=0; return { next() { return i&lt;3 ? {value:i++,done:false} : {done:true}; } }; } }</code>. Enables <code>for...of</code>, spread, destructuring.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between setTimeout(fn,0) and queueMicrotask(fn)?",
+          "answerHtml": "<p><code>setTimeout(fn,0)</code>: adds to macrotask queue — runs after ALL microtasks and any pending rendering. <code>queueMicrotask(fn)</code>: adds to microtask queue — runs before any macrotasks, after current synchronous code. Promise.then callbacks are also microtasks. This order difference matters for timing-sensitive code.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is a Web Worker?",
+          "answerHtml": "<p>Runs JS in a background thread — true parallelism. Created with <code>new Worker('worker.js')</code>. Communicate via <code>postMessage/onmessage</code>. Workers can't access DOM, window, or document. Use for: heavy computation, data processing, image manipulation. <code>SharedWorker</code> is shared across tabs. <code>Service Worker</code> handles network requests (offline, caching).</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What are ES2023-2024 new features?",
+          "answerHtml": "<p><strong>ES2023</strong>: <code>Array.findLast/findLastIndex</code>, <code>toSorted/toReversed/toSpliced/with</code> (immutable array methods), hashbang grammar. <strong>ES2024</strong>: <code>Object.groupBy()</code>, <code>Map.groupBy()</code>, <code>Promise.withResolvers()</code>, well-formed Unicode strings, Atomics.waitAsync. These are actively asked in senior interviews.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the module system (import/export)?",
+          "answerHtml": "<p>ES Modules: <code>export const x = 1</code>, <code>export default fn</code>, <code>import {x} from './mod'</code>, <code>import fn from './mod'</code>. Live bindings (exports reflect current value). Static analysis (tree-shakable). <code>import()</code> for dynamic/lazy loading. CommonJS (<code>require/module.exports</code>) is Node.js legacy — synchronous, not tree-shakable.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between deep equality and shallow equality?",
+          "answerHtml": "<p><strong>Shallow</strong>: compares first-level values with <code>===</code>. <code>{a:1} !== {a:1}</code> (different references). <strong>Deep</strong>: recursively compares all nested values. No built-in deep equality in JS. Options: <code>JSON.stringify(a) === JSON.stringify(b)</code> (order-dependent, loses types), lodash <code>_.isEqual()</code>, custom recursive function. React uses <code>Object.is()</code> for state comparison.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is short-circuit evaluation?",
+          "answerHtml": "<p><code>&amp;&amp;</code>: returns first falsy value (or last if all truthy). <code>||</code>: returns first truthy value (or last if all falsy). Uses: <code>user &amp;&amp; user.name</code> (safe access), <code>name || 'Anonymous'</code> (default). Gotcha: <code>0 || 'default'</code> gives <code>'default'</code> because 0 is falsy — use <code>??</code> for null/undefined only.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Implement debounce from scratch.",
+          "answerHtml": "<p><code>function debounce(fn, delay) { let timer; return (...args) =&gt; { clearTimeout(timer); timer = setTimeout(() =&gt; fn(...args), delay); }; }</code> Uses closure to persist timer. Each call resets the timer. The function only fires after the user stops calling for the specified delay. Can be enhanced with leading/trailing options and cancel method.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Implement throttle from scratch.",
+          "answerHtml": "<p><code>function throttle(fn, limit) { let inThrottle; return (...args) =&gt; { if (!inThrottle) { fn(...args); inThrottle = true; setTimeout(() =&gt; inThrottle = false, limit); } }; }</code> Ensures function runs at most once per interval. First call executes immediately. Uses closure for the flag. Can be enhanced with trailing call option.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Implement a simple Promise from scratch.",
+          "answerHtml": "<p>Core: store state (pending/fulfilled/rejected), value, and callback queue. <code>resolve()</code> transitions state and runs stored callbacks. <code>.then()</code> returns a new Promise (for chaining), stores callbacks if pending, runs immediately if already resolved. Key: callbacks must be async (microtask) per spec. This demonstrates understanding of the Promise specification (Promises/A+).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Implement curry function.",
+          "answerHtml": "<p><code>const curry = (fn) =&gt; { const arity = fn.length; return function curried(...args) { return args.length &gt;= arity ? fn(...args) : (...more) =&gt; curried(...args, ...more); }; }</code> Recursively collects arguments until enough are gathered. <code>curry(add)(1)(2)</code> and <code>curry(add)(1,2)</code> both work. Placeholder support adds complexity.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Implement Function.prototype.bind polyfill.",
+          "answerHtml": "<p><code>Function.prototype.myBind = function(context, ...boundArgs) { const fn = this; return function(...args) { return fn.apply(context, [...boundArgs, ...args]); }; }</code> Uses closure to capture context and partial args. Real bind also handles 'new' calls and preserves prototype chain — this simplified version covers 90% of interview expectations.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Explain the JavaScript engine pipeline.",
+          "answerHtml": "<p><strong>1) Parsing</strong>: source → AST (Abstract Syntax Tree). <strong>2) Interpretation</strong>: AST → bytecode (executed immediately by interpreter). <strong>3) Profiling</strong>: engine monitors 'hot' functions (called frequently). <strong>4) JIT Compilation</strong>: hot functions compiled to optimized machine code. <strong>5) Deoptimization</strong>: if assumptions are wrong (e.g., type changed), falls back to interpreter. V8 uses Ignition (interpreter) + TurboFan (compiler).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What are memory leaks in JavaScript? How to detect and fix?",
+          "answerHtml": "<p>Common leaks: <strong>1)</strong> Forgotten timers/intervals (clear them!). <strong>2)</strong> Detached DOM references in closures. <strong>3)</strong> Closures retaining large objects unnecessarily. <strong>4)</strong> Growing caches without eviction. <strong>5)</strong> Event listeners not removed. Detect: Chrome DevTools Memory tab — take heap snapshots, compare, find growing objects. Fix: cleanup functions, WeakMap/WeakRef for caches, remove listeners, null out references.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Explain the Proxy/Reflect API with real use cases.",
+          "answerHtml": "<p><strong>Proxy</strong> intercepts 13 operations: get, set, has, deleteProperty, apply, construct, etc. <strong>Reflect</strong> provides default behavior for each trap. Use cases: <strong>1) Validation</strong>: reject invalid values in set trap. <strong>2) Reactive systems</strong>: trigger UI updates on property change (Vue 3's reactivity). <strong>3) Negative indexing</strong>: <code>arr[-1]</code>. <strong>4) Auto-vivification</strong>: auto-create nested objects on access. <strong>5) Access logging</strong>: track all property reads/writes.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Explain JavaScript module systems (ESM vs CJS vs AMD vs UMD).",
+          "answerHtml": "<p><strong>ESM</strong>: <code>import/export</code>, static analysis, tree-shakable, async loading, live bindings. <strong>CJS</strong>: <code>require/module.exports</code>, Node.js legacy, synchronous, copies values. <strong>AMD</strong>: <code>define([],(deps)=&gt;{})</code>, browser async loading (RequireJS), mostly obsolete. <strong>UMD</strong>: wrapper that works in all systems (CJS/AMD/global). Modern: use ESM everywhere. Node.js supports both via .mjs extension or package.json <code>\"type\":\"module\"</code>.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is tail call optimization (TCO)?",
+          "answerHtml": "<p>When the last action of a function is a function call, the engine can reuse the current stack frame instead of adding a new one — prevents stack overflow for recursive functions. Only Safari implements TCO in strict mode. Other engines don't. Workaround: convert recursion to iteration, or use trampolining: <code>function trampoline(fn) { let result = fn(); while(typeof result === 'function') result = result(); return result; }</code></p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Implement EventEmitter from scratch.",
+          "answerHtml": "<p><code>class EventEmitter { constructor() { this.events = {}; } on(event, fn) { (this.events[event] ??= []).push(fn); return this; } off(event, fn) { this.events[event] = this.events[event]?.filter(f =&gt; f !== fn); } emit(event, ...args) { this.events[event]?.forEach(fn =&gt; fn(...args)); } once(event, fn) { const wrapper = (...args) =&gt; { fn(...args); this.off(event, wrapper); }; this.on(event, wrapper); } }</code> Demonstrates closures, this binding, and the observer pattern.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the difference between concurrency and parallelism in JS?",
+          "answerHtml": "<p><strong>Concurrency</strong>: multiple tasks make progress (event loop — one thread, interleaved execution). <strong>Parallelism</strong>: multiple tasks run simultaneously (Web Workers — multiple threads). JS main thread is concurrent, not parallel. Web Workers enable true parallelism. SharedArrayBuffer + Atomics enable shared memory between workers (with synchronization).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Explain WeakRef and FinalizationRegistry.",
+          "answerHtml": "<p><strong>WeakRef</strong>: holds weak reference to object. <code>ref.deref()</code> returns object or undefined if GC'd. Use for caches that shouldn't prevent garbage collection. <strong>FinalizationRegistry</strong>: register callbacks that fire when objects are GC'd. <code>const registry = new FinalizationRegistry(heldValue =&gt; { cleanup(heldValue); }); registry.register(obj, 'cleanup-token')</code>. Both are non-deterministic — GC timing is unpredictable.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Implement deep clone without structuredClone.",
+          "answerHtml": "<p><code>function deepClone(obj, seen = new WeakMap()) { if (obj === null || typeof obj !== 'object') return obj; if (seen.has(obj)) return seen.get(obj); if (obj instanceof Date) return new Date(obj); if (obj instanceof RegExp) return new RegExp(obj); const clone = Array.isArray(obj) ? [] : {}; seen.set(obj, clone); for (const key of Reflect.ownKeys(obj)) { clone[key] = deepClone(obj[key], seen); } return clone; }</code> Handles circular refs with WeakMap, preserves Date/RegExp, uses Reflect.ownKeys for symbols.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the Temporal API (Stage 3)?",
+          "answerHtml": "<p>Modern date/time API replacing the broken Date object. <code>Temporal.Now.instant()</code>, <code>Temporal.PlainDate.from('2025-01-15')</code>, <code>Temporal.ZonedDateTime</code>. Features: immutable, timezone-aware, calendar support, duration arithmetic, no month-indexing issues (January is 1 not 0). Still Stage 3 but polyfillable. Will eventually obsolete moment.js and date-fns for most use cases.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Implement pipe and compose functions.",
+          "answerHtml": "<p><code>const pipe = (...fns) =&gt; (x) =&gt; fns.reduce((v, fn) =&gt; fn(v), x);</code> Left-to-right composition. <code>const compose = (...fns) =&gt; (x) =&gt; fns.reduceRight((v, fn) =&gt; fn(v), x);</code> Right-to-left. Usage: <code>const transform = pipe(trim, lowercase, capitalize); transform(' HELLO ')</code>. Fundamental functional programming pattern. TC39 has a pipeline operator proposal (<code>x |&gt; fn</code>).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Explain the Iterator and Iterable protocols in depth.",
+          "answerHtml": "<p><strong>Iterable</strong>: has <code>[Symbol.iterator]()</code> returning an iterator. <strong>Iterator</strong>: has <code>.next()</code> returning <code>{value, done}</code>. Custom: make any object iterable. Async versions use <code>[Symbol.asyncIterator]()</code> and <code>async next()</code>. Generators auto-implement both protocols. Consumed by: <code>for...of</code>, spread, destructuring, <code>Array.from()</code>, <code>Promise.all()</code>, <code>yield*</code>.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the structured clone algorithm?",
+          "answerHtml": "<p>The algorithm behind <code>structuredClone()</code>, <code>postMessage()</code>, IndexedDB, and history API. Handles: objects, arrays, Maps, Sets, Dates, RegExp, ArrayBuffers, Blobs, Files, ImageData, circular references. Does NOT handle: functions, DOM nodes, property descriptors, getters/setters, prototype chain, Error objects (in some engines). It's what makes Web Worker communication possible.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Explain AbortController and AbortSignal.",
+          "answerHtml": "<p><code>const controller = new AbortController(); fetch(url, {signal: controller.signal}).catch(e =&gt; { if(e.name === 'AbortError') console.log('Cancelled'); }); controller.abort();</code> Cancels fetch requests, event listeners, and any async operation that accepts a signal. Multiple operations can share one signal. Use in React cleanup: <code>useEffect(() =&gt; { const ctrl = new AbortController(); fetch(url, {signal: ctrl.signal}); return () =&gt; ctrl.abort(); }, [url])</code></p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What are SharedArrayBuffer and Atomics?",
+          "answerHtml": "<p><strong>SharedArrayBuffer</strong>: memory shared between main thread and workers (unlike regular ArrayBuffer which is transferred/copied). <strong>Atomics</strong>: provides thread-safe operations on shared memory — <code>Atomics.add()</code>, <code>Atomics.load()</code>, <code>Atomics.store()</code>, <code>Atomics.wait()/notify()</code> for synchronization. Required for high-performance parallel computing in JS. Requires cross-origin isolation headers (COOP/COEP) due to Spectre mitigations.</p>"
+        }
+      ],
+      "hasFilterBar": true
+    },
+    {
+      "id": "js-ts",
+      "intro": "Extending JavaScript with static typing to build robust, scalable applications.",
+      "cards": [
+        {
+          "title": "Types vs Interfaces",
+          "contentHtml": "<p>Both are used to define custom structures in TypeScript, but they have subtle differences.</p>\n      <ul>\n        <li><b>Interface:</b> Strictly for object shapes. Can be merged via \"Declaration Merging\" (if you declare the same interface twice, TS combines their properties). Ideal for public API definitions.</li>\n        <li><b>Type Aliases (`type`):</b> More flexible. Can define primitives, unions, intersections, and mapped types. Cannot be declaration-merged. Ideal for internal component definitions and complex utility types.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>// Interface (Object Shape)\ninterface User { id: number; name: string; }\n\n// Type (Union)\ntype Status = \"idle\" | \"loading\" | \"success\" | \"error\";\n\n// Intersection (Combining shapes)\ntype AdminUser = User &amp; { role: \"admin\" | \"superadmin\" };\n</code></pre>\n      </div>"
+        },
+        {
+          "title": "Generics & Utility Types",
+          "contentHtml": "<p>Generics allow you to write reusable code that works across multiple types.</p>\n      <ul>\n        <li><b>`T` as an Argument:&lt;/b&gt; Think of a generic `<t>` like a type variable passed into a function.</t></b></li><b>\n        <li><b>Partial&lt;T&gt;:</b> Makes all properties in T optional. Useful for update/patch payloads.</li>\n        <li><b>Omit&lt;T, K&gt;:</b> Creates a type by removing specific keys `K` from `T`.</li>\n        <li><b>Record&lt;K, T&gt;:</b> Creates an object type where keys are of type `K` and values are of type `T`.</li>\n      </b></ul><b>\n      <div class=\"code-block\">\n<pre><code>// Generic Function: infers type T from the input array\nfunction getFirstItem&lt;T&gt;(items: T[]): T | undefined {\n  return items[0];\n}\n\nconst num = getFirstItem([1, 2, 3]); // Hover: num is number\nconst str = getFirstItem([\"a\", \"b\"]); // Hover: str is string\n</code></pre>\n      </div>\n    </b>"
+        }
+      ]
+    }
+  ]
+}

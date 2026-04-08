@@ -1,0 +1,1649 @@
+{
+  "id": "angular",
+  "title": "Angular Mastery Bible",
+  "subtitle": "Signals, state, SSR & 15 deep chapters",
+  "tabs": [
+    {
+      "id": "state-management",
+      "label": "State Management"
+    },
+    {
+      "id": "pwa-sw",
+      "label": "PWA & Service Workers"
+    },
+    {
+      "id": "micro-frontends",
+      "label": "Micro-Frontends"
+    },
+    {
+      "id": "material-cdk",
+      "label": "Angular Material & CDK"
+    },
+    {
+      "id": "i18n-l10n",
+      "label": "i18n & l10n"
+    },
+    {
+      "id": "build-security-a11y",
+      "label": "Build, Security & A11y"
+    },
+    {
+      "id": "angular-animations",
+      "label": "Animations"
+    },
+    {
+      "id": "core",
+      "label": "Core & Architecture"
+    },
+    {
+      "id": "comp",
+      "label": "Components Deep Dive"
+    },
+    {
+      "id": "tmpl",
+      "label": "Templates & Directives"
+    },
+    {
+      "id": "di",
+      "label": "Dependency Injection"
+    },
+    {
+      "id": "data",
+      "label": "Data Management"
+    },
+    {
+      "id": "rxjs",
+      "label": "RxJS & Reactivity"
+    },
+    {
+      "id": "routing",
+      "label": "Routing & Guards"
+    },
+    {
+      "id": "forms",
+      "label": "Forms Mastery"
+    },
+    {
+      "id": "pipes",
+      "label": "Custom Pipes"
+    },
+    {
+      "id": "signals",
+      "label": "Signals (v16-v19)"
+    },
+    {
+      "id": "perf",
+      "label": "Performance & Optimization"
+    },
+    {
+      "id": "testing",
+      "label": "Testing (Vitest/Cypress)"
+    },
+    {
+      "id": "ssr",
+      "label": "SSR & Hydration"
+    },
+    {
+      "id": "v21",
+      "label": "Angular 19+ (v21 Prep)"
+    },
+    {
+      "id": "iq",
+      "label": "Interview Q&A (195)"
+    }
+  ],
+  "sections": [
+    {
+      "id": "state-management",
+      "intro": "Managing complex state across Angular applications using NgRx, NGXS, and Signal Store.",
+      "cards": [
+        {
+          "title": "NgRx Store (Redux Pattern)",
+          "contentHtml": "<p>NgRx is the official state management library for Angular, implementing the Redux pattern with RxJS.</p>\n      <ul>\n        <li><b>Store</b>: Single source of truth. Immutable object tree.</li>\n        <li><b>Actions</b>: Unique events that express state changes.</li>\n        <li><b>Reducers</b>: Pure functions that map `(currentState, action) =&gt; newState`.</li>\n        <li><b>Selectors</b>: Pure functions to derive/query slice of state from the store.</li>\n        <li><b>Effects</b>: Side-effect model to isolate API calls and async logic from components.</li>\n      </ul>\n      <div class=\"analogy\">\n        Think of NgRx as a <b>Bank</b>. You can't change your balance directly in the database (Store). You have to fill out a deposit slip (Action), hand it to the teller (Reducer), who then calculates the new balance. If you need to verify an out-of-state check first, the manager (Effects) handles the delay before giving the deposit slip back to the teller.\n      </div>\n      <div class=\"code-block\">\n<pre><code>// 1. Action\nexport const loadUsers = createAction('[User List] Load Users');\nexport const loadUsersSuccess = createAction('[User List] Load Success', props&lt;{users: User[]}&gt;());\n\n// 2. Reducer\nexport const userReducer = createReducer(\n  initialState,\n  on(loadUsersSuccess, (state, { users }) =&gt; ({ ...state, users }))\n);\n\n// 3. Selector\nexport const selectAllUsers = createSelector(selectUserState, (state) =&gt; state.users);\n\n// 4. Effect (Service/API side-effects)\nloadUsers$ = createEffect(() =&gt; this.actions$.pipe(\n  ofType(loadUsers),\n  exhaustMap(() =&gt; this.userService.getAll().pipe(\n    map(users =&gt; loadUsersSuccess({ users })),\n    catchError(() =&gt; EMPTY)\n  ))\n));\n</code></pre>\n      </div>"
+        },
+        {
+          "title": "NgRx SignalStore (Modern State)",
+          "contentHtml": "<p>Introduced in Angular 17/18, `SignalStore` provides a reactive, functional state management approach built directly on Angular Signals, replacing RxJS for synchronous reactivity.</p>\n      <ul>\n        <li>Fully functional API (`signalStore()`).</li>\n        <li>No boilerplate (actions, reducers, selectors are merged into state features).</li>\n        <li>First-class TypeScript inference with `withState`, `withMethods`, `withComputed`.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>import { signalStore, withState, withComputed, withMethods } from '@ngrx/signals';\nimport { rxMethod } from '@ngrx/signals/rxjs-interop';\n\nexport const UserStore = signalStore(\n  { providedIn: 'root' },\n  withState({ users: [], loading: false }),\n  withComputed(({ users }) =&gt; ({\n    activeUsers: computed(() =&gt; users().filter(u =&gt; u.isActive))\n  })),\n  withMethods((store, userService = inject(UserService)) =&gt; ({\n    loadAll: rxMethod&lt;void&gt;(\n      pipe(\n        tap(() =&gt; patchState(store, { loading: true })),\n        switchMap(() =&gt; userService.getUsers().pipe(\n          tap((users) =&gt; patchState(store, { users, loading: false }))\n        ))\n      )\n    )\n  }))\n);\n\n// In Component:\n// store = inject(UserStore);\n// store.loadAll();\n// this.active = store.activeUsers(); // It's a signal!\n</code></pre>\n      </div>\n      <div class=\"tip\">\n        <b>Tip:</b> If you are starting an Angular v17+ project, immediately adopt <b>SignalStore</b> for local component state, and optionally use it for global state. It's much lighter than Redux.\n      </div>"
+        }
+      ]
+    },
+    {
+      "id": "pwa-sw",
+      "intro": "Turning Angular apps into installable, offline-capable Progressive Web Apps.",
+      "cards": [
+        {
+          "title": "@angular/pwa",
+          "contentHtml": "<p>Adding `ng add @angular/pwa` instantly configures your Angular app with a Web App Manifest and an optimized Service Worker (`ngsw-worker.js`).</p>\n      <ul>\n        <li><b>ngsw-config.json:</b> The configuration file controlling cache policies.</li>\n        <li><b>assetGroups:</b> Caches app shell resources (JS, CSS, initial HTML, icons). Can be `installMode: 'prefetch'` (download immediately) or `'lazy'` (download on demand).</li>\n        <li><b>dataGroups:</b> Caches API requests. Strategies include `performance` (cache-first, network-fallback) and `freshness` (network-first, cache-fallback with timeouts).</li>\n        <li><b>SwUpdate:</b> Angular service to communicate with the service worker. Checks for updates (`checkForUpdate()`) and tells the SW to activate new versions so the app can prompt the user to refresh.</li>\n        <li><b>SwPush:</b> Service for subscribing to and receiving Web Push Notifications payload data.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>// ngsw-config.json (Data Caching)\n\"dataGroups\": [{\n  \"name\": \"api-freshness\",\n  \"urls\": [\"/api/live-data/**\"],\n  \"cacheConfig\": {\n    \"strategy\": \"freshness\",\n    \"maxSize\": 100,\n    \"maxAge\": \"3d\",\n    \"timeout\": \"5s\" // If network takes &gt;5s, serve cached!\n  }\n}]\n</code></pre>\n      </div>"
+        }
+      ]
+    },
+    {
+      "id": "micro-frontends",
+      "intro": "Scaling applications across multiple independent teams and codebases.",
+      "cards": [
+        {
+          "title": "Module Federation (Webpack) / Native Federation (Vite/Esbuild)",
+          "contentHtml": "<p>Micro-frontends allow you to split a monolithic Angular app into smaller, independently deployable applications. These applications load each other's compiled code at runtime.</p>\n      <ul>\n        <li><b>Host Application (Shell):</b> The main app that boots up, handles global routing, and loads remote modules.</li>\n        <li><b>Remote Application:</b> A standalone application that exposes parts of itself (components or routes) to be consumed.</li>\n        <li><b>Shared Dependencies:</b> Federation allows you to declare dependencies (like `@angular/core` or RxJS) as singletons, so the browser doesn't download the Angular framework 5 times.</li>\n      </ul>\n      <p>Because Angular 17+ moved away from Webpack towards Esbuild/Vite, the standard tool has become <b>Native Federation</b>, which uses browser-native Import Maps rather than Webpack-specific logic.</p>\n      <div class=\"code-block\">\n<pre><code>// Host routing loading a remote Micro-Frontend via Native Federation\nexport const routes: Routes = [\n  {\n    path: 'flights',\n    loadChildren: () =&gt;\n      loadRemoteModule('flights', './Component')\n        .then(m =&gt; m.FlightsComponent)\n  }\n];\n</code></pre>\n      </div>"
+        },
+        {
+          "title": "Angular Elements (Web Components)",
+          "contentHtml": "<p>Angular Elements allows you to package an Angular component as a standard <b>Custom Element</b>. This is the ultimate \"agnostic\" micro-frontend strategy.</p>\n      <ul>\n        <li><b>Interoperability:</b> Can be used in React, Vue, or vanilla JS without the host knowing it's Angular.</li>\n        <li><b>Isolated Styles:</b> Uses Shadow DOM for style encapsulation.</li>\n        <li><b>Challenge:</b> The initial bundle size is larger because it must include the Angular runtime inside each element (unless using shared vendors).</li>\n      </ul>"
+        },
+        {
+          "title": "Shared State in Micro-Frontends",
+          "contentHtml": "<p>Sharing state between independent apps is the biggest challenge in MFE architecture.</p>\n      <ul>\n        <li><b>Browser Events:</b> Using `Window.dispatchEvent` for loose coupling.</li>\n        <li><b>Shared Libraries:</b> A shared NgRx/SignalStore library that both apps import (must be configured as a singleton dependency).</li>\n        <li><b>Local Storage / Cookies:</b> For persistent shared data like auth tokens.</li>\n      </ul>"
+        }
+      ]
+    },
+    {
+      "id": "material-cdk",
+      "intro": "Building accessible, high-quality UI components leveraging the Component Dev Kit.",
+      "cards": [
+        {
+          "title": "Component Dev Kit (CDK)",
+          "contentHtml": "<p>The CDK provides behavior primitives without any visual styling. It's the foundation of Angular Material but can be used to build your own custom design systems.</p>\n      <ul>\n        <li><b>Overlay:</b> Used for rendering floating panels safely (dialogs, tooltips, menus).</li>\n        <li><b>Portal:</b> Dynamically render templates or components anywhere in the DOM.</li>\n        <li><b>A11y:</b> Accessibility utilities like `FocusTrap`, `LiveAnnouncer`, and `ListKeyManager`.</li>\n        <li><b>Drag and Drop:</b> Declarative drag/drop interfaces with custom preview and drop zones.</li>\n        <li><b>Scrolling:</b> Virtual scrolling with `cdk-virtual-scroll-viewport` to render large lists efficiently.</li>\n        <li><b>Layout:</b> `BreakpointObserver` to evaluate media queries with RxJS.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>// Example: Virtual Scrolling for 100k items\nimport { ScrollingModule } from '@angular/cdk/scrolling';\n\n@Component({\n  standalone: true,\n  imports: [ScrollingModule],\n  template: `\n    &lt;cdk-virtual-scroll-viewport itemSize=\"50\" class=\"viewport\"&gt;\n      &lt;div *cdkVirtualFor=\"let item of items\" class=\"item\"&gt;\n        {{item}}\n      &lt;/div&gt;\n    &lt;/cdk-virtual-scroll-viewport&gt;\n  `,\n  styles: ['.viewport { height: 400px; width: 100%; }']\n})\nexport class VirtualList {\n  items = Array.from({length: 100000}).map((_, i) =&gt; `Item #${i}`);\n}\n</code></pre>\n      </div>"
+        },
+        {
+          "title": "Angular Material v17+ (M3)",
+          "contentHtml": "<p>Angular Material implements Google's <b>Material Design 3 (M3)</b> specification. It provides fully accessible and themeable components.</p>\n      <ul>\n        <li><b>Design Tokens:</b> M3 relies heavily on CSS variables (custom properties), allowing for dynamic theming at runtime without rebuilding Sass.</li>\n        <li><b>Typography &amp; Density:</b> Fully customizable scales that automatically push down into all components.</li>\n        <li><b>Key Components:</b> `MatTable` (complex data grids), `MatDialog` (modals via Overlay), `MatFormField` (advanced input wrapper with error states).</li>\n      </ul>\n      <div class=\"tip\">\n        <b>Tip:</b> Never use `::ng-deep` to style Material components. Always use the provided CSS variables or design tokens to override styles safely.\n      </div>"
+        }
+      ]
+    },
+    {
+      "id": "i18n-l10n",
+      "intro": "Internationalization and localization strategies in Angular.",
+      "cards": [
+        {
+          "title": "@angular/localize (Built-in i18n)",
+          "contentHtml": "<p>Angular's native approach operates at compile-time (AOT). The compiler generates a completely separate application bundle for each locale. This provides the best performance because there's no runtime translation parsing.</p>\n      <ul>\n        <li><b>i18n attribute:</b> Mark HTML elements for translation: `&lt;h1 i18n=\"@@homeTitle\"&gt;Hello`.</li>\n        <li><b>$localize:</b> Translate strings in TypeScript: `const title = $localize\\`:@@homeTitle:Hello\\`;`.</li>\n        <li><b>ng extract-i18n:</b> CLI command that generates an XLIFF/XMB file with all extracted messages.</li>\n        <li><b>ICU Expressions:</b> Handle pluralization (`{msgCount, plural, =0 {No msgs} one {1 msg} other {# msgs}}`) and alternate selections (`{gender, select, male {He} female {She} other {They}}`).</li>\n      </ul>\n      <div class=\"analogy\">\n        Think of AOT i18n like <b>publishing a translated book</b>. You print a completely different physical book for English and French. The reader doesn't waste time translating while reading; they just pick up the French book.\n      </div>"
+        },
+        {
+          "title": "Runtime Translation (ngx-translate / Transloco)",
+          "contentHtml": "<p>If you cannot use compile-time translation (e.g., you need users to switch languages instantly without a page reload, or translations come from a database API), you must use a runtime library like <b>Transloco</b> or <b>ngx-translate</b>.</p>\n      <ul>\n        <li>Loads translations asynchronously (JSON files).</li>\n        <li>Uses Pipes to display data: `{{ 'HOME.TITLE' | transloco }}`.</li>\n        <li>Slightly worse performance than AOT because Angular has to watch bindings and evaluate them at runtime.</li>\n      </ul>"
+        }
+      ]
+    },
+    {
+      "id": "build-security-a11y",
+      "intro": "Advanced compilation toolchain, security mechanisms, and accessibility standards.",
+      "cards": [
+        {
+          "title": "Esbuild & Application Builder (v17+)",
+          "contentHtml": "<p>Modern Angular uses the `@angular-devkit/build-angular:application` builder, driven by <b>Esbuild</b> and <b>Vite</b>.</p>\n      <ul>\n        <li><b>Esbuild:</b> Replaces Webpack for JS/TS compilation and bundling. Written in Go, it is 2x to 4x faster during builds.</li>\n        <li><b>Vite:</b> Powers the local dev server (`ng serve`), providing rapid HMR (Hot Module Replacement) and optimized dev-time caching.</li>\n        <li><b>Bundle Optimization:</b> Angular ensures aggressive <b>Tree-Shaking</b> (removing unused code). Standalone components drastically improve tree-shaking by removing the \"heavy\" `NgModule` closures.</li>\n      </ul>"
+        },
+        {
+          "title": "Security (DomSanitizer & CSRF)",
+          "contentHtml": "<p>Angular is secure by default, treating all injected values as untrusted.</p>\n      <ul>\n        <li><b>Contextual Escaping:</b> Angular recognizes the context of a binding (HTML, Style, Resource URL) and automatically escapes or cleanses the string to prevent XSS (Cross-Site Scripting).</li>\n        <li><b>DomSanitizer:</b> If you mathematically know a string is safe (e.g., an iframe URL you control), you can bypass security using `sanitizer.bypassSecurityTrustHtml(value)`. <i>Use with extreme caution.</i></li>\n        <li><b>CSRF Protection:</b> `HttpClient` has built-in XSRF (CSRF) protection. If the server sends an `XSRF-TOKEN` cookie, Angular automatically attaches it as an `X-XSRF-TOKEN` HTTP header to all mutation requests (POST/PUT/DELETE).</li>\n      </ul>"
+        },
+        {
+          "title": "Accessibility (A11y)",
+          "contentHtml": "<p>Building for all users requires using ARIA attributes and focus management correctly.</p>\n      <ul>\n        <li><b>ARIA in Templates:</b> Use attribute bindings for ARIA state `[attr.aria-expanded]=\"isOpen\"`. Warning: you must use the `attr.` prefix for ARIA attributes because they are HTML attributes, not DOM properties.</li>\n        <li><b>CDK LiveAnnouncer:</b> A service to announce messages for screen-reader users (perfect for dynamic updates like \"Item saved\" or \"Notification received\").</li>\n        <li><b>CDK FocusTrap:</b> Crucial for modals. Prevents keyboard navigation (Tab key) from leaving the modal while it is open.</li>\n      </ul>"
+        }
+      ]
+    },
+    {
+      "id": "angular-animations",
+      "intro": "Building rich, performant UI motion using Angular's DSL on top of the Web Animations API.",
+      "cards": [
+        {
+          "title": "Animation DSL API",
+          "contentHtml": "<p>Angular provides a domain-specific language (DSL) for defining animations inside component metadata. It uses `BrowserAnimationsModule` behind the scenes.</p>\n      <ul>\n        <li><b>trigger():</b> Defines an animation name that binds to an element via `[@myTrigger]`.</li>\n        <li><b>state():</b> Defines specific styling points (e.g., \"open\", \"closed\").</li>\n        <li><b>transition():</b> Defines how to animate between states (e.g., `'open =&gt; closed'`). Special states include `void` (not attached to DOM) and `*` (any state). Fast syntax: `':enter'` (`void =&gt; *`) and `':leave'` (`* =&gt; void`).</li>\n        <li><b>animate():</b> Specifies duration, delay, and easing (e.g., `animate('200ms ease-out')`).</li>\n        <li><b>style():</b> Specifies the CSS properties to animate.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>import { trigger, state, style, animate, transition } from '@angular/animations';\n\n@Component({\n  template: `&lt;div [@openClose]=\"isOpen ? 'open' : 'closed'\"&gt;Toggle Me&lt;/div&gt;`,\n  animations: [\n    trigger('openClose', [\n      state('open', style({ height: '200px', opacity: 1, backgroundColor: 'yellow' })),\n      state('closed', style({ height: '100px', opacity: 0.5, backgroundColor: 'green' })),\n      transition('open =&gt; closed', [ animate('1s') ]),\n      transition('closed =&gt; open', [ animate('0.5s') ]),\n    ]),\n  ]\n})\nexport class AnimatedComponent { isOpen = true; }\n</code></pre>\n      </div>"
+        },
+        {
+          "title": "Advanced Animation Control",
+          "contentHtml": "<p>For more complex orchestrations, Angular animations provide grouping and querying:</p>\n      <ul>\n        <li><b>query():</b> Finds inner elements to animate them inside the parent's transition.</li>\n        <li><b>stagger():</b> Delays the start time of multiple queried items (great for animating lists).</li>\n        <li><b>group():</b> Runs multiple animation steps in parallel.</li>\n        <li><b>sequence():</b> Runs steps sequentially (default behavior of arrays).</li>\n        <li><b>animateChild():</b> Tells Angular to execute child component animations, which would otherwise be blocked by the parent animation.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>trigger('listAnimation', [\n  transition('* =&gt; *', [\n    query(':enter', [\n      style({ opacity: 0, transform: 'translateY(-15px)' }),\n      stagger('50ms', [\n        animate('300ms ease-out', style({ opacity: 1, transform: 'none' }))\n      ])\n    ], { optional: true })\n  ])\n])\n</code></pre>\n      </div>"
+        }
+      ]
+    },
+    {
+      "id": "core",
+      "intro": "The foundation everything else builds on. Understand these perfectly before touching anything else.",
+      "cards": [
+        {
+          "title": "What Angular Actually Is",
+          "contentHtml": "<p>Angular is a <strong>TypeScript-first, component-based platform</strong> for building web apps. It's maintained by Google and is a <strong>full framework</strong> — unlike React (library), Angular ships with routing, forms, HTTP, animations, i18n, testing utilities, and a CLI out of the box.</p>\n<p>Angular follows a <strong>release cadence of every 6 months</strong> (major versions). Each major version is supported for 18 months. The current approach is incremental, non-breaking improvements — not rewrites.</p>\n<div class=\"analogy\">React gives you a kitchen knife and says \"build your kitchen.\" Angular gives you the <strong>entire kitchen — oven, fridge, dishwasher, and a recipe book</strong>. Less choice, more consistency, especially for large teams.</div>"
+        },
+        {
+          "title": "Architecture Overview",
+          "contentHtml": "<p>Angular apps are built from these core concepts, in order of importance:</p>\n<h3>1. Components</h3>\n<p>A TypeScript class + HTML template + optional CSS. The <code>@Component()</code> decorator tells Angular what selector to use, what template to render, and what styles to apply. Components form a <strong>tree</strong> — like the DOM itself.</p>\n\n<h3>2. Templates</h3>\n<p>HTML enhanced with Angular syntax: interpolation <code>{{ }}</code>, property binding <code>[ ]</code>, event binding <code>( )</code>, two-way binding <code>[( )]</code>, structural directives, and the new control flow (<code>@if</code>, <code>@for</code>, <code>@switch</code>).</p>\n\n<h3>3. Services &amp; DI</h3>\n<p>Services are classes decorated with <code>@Injectable()</code>. They hold reusable logic (API calls, state, business rules). Angular's DI system creates and provides them automatically.</p>\n\n<h3>4. Modules (Legacy) → Standalone</h3>\n<p><code>NgModule</code> was the original grouping mechanism. Since Angular 14, <strong>standalone components</strong> are the default. They declare their own imports and don't need a module. New projects should be 100% standalone.</p>\n\n<h3>5. Directives</h3>\n<p>Classes that modify DOM elements. Three types: <strong>Component directives</strong> (components ARE directives with templates), <strong>Structural directives</strong> (add/remove DOM: <code>*ngIf</code>, <code>*ngFor</code>), <strong>Attribute directives</strong> (change behavior: <code>ngClass</code>, <code>ngStyle</code>).</p>\n\n<h3>6. Pipes</h3>\n<p>Transform display values in templates. Built-in: <code>date</code>, <code>currency</code>, <code>percent</code>, <code>uppercase</code>, <code>lowercase</code>, <code>json</code>, <code>async</code>, <code>slice</code>, <code>keyvalue</code>, <code>titlecase</code>.</p>"
+        },
+        {
+          "title": "How Angular Bootstraps",
+          "contentHtml": "<pre><code><span class=\"cm\">// main.ts — the entry point</span>\n<span class=\"kw\">import</span> { bootstrapApplication } <span class=\"kw\">from</span> <span class=\"st\">'@angular/platform-browser'</span>;\n<span class=\"kw\">import</span> { AppComponent } <span class=\"kw\">from</span> <span class=\"st\">'./app/app.component'</span>;\n<span class=\"kw\">import</span> { appConfig } <span class=\"kw\">from</span> <span class=\"st\">'./app/app.config'</span>;\n\n<span class=\"fn\">bootstrapApplication</span>(AppComponent, appConfig)\n  .catch(err =&gt; console.error(err));</code></pre>\n\n<pre><code><span class=\"cm\">// app.config.ts — global providers</span>\n<span class=\"kw\">export const</span> appConfig: ApplicationConfig = {\n  providers: [\n    <span class=\"fn\">provideRouter</span>(routes, <span class=\"fn\">withComponentInputBinding</span>()),\n    <span class=\"fn\">provideHttpClient</span>(<span class=\"fn\">withInterceptors</span>([authInterceptor])),\n    <span class=\"fn\">provideAnimationsAsync</span>(),\n  ]\n};</code></pre>\n<div class=\"deep\">When Angular bootstraps: <strong>1)</strong> It reads <code>main.ts</code> and calls <code>bootstrapApplication</code>. <strong>2)</strong> Creates the root injector with providers from <code>appConfig</code>. <strong>3)</strong> Creates the root component (AppComponent). <strong>4)</strong> Renders AppComponent's template into the <code>&lt;app-root&gt;</code> element in <code>index.html</code>. <strong>5)</strong> Zone.js starts monitoring for async events to trigger change detection.</div>"
+        },
+        {
+          "title": "Angular CLI — Every Command You Need",
+          "contentHtml": "<pre><code><span class=\"cm\"># Project</span>\nng new my-app --standalone --style=scss --routing --ssr\nng serve --open --port 4200\nng build --configuration=production\nng update @angular/core @angular/cli\n\n<span class=\"cm\"># Generate</span>\nng g component features/users/user-card    <span class=\"cm\"># component</span>\nng g service core/services/auth            <span class=\"cm\"># service</span>\nng g pipe shared/pipes/truncate            <span class=\"cm\"># pipe</span>\nng g directive shared/directives/highlight <span class=\"cm\"># directive</span>\nng g guard core/guards/auth                <span class=\"cm\"># guard</span>\nng g interceptor core/interceptors/jwt     <span class=\"cm\"># interceptor</span>\nng g interface models/user                 <span class=\"cm\"># interface</span>\nng g enum models/role                      <span class=\"cm\"># enum</span>\nng g environments                          <span class=\"cm\"># environment files</span>\n\n<span class=\"cm\"># Testing &amp; Analysis</span>\nng test                       <span class=\"cm\"># unit tests (Karma/Jest)</span>\nng test --code-coverage        <span class=\"cm\"># with coverage report</span>\nng e2e                        <span class=\"cm\"># end-to-end (Cypress/Playwright)</span>\nng build --stats-json         <span class=\"cm\"># bundle analysis</span>\n\n<span class=\"cm\"># Schematics</span>\nng add @angular/material      <span class=\"cm\"># add a library</span>\nng add @angular/pwa           <span class=\"cm\"># add PWA support</span></code></pre>"
+        },
+        {
+          "title": "Project Structure (Best Practice)",
+          "contentHtml": "<pre><code>src/\n├── app/\n│   ├── core/                 <span class=\"cm\"># Singletons: guards, interceptors, global services</span>\n│   │   ├── guards/\n│   │   ├── interceptors/\n│   │   └── services/\n│   ├── shared/               <span class=\"cm\"># Reusable: components, pipes, directives</span>\n│   │   ├── components/\n│   │   ├── pipes/\n│   │   └── directives/\n│   ├── features/             <span class=\"cm\"># Feature areas (lazy-loaded)</span>\n│   │   ├── users/\n│   │   │   ├── user-list.component.ts\n│   │   │   ├── user-detail.component.ts\n│   │   │   ├── user.service.ts\n│   │   │   └── users.routes.ts\n│   │   └── dashboard/\n│   ├── models/               <span class=\"cm\"># Interfaces, types, enums</span>\n│   ├── app.component.ts\n│   ├── app.config.ts\n│   └── app.routes.ts\n├── assets/\n├── environments/\n└── main.ts</code></pre>\n<div class=\"tip\"><strong>Core</strong> = things that exist once (auth service, JWT interceptor). <strong>Shared</strong> = reusable pieces imported by features (button component, truncate pipe). <strong>Features</strong> = business domains with their own routes, components, and services.</div>"
+        },
+        {
+          "title": "Lifecycle Hooks — Complete Reference",
+          "contentHtml": "<p>Called in this exact order:</p>\n<pre><code><span class=\"kw\">export class</span> <span class=\"fn\">MyComponent</span> <span class=\"kw\">implements</span>\n  OnChanges, OnInit, DoCheck,\n  AfterContentInit, AfterContentChecked,\n  AfterViewInit, AfterViewChecked,\n  OnDestroy {\n\n  <span class=\"cm\">// 1. CONSTRUCTOR — DI only. No logic here.</span>\n\n  <span class=\"cm\">// 2. ngOnChanges — @Input() changed (called BEFORE ngOnInit)</span>\n  <span class=\"cm\">//    Receives SimpleChanges with previous/current values</span>\n  <span class=\"fn\">ngOnChanges</span>(c: SimpleChanges) {}\n\n  <span class=\"cm\">// 3. ngOnInit — Component initialized. Inputs are ready.</span>\n  <span class=\"cm\">//    API calls, subscriptions, one-time setup go here.</span>\n  <span class=\"fn\">ngOnInit</span>() {}\n\n  <span class=\"cm\">// 4. ngDoCheck — Custom change detection logic</span>\n  <span class=\"cm\">//    Runs on EVERY CD cycle. Very expensive. Avoid if possible.</span>\n  <span class=\"fn\">ngDoCheck</span>() {}\n\n  <span class=\"cm\">// 5. ngAfterContentInit — ng-content projected content initialized</span>\n  <span class=\"cm\">//    @ContentChild is available here. Runs ONCE.</span>\n  <span class=\"fn\">ngAfterContentInit</span>() {}\n\n  <span class=\"cm\">// 6. ngAfterContentChecked — projected content checked</span>\n  <span class=\"cm\">//    Runs after every CD cycle.</span>\n  <span class=\"fn\">ngAfterContentChecked</span>() {}\n\n  <span class=\"cm\">// 7. ngAfterViewInit — View (and child views) initialized</span>\n  <span class=\"cm\">//    @ViewChild is available here. Runs ONCE.</span>\n  <span class=\"cm\">//    DOM manipulation, chart initialization go here.</span>\n  <span class=\"fn\">ngAfterViewInit</span>() {}\n\n  <span class=\"cm\">// 8. ngAfterViewChecked — View (and child views) checked</span>\n  <span class=\"cm\">//    Runs after every CD cycle.</span>\n  <span class=\"fn\">ngAfterViewChecked</span>() {}\n\n  <span class=\"cm\">// 9. ngOnDestroy — Component about to be removed</span>\n  <span class=\"cm\">//    Unsubscribe, remove event listeners, clear timers.</span>\n  <span class=\"fn\">ngOnDestroy</span>() {}\n}</code></pre>\n<div class=\"warn\">Don't use <code>ngDoCheck</code>, <code>ngAfterContentChecked</code>, or <code>ngAfterViewChecked</code> unless you have a very specific reason. They run on <strong>every single change detection cycle</strong> and can destroy performance.</div>\n<div class=\"analogy\"><strong>ngOnInit</strong> = move-in day (set up the apartment). <strong>ngAfterViewInit</strong> = the furniture is delivered (DOM is ready). <strong>ngOnDestroy</strong> = moving-out day (cancel the utilities). <strong>ngOnChanges</strong> = a package arrives (new @Input data).</div>"
+        }
+      ]
+    },
+    {
+      "id": "comp",
+      "intro": "Every line of Angular starts and ends with components. Here's everything you need to master.",
+      "cards": [
+        {
+          "title": "Component Anatomy",
+          "contentHtml": "<pre><code><span class=\"dc\">@Component</span>({\n  <span class=\"fn\">selector</span>: <span class=\"st\">'app-user-card'</span>,\n  <span class=\"fn\">standalone</span>: <span class=\"kw\">true</span>,\n  <span class=\"fn\">imports</span>: [CommonModule, RouterLink],  <span class=\"cm\">// declare dependencies</span>\n  <span class=\"fn\">templateUrl</span>: <span class=\"st\">'./user-card.component.html'</span>,\n  <span class=\"fn\">styleUrl</span>: <span class=\"st\">'./user-card.component.scss'</span>,\n  <span class=\"fn\">changeDetection</span>: ChangeDetectionStrategy.OnPush,\n  <span class=\"fn\">encapsulation</span>: ViewEncapsulation.Emulated,  <span class=\"cm\">// default</span>\n  <span class=\"fn\">host</span>: {\n    <span class=\"st\">'class'</span>: <span class=\"st\">'block'</span>,\n    <span class=\"st\">'[class.active]'</span>: <span class=\"st\">'isActive'</span>,\n    <span class=\"st\">'(click)'</span>: <span class=\"st\">'onClick($event)'</span>,\n    <span class=\"st\">'role'</span>: <span class=\"st\">'article'</span>,\n  }\n})</code></pre>"
+        },
+        {
+          "title": "View Encapsulation — The 3 Modes",
+          "contentHtml": "<h3>Emulated (Default)</h3>\n<p>Angular adds unique attributes to elements (like <code>_ngcontent-abc-123</code>) and scopes CSS selectors to those attributes. Styles don't leak out, but global styles can leak in.</p>\n<h3>ShadowDom</h3>\n<p>Uses native browser Shadow DOM. Complete isolation — no styles in or out. Not all browsers support all features equally.</p>\n<h3>None</h3>\n<p>No encapsulation. Styles become global. Useful for global theme overrides but dangerous if overused.</p>\n<div class=\"tip\">Stick with <strong>Emulated</strong> for 99% of components. Use <strong>None</strong> only for intentionally global styles (like a theme component).</div>"
+        },
+        {
+          "title": "Smart vs Dumb Components (Container/Presentational)",
+          "contentHtml": "<div class=\"grid2\">\n<div>\n<h4>Smart (Container)</h4>\n<p>✓ Injects services<br>✓ Manages state<br>✓ Handles logic<br>✓ Passes data down via @Input<br>✓ Listens to child events via @Output<br>✗ Minimal HTML/CSS</p>\n</div>\n<div>\n<h4>Dumb (Presentational)</h4>\n<p>✓ Only @Input and @Output<br>✓ Pure rendering logic<br>✓ Reusable across features<br>✓ Easy to test<br>✓ Always OnPush<br>✗ No service injection</p>\n</div>\n</div>"
+        },
+        {
+          "title": "Content Projection — 3 Levels",
+          "contentHtml": "<h3>1. Single Slot</h3>\n<pre><code><span class=\"cm\">&lt;!-- wrapper.component.html --&gt;</span>\n&lt;div class=\"wrapper\"&gt;\n  &lt;ng-content /&gt;\n&lt;/div&gt;</code></pre>\n<h3>2. Multi-Slot (Named)</h3>\n<pre><code>&lt;div class=\"card\"&gt;\n  &lt;header&gt;&lt;ng-content select=\"[card-header]\" /&gt;&lt;/header&gt;\n  &lt;main&gt;&lt;ng-content /&gt;&lt;/main&gt;  <span class=\"cm\">&lt;!-- default slot --&gt;</span>\n  &lt;footer&gt;&lt;ng-content select=\"[card-footer]\" /&gt;&lt;/footer&gt;\n&lt;/div&gt;\n\n<span class=\"cm\">&lt;!-- Usage --&gt;</span>\n&lt;app-card&gt;\n  &lt;h2 card-header&gt;Title&lt;/h2&gt;\n  &lt;p&gt;Body content (default slot)&lt;/p&gt;\n  &lt;button card-footer&gt;Save&lt;/button&gt;\n&lt;/app-card&gt;</code></pre>\n<h3>3. Conditional Projection (ngTemplateOutlet)</h3>\n<pre><code><span class=\"cm\">&lt;!-- parent provides a template --&gt;</span>\n&lt;app-table [rowTemplate]=\"customRow\"&gt;\n&lt;/app-table&gt;\n&lt;ng-template #customRow let-item&gt;\n  &lt;td&gt;{{ item.name }}&lt;/td&gt;\n&lt;/ng-template&gt;\n\n<span class=\"cm\">&lt;!-- table.component.ts --&gt;</span>\n<span class=\"dc\">@Input</span>() rowTemplate!: TemplateRef&lt;any&gt;;\n\n<span class=\"cm\">&lt;!-- table.component.html --&gt;</span>\n@for (item of data; track item.id) {\n  &lt;tr&gt;\n    &lt;ng-container *ngTemplateOutlet=\"rowTemplate; context: { $implicit: item }\" /&gt;\n  &lt;/tr&gt;\n}</code></pre>"
+        },
+        {
+          "title": "ViewChild, ViewChildren, ContentChild, ContentChildren",
+          "contentHtml": "<pre><code><span class=\"cm\">// Access elements/components in THIS component's template</span>\n<span class=\"dc\">@ViewChild</span>(<span class=\"st\">'myInput'</span>) inputEl!: ElementRef;\n<span class=\"dc\">@ViewChild</span>(ChildComponent) child!: ChildComponent;\n<span class=\"dc\">@ViewChildren</span>(ItemComponent) items!: QueryList&lt;ItemComponent&gt;;\n\n<span class=\"cm\">// Access projected content (ng-content)</span>\n<span class=\"dc\">@ContentChild</span>(HeaderDirective) header!: HeaderDirective;\n<span class=\"dc\">@ContentChildren</span>(TabComponent) tabs!: QueryList&lt;TabComponent&gt;;</code></pre>\n<div class=\"warn\"><code>@ViewChild</code> is available in <code>ngAfterViewInit</code>, NOT <code>ngOnInit</code>. <code>@ContentChild</code> is available in <code>ngAfterContentInit</code>. Accessing them earlier gives <code>undefined</code>.</div>"
+        },
+        {
+          "title": "Host Element Binding",
+          "contentHtml": "<pre><code><span class=\"dc\">@Component</span>({\n  host: {\n    <span class=\"st\">'class'</span>: <span class=\"st\">'card-component'</span>,      <span class=\"cm\">// static class</span>\n    <span class=\"st\">'[class.active]'</span>: <span class=\"st\">'isActive()'</span>,  <span class=\"cm\">// conditional class</span>\n    <span class=\"st\">'[attr.role]'</span>: <span class=\"st\">'\"button\"'</span>,      <span class=\"cm\">// attribute</span>\n    <span class=\"st\">'[style.width.px]'</span>: <span class=\"st\">'width'</span>,    <span class=\"cm\">// style binding</span>\n    <span class=\"st\">'(click)'</span>: <span class=\"st\">'handleClick()'</span>,    <span class=\"cm\">// event listener</span>\n    <span class=\"st\">'(window:resize)'</span>: <span class=\"st\">'onResize()'</span> <span class=\"cm\">// global event</span>\n  }\n})\n\n<span class=\"cm\">// Or with decorators (older style)</span>\n<span class=\"dc\">@HostBinding</span>(<span class=\"st\">'class.active'</span>) <span class=\"kw\">get</span> isActive() { <span class=\"kw\">return</span> <span class=\"kw\">this</span>.active; }\n<span class=\"dc\">@HostListener</span>(<span class=\"st\">'click'</span>, [<span class=\"st\">'$event'</span>]) onClick(e: Event) { }</code></pre>"
+        }
+      ]
+    },
+    {
+      "id": "tmpl",
+      "intro": "Angular's template syntax is rich and precise. Master every operator and directive.",
+      "cards": [
+        {
+          "title": "Complete Binding Syntax",
+          "contentHtml": "<pre><code><span class=\"cm\">&lt;!-- INTERPOLATION: one-way, component → DOM --&gt;</span>\n{{ expression }}\n{{ user?.name }}          <span class=\"cm\">&lt;!-- safe navigation --&gt;</span>\n{{ price | currency:'GBP' }} <span class=\"cm\">&lt;!-- with pipe --&gt;</span>\n{{ condition ? 'Yes' : 'No' }} <span class=\"cm\">&lt;!-- ternary --&gt;</span>\n\n<span class=\"cm\">&lt;!-- PROPERTY BINDING: component → element property --&gt;</span>\n[src]=\"imageUrl\"\n[disabled]=\"isLoading\"\n[innerHTML]=\"htmlContent\"  <span class=\"cm\">&lt;!-- Angular sanitizes this --&gt;</span>\n[attr.aria-label]=\"label\"  <span class=\"cm\">&lt;!-- attribute binding --&gt;</span>\n[class.active]=\"isActive\"  <span class=\"cm\">&lt;!-- single class --&gt;</span>\n[class]=\"classExpression\"  <span class=\"cm\">&lt;!-- string, array, or object --&gt;</span>\n[style.color]=\"textColor\"\n[style.width.px]=\"width\"   <span class=\"cm\">&lt;!-- with unit --&gt;</span>\n\n<span class=\"cm\">&lt;!-- EVENT BINDING: element → component --&gt;</span>\n(click)=\"handler()\"\n(click)=\"handler($event)\"  <span class=\"cm\">&lt;!-- access DOM event --&gt;</span>\n(keyup.enter)=\"submit()\"   <span class=\"cm\">&lt;!-- key filter --&gt;</span>\n(input)=\"onInput($event)\"\n\n<span class=\"cm\">&lt;!-- TWO-WAY BINDING --&gt;</span>\n[(ngModel)]=\"username\"     <span class=\"cm\">&lt;!-- requires FormsModule --&gt;</span>\n[(value)]=\"name\"           <span class=\"cm\">&lt;!-- any @Input/@Output pair --&gt;</span>\n\n<span class=\"cm\">&lt;!-- TEMPLATE REFERENCE VARIABLE --&gt;</span>\n&lt;input #nameInput&gt;\n&lt;button (click)=\"greet(nameInput.value)\"&gt;Hi&lt;/button&gt;</code></pre>"
+        },
+        {
+          "title": "New Control Flow (Angular 17+)",
+          "contentHtml": "<pre><code><span class=\"cm\">&lt;!-- @if / @else if / @else --&gt;</span>\n@if (user.role === 'admin') {\n  &lt;admin-panel /&gt;\n} @else if (user.role === 'editor') {\n  &lt;editor-view /&gt;\n} @else {\n  &lt;guest-view /&gt;\n}\n\n<span class=\"cm\">&lt;!-- @for with REQUIRED track --&gt;</span>\n@for (item of items; track item.id; let i = $index, last = $last) {\n  &lt;div [class.last]=\"last\"&gt;{{ i + 1 }}. {{ item.name }}&lt;/div&gt;\n} @empty {\n  &lt;p&gt;No items found.&lt;/p&gt;\n}\n\n<span class=\"cm\">&lt;!-- @switch --&gt;</span>\n@switch (status) {\n  @case ('loading') { &lt;spinner /&gt; }\n  @case ('error') { &lt;error-msg /&gt; }\n  @case ('success') { &lt;data-view /&gt; }\n  @default { &lt;p&gt;Unknown state&lt;/p&gt; }\n}\n\n<span class=\"cm\">&lt;!-- Available variables in @for --&gt;</span>\n<span class=\"cm\">// $index, $first, $last, $even, $odd, $count</span></code></pre>\n<div class=\"warn\">The <code>track</code> expression in <code>@for</code> is <strong>required</strong> (unlike the old <code>trackBy</code> which was optional). Always track by a unique identifier, NOT by <code>$index</code> — using index defeats the purpose of efficient DOM reconciliation.</div>"
+        },
+        {
+          "title": "ng-template, ng-container, ng-content",
+          "contentHtml": "<pre><code><span class=\"cm\">&lt;!-- ng-template: invisible template block, doesn't render by itself --&gt;</span>\n&lt;ng-template #loading&gt;\n  &lt;p&gt;Loading...&lt;/p&gt;\n&lt;/ng-template&gt;\n\n<span class=\"cm\">&lt;!-- ng-container: grouping without adding DOM elements --&gt;</span>\n&lt;ng-container *ngIf=\"user\"&gt;\n  &lt;h2&gt;{{ user.name }}&lt;/h2&gt;\n  &lt;p&gt;{{ user.email }}&lt;/p&gt;\n&lt;/ng-container&gt;\n\n<span class=\"cm\">&lt;!-- ng-content: content projection slot --&gt;</span>\n&lt;ng-content select=\".header\" /&gt;</code></pre>\n<div class=\"analogy\"><code>ng-template</code> = a <strong>blueprint</strong> that's stored but not built until you reference it. <code>ng-container</code> = an <strong>invisible wrapper</strong> (like a &lt;Fragment&gt; in React). <code>ng-content</code> = a <strong>mail slot</strong> for parent content.</div>"
+        },
+        {
+          "title": "Built-in Attribute Directives",
+          "contentHtml": "<pre><code><span class=\"cm\">&lt;!-- ngClass: apply classes conditionally --&gt;</span>\n&lt;div [ngClass]=\"{ 'active': isActive, 'disabled': isDisabled }\"&gt;\n&lt;div [ngClass]=\"['class1', 'class2']\"&gt;\n&lt;div [ngClass]=\"classString\"&gt;\n\n<span class=\"cm\">&lt;!-- ngStyle: apply inline styles --&gt;</span>\n&lt;div [ngStyle]=\"{ 'color': textColor, 'font-size.px': size }\"&gt;\n\n<span class=\"cm\">&lt;!-- ngSwitch --&gt;</span>\n&lt;div [ngSwitch]=\"role\"&gt;\n  &lt;p *ngSwitchCase=\"'admin'\"&gt;Admin&lt;/p&gt;\n  &lt;p *ngSwitchCase=\"'user'\"&gt;User&lt;/p&gt;\n  &lt;p *ngSwitchDefault&gt;Guest&lt;/p&gt;\n&lt;/div&gt;</code></pre>"
+        }
+      ]
+    },
+    {
+      "id": "di",
+      "intro": "Dependency Injection is Angular's secret architecture weapon. Interviewers love asking about the injector hierarchy.",
+      "cards": [
+        {
+          "title": "The Injector Hierarchy",
+          "contentHtml": "<p>Angular has <strong>two parallel injector trees</strong>:</p>\n<h3>1. Environment Injector (Module Injector) Tree</h3>\n<p><code>Root</code> → <code>Platform</code> → Lazy-loaded route injectors. Services with <code>providedIn: 'root'</code> live here.</p>\n<h3>2. Element Injector Tree</h3>\n<p>Mirrors the component tree. When a component has <code>providers: [MyService]</code>, it creates a new instance for that component and its descendants.</p>\n<h3>Resolution Order</h3>\n<p>When you <code>inject(Service)</code>, Angular walks UP the <strong>element injector tree</strong> first, then UP the <strong>environment injector tree</strong>. First match wins.</p>\n<pre><code><span class=\"cm\">// RESOLUTION ORDER:</span>\n<span class=\"cm\">// 1. This component's element injector</span>\n<span class=\"cm\">// 2. Parent component's element injector</span>\n<span class=\"cm\">// 3. ... up to root component</span>\n<span class=\"cm\">// 4. Root environment injector</span>\n<span class=\"cm\">// 5. Platform injector</span>\n<span class=\"cm\">// 6. NullInjector → throws error (unless @Optional)</span></code></pre>"
+        },
+        {
+          "title": "Provider Types",
+          "contentHtml": "<pre><code><span class=\"cm\">// useClass — provide a class (default)</span>\n{ provide: LoggerService, useClass: BetterLoggerService }\n\n<span class=\"cm\">// useValue — provide a static value</span>\n{ provide: API_URL, useValue: <span class=\"st\">'https://api.example.com'</span> }\n\n<span class=\"cm\">// useFactory — provide via factory function</span>\n{\n  provide: DataService,\n  useFactory: (http: HttpClient, config: ConfigService) =&gt;\n    config.useMock ? <span class=\"kw\">new</span> MockDataService() : <span class=\"kw\">new</span> RealDataService(http),\n  deps: [HttpClient, ConfigService]\n}\n\n<span class=\"cm\">// useExisting — alias one token to another</span>\n{ provide: AbstractLogger, useExisting: ConsoleLoggerService }\n\n<span class=\"cm\">// InjectionToken for non-class values</span>\n<span class=\"kw\">export const</span> API_URL = <span class=\"kw\">new</span> InjectionToken&lt;<span class=\"kw\">string</span>&gt;(<span class=\"st\">'API URL'</span>);\n<span class=\"kw\">export const</span> IS_PROD = <span class=\"kw\">new</span> InjectionToken&lt;<span class=\"kw\">boolean</span>&gt;(<span class=\"st\">'IS_PROD'</span>, {\n  providedIn: <span class=\"st\">'root'</span>,\n  factory: () =&gt; !isDevMode()\n});</code></pre>"
+        },
+        {
+          "title": "Resolution Modifiers",
+          "contentHtml": "<pre><code><span class=\"cm\">// @Self() — only look at THIS component's injector</span>\n<span class=\"kw\">private</span> svc = <span class=\"fn\">inject</span>(MyService, { self: <span class=\"kw\">true</span> });\n\n<span class=\"cm\">// @SkipSelf() — skip this component, start at parent</span>\n<span class=\"kw\">private</span> svc = <span class=\"fn\">inject</span>(MyService, { skipSelf: <span class=\"kw\">true</span> });\n\n<span class=\"cm\">// @Optional() — return null instead of throwing</span>\n<span class=\"kw\">private</span> svc = <span class=\"fn\">inject</span>(MyService, { optional: <span class=\"kw\">true</span> });\n\n<span class=\"cm\">// @Host() — stop at host component boundary</span>\n<span class=\"kw\">private</span> svc = <span class=\"fn\">inject</span>(MyService, { host: <span class=\"kw\">true</span> });</code></pre>\n<div class=\"analogy\"><code>@Self</code> = \"check MY pockets only.\" <code>@SkipSelf</code> = \"ask my parent, not me.\" <code>@Optional</code> = \"it's fine if nobody has it.\" <code>@Host</code> = \"ask up to my landlord, but not beyond.\"</div>"
+        },
+        {
+          "title": "inject() vs Constructor Injection",
+          "contentHtml": "<pre><code><span class=\"cm\">// OLD: constructor injection</span>\n<span class=\"kw\">constructor</span>(\n  <span class=\"kw\">private</span> auth: AuthService,\n  <span class=\"kw\">private</span> router: Router,\n  @Optional() <span class=\"kw\">private</span> logger: LoggerService\n) {}\n\n<span class=\"cm\">// MODERN: inject() function</span>\n<span class=\"kw\">private</span> auth = <span class=\"fn\">inject</span>(AuthService);\n<span class=\"kw\">private</span> router = <span class=\"fn\">inject</span>(Router);\n<span class=\"kw\">private</span> logger = <span class=\"fn\">inject</span>(LoggerService, { optional: <span class=\"kw\">true</span> });\n\n<span class=\"cm\">// inject() also works in:</span>\n<span class=\"cm\">// - Functional guards, resolvers, interceptors</span>\n<span class=\"cm\">// - Factory functions</span>\n<span class=\"cm\">// - InjectionToken factory</span>\n\n<span class=\"cm\">// Composable pattern with inject():</span>\n<span class=\"kw\">function</span> <span class=\"fn\">injectAuth</span>() {\n  <span class=\"kw\">const</span> auth = <span class=\"fn\">inject</span>(AuthService);\n  <span class=\"kw\">const</span> router = <span class=\"fn\">inject</span>(Router);\n  <span class=\"kw\">return</span> {\n    isLoggedIn: auth.isLoggedIn,\n    logout: () =&gt; { auth.logout(); router.navigate([<span class=\"st\">'/login'</span>]); }\n  };\n}</code></pre>"
+        }
+      ]
+    },
+    {
+      "id": "data",
+      "intro": "Services are where your business logic and data access live. HTTP is how you talk to servers.",
+      "cards": [
+        {
+          "title": "Service Patterns",
+          "contentHtml": "<pre><code><span class=\"dc\">@Injectable</span>({ providedIn: <span class=\"st\">'root'</span> })\n<span class=\"kw\">export class</span> <span class=\"fn\">UserService</span> {\n  <span class=\"kw\">private</span> http = <span class=\"fn\">inject</span>(HttpClient);\n  <span class=\"kw\">private</span> apiUrl = <span class=\"fn\">inject</span>(API_URL);\n\n  <span class=\"fn\">getAll</span>(params?: { page: <span class=\"kw\">number</span>; search?: <span class=\"kw\">string</span> }): Observable&lt;PaginatedResponse&lt;User&gt;&gt; {\n    <span class=\"kw\">return this</span>.http.get&lt;PaginatedResponse&lt;User&gt;&gt;(\n      <span class=\"st\">`${this.apiUrl}/users`</span>,\n      { params: { ...params } }\n    );\n  }\n\n  <span class=\"fn\">getById</span>(id: <span class=\"kw\">string</span>): Observable&lt;User&gt; {\n    <span class=\"kw\">return this</span>.http.get&lt;User&gt;(<span class=\"st\">`${this.apiUrl}/users/${id}`</span>);\n  }\n\n  <span class=\"fn\">create</span>(dto: CreateUserDto): Observable&lt;User&gt; {\n    <span class=\"kw\">return this</span>.http.post&lt;User&gt;(<span class=\"st\">`${this.apiUrl}/users`</span>, dto);\n  }\n\n  <span class=\"fn\">update</span>(id: <span class=\"kw\">string</span>, dto: Partial&lt;User&gt;): Observable&lt;User&gt; {\n    <span class=\"kw\">return this</span>.http.patch&lt;User&gt;(<span class=\"st\">`${this.apiUrl}/users/${id}`</span>, dto);\n  }\n\n  <span class=\"fn\">delete</span>(id: <span class=\"kw\">string</span>): Observable&lt;<span class=\"kw\">void</span>&gt; {\n    <span class=\"kw\">return this</span>.http.delete&lt;<span class=\"kw\">void</span>&gt;(<span class=\"st\">`${this.apiUrl}/users/${id}`</span>);\n  }\n\n  <span class=\"fn\">upload</span>(file: File): Observable&lt;HttpEvent&lt;UploadResponse&gt;&gt; {\n    <span class=\"kw\">const</span> formData = <span class=\"kw\">new</span> FormData();\n    formData.append(<span class=\"st\">'file'</span>, file);\n    <span class=\"kw\">return this</span>.http.post&lt;UploadResponse&gt;(\n      <span class=\"st\">`${this.apiUrl}/upload`</span>, formData,\n      { reportProgress: <span class=\"kw\">true</span>, observe: <span class=\"st\">'events'</span> }\n    );\n  }\n}</code></pre>"
+        },
+        {
+          "title": "Interceptors — Complete Patterns",
+          "contentHtml": "<h3>Auth Interceptor</h3>\n<pre><code><span class=\"kw\">export const</span> <span class=\"fn\">authInterceptor</span>: HttpInterceptorFn = (req, next) =&gt; {\n  <span class=\"kw\">const</span> token = <span class=\"fn\">inject</span>(AuthService).getToken();\n  <span class=\"kw\">if</span> (token) {\n    req = req.clone({ setHeaders: { Authorization: <span class=\"st\">`Bearer ${token}`</span> } });\n  }\n  <span class=\"kw\">return</span> <span class=\"fn\">next</span>(req);\n};</code></pre>\n<h3>Error Interceptor with Retry</h3>\n<pre><code><span class=\"kw\">export const</span> <span class=\"fn\">errorInterceptor</span>: HttpInterceptorFn = (req, next) =&gt; {\n  <span class=\"kw\">const</span> router = <span class=\"fn\">inject</span>(Router);\n  <span class=\"kw\">return</span> <span class=\"fn\">next</span>(req).pipe(\n    <span class=\"fn\">retry</span>({ count: 2, delay: 1000 }),\n    <span class=\"fn\">catchError</span>((err: HttpErrorResponse) =&gt; {\n      <span class=\"kw\">if</span> (err.status === 401) router.navigate([<span class=\"st\">'/login'</span>]);\n      <span class=\"kw\">if</span> (err.status === 403) router.navigate([<span class=\"st\">'/forbidden'</span>]);\n      <span class=\"kw\">return</span> <span class=\"fn\">throwError</span>(() =&gt; err);\n    })\n  );\n};</code></pre>\n<h3>Loading Interceptor</h3>\n<pre><code><span class=\"kw\">export const</span> <span class=\"fn\">loadingInterceptor</span>: HttpInterceptorFn = (req, next) =&gt; {\n  <span class=\"kw\">const</span> loading = <span class=\"fn\">inject</span>(LoadingService);\n  loading.show();\n  <span class=\"kw\">return</span> <span class=\"fn\">next</span>(req).pipe(<span class=\"fn\">finalize</span>(() =&gt; loading.hide()));\n};</code></pre>\n<h3>Caching Interceptor</h3>\n<pre><code><span class=\"kw\">const</span> cache = <span class=\"kw\">new</span> Map&lt;<span class=\"kw\">string</span>, HttpResponse&lt;any&gt;&gt;();\n\n<span class=\"kw\">export const</span> <span class=\"fn\">cacheInterceptor</span>: HttpInterceptorFn = (req, next) =&gt; {\n  <span class=\"kw\">if</span> (req.method !== <span class=\"st\">'GET'</span>) <span class=\"kw\">return</span> <span class=\"fn\">next</span>(req);\n  <span class=\"kw\">const</span> cached = cache.get(req.urlWithParams);\n  <span class=\"kw\">if</span> (cached) <span class=\"kw\">return</span> <span class=\"fn\">of</span>(cached.clone());\n  <span class=\"kw\">return</span> <span class=\"fn\">next</span>(req).pipe(\n    <span class=\"fn\">tap</span>(event =&gt; {\n      <span class=\"kw\">if</span> (event <span class=\"kw\">instanceof</span> HttpResponse) cache.set(req.urlWithParams, event.clone());\n    })\n  );\n};</code></pre>"
+        }
+      ]
+    },
+    {
+      "id": "rxjs",
+      "intro": "RxJS is the backbone of Angular's async layer. Here's every operator and pattern you need.",
+      "cards": [
+        {
+          "title": "Observable Fundamentals",
+          "contentHtml": "<pre><code><span class=\"cm\">// Creating Observables</span>\n<span class=\"kw\">import</span> { of, from, interval, timer, fromEvent, Subject, BehaviorSubject,\n  ReplaySubject, AsyncSubject, combineLatest, merge, forkJoin, concat } <span class=\"kw\">from</span> <span class=\"st\">'rxjs'</span>;\n\n<span class=\"fn\">of</span>(<span class=\"nu\">1</span>, <span class=\"nu\">2</span>, <span class=\"nu\">3</span>)                        <span class=\"cm\">// emits 1, 2, 3 then completes</span>\n<span class=\"fn\">from</span>([<span class=\"nu\">1</span>, <span class=\"nu\">2</span>, <span class=\"nu\">3</span>])                     <span class=\"cm\">// same from array</span>\n<span class=\"fn\">from</span>(fetch(<span class=\"st\">'/api'</span>))                 <span class=\"cm\">// from Promise</span>\n<span class=\"fn\">interval</span>(<span class=\"nu\">1000</span>)                      <span class=\"cm\">// emits 0, 1, 2... every second</span>\n<span class=\"fn\">timer</span>(<span class=\"nu\">3000</span>)                         <span class=\"cm\">// emits once after 3 seconds</span>\n<span class=\"fn\">timer</span>(<span class=\"nu\">0</span>, <span class=\"nu\">1000</span>)                      <span class=\"cm\">// like interval but starts immediately</span>\n<span class=\"fn\">fromEvent</span>(button, <span class=\"st\">'click'</span>)          <span class=\"cm\">// from DOM events</span>\nEMPTY                                <span class=\"cm\">// completes immediately, no values</span>\nNEVER                                <span class=\"cm\">// never emits, never completes</span>\n<span class=\"fn\">throwError</span>(() =&gt; <span class=\"kw\">new</span> Error(<span class=\"st\">'!'</span>))   <span class=\"cm\">// error immediately</span></code></pre>"
+        },
+        {
+          "title": "Subjects — 4 Types",
+          "contentHtml": "<pre><code><span class=\"cm\">// Subject: no initial value, late subscribers miss past emissions</span>\n<span class=\"kw\">const</span> s = <span class=\"kw\">new</span> Subject&lt;<span class=\"kw\">string</span>&gt;();\n\n<span class=\"cm\">// BehaviorSubject: has a current value, new subscribers get latest immediately</span>\n<span class=\"kw\">const</span> bs = <span class=\"kw\">new</span> BehaviorSubject&lt;<span class=\"kw\">string</span>&gt;(<span class=\"st\">'initial'</span>);\nbs.getValue(); <span class=\"cm\">// synchronous access to current value</span>\n\n<span class=\"cm\">// ReplaySubject: replays N past emissions to new subscribers</span>\n<span class=\"kw\">const</span> rs = <span class=\"kw\">new</span> ReplaySubject&lt;<span class=\"kw\">string</span>&gt;(<span class=\"nu\">3</span>); <span class=\"cm\">// buffer last 3</span>\n\n<span class=\"cm\">// AsyncSubject: only emits the LAST value, and only when completed</span>\n<span class=\"kw\">const</span> as = <span class=\"kw\">new</span> AsyncSubject&lt;<span class=\"kw\">string</span>&gt;();</code></pre>\n<div class=\"analogy\"><strong>Subject</strong> = live TV broadcast (miss it, it's gone). <strong>BehaviorSubject</strong> = TV with DVR showing current channel. <strong>ReplaySubject</strong> = DVR that recorded the last N shows. <strong>AsyncSubject</strong> = a movie that only shows the ending.</div>"
+        },
+        {
+          "title": "Every Operator You Need",
+          "contentHtml": "<h3>Transformation</h3>\n<pre><code><span class=\"fn\">map</span>(x =&gt; x * 2)                  <span class=\"cm\">// transform each value</span>\n<span class=\"fn\">switchMap</span>(x =&gt; api.get(x))        <span class=\"cm\">// cancel previous, use latest</span>\n<span class=\"fn\">mergeMap</span>(x =&gt; api.get(x))         <span class=\"cm\">// run all in parallel</span>\n<span class=\"fn\">concatMap</span>(x =&gt; api.get(x))        <span class=\"cm\">// run sequentially, preserve order</span>\n<span class=\"fn\">exhaustMap</span>(x =&gt; api.get(x))       <span class=\"cm\">// ignore new until current completes</span>\n<span class=\"fn\">scan</span>((acc, val) =&gt; acc + val, 0)  <span class=\"cm\">// running total (like reduce)</span>\n<span class=\"fn\">pairwise</span>()                        <span class=\"cm\">// emit [previous, current] pairs</span>\n<span class=\"fn\">toArray</span>()                         <span class=\"cm\">// collect all into array on complete</span></code></pre>\n<h3>Filtering</h3>\n<pre><code><span class=\"fn\">filter</span>(x =&gt; x &gt; 5)               <span class=\"cm\">// only pass matching values</span>\n<span class=\"fn\">distinctUntilChanged</span>()            <span class=\"cm\">// skip consecutive duplicates</span>\n<span class=\"fn\">debounceTime</span>(<span class=\"nu\">300</span>)                 <span class=\"cm\">// wait 300ms of silence</span>\n<span class=\"fn\">throttleTime</span>(<span class=\"nu\">1000</span>)               <span class=\"cm\">// max 1 emission per second</span>\n<span class=\"fn\">take</span>(<span class=\"nu\">5</span>)                           <span class=\"cm\">// take first 5 then complete</span>\n<span class=\"fn\">takeUntil</span>(destroy$)               <span class=\"cm\">// complete when signal fires</span>\n<span class=\"fn\">takeWhile</span>(x =&gt; x &lt; <span class=\"nu\">10</span>)           <span class=\"cm\">// take while condition is true</span>\n<span class=\"fn\">skip</span>(<span class=\"nu\">3</span>)                           <span class=\"cm\">// skip first 3 emissions</span>\n<span class=\"fn\">first</span>()                           <span class=\"cm\">// take first then complete</span>\n<span class=\"fn\">last</span>()                            <span class=\"cm\">// take last on complete</span></code></pre>\n<h3>Combination</h3>\n<pre><code><span class=\"fn\">combineLatest</span>([a$, b$])           <span class=\"cm\">// emit when ANY changes (needs all to emit once)</span>\n<span class=\"fn\">merge</span>(a$, b$)                     <span class=\"cm\">// interleave emissions from multiple sources</span>\n<span class=\"fn\">forkJoin</span>([a$, b$])                <span class=\"cm\">// wait for ALL to complete, emit last values</span>\n<span class=\"fn\">concat</span>(a$, b$)                    <span class=\"cm\">// subscribe to b$ after a$ completes</span>\n<span class=\"fn\">withLatestFrom</span>(other$)            <span class=\"cm\">// grab latest from other when source emits</span>\n<span class=\"fn\">startWith</span>(<span class=\"st\">'initial'</span>)              <span class=\"cm\">// prepend a value before stream starts</span></code></pre>\n<h3>Error Handling</h3>\n<pre><code><span class=\"fn\">catchError</span>(err =&gt; of(fallback))   <span class=\"cm\">// catch and replace with fallback</span>\n<span class=\"fn\">retry</span>({ count: <span class=\"nu\">3</span>, delay: <span class=\"nu\">1000</span> })  <span class=\"cm\">// retry N times with delay</span>\n<span class=\"fn\">finalize</span>(() =&gt; cleanup())         <span class=\"cm\">// run on complete OR error (like finally)</span></code></pre>\n<h3>Utility</h3>\n<pre><code><span class=\"fn\">tap</span>(x =&gt; console.log(x))          <span class=\"cm\">// side effect without changing stream</span>\n<span class=\"fn\">delay</span>(<span class=\"nu\">1000</span>)                       <span class=\"cm\">// delay emissions by 1 second</span>\n<span class=\"fn\">shareReplay</span>({ bufferSize: <span class=\"nu\">1</span>, refCount: <span class=\"kw\">true</span> }) <span class=\"cm\">// multicast + cache</span></code></pre>"
+        },
+        {
+          "title": "Real-World Pattern: Search Typeahead",
+          "contentHtml": "<pre><code>searchResults$ = <span class=\"kw\">this</span>.searchControl.valueChanges.pipe(\n  <span class=\"fn\">debounceTime</span>(<span class=\"nu\">300</span>),            <span class=\"cm\">// wait for user to stop typing</span>\n  <span class=\"fn\">distinctUntilChanged</span>(),       <span class=\"cm\">// skip if same value</span>\n  <span class=\"fn\">filter</span>(term =&gt; term.length &gt;= <span class=\"nu\">2</span>),  <span class=\"cm\">// minimum characters</span>\n  <span class=\"fn\">switchMap</span>(term =&gt;              <span class=\"cm\">// cancel previous request</span>\n    <span class=\"kw\">this</span>.searchService.search(term).pipe(\n      <span class=\"fn\">catchError</span>(() =&gt; <span class=\"fn\">of</span>([]))   <span class=\"cm\">// handle errors gracefully</span>\n    )\n  )\n);</code></pre>\n<div class=\"tip\">This is the #1 most asked RxJS pattern in interviews. Memorize the order: <strong>debounceTime → distinctUntilChanged → filter → switchMap → catchError</strong>.</div>"
+        },
+        {
+          "title": "Unsubscription Strategies (ranked best to worst)",
+          "contentHtml": "<pre><code><span class=\"cm\">// 1. async pipe (BEST — automatic, no manual cleanup)</span>\n{{ data$ | async }}\n\n<span class=\"cm\">// 2. takeUntilDestroyed() — Angular 16+</span>\ndata$ = <span class=\"kw\">this</span>.http.get(<span class=\"st\">'/api'</span>).pipe(\n  <span class=\"fn\">takeUntilDestroyed</span>()  <span class=\"cm\">// auto-complete on destroy</span>\n);\n\n<span class=\"cm\">// 3. DestroyRef</span>\n<span class=\"kw\">private</span> destroyRef = <span class=\"fn\">inject</span>(DestroyRef);\nngOnInit() {\n  <span class=\"kw\">this</span>.obs$.pipe(<span class=\"fn\">takeUntilDestroyed</span>(<span class=\"kw\">this</span>.destroyRef)).subscribe();\n}\n\n<span class=\"cm\">// 4. takeUntil with Subject (classic pattern)</span>\n<span class=\"kw\">private</span> destroy$ = <span class=\"kw\">new</span> Subject&lt;<span class=\"kw\">void</span>&gt;();\nngOnDestroy() { <span class=\"kw\">this</span>.destroy$.next(); <span class=\"kw\">this</span>.destroy$.complete(); }\n\n<span class=\"cm\">// 5. Manual unsubscribe (AVOID unless necessary)</span>\n<span class=\"kw\">private</span> sub!: Subscription;\nngOnDestroy() { <span class=\"kw\">this</span>.sub?.unsubscribe(); }</code></pre>"
+        }
+      ]
+    },
+    {
+      "id": "routing",
+      "intro": "Angular's router is the most powerful of any framework. Here's every feature.",
+      "cards": [
+        {
+          "title": "Complete Route Configuration",
+          "contentHtml": "<pre><code><span class=\"kw\">export const</span> routes: Routes = [\n  <span class=\"cm\">// Basic</span>\n  { path: <span class=\"st\">''</span>, component: HomeComponent },\n  { path: <span class=\"st\">'about'</span>, component: AboutComponent, title: <span class=\"st\">'About Us'</span> },\n\n  <span class=\"cm\">// Parameterized</span>\n  { path: <span class=\"st\">'users/:id'</span>, component: UserDetailComponent },\n  { path: <span class=\"st\">'users/:id/posts/:postId'</span>, component: PostComponent },\n\n  <span class=\"cm\">// Lazy loading</span>\n  { path: <span class=\"st\">'admin'</span>, loadComponent: () =&gt; <span class=\"fn\">import</span>(<span class=\"st\">'./admin.component'</span>).then(m =&gt; m.AdminComponent) },\n  { path: <span class=\"st\">'shop'</span>, loadChildren: () =&gt; <span class=\"fn\">import</span>(<span class=\"st\">'./shop.routes'</span>).then(m =&gt; m.shopRoutes) },\n\n  <span class=\"cm\">// Guards</span>\n  { path: <span class=\"st\">'dashboard'</span>, component: DashComponent, canActivate: [authGuard] },\n\n  <span class=\"cm\">// Resolver</span>\n  { path: <span class=\"st\">'users/:id'</span>, component: UserComponent, resolve: { user: userResolver } },\n\n  <span class=\"cm\">// Nested routes (children)</span>\n  {\n    path: <span class=\"st\">'settings'</span>,\n    component: SettingsLayoutComponent,\n    children: [\n      { path: <span class=\"st\">''</span>, redirectTo: <span class=\"st\">'profile'</span>, pathMatch: <span class=\"st\">'full'</span> },\n      { path: <span class=\"st\">'profile'</span>, component: ProfileComponent },\n      { path: <span class=\"st\">'security'</span>, component: SecurityComponent },\n    ]\n  },\n\n  <span class=\"cm\">// Redirect</span>\n  { path: <span class=\"st\">'home'</span>, redirectTo: <span class=\"st\">''</span>, pathMatch: <span class=\"st\">'full'</span> },\n\n  <span class=\"cm\">// Wildcard (must be last)</span>\n  { path: <span class=\"st\">'**'</span>, component: NotFoundComponent },\n];</code></pre>"
+        },
+        {
+          "title": "Route Guards (Functional Style)",
+          "contentHtml": "<pre><code><span class=\"cm\">// canActivate — can the user enter?</span>\n<span class=\"kw\">export const</span> <span class=\"fn\">authGuard</span>: CanActivateFn = () =&gt; {\n  <span class=\"kw\">return</span> <span class=\"fn\">inject</span>(AuthService).isLoggedIn()\n    ? <span class=\"kw\">true</span>\n    : <span class=\"fn\">inject</span>(Router).createUrlTree([<span class=\"st\">'/login'</span>]);\n};\n\n<span class=\"cm\">// canDeactivate — can the user leave? (unsaved changes)</span>\n<span class=\"kw\">export const</span> <span class=\"fn\">unsavedGuard</span>: CanDeactivateFn&lt;HasUnsavedChanges&gt; = (component) =&gt; {\n  <span class=\"kw\">return</span> component.hasUnsavedChanges()\n    ? confirm(<span class=\"st\">'Discard changes?'</span>)\n    : <span class=\"kw\">true</span>;\n};\n\n<span class=\"cm\">// canMatch — should this route even match?</span>\n<span class=\"kw\">export const</span> <span class=\"fn\">adminMatch</span>: CanMatchFn = () =&gt; {\n  <span class=\"kw\">return</span> <span class=\"fn\">inject</span>(AuthService).hasRole(<span class=\"st\">'admin'</span>);\n};</code></pre>"
+        },
+        {
+          "title": "Reading Route Data",
+          "contentHtml": "<pre><code><span class=\"kw\">export class</span> <span class=\"fn\">UserComponent</span> {\n  <span class=\"kw\">private</span> route = <span class=\"fn\">inject</span>(ActivatedRoute);\n\n  <span class=\"cm\">// Snapshot (one-time read)</span>\n  id = <span class=\"kw\">this</span>.route.snapshot.params[<span class=\"st\">'id'</span>];\n  query = <span class=\"kw\">this</span>.route.snapshot.queryParams[<span class=\"st\">'search'</span>];\n  data = <span class=\"kw\">this</span>.route.snapshot.data[<span class=\"st\">'user'</span>];\n\n  <span class=\"cm\">// Reactive (updates when params change)</span>\n  id$ = <span class=\"kw\">this</span>.route.params.pipe(<span class=\"fn\">map</span>(p =&gt; p[<span class=\"st\">'id'</span>]));\n\n  <span class=\"cm\">// With withComponentInputBinding() — cleanest!</span>\n  <span class=\"cm\">// Route params become @Input() automatically</span>\n  id = <span class=\"fn\">input</span>&lt;<span class=\"kw\">string</span>&gt;();  <span class=\"cm\">// maps to :id in route</span>\n}</code></pre>\n<div class=\"tip\"><code>withComponentInputBinding()</code> in your router config lets route params, query params, and resolved data automatically bind to component inputs with matching names. This is the cleanest approach.</div>"
+        }
+      ]
+    },
+    {
+      "id": "forms",
+      "intro": "Forms are where Angular truly outshines other frameworks. Two approaches, each with its strengths.",
+      "cards": [
+        {
+          "title": "Reactive Forms — Complete Reference",
+          "contentHtml": "<pre><code><span class=\"kw\">export class</span> <span class=\"fn\">RegisterComponent</span> {\n  <span class=\"kw\">private</span> fb = <span class=\"fn\">inject</span>(FormBuilder);\n\n  form = <span class=\"kw\">this</span>.fb.group({\n    <span class=\"cm\">// [initialValue, syncValidators, asyncValidators]</span>\n    name: [<span class=\"st\">''</span>, [Validators.required, Validators.minLength(<span class=\"nu\">2</span>)]],\n    email: [<span class=\"st\">''</span>, [Validators.required, Validators.email]],\n    password: [<span class=\"st\">''</span>, [Validators.required, Validators.minLength(<span class=\"nu\">8</span>),\n                    Validators.pattern(<span class=\"st\">/(?=.*[A-Z])(?=.*\\d)/</span>)]],\n    confirmPassword: [<span class=\"st\">''</span>],\n    age: [<span class=\"kw\">null</span>, [Validators.min(<span class=\"nu\">18</span>), Validators.max(<span class=\"nu\">120</span>)]],\n    role: [<span class=\"st\">'user'</span>],\n    agreeToTerms: [<span class=\"kw\">false</span>, Validators.requiredTrue],\n    addresses: <span class=\"kw\">this</span>.fb.array([]),\n  }, {\n    validators: [<span class=\"kw\">this</span>.passwordMatchValidator],\n    updateOn: <span class=\"st\">'blur'</span>  <span class=\"cm\">// validate on blur instead of every keystroke</span>\n  });\n\n  <span class=\"cm\">// Typed form — full TypeScript support!</span>\n  form = <span class=\"kw\">this</span>.fb.nonNullable.group({ ... });\n\n  <span class=\"cm\">// Cross-field validator</span>\n  <span class=\"fn\">passwordMatchValidator</span>(control: AbstractControl): ValidationErrors | <span class=\"kw\">null</span> {\n    <span class=\"kw\">const</span> pass = control.get(<span class=\"st\">'password'</span>)?.value;\n    <span class=\"kw\">const</span> confirm = control.get(<span class=\"st\">'confirmPassword'</span>)?.value;\n    <span class=\"kw\">return</span> pass === confirm ? <span class=\"kw\">null</span> : { passwordMismatch: <span class=\"kw\">true</span> };\n  }\n\n  <span class=\"cm\">// Async validator</span>\n  <span class=\"fn\">emailTakenValidator</span>(ctrl: AbstractControl): Observable&lt;ValidationErrors | <span class=\"kw\">null</span>&gt; {\n    <span class=\"kw\">return</span> <span class=\"kw\">this</span>.userService.checkEmail(ctrl.value).pipe(\n      <span class=\"fn\">map</span>(taken =&gt; taken ? { emailTaken: <span class=\"kw\">true</span> } : <span class=\"kw\">null</span>),\n      <span class=\"fn\">debounceTime</span>(<span class=\"nu\">300</span>),\n      <span class=\"fn\">first</span>()\n    );\n  }\n\n  <span class=\"cm\">// Dynamic FormArray</span>\n  <span class=\"kw\">get</span> <span class=\"fn\">addresses</span>() { <span class=\"kw\">return this</span>.form.get(<span class=\"st\">'addresses'</span>) <span class=\"kw\">as</span> FormArray; }\n  <span class=\"fn\">addAddress</span>() {\n    <span class=\"kw\">this</span>.addresses.push(<span class=\"kw\">this</span>.fb.group({ street: [<span class=\"st\">''</span>], city: [<span class=\"st\">''</span>], zip: [<span class=\"st\">''</span>] }));\n  }\n  <span class=\"fn\">removeAddress</span>(i: <span class=\"kw\">number</span>) { <span class=\"kw\">this</span>.addresses.removeAt(i); }\n\n  <span class=\"cm\">// Useful methods</span>\n  <span class=\"fn\">onSubmit</span>() {\n    <span class=\"kw\">if</span> (<span class=\"kw\">this</span>.form.invalid) { <span class=\"kw\">this</span>.form.markAllAsTouched(); <span class=\"kw\">return</span>; }\n    console.log(<span class=\"kw\">this</span>.form.getRawValue()); <span class=\"cm\">// includes disabled fields</span>\n  }\n  <span class=\"fn\">reset</span>() { <span class=\"kw\">this</span>.form.reset(); }\n  <span class=\"fn\">patch</span>() { <span class=\"kw\">this</span>.form.patchValue({ name: <span class=\"st\">'New'</span> }); } <span class=\"cm\">// partial update</span>\n  <span class=\"fn\">setAll</span>() { <span class=\"kw\">this</span>.form.setValue({ ... }); } <span class=\"cm\">// all fields required</span>\n}</code></pre>"
+        },
+        {
+          "title": "Template Error Display",
+          "contentHtml": "<pre><code>&lt;input formControlName=\"email\"&gt;\n@if (form.get('email')?.hasError('required') &amp;&amp; form.get('email')?.touched) {\n  &lt;span class=\"error\"&gt;Email is required&lt;/span&gt;\n}\n@if (form.get('email')?.hasError('email')) {\n  &lt;span class=\"error\"&gt;Must be a valid email&lt;/span&gt;\n}\n@if (form.hasError('passwordMismatch')) {\n  &lt;span class=\"error\"&gt;Passwords don't match&lt;/span&gt;\n}</code></pre>"
+        }
+      ]
+    },
+    {
+      "id": "pipes",
+      "intro": "Pipes and custom directives are the building blocks of reusable template logic.",
+      "cards": [
+        {
+          "title": "All Built-in Pipes",
+          "contentHtml": "<pre><code>{{ date | date:'longDate' }}           <span class=\"cm\">// April 4, 2026</span>\n{{ date | date:'dd/MM/yyyy HH:mm' }}   <span class=\"cm\">// 04/04/2026 14:30</span>\n{{ 42.567 | number:'1.2-2' }}          <span class=\"cm\">// 42.57</span>\n{{ 0.85 | percent }}                   <span class=\"cm\">// 85%</span>\n{{ 99.99 | currency:'GBP' }}           <span class=\"cm\">// £99.99</span>\n{{ 'hello' | uppercase }}              <span class=\"cm\">// HELLO</span>\n{{ 'HELLO' | lowercase }}              <span class=\"cm\">// hello</span>\n{{ 'hello world' | titlecase }}        <span class=\"cm\">// Hello World</span>\n{{ obj | json }}                       <span class=\"cm\">// JSON.stringify</span>\n{{ text | slice:0:50 }}                <span class=\"cm\">// substring</span>\n{{ map | keyvalue }}                   <span class=\"cm\">// iterate Maps/Objects</span>\n{{ obs$ | async }}                     <span class=\"cm\">// subscribe to Observable</span></code></pre>"
+        },
+        {
+          "title": "Custom Pipe + Pure vs Impure",
+          "contentHtml": "<pre><code><span class=\"cm\">// PURE pipe (default) — only recalculates when input REFERENCE changes</span>\n<span class=\"dc\">@Pipe</span>({ name: <span class=\"st\">'truncate'</span>, standalone: <span class=\"kw\">true</span>, pure: <span class=\"kw\">true</span> })\n<span class=\"kw\">export class</span> <span class=\"fn\">TruncatePipe</span> <span class=\"kw\">implements</span> PipeTransform {\n  <span class=\"fn\">transform</span>(value: <span class=\"kw\">string</span>, limit = <span class=\"nu\">50</span>, trail = <span class=\"st\">'...'</span>): <span class=\"kw\">string</span> {\n    <span class=\"kw\">return</span> value.length &gt; limit ? value.substring(<span class=\"nu\">0</span>, limit) + trail : value;\n  }\n}\n\n<span class=\"cm\">// IMPURE pipe — recalculates on EVERY change detection cycle</span>\n<span class=\"cm\">// Use only when you need to detect array mutations</span>\n<span class=\"dc\">@Pipe</span>({ name: <span class=\"st\">'filterActive'</span>, standalone: <span class=\"kw\">true</span>, pure: <span class=\"kw\">false</span> })\n<span class=\"kw\">export class</span> <span class=\"fn\">FilterActivePipe</span> <span class=\"kw\">implements</span> PipeTransform {\n  <span class=\"fn\">transform</span>(items: User[]): User[] {\n    <span class=\"kw\">return</span> items.filter(i =&gt; i.active);\n  }\n}</code></pre>\n<div class=\"warn\">Impure pipes run on <strong>every change detection cycle</strong>. For arrays, it's better to use a pure pipe + immutable updates (create new array reference) or use signals/computed.</div>"
+        },
+        {
+          "title": "Custom Structural Directive",
+          "contentHtml": "<pre><code><span class=\"dc\">@Directive</span>({ selector: <span class=\"st\">'[appIfRole]'</span>, standalone: <span class=\"kw\">true</span> })\n<span class=\"kw\">export class</span> <span class=\"fn\">IfRoleDirective</span> {\n  <span class=\"kw\">private</span> auth = <span class=\"fn\">inject</span>(AuthService);\n  <span class=\"kw\">private</span> templateRef = <span class=\"fn\">inject</span>(TemplateRef&lt;any&gt;);\n  <span class=\"kw\">private</span> viewContainer = <span class=\"fn\">inject</span>(ViewContainerRef);\n  <span class=\"kw\">private</span> hasView = <span class=\"kw\">false</span>;\n\n  <span class=\"dc\">@Input</span>() <span class=\"kw\">set</span> <span class=\"fn\">appIfRole</span>(role: <span class=\"kw\">string</span>) {\n    <span class=\"kw\">if</span> (<span class=\"kw\">this</span>.auth.hasRole(role) &amp;&amp; !<span class=\"kw\">this</span>.hasView) {\n      <span class=\"kw\">this</span>.viewContainer.createEmbeddedView(<span class=\"kw\">this</span>.templateRef);\n      <span class=\"kw\">this</span>.hasView = <span class=\"kw\">true</span>;\n    } <span class=\"kw\">else if</span> (!<span class=\"kw\">this</span>.auth.hasRole(role) &amp;&amp; <span class=\"kw\">this</span>.hasView) {\n      <span class=\"kw\">this</span>.viewContainer.clear();\n      <span class=\"kw\">this</span>.hasView = <span class=\"kw\">false</span>;\n    }\n  }\n}\n\n<span class=\"cm\">// Usage</span>\n&lt;button *appIfRole=\"'admin'\"&gt;Delete All&lt;/button&gt;</code></pre>"
+        },
+        {
+          "title": "Custom Attribute Directive",
+          "contentHtml": "<pre><code><span class=\"dc\">@Directive</span>({ selector: <span class=\"st\">'[appHighlight]'</span>, standalone: <span class=\"kw\">true</span> })\n<span class=\"kw\">export class</span> <span class=\"fn\">HighlightDirective</span> {\n  <span class=\"kw\">private</span> el = <span class=\"fn\">inject</span>(ElementRef);\n  <span class=\"dc\">@Input</span>() appHighlight = <span class=\"st\">'yellow'</span>;\n\n  <span class=\"dc\">@HostListener</span>(<span class=\"st\">'mouseenter'</span>) onEnter() {\n    <span class=\"kw\">this</span>.el.nativeElement.style.backgroundColor = <span class=\"kw\">this</span>.appHighlight;\n  }\n  <span class=\"dc\">@HostListener</span>(<span class=\"st\">'mouseleave'</span>) onLeave() {\n    <span class=\"kw\">this</span>.el.nativeElement.style.backgroundColor = <span class=\"kw\">null</span>;\n  }\n}\n\n<span class=\"cm\">// Usage</span>\n&lt;p appHighlight=\"cyan\"&gt;Hover me!&lt;/p&gt;</code></pre>"
+        }
+      ]
+    },
+    {
+      "id": "signals",
+      "intro": "Signals are Angular's future. They simplify reactivity and will eventually replace Zone.js.",
+      "cards": [
+        {
+          "title": "Signal Primitives",
+          "contentHtml": "<pre><code><span class=\"kw\">import</span> { signal, computed, effect, untracked, linkedSignal } <span class=\"kw\">from</span> <span class=\"st\">'@angular/core'</span>;\n\n<span class=\"cm\">// Writable signal</span>\ncount = <span class=\"fn\">signal</span>(<span class=\"nu\">0</span>);\ncount.set(<span class=\"nu\">5</span>);                  <span class=\"cm\">// replace</span>\ncount.update(c =&gt; c + <span class=\"nu\">1</span>);      <span class=\"cm\">// derive from current</span>\n\n<span class=\"cm\">// Computed (read-only, auto-tracks dependencies)</span>\ndoubled = <span class=\"fn\">computed</span>(() =&gt; <span class=\"kw\">this</span>.count() * <span class=\"nu\">2</span>);\n<span class=\"cm\">// Angular knows this depends on count(). When count changes, doubled recalculates.</span>\n\n<span class=\"cm\">// Effect (side effects when signals change)</span>\nlogEffect = <span class=\"fn\">effect</span>(() =&gt; {\n  console.log(<span class=\"st\">`Count is now: ${this.count()}`</span>);\n  <span class=\"cm\">// This runs whenever count() changes</span>\n});\n\n<span class=\"cm\">// untracked — read a signal WITHOUT creating a dependency</span>\n<span class=\"fn\">effect</span>(() =&gt; {\n  <span class=\"kw\">const</span> name = <span class=\"kw\">this</span>.name();          <span class=\"cm\">// tracked</span>\n  <span class=\"kw\">const</span> age = <span class=\"fn\">untracked</span>(<span class=\"kw\">this</span>.age);  <span class=\"cm\">// NOT tracked</span>\n});\n\n<span class=\"cm\">// linkedSignal — a writable computed (Angular 19+)</span>\nselectedTab = <span class=\"fn\">linkedSignal</span>(() =&gt; <span class=\"kw\">this</span>.tabs()[<span class=\"nu\">0</span>]);\n<span class=\"cm\">// Auto-resets when tabs() changes, but can also be set manually</span></code></pre>\n<div class=\"analogy\"><strong>signal</strong> = a whiteboard that anyone can write on. <strong>computed</strong> = a calculator display that auto-updates from the whiteboard. <strong>effect</strong> = a bell that rings whenever the whiteboard changes. <strong>untracked</strong> = peeking at the whiteboard without signing the visitor log.</div>"
+        },
+        {
+          "title": "Signal Inputs, Model Inputs & Queries",
+          "contentHtml": "<pre><code><span class=\"cm\">// Signal inputs (replacing @Input)</span>\nname = <span class=\"fn\">input.required</span>&lt;<span class=\"kw\">string</span>&gt;();      <span class=\"cm\">// required</span>\nrole = <span class=\"fn\">input</span>(<span class=\"st\">'user'</span>);                    <span class=\"cm\">// optional with default</span>\ncount = <span class=\"fn\">input</span>(<span class=\"nu\">0</span>, { alias: <span class=\"st\">'itemCount'</span> }); <span class=\"cm\">// aliased</span>\ndata = <span class=\"fn\">input</span>&lt;<span class=\"kw\">string</span> | <span class=\"kw\">undefined</span>&gt;();     <span class=\"cm\">// optional, undefined default</span>\n\n<span class=\"cm\">// Transform on input</span>\ndisabled = <span class=\"fn\">input</span>(<span class=\"kw\">false</span>, { transform: booleanAttribute });\nsize = <span class=\"fn\">input</span>(<span class=\"nu\">0</span>, { transform: numberAttribute });\n\n<span class=\"cm\">// Model inputs — two-way binding</span>\nchecked = <span class=\"fn\">model</span>(<span class=\"kw\">false</span>);                  <span class=\"cm\">// [(checked)]=\"value\"</span>\nchecked = <span class=\"fn\">model.required</span>&lt;<span class=\"kw\">boolean</span>&gt;();\n\n<span class=\"cm\">// Signal-based outputs</span>\nclicked = <span class=\"fn\">output</span>&lt;<span class=\"kw\">string</span>&gt;();\n<span class=\"kw\">this</span>.clicked.emit(<span class=\"st\">'hello'</span>);\n\n<span class=\"cm\">// Signal queries (replacing @ViewChild)</span>\nmyInput = <span class=\"fn\">viewChild.required</span>&lt;ElementRef&gt;(<span class=\"st\">'myInput'</span>);\nitems = <span class=\"fn\">viewChildren</span>(ItemComponent);\nheader = <span class=\"fn\">contentChild</span>(HeaderDirective);\ntabs = <span class=\"fn\">contentChildren</span>(TabComponent);</code></pre>"
+        },
+        {
+          "title": "resource() & rxResource()",
+          "contentHtml": "<pre><code><span class=\"cm\">// resource() — Promise-based async data fetching</span>\nuserResource = <span class=\"fn\">resource</span>({\n  request: () =&gt; ({ id: <span class=\"kw\">this</span>.userId() }),\n  loader: <span class=\"kw\">async</span> ({ request, abortSignal }) =&gt; {\n    <span class=\"kw\">const</span> res = <span class=\"kw\">await</span> fetch(<span class=\"st\">`/api/users/${request.id}`</span>, { signal: abortSignal });\n    <span class=\"kw\">return</span> res.json() <span class=\"kw\">as</span> Promise&lt;User&gt;;\n  }\n});\n\n<span class=\"cm\">// In template:</span>\n<span class=\"cm\">// userResource.value()      → User | undefined</span>\n<span class=\"cm\">// userResource.isLoading()  → boolean</span>\n<span class=\"cm\">// userResource.error()      → Error | undefined</span>\n<span class=\"cm\">// userResource.status()     → 'idle' | 'loading' | 'resolved' | 'error'</span>\n\n<span class=\"cm\">// rxResource() — RxJS/Observable version</span>\nuserResource = <span class=\"fn\">rxResource</span>({\n  request: () =&gt; ({ id: <span class=\"kw\">this</span>.userId() }),\n  loader: ({ request }) =&gt; <span class=\"kw\">this</span>.http.get&lt;User&gt;(<span class=\"st\">`/api/users/${request.id}`</span>)\n});</code></pre>"
+        }
+      ]
+    },
+    {
+      "id": "perf",
+      "intro": "Performance optimization separates seniors from juniors. Master change detection and you master Angular.",
+      "cards": [
+        {
+          "title": "Change Detection — How It Really Works",
+          "contentHtml": "<p><strong>Zone.js</strong> monkey-patches every async API: <code>setTimeout</code>, <code>Promise.then</code>, <code>addEventListener</code>, <code>XMLHttpRequest</code>, <code>fetch</code>. When any async operation completes, Zone.js notifies Angular, which runs change detection from the root down.</p>\n<h3>Default Strategy</h3>\n<p>Angular checks <strong>every component in the tree</strong> on every detection cycle. It compares previous and current values of all bindings. If different, it updates the DOM.</p>\n<h3>OnPush Strategy</h3>\n<p>Angular <strong>skips this component</strong> unless one of these happens:</p>\n<ul>\n<li><strong>@Input() reference changes</strong> — object identity, not deep comparison</li>\n<li><strong>Event fires from within</strong> — click, keyup, etc. in this component's template</li>\n<li><strong>Observable emits via async pipe</strong></li>\n<li><strong>Signal value changes</strong></li>\n<li><strong>Manual markForCheck()</strong> or <strong>detectChanges()</strong></li>\n</ul>\n<div class=\"deep\">Angular's CD walks the component tree <strong>top-down</strong>. For each component: check bindings → update DOM → recurse into children. With OnPush, entire subtrees are skipped. This is why OnPush + immutable data = huge perf wins on component-heavy apps.</div>"
+        },
+        {
+          "title": "Zoneless Angular (Default since v21)",
+          "contentHtml": "<pre><code><span class=\"cm\">// Angular 21+: zoneless is the DEFAULT for new projects</span>\n<span class=\"cm\">// For existing projects migrating:</span>\n<span class=\"kw\">export const</span> appConfig: ApplicationConfig = {\n  providers: [\n    <span class=\"fn\">provideZonelessChangeDetection</span>(), <span class=\"cm\">// stable!</span>\n    <span class=\"cm\">// ... other providers</span>\n  ]\n};</code></pre>\n<p>Without Zone.js, Angular relies <strong>entirely on signals and explicit notifications</strong> for change detection. Benefits: ~15KB smaller bundle, cleaner stack traces, no Zone.js quirks, truly fine-grained updates. This is no longer experimental — it's the recommended path forward.</p>"
+        },
+        {
+          "title": "Deferrable Views — Component-Level Code Splitting",
+          "contentHtml": "<pre><code><span class=\"cm\">&lt;!-- Load when visible on screen --&gt;</span>\n@defer (on viewport) {\n  &lt;app-heavy-chart [data]=\"chartData\" /&gt;\n} @placeholder (minimum 100ms) {\n  &lt;div class=\"h-64 bg-gray-800 animate-pulse\"&gt;&lt;/div&gt;\n} @loading (after 150ms; minimum 200ms) {\n  &lt;app-spinner /&gt;\n} @error {\n  &lt;p&gt;Failed to load chart.&lt;/p&gt;\n}\n\n<span class=\"cm\">&lt;!-- All triggers --&gt;</span>\n@defer (on idle)          <span class=\"cm\">// requestIdleCallback</span>\n@defer (on viewport)      <span class=\"cm\">// IntersectionObserver</span>\n@defer (on interaction)   <span class=\"cm\">// click, focus, etc.</span>\n@defer (on hover)         <span class=\"cm\">// mouseenter/focusin</span>\n@defer (on timer(5s))     <span class=\"cm\">// after 5 seconds</span>\n@defer (when showChart)   <span class=\"cm\">// when boolean is true</span>\n@defer (on viewport; prefetch on idle)  <span class=\"cm\">// prefetch early!</span></code></pre>"
+        },
+        {
+          "title": "Virtual Scrolling",
+          "contentHtml": "<pre><code><span class=\"cm\">&lt;!-- For lists with 1000+ items --&gt;</span>\n&lt;cdk-virtual-scroll-viewport itemSize=\"48\" class=\"h-[500px]\"&gt;\n  &lt;div *cdkVirtualFor=\"let item of items; trackBy: trackById\"\n       class=\"h-12 flex items-center\"&gt;\n    {{ item.name }}\n  &lt;/div&gt;\n&lt;/cdk-virtual-scroll-viewport&gt;</code></pre>\n<p>Only renders items visible in the viewport (~20 elements) instead of all 10,000. Massive performance win for large lists, tables, and feeds.</p>"
+        },
+        {
+          "title": "Performance Checklist",
+          "contentHtml": "<p><strong>1.</strong> <code>OnPush</code> on every component. <strong>2.</strong> <code>track</code> by unique ID in all <code>@for</code> loops. <strong>3.</strong> Use <code>async</code> pipe or signals instead of manual subscriptions. <strong>4.</strong> Lazy load routes with <code>loadComponent</code>/<code>loadChildren</code>. <strong>5.</strong> Use <code>@defer</code> for heavy below-fold components. <strong>6.</strong> Virtual scrolling for long lists. <strong>7.</strong> Preload lazy chunks with <code>PreloadAllModules</code>. <strong>8.</strong> Avoid function calls in templates (use pipes or computed). <strong>9.</strong> Use <code>ChangeDetectorRef.detach()</code> for static sub-trees. <strong>10.</strong> Analyze bundles with <code>ng build --stats-json</code>.</p>"
+        }
+      ]
+    },
+    {
+      "id": "testing",
+      "intro": "Untested code is unfinished code. Angular provides robust testing tools out of the box.",
+      "cards": [
+        {
+          "title": "Unit Testing Components",
+          "contentHtml": "<pre><code><span class=\"fn\">describe</span>(<span class=\"st\">'UserCardComponent'</span>, () =&gt; {\n  <span class=\"kw\">let</span> component: UserCardComponent;\n  <span class=\"kw\">let</span> fixture: ComponentFixture&lt;UserCardComponent&gt;;\n\n  <span class=\"fn\">beforeEach</span>(<span class=\"kw\">async</span> () =&gt; {\n    <span class=\"kw\">await</span> TestBed.configureTestingModule({\n      imports: [UserCardComponent],\n    }).compileComponents();\n\n    fixture = TestBed.createComponent(UserCardComponent);\n    component = fixture.componentInstance;\n    fixture.componentRef.setInput(<span class=\"st\">'user'</span>, { id: <span class=\"st\">'1'</span>, name: <span class=\"st\">'Alice'</span> });\n    fixture.detectChanges();\n  });\n\n  <span class=\"fn\">it</span>(<span class=\"st\">'should display user name'</span>, () =&gt; {\n    <span class=\"kw\">const</span> el = fixture.nativeElement.querySelector(<span class=\"st\">'h3'</span>);\n    expect(el.textContent).toContain(<span class=\"st\">'Alice'</span>);\n  });\n\n  <span class=\"fn\">it</span>(<span class=\"st\">'should emit delete event'</span>, () =&gt; {\n    <span class=\"fn\">jest</span>.spyOn(component.delete, <span class=\"st\">'emit'</span>);\n    <span class=\"kw\">const</span> btn = fixture.nativeElement.querySelector(<span class=\"st\">'button'</span>);\n    btn.click();\n    expect(component.delete.emit).toHaveBeenCalledWith(<span class=\"st\">'1'</span>);\n  });\n});</code></pre>"
+        },
+        {
+          "title": "Testing Services with HttpClient",
+          "contentHtml": "<pre><code><span class=\"fn\">describe</span>(<span class=\"st\">'UserService'</span>, () =&gt; {\n  <span class=\"kw\">let</span> service: UserService;\n  <span class=\"kw\">let</span> httpMock: HttpTestingController;\n\n  <span class=\"fn\">beforeEach</span>(() =&gt; {\n    TestBed.configureTestingModule({\n      providers: [\n        UserService,\n        <span class=\"fn\">provideHttpClient</span>(),\n        <span class=\"fn\">provideHttpClientTesting</span>(),\n      ]\n    });\n    service = TestBed.inject(UserService);\n    httpMock = TestBed.inject(HttpTestingController);\n  });\n\n  <span class=\"fn\">afterEach</span>(() =&gt; httpMock.verify()); <span class=\"cm\">// ensure no unexpected requests</span>\n\n  <span class=\"fn\">it</span>(<span class=\"st\">'should fetch users'</span>, () =&gt; {\n    <span class=\"kw\">const</span> mockUsers = [{ id: <span class=\"st\">'1'</span>, name: <span class=\"st\">'Alice'</span> }];\n    service.getAll().subscribe(users =&gt; {\n      expect(users).toEqual(mockUsers);\n    });\n    <span class=\"kw\">const</span> req = httpMock.expectOne(<span class=\"st\">'/api/users'</span>);\n    expect(req.request.method).toBe(<span class=\"st\">'GET'</span>);\n    req.flush(mockUsers);\n  });\n});</code></pre>"
+        },
+        {
+          "title": "Testing with Signals",
+          "contentHtml": "<pre><code><span class=\"fn\">it</span>(<span class=\"st\">'should compute total'</span>, () =&gt; {\n  <span class=\"kw\">const</span> cart = TestBed.inject(CartService);\n  cart.items.set([\n    { id: <span class=\"st\">'1'</span>, name: <span class=\"st\">'A'</span>, price: <span class=\"nu\">10</span> },\n    { id: <span class=\"st\">'2'</span>, name: <span class=\"st\">'B'</span>, price: <span class=\"nu\">20</span> },\n  ]);\n  expect(cart.totalPrice()).toBe(<span class=\"nu\">30</span>); <span class=\"cm\">// computed updates synchronously</span>\n});</code></pre>"
+        }
+      ]
+    },
+    {
+      "id": "ssr",
+      "intro": "The advanced topics that make you a true Angular master.",
+      "cards": [
+        {
+          "title": "Server-Side Rendering & Hydration",
+          "contentHtml": "<p>Angular Universal renders your app on the server, sending full HTML to the browser for fast First Contentful Paint and SEO.</p>\n<h3>Non-Destructive Hydration (Angular 16+)</h3>\n<p>Instead of destroying server-rendered DOM and recreating it, Angular <strong>attaches</strong> to existing DOM nodes — preserving them and adding event listeners. No more UI flicker.</p>\n<h3>Incremental Hydration (Angular 19+)</h3>\n<p>Combine <code>@defer</code> with SSR. Server renders the HTML, but JavaScript for deferred blocks is only loaded when triggered. Best of both worlds: SEO + fast TTI.</p>\n<pre><code><span class=\"cm\">// Enable in app.config.ts</span>\nproviders: [\n  <span class=\"fn\">provideClientHydration</span>(\n    <span class=\"fn\">withEventReplay</span>(),           <span class=\"cm\">// replay user events before hydration</span>\n    <span class=\"fn\">withIncrementalHydration</span>(),   <span class=\"cm\">// defer hydration of @defer blocks</span>\n  )\n]</code></pre>"
+        },
+        {
+          "title": "Angular Animations",
+          "contentHtml": "<pre><code><span class=\"kw\">import</span> { trigger, transition, style, animate, state, query, stagger } <span class=\"kw\">from</span> <span class=\"st\">'@angular/animations'</span>;\n\n<span class=\"dc\">@Component</span>({\n  animations: [\n    <span class=\"fn\">trigger</span>(<span class=\"st\">'fadeSlide'</span>, [\n      <span class=\"fn\">transition</span>(<span class=\"st\">':enter'</span>, [\n        <span class=\"fn\">style</span>({ opacity: <span class=\"nu\">0</span>, transform: <span class=\"st\">'translateY(-20px)'</span> }),\n        <span class=\"fn\">animate</span>(<span class=\"st\">'300ms ease-out'</span>, <span class=\"fn\">style</span>({ opacity: <span class=\"nu\">1</span>, transform: <span class=\"st\">'translateY(0)'</span> }))\n      ]),\n      <span class=\"fn\">transition</span>(<span class=\"st\">':leave'</span>, [\n        <span class=\"fn\">animate</span>(<span class=\"st\">'200ms ease-in'</span>, <span class=\"fn\">style</span>({ opacity: <span class=\"nu\">0</span> }))\n      ])\n    ]),\n    <span class=\"fn\">trigger</span>(<span class=\"st\">'listStagger'</span>, [\n      <span class=\"fn\">transition</span>(<span class=\"st\">'* =&gt; *'</span>, [\n        <span class=\"fn\">query</span>(<span class=\"st\">':enter'</span>, [\n          <span class=\"fn\">style</span>({ opacity: <span class=\"nu\">0</span>, transform: <span class=\"st\">'translateX(-20px)'</span> }),\n          <span class=\"fn\">stagger</span>(<span class=\"st\">'50ms'</span>, <span class=\"fn\">animate</span>(<span class=\"st\">'300ms ease-out'</span>,\n            <span class=\"fn\">style</span>({ opacity: <span class=\"nu\">1</span>, transform: <span class=\"st\">'translateX(0)'</span> })))\n        ], { optional: <span class=\"kw\">true</span> })\n      ])\n    ])\n  ]\n})</code></pre>"
+        },
+        {
+          "title": "Internationalization (i18n)",
+          "contentHtml": "<pre><code><span class=\"cm\">&lt;!-- Mark text for translation --&gt;</span>\n&lt;h1 i18n=\"site header|Main welcome heading\"&gt;Welcome to our app&lt;/h1&gt;\n&lt;p i18n=\"@@introMessage\"&gt;Hello, {{ name }}&lt;/p&gt;\n\n<span class=\"cm\">&lt;!-- Pluralization --&gt;</span>\n&lt;span i18n&gt;{count, plural,\n  =0 {No items}\n  =1 {One item}\n  other {{{count}} items}\n}&lt;/span&gt;\n\n<span class=\"cm\"># Extract translations</span>\nng extract-i18n --output-path src/locale</code></pre>"
+        },
+        {
+          "title": "Security",
+          "contentHtml": "<h3>XSS Protection</h3>\n<p>Angular <strong>sanitizes all template bindings by default</strong>. Interpolation, property binding, and <code>[innerHTML]</code> all have dangerous content stripped. To bypass (for trusted content), use <code>DomSanitizer.bypassSecurityTrustHtml()</code>.</p>\n<h3>CSRF/XSRF</h3>\n<p>HttpClient automatically reads the <code>XSRF-TOKEN</code> cookie and sends it as <code>X-XSRF-TOKEN</code> header on mutating requests. Configure with <code>withXsrfConfiguration()</code>.</p>\n<h3>Content Security Policy</h3>\n<p>Angular's AOT compilation avoids <code>eval()</code> and dynamic code execution, making it CSP-friendly. Avoid JIT in production.</p>"
+        },
+        {
+          "title": "Design Patterns for Large Apps",
+          "contentHtml": "<p><strong>Smart/Dumb Components</strong> — Separate data from presentation. <strong>Facade Pattern</strong> — A service sits between components and complex state, simplifying the interface. <strong>Repository Pattern</strong> — Abstract data access behind interfaces for testability. <strong>Adapter Pattern</strong> — Transform API responses into internal models at the service layer. <strong>Strategy Pattern</strong> — Use InjectionTokens to swap implementations at runtime.</p>"
+        }
+      ]
+    },
+    {
+      "id": "v21",
+      "intro": "Angular 21 (November 2025) is the current version. Angular 22 is expected May 2026. These updates represent the biggest shift in how Angular works since the framework's rewrite.",
+      "cards": [
+        {
+          "title": "🔥 Version Timeline & Status (April 2026)",
+          "contentHtml": "<p><span class=\"tag tag-r\">v21 — Active Support</span> <span class=\"tag tag-y\">v20 — LTS until ~Nov 2026</span> <span class=\"tag tag-p\">v19 — LTS expires May 2026</span> <span class=\"tag tag-b\">v22 — Expected May 2026</span></p>\n<p>Angular 18 and all earlier versions have reached end of life. If you're starting a new project, use Angular 21.</p>"
+        },
+        {
+          "title": "Signal Forms (Angular 21 — Experimental)",
+          "contentHtml": "<p>The biggest new feature in v21. Signal Forms are a completely reimagined forms API where form state is managed via Signals instead of RxJS Observables. They combine the simplicity of template-driven forms with the power of reactive forms.</p>\n<pre><code><span class=\"kw\">import</span> { form, field } <span class=\"kw\">from</span> <span class=\"st\">'@angular/forms/signal'</span>;\n\n<span class=\"kw\">export class</span> <span class=\"fn\">RegisterComponent</span> {\n  <span class=\"cm\">// Define form as a signal-based model</span>\n  registerForm = <span class=\"fn\">form</span>({\n    name: <span class=\"fn\">field</span>(<span class=\"st\">''</span>, { validators: [Validators.required] }),\n    email: <span class=\"fn\">field</span>(<span class=\"st\">''</span>, { validators: [Validators.required, Validators.email] }),\n    addresses: <span class=\"fn\">fieldArray</span>([\n      <span class=\"fn\">form</span>({ street: <span class=\"fn\">field</span>(<span class=\"st\">''</span>), city: <span class=\"fn\">field</span>(<span class=\"st\">''</span>) })\n    ])\n  });\n\n  <span class=\"cm\">// Read values reactively — no .valueChanges subscription needed!</span>\n  namePreview = <span class=\"fn\">computed</span>(() =&gt; <span class=\"kw\">this</span>.registerForm.controls.name.value());\n  isValid = <span class=\"fn\">computed</span>(() =&gt; <span class=\"kw\">this</span>.registerForm.valid());\n\n  <span class=\"fn\">onSubmit</span>() {\n    <span class=\"kw\">if</span> (<span class=\"kw\">this</span>.registerForm.valid()) {\n      console.log(<span class=\"kw\">this</span>.registerForm.value()); <span class=\"cm\">// signal-based!</span>\n    }\n  }\n}</code></pre>\n<h3>Why Signal Forms Matter</h3>\n<p><strong>No more <code>valueChanges.pipe(takeUntilDestroyed())</code></strong> — form state is just signals. Read them like any other signal. <strong>No more FormGroup/FormControl distinction confusion.</strong> Compound forms (groups) and repeating groups (arrays) are trivially simple. <strong>Type-safe by default.</strong></p>\n<div class=\"tip\">Signal Forms are <strong>experimental</strong> in v21. They're expected to stabilise in Angular 22. For production today, continue using Reactive Forms, but start learning Signal Forms — they're the future.</div>"
+        },
+        {
+          "title": "Zoneless Change Detection — Now the Default",
+          "contentHtml": "<p>In Angular 18, zoneless was experimental. In Angular 20.2, it became stable. <strong>In Angular 21, zoneless is the default for all new projects.</strong></p>\n<pre><code><span class=\"cm\">// Angular 21 — new projects are zoneless by default!</span>\n<span class=\"cm\">// No more Zone.js. No more monkey-patching.</span>\n<span class=\"cm\">// Change detection is driven entirely by signals.</span>\n\n<span class=\"cm\">// If migrating an existing project, use the schematic:</span>\nng generate @angular/core:zoneless\n\n<span class=\"cm\">// Or manually in app.config.ts:</span>\n<span class=\"kw\">export const</span> appConfig: ApplicationConfig = {\n  providers: [\n    <span class=\"fn\">provideZonelessChangeDetection</span>(), <span class=\"cm\">// stable in v21!</span>\n    <span class=\"cm\">// ...</span>\n  ]\n};</code></pre>\n<h3>What This Means In Practice</h3>\n<p><strong>~15KB smaller bundle</strong> (no zone.js). <strong>Faster INP (Interaction to Next Paint)</strong> — no monkey-patching overhead. <strong>Native async/await works perfectly</strong> — no more \"weird\" change detection bugs. <strong>Cleaner stack traces</strong> — no zone.js frames cluttering your debugger.</p>\n<div class=\"warn\">If you're migrating from zone-based to zoneless, ensure all your components use <strong>OnPush + signals or async pipe</strong>. Components relying on Zone.js to detect changes from setTimeout, Promise, or manual mutations will break without signals.</div>\n<div class=\"analogy\">Zone.js was like having a <strong>motion sensor in every room</strong> of your house that turned on all the lights whenever anyone moved anywhere. Zoneless is like having <strong>smart switches</strong> — each light only turns on when someone enters THAT specific room.</div>"
+        },
+        {
+          "title": "HttpClient Available by Default",
+          "contentHtml": "<p>In Angular 21, <code>HttpClient</code> is automatically available at the root level. No more <code>provideHttpClient()</code> boilerplate in app.config.ts for basic usage.</p>\n<pre><code><span class=\"cm\">// Before (Angular ≤20): Required manual setup</span>\n<span class=\"kw\">export const</span> appConfig = {\n  providers: [\n    <span class=\"fn\">provideHttpClient</span>(<span class=\"fn\">withInterceptors</span>([...])),\n  ]\n};\n\n<span class=\"cm\">// After (Angular 21): HttpClient is provided by default!</span>\n<span class=\"cm\">// Just inject and use it. Add interceptors only if needed.</span>\n<span class=\"kw\">export class</span> <span class=\"fn\">UserService</span> {\n  <span class=\"kw\">private</span> http = <span class=\"fn\">inject</span>(HttpClient);\n  <span class=\"cm\">// Works immediately, no setup required</span>\n}</code></pre>"
+        },
+        {
+          "title": "Vitest — New Default Test Runner",
+          "contentHtml": "<p>Angular 21 stabilises Vitest integration and makes it the default for new apps, replacing Karma/Jasmine.</p>\n<pre><code><span class=\"cm\">// Vitest runs zoneless by default — matching your app!</span>\n<span class=\"cm\">// Supports fake timers, snapshots, and parallelization.</span>\n\n<span class=\"cm\">// Migrate existing project:</span>\nng generate @angular/core:karma-to-vitest\n\n<span class=\"cm\">// Example test (looks similar but faster)</span>\n<span class=\"fn\">describe</span>(<span class=\"st\">'CartService'</span>, () =&gt; {\n  <span class=\"fn\">it</span>(<span class=\"st\">'should compute total'</span>, () =&gt; {\n    <span class=\"kw\">const</span> cart = TestBed.inject(CartService);\n    cart.items.set([{ price: <span class=\"nu\">10</span> }, { price: <span class=\"nu\">20</span> }]);\n    expect(cart.totalPrice()).toBe(<span class=\"nu\">30</span>);\n  });\n});</code></pre>\n<div class=\"tip\">Vitest is <strong>significantly faster</strong> than Karma, especially in large workspaces. It uses the <code>vi</code> object for mocking, supports ES modules natively, and runs in Node without a browser. If you're still on Karma, migrate now.</div>"
+        },
+        {
+          "title": "@angular/aria — Accessibility Components",
+          "contentHtml": "<p>Angular 21 introduces a new developer preview library: <code>@angular/aria</code>. It provides accessible directives implementing WAI-ARIA patterns out of the box.</p>\n<pre><code><span class=\"cm\">// Install</span>\nng add @angular/aria\n\n<span class=\"cm\">// Provides 8 UI patterns, 13 components including:</span>\n<span class=\"cm\">// - Tree view</span>\n<span class=\"cm\">// - Tabs</span>\n<span class=\"cm\">// - Accordion</span>\n<span class=\"cm\">// - Listbox</span>\n<span class=\"cm\">// - Dialog</span>\n<span class=\"cm\">// Each with keyboard navigation, focus management,</span>\n<span class=\"cm\">// ARIA attributes, and screen reader support built-in.</span>\n\n<span class=\"cm\">// These are UNSTYLED — designed as foundations for custom</span>\n<span class=\"cm\">// component libraries, not direct use in apps.</span></code></pre>\n<p>This is crucial for EU compliance — the European Accessibility Act requires digital products to meet accessibility standards.</p>"
+        },
+        {
+          "title": "Angular MCP Server & AI Tooling",
+          "contentHtml": "<p>Angular 21 integrates AI-assisted development directly into the CLI via the Model Context Protocol (MCP).</p>\n<pre><code><span class=\"cm\">// Start the MCP server</span>\nng mcp\nng mcp -E  <span class=\"cm\">// include experimental tools</span>\n\n<span class=\"cm\">// Available tools:</span>\n<span class=\"cm\">// - find_examples: curated code examples from Angular team</span>\n<span class=\"cm\">// - get_best_practices: Angular best practice guide</span>\n<span class=\"cm\">// - list_projects: lists workspace projects</span>\n<span class=\"cm\">// - search_documentation: searches official Angular docs</span>\n<span class=\"cm\">// - ai_tutor: interactive AI learning assistant</span>\n<span class=\"cm\">// - onpush_zoneless_migration: helps migrate to zoneless</span>\n<span class=\"cm\">// - modernize: migrate legacy code to modern Angular (experimental)</span>\n\n<span class=\"cm\">// Configure in your IDE (e.g., VS Code MCP settings):</span>\n{\n  <span class=\"st\">\"mcpServers\"</span>: {\n    <span class=\"st\">\"angular-cli\"</span>: {\n      <span class=\"st\">\"command\"</span>: <span class=\"st\">\"npx\"</span>,\n      <span class=\"st\">\"args\"</span>: [<span class=\"st\">\"-y\"</span>, <span class=\"st\">\"@angular/cli\"</span>, <span class=\"st\">\"mcp\"</span>]\n    }\n  }\n}</code></pre>"
+        },
+        {
+          "title": "Angular 20 Recap — What Graduated to Stable",
+          "contentHtml": "<p>Angular 20 (May 2025) was the \"graduation\" release where many experimental features became stable:</p>\n<ul>\n<li><strong>All signal primitives stable:</strong> <code>signal()</code>, <code>computed()</code>, <code>effect()</code>, <code>linkedSignal()</code>, signal-based queries (<code>viewChild()</code>, <code>contentChildren()</code>), and signal inputs (<code>input()</code>, <code>model()</code>)</li>\n<li><strong>Zoneless change detection stable</strong> (v20.2)</li>\n<li><strong>Template HMR (Hot Module Replacement) stable</strong> — edit templates and see changes instantly without full reload</li>\n<li><strong>Route-level render mode stable</strong> — configure SSR, SSG, or CSR per route</li>\n<li><strong>CDK drag-and-drop</strong> — mixed orientation support</li>\n<li><strong>OnPush moving toward default</strong> — Angular 22 is expected to make OnPush the default change detection strategy</li>\n</ul>"
+        },
+        {
+          "title": "Angular 22 — What's Coming (Expected May 2026)",
+          "contentHtml": "<p>Based on the Angular roadmap and community signals:</p>\n<ul>\n<li><strong>Selectorless components:</strong> Import components directly without string selectors — improves refactorability and type safety</li>\n<li><strong>Stable Signal Forms:</strong> Moving from experimental to stable/recommended</li>\n<li><strong>OnPush as default:</strong> New components will use OnPush change detection by default</li>\n<li><strong>TypeScript 5.9 support</strong></li>\n<li><strong>Signal debugging UI:</strong> Visual inspector for signal dependencies in DevTools</li>\n<li><strong>Karma-to-Vitest migration tool stable</strong></li>\n<li><strong>Enhanced AI/MCP tooling</strong> — deeper integration with agentic IDEs</li>\n</ul>\n<div class=\"deep\">The trajectory is clear: Angular is becoming a <strong>signals-first, zoneless, AI-assisted</strong> framework. Zone.js, NgModules, Karma, and RxJS-heavy patterns are being phased out in favour of signals, standalone components, Vitest, and MCP-powered tooling.</div>"
+        },
+        {
+          "title": "Critical Security CVEs (Late 2025)",
+          "contentHtml": "<p>Three CVEs were disclosed across the Angular platform — know these for interviews:</p>\n<ul>\n<li><strong>CVE-2025-59052</strong> (CVSS 7.1): Race condition in SSR pipeline that could leak request-scoped data between concurrent requests</li>\n<li><strong>CVE-2025-66035</strong> (CVSS 7.7): HttpClient could leak XSRF tokens via protocol-relative URLs</li>\n<li><strong>CVE-2025-66412</strong> (CVSS High): Stored XSS vulnerability in the template compiler related to SVG and MathML attribute sanitisation</li>\n</ul>\n<p>All patched in v19.2+, v20.x, and v21. This is why running EOL versions is dangerous.</p>"
+        }
+      ]
+    },
+    {
+      "id": "iq",
+      "intro": "100+ questions organized by difficulty. Click to reveal answers with memorable explanations.",
+      "cards": [],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is an Angular module (NgModule)?",
+          "answerHtml": "<p>An NgModule is a construct that gathers together components, directives, pipes, and services into cohesive blocks of functionality. Note: In modern Angular (v14+), Standalone Components reduce the need for NgModules.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "Why did Angular shift to Standalone Components?",
+          "answerHtml": "<p>To reduce boilerplate, simplify the learning curve, and make lazy-loading and tree-shaking more efficient by removing the NgModule abstraction layer.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is a decorator in Angular?",
+          "answerHtml": "<p>A decorator is a function that adds metadata to a class, its members, or its method arguments. Examples: @Component(), @Injectable(), @Input().</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What are the main building blocks of Angular?",
+          "answerHtml": "<p>Components, Templates, Directives, Pipes, Routing, and Services/Dependency Injection.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is string interpolation?",
+          "answerHtml": "<p>A way to bind a component property to a template, using double curly braces: `{{ propertyName }}`.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is property binding?",
+          "answerHtml": "<p>Binding a component property to a DOM property using square brackets: `[hidden]=\"isHidden\"`.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is event binding?",
+          "answerHtml": "<p>Listening to DOM events and executing a component method using parentheses: `(click)=\"save()\"`.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is two-way data binding?",
+          "answerHtml": "<p>A combination of property and event binding that syncs data between the component and the view. Uses the banana-in-a-box syntax: `[(ngModel)]=\"name\"`.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the purpose of the AppRoot component?",
+          "answerHtml": "<p>Usually `<app-root>`, it is the top-level component that bootstraps the application and holds the router outlet.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is angular.json?",
+          "answerHtml": "<p>The CLI configuration file containing workspace and project-specific settings for building, serving, test, and linting.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the package.json file?",
+          "answerHtml": "<p>An npm/node standard file that defines script commands and lists the libraries (dependencies) that the project needs to run.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is a pipe in Angular?",
+          "answerHtml": "<p>A function that takes in data as input and transforms it to a desired output format in the template. Example: `{{ date | date:\"shortDate\" }}`.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is ng-template?",
+          "answerHtml": "<p>An Angular element for rendering HTML. It is never displayed directly. It is typically used with structural directives (like *ngIf or *ngFor) which instantiate it.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is ng-container?",
+          "answerHtml": "<p>A logical container that does not render an extra element in the DOM. Extremely useful when you need to apply a structural directive (*ngIf) without wrapping the content in a <div>.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "How do you structure an Angular project?",
+          "answerHtml": "<p>Typically using a feature-based structure: Core folder (singletons), Shared folder (dumb components/pipes), and Feature folders (smart components and routing).</p>"
+        },
+        {
+          "level": "basic",
+          "question": "How do you create a component using the CLI?",
+          "answerHtml": "<p>`ng generate component my-comp` or `ng g c my-comp`.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is an environment file?",
+          "answerHtml": "<p>Used to store configuration variables targeting specific environments (like dev, staging, prod), swapped automatically during the build process.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the ngOnInit lifecycle hook?",
+          "answerHtml": "<p>A lifecycle hook that runs once after the first ngOnChanges. It is the best place to initialize data and make the first API calls.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the ngOnDestroy hook?",
+          "answerHtml": "<p>Runs right before the component is destroyed. This is critical for cleaning up things like RxJS subscriptions to prevent memory leaks.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is NgRx?",
+          "answerHtml": "<p>A reactive State Management library for Angular inspired by Redux, utilizing RxJS heavily.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is an NgRx Store?",
+          "answerHtml": "<p>A single, immutable data structure that represents the state of your entire application.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is an NgRx Action?",
+          "answerHtml": "<p>An object describing an event that has happened in the application, dispatched to the store. Created via `createAction`.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is an NgRx Reducer?",
+          "answerHtml": "<p>A pure function that takes the current state and a dispatched Action, and returns a new updated state object.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is an NgRx Selector?",
+          "answerHtml": "<p>Pure functions used for obtaining slices of store state. They memorize (cache) previous results for performance.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What are NgRx Effects?",
+          "answerHtml": "<p>A side effect model. They listen for actions dispatched from the store, perform operations (like API calls), and then dispatch new actions.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the NgRx Entity pattern?",
+          "answerHtml": "<p>A utility to manage collections of entities (lists of objects). It provides an adapter with CRUD operations and normalizes data into an `{ ids: [], entities: {} }` structure for rapid lookups.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is NgRx SignalStore?",
+          "answerHtml": "<p>A lightweight, fully functional state management solution built on Angular Signals. It requires no Actions or Reducers boilerplate and is the modern approach for local or global state in v17+.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When should you use Global State vs Local State?",
+          "answerHtml": "<p>Use Global (NgRx Store) for data shared across multiple distant components, user sessions, or cached API results. Use Local (ComponentStore/SignalStore) for data specific to a feature module or complex component.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you handle loading/error states in NgRx?",
+          "answerHtml": "<p>Typically by defining three distinct actions: `loadEntities`, `loadEntitiesSuccess`, and `loadEntitiesFailure`. The reducer updates `isLoading` and `error` flags accordingly.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the facade pattern in Angular component state?",
+          "answerHtml": "<p>A service that injects the Store and provides selected Observables/Signals and methods to dispatch actions. This hides NgRx complexity from the \"dumb\" UI components.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How does time-travel debugging work in Redux/NgRx?",
+          "answerHtml": "<p>Since the store state is immutable, every action creates a new snapshot. The Redux DevTools extension allows you to rewind and jump between these immutable state snapshots.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What happens if a reducer is not a pure function?",
+          "answerHtml": "<p>The state could mutate in place, leading to unpredictable bugs and preventing Angular from knowing if the state reference changed (breaking OnPush change detection).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the difference between switchMap and concatMap inside NgRx Effects?",
+          "answerHtml": "<p>`switchMap` cancels the previous inner observable if a new action arrives (good for GET requests/search). `concatMap` queues the inner observables in order (good for POST/PUT requests where order matters).</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you test NgRx code?",
+          "answerHtml": "<p>Reducers and Selectors are tested as pure functions. Effects are tested using `provideMockActions` and jasmine marbles (hot/cold observables). Components are tested by mocking the Store via `provideMockStore`.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the Angular TestBed?",
+          "answerHtml": "<p>A powerful unit testing utility that configures and initializes the environment for writing unit tests, creating a dynamic module for the component context.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is describe, beforeAll, beforeEach, it in Jasmine?",
+          "answerHtml": "<p>`describe` groups tests. `it` defines a specific test. `beforeEach` runs setup code before EVERY test in the block. `beforeAll` runs setup code ONCE for the block.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is MockComponent and why use it?",
+          "answerHtml": "<p>A dummy version of a child component used to isolate the parent component being tested. It prevents the test from failing due to child dependencies.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you test services with HTTP dependencies?",
+          "answerHtml": "<p>By injecting the `HttpTestingController` (via `provideHttpClientTesting()`). You can expect requests, flush them with mock data, and verify no outstanding requests remain.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What are Component Harnesses?",
+          "answerHtml": "<p>A concept from Angular CDK testing. It provides a robust API for interacting with components (like MatSelect) without relying on fragile CSS DOM selectors.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is a Spy in Jasmine/Jest?",
+          "answerHtml": "<p>A mocked function that tracks information about if and how it was called (arguments, call count) and allows you to fake its return value (`spyOn(obj, \"method\").and.returnValue()`).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you test a component with OnPush change detection?",
+          "answerHtml": "<p>Since `fixture.detectChanges()` might not work if inputs haven't changed, you often have to simulate the event or call `fixture.componentRef.setInput()` in newer Angular versions.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between fixture.debugElement and fixture.nativeElement?",
+          "answerHtml": "<p>`nativeElement` provides the raw DOM element. `debugElement` is an Angular wrapper that provides access to the component instance, directives, and custom query predicates (`By.css`).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you test Angular Signals?",
+          "answerHtml": "<p>Since signals are synchronous and pull-based, you simply set the signal (`mySignal.set(val)`) and assert the computed value or template output immediately after `detectChanges()`.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the fakeAsync zone?",
+          "answerHtml": "<p>It allows you to test asynchronous code (like `setTimeout` or Promises) in a synchronous way, by letting you manually advance time using `tick(ms)` or `flush()`, avoiding flaky asynchronous tests.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the difference between tick() and flush()?",
+          "answerHtml": "<p>`tick(ms)` advances the virtual clock by a specific amount of time. `flush()` advances time until the macrotask queue is completely empty.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How do you test an Angular Route Guard?",
+          "answerHtml": "<p>Extract the functional guard or class injectables into the test file, provide any required mock services (like AuthService), call the guard function directly, and check if it returns true, false, or a UrlTree.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why is NO_ERRORS_SCHEMA considered an anti-pattern?",
+          "answerHtml": "<p>It tells the compiler to ignore unrecognized elements and attributes. While it suppresses errors for missing child components, it also masks genuine typos (e.g., `<app-utten>` instead of `<app-button>`).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you test un-exported functions or private component states?",
+          "answerHtml": "<p>You shouldn't. Tests should verify the public API and observable side effects (DOM output, service calls) rather than brittle internal implementation details.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you mock the router in tests?",
+          "answerHtml": "<p>Use `provideRouter([])` with an empty config, or inject a mock object for `Router` via `provide({provide: Router, useValue: mockRouter})` and spy on its `navigate` or `navigateByUrl` methods.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is the Angular Compiler (Ivy)?",
+          "answerHtml": "<p>Ivy is the rendering engine in modern Angular. It compiles components into highly efficient DOM instructions at build time, significantly reducing bundle size.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What are tree-shakable providers (`providedIn: root`)?",
+          "answerHtml": "<p>By providing a service in `root`, Angular does not need it registered in any module. If the service is never injected anywhere, the bundler can safely drop its code from the final payload.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Explain Zone.js and its role in Angular.",
+          "answerHtml": "<p>Zone.js monkeys-patches standard async browser APIs (setTimeout, XHR, DOM events). When an async task completes, Zone.js tells Angular, which then triggers change detection from top to bottom (unless OnPush).</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What does \"Zone-less Angular\" mean?",
+          "answerHtml": "<p>In Angular 18+, with Signals and the `provideExperimentalZonelessChangeDetection()` API, Angular no longer needs Zone.js. It precisely tracks exactly which DOM nodes need updating via tracking signals.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is hydration vs destratification in SSR?",
+          "answerHtml": "<p>Hydration is attaching event listeners and state to server-rendered HTML. Angular 16 introduced Non-Destructive Hydration, which no longer destroys the DOM before recreating it.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is control flow migration in Angular 17?",
+          "answerHtml": "<p>Moving from structural directives (`*ngIf`, `*ngFor`) to built-in template syntax (`@if`, `@for`). It compiles much faster, performs better, and requires no module imports.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is Deferrable Views (`@defer`)?",
+          "answerHtml": "<p>A declarative way to lazy-load components directly in the template. `@defer (on viewport) { <heavy-chart /> }` will chunk the chart component and only load it when it scrolls into view.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What are esbuild and Vite doing in Angular 17+?",
+          "answerHtml": "<p>Webpack was replaced. Esbuild compiles JS/TS blazingly fast. Vite serves the local dev server using native ES modules for immediate updates without rebundling the whole app.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is a forwardRef and when do you need it?",
+          "answerHtml": "<p>A function that allows referencing a class before it has been fully defined. It's required when a class injects a service that is declared later in the file, or when a component implements `ControlValueAccessor` and provides itself.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is the Angular Injector hierarchy?",
+          "answerHtml": "<p>Angular has two injector trees: The ModuleInjector hierarchy (`@Injectable({providedIn: root/module})`) and the ElementInjector hierarchy (providers on the `@Component()` or `@Directive()`). Resolution starts at the Element and falls back to the Module.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Describe how `HostListener` and `HostBinding` work.",
+          "answerHtml": "<p>`@HostListener` binds to an event on the host element of the component/directive. `@HostBinding` binds a property of the class to an attribute/class/style of the host element.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is Dependency Injection Token (InjectionToken)?",
+          "answerHtml": "<p>A token used to inject non-class dependencies like string configs, interfaces, or plain objects into constructors because interfaces disappear at runtime in TypeScript.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How does Angular handle XSS attacks?",
+          "answerHtml": "<p>Angular considers all values untrusted and automatically sanitizes values depending on the context: HTML (escapes script tags), Style (blocks dangerous CSS), and URLs (prevents javascript: URIs).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you bypass Angular sanitization?",
+          "answerHtml": "<p>By injecting the `DomSanitizer` service and calling `bypassSecurityTrustHtml()`, `bypassSecurityTrustUrl()`, or `bypassSecurityTrustResourceUrl()`. Use sparingly!</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the difference between ViewChild and ContentChild?",
+          "answerHtml": "<p>`@ViewChild` accesses elements/components defined in the component's OWN template. `@ContentChild` accesses elements projected from the PARENT component via `<ng-content>`.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is `static: true` in ViewChild?",
+          "answerHtml": "<p>If `true`, Angular resolves the query BEFORE change detection runs, meaning the element must not be inside an `*ngIf`. Useful when injecting the element in `ngOnInit`.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How does Dependency Injection resolution work with `Host`, `Self`, `SkipSelf`, and `Optional` decorators?",
+          "answerHtml": "<p>`@Optional`: Returns null if not found. `@Self`: Looks ONLY on the current component. `@SkipSelf`: Starts looking from the parent component. `@Host`: Stops looking when it reaches the host component (the boundary of the custom element).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a Router Outlet?",
+          "answerHtml": "<p>A directive (`<router-outlet>`) that acts as a placeholder where the router should display the components corresponding to the active route.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What are intercepting routes?",
+          "answerHtml": "<p>Not native Angular terminology (that's Next.js). In Angular, we intercept HTTP requests via `HttpInterceptorFn`. It modifies outgoing requests (e.g., adding Auth tokens) or incoming responses (handling global errors).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a Resolver in routing?",
+          "answerHtml": "<p>A function that pre-fetches data before the route transition completes. The route will wait for the resolver observable to emit to prevent a blank UI.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is an Entry Component?",
+          "answerHtml": "<p>A component loaded imperatively by code (like a Modal or Dialog) rather than declared in a template. In Ivy (v9+), you no longer need to declare them in `entryComponents` arrays.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is APP_INITIALIZER?",
+          "answerHtml": "<p>An InjectionToken allowing you to run a function or Promise BEFORE the Angular app finishes bootstrapping. Great for loading initial config files.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Explain ChangeDetectionStrategy.OnPush.",
+          "answerHtml": "<p>Tells Angular to only check the component when its `@Input()` references change, an event originates from within the component, an async pipe emits, or the new Signal state changes. Vastly improves performance.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a TrackBy function?",
+          "answerHtml": "<p>Used with `*ngFor` (or the `track` block in `@for`). It tells Angular how to uniquely identify items. If the array reference changes, Angular only updates DOM nodes that actually changed instead of destroying and recreating the whole list.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you create a custom form control?",
+          "answerHtml": "<p>By implementing the `ControlValueAccessor` interface (`writeValue`, `registerOnChange`, `registerOnTouched`, `setDisabledState`) and providing it via the `NG_VALUE_ACCESSOR` token.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the ViewEncapsulation property?",
+          "answerHtml": "<p>It determines how styles are scoped to the component. `Emulated` (default) adds unique attributes to isolate styles. `None` applies them globally. `ShadowDom` uses native Shadow DOM.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is the purpose of `markForCheck()` vs `detectChanges()`?",
+          "answerHtml": "<p>`markForCheck()` flags the component and all its ancestors to be checked in the NEXT normal change detection run. `detectChanges()` forces an immediate, synchronous check of the component and its children.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is `ngDoCheck`?",
+          "answerHtml": "<p>A lifecycle hook that triggers on EVERY change detection cycle, regardless of whether inputs changed. Highly dangerous to use because it executes very frequently; only use it for tracking complex internal object mutations if absolutely necessary.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you dynamically load a component at runtime?",
+          "answerHtml": "<p>Using `ViewContainerRef.createComponent()`, passing the imported component class. It allows injecting the component into a specific #placeholder in the DOM.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is `effect()` in Angular Signals?",
+          "answerHtml": "<p>An operation that runs when one or more signals it reads change. Useful for bridging signals to non-signal code (like DOM APIs, logging, or setting up RxJS subjects).</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the difference between a Component and a Directive?",
+          "answerHtml": "<p>A Component is a Directive with a template. It is the building block of the UI, while a Directive (Attribute/Structural) adds behavior/appearance to an existing element.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is TypeScript and why does Angular use it?",
+          "answerHtml": "<p>TypeScript is a typed superset of JavaScript. Angular uses it for early error detection, better IDE tooling (intellisense), and to handle decorators and interfaces effectively.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the purpose of the `selector` in @Component?",
+          "answerHtml": "<p>It defines the CSS selector that identifies this component in a template (e.g., `<app-nav>`).</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the `providers` array in a component for?",
+          "answerHtml": "<p>It allows registering services at the component level (ElementInjector), creating a separate instance of the service for that component and its children.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the difference between `const` and `let` in TypeScript?",
+          "answerHtml": "<p>`const` is for values that won't be reassigned. `let` is for block-scoped variables that can be reassigned.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is an Interface?",
+          "answerHtml": "<p>A syntax for defining the structure of an object without implementing it. It exists only at compile-time for type checking.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the `constructor` used for in Angular components?",
+          "answerHtml": "<p>Primarily for Dependency Injection. Heavy initialization logic should be moved to `ngOnInit`.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "How do you handle user input in it template?",
+          "answerHtml": "<p>Using event binding, e.g., `(input)=\"onInput($event)\"`.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the `ngFor` trackBy function?",
+          "answerHtml": "<p>A function that returns a unique identifier for list items, preventing the entire list from re-rendering if only middle items change.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the purpose of `target` in tsconfig.json?",
+          "answerHtml": "<p>Specifies the ECMAScript version (e.g., ES2022) that the TypeScript compiler will output.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is \"Prop Drilling\" and how does NgRx solve it?",
+          "answerHtml": "<p>Passing data through multiple levels of components just to reach a child. NgRx allows components to \"select\" data directly from the store, bypassing intermediate parents.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is `patchState` in NgRx SignalStore?",
+          "answerHtml": "<p>A function that allows updating the state of a SignalStore in a type-safe way, merging the partial state into the current one.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you handle optimistic updates in NgRx?",
+          "answerHtml": "<p>Update the store immediately when an action is dispatched, and if the subsequent API call fails, dispatch a \"Failure\" action to revert (rollback) the state.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Compare ComponentStore vs Store vs SignalStore.",
+          "answerHtml": "<p>`Store` is for global, complex cross-feature state. `ComponentStore` is for complex local state using RxJS. `SignalStore` is the unified modern approach for both, utilizing Signals for performance.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a \"Container\" vs \"Presentational\" component pattern?",
+          "answerHtml": "<p>Containers (Smart) know about state/services. Presentational (Dumb) receive data via @Input and emit via @Output, making them highly reusable and testable.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you prevent circular dependencies in NgRx?",
+          "answerHtml": "<p>By isolating Actions and Selectors into separate files and using \"barrel\" imports carefully, or by using \"Feature State\" slices.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is NGRX Router Store?",
+          "answerHtml": "<p>A library that syncs the Angular Router state with the NgRx store, allowing you to use route parameters in your selectors.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is state normalization and why do it?",
+          "answerHtml": "<p>Storing data as flat objects indexed by IDs (like a database) instead of nested trees. It prevents data duplication and makes updates extremely fast via NgRx Entity.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What are \"Jasmine Marbles\"?",
+          "answerHtml": "<p>A testing syntax for RxJS observables using visual representations (`-`, `a`, `|`, `#`) to assert timing and values of hot/cold observables.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is `fixture.whenStable()` used?",
+          "answerHtml": "<p>It returns a promise that resolves when all pending asynchronous activities in the Angular Zone have completed.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you test a component that uses `@defer`?",
+          "answerHtml": "<p>By using the `ComponentFixture.getComponentDeferInstances()` API to manually trigger the different states (prefetch, loading, error, complete) of the deferred block.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the difference between `spyOn` and `jasmine.createSpyObj`?",
+          "answerHtml": "<p>`spyOn` mocks an existing method on a real object. `createSpyObj` generates a completely new mock object with specified methods.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you mock the `HttpClient`?",
+          "answerHtml": "<p>Using `HttpClientTestingModule` and `HttpTestingController` to intercept and flush requests.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Explain visual regression testing in Angular.",
+          "answerHtml": "<p>Taking screenshots of components/pages and comparing them pixel-by-pixel against reference images to detect UI changes (e.g., using Playwright or Applitools).</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is \"Integration Testing\" in the context of Angular?",
+          "answerHtml": "<p>Testing a component and its real child components together, rather than mocking all children (Shallow testing).</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the `trigger()` function in Angular animations?",
+          "answerHtml": "<p>It defines the name of the animation and the collection of states and transitions associated with it.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the `*` and `void` state in animations?",
+          "answerHtml": "<p>`void` is the state when an element is not in the DOM. `*` is a wildcard represents any state. Transition `void => *` happens when an element enters.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you create staggered animations?",
+          "answerHtml": "<p>Using the `stagger()` function within a `query()` to introduce a delay between multiple elements animating in a sequence.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Can you use CSS variables in Angular animations?",
+          "answerHtml": "<p>Yes, they can be accessed via `style({ transform: \"var(--my-var)\" })` within transitions.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you disable animations globally for tests?",
+          "answerHtml": "<p>By providing `NoopAnimationsModule` instead of `BrowserAnimationsModule` in the test setup.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the `i18n` attribute in templates?",
+          "answerHtml": "<p>A built-in attribute used to mark static text for translation. The Angular CLI extracts these into XLIFF files.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What are ICU expressions in Angular i18n?",
+          "answerHtml": "<p>Syntax used to handle pluralization (`plural`) and selection (`select`) based on variable values within a translation.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you swap languages at runtime?",
+          "answerHtml": "<p>Angular's built-in i18n is compile-time. For runtime translation, libraries like `@ngx-translate` or modern `@angular/localize` runtime strategies are used.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is a Manifest file in a PWA?",
+          "answerHtml": "<p>A JSON file (`manifest.webmanifest`) that tells the browser how the app should behave when installed (icons, theme color, splash screen).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How does `@angular/service-worker` handle updates?",
+          "answerHtml": "<p>It checks for a new `ngsw.json` file. If a new version is found, it downloads all assets in the background and prompts the user via `SwUpdate` service.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is \"Safety Worker\" in Angular PWA?",
+          "answerHtml": "<p>A tiny fallback service worker used to unregister old, problematic workers if a corruption is detected.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is Module Federation?",
+          "answerHtml": "<p>A Webpack/Esbuild feature that allows a host application to dynamically load compiled modules from a remote application at runtime.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What are Angular Elements?",
+          "answerHtml": "<p>Angular components packaged as custom elements (Web Components), allowing them to be used in any HTML environment (React, Vue, plain HTML).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is Content Security Policy (CSP)?",
+          "answerHtml": "<p>A security header that tells the browser which sources of scripts, styles, and images are trusted, preventing XSS attacks.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is the difference between JIT and AOT compilation?",
+          "answerHtml": "<p>JIT (Just-In-Time) compiles in the browser at runtime. AOT (Ahead-Of-Time) compiles during the build process. AOT is default and much faster/secure.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is \"PurgeCSS\" for Angular?",
+          "answerHtml": "<p>A tool that analyzes templates at build time to remove unused global CSS, reducing bundle size (often used with Tailwind).</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is \"Differential Loading\"?",
+          "answerHtml": "<p>Generating two sets of bundles: ES2015+ for modern browsers and ES5 for legacy ones, ensuring everyone gets the smallest possible code.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the `cdk/a11y` FocusTrap?",
+          "answerHtml": "<p>A utility that traps keyboard focus within a specific element (like a Dialog), preventing the user from tabbing out of it.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you handle Live Regions in Angular?",
+          "answerHtml": "<p>By using the `LiveAnnouncer` service from Angular CDK to announce dynamic changes (like errors or success messages) to screen readers.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the purpose of ARIA labels?",
+          "answerHtml": "<p>Accessible Rich Internet Applications labels provide descriptive text for elements that don't have a visible label (like icon-only buttons) for screen readers.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is \"Selectorless Components\"?",
+          "answerHtml": "<p>Proposed features where components don't require a tag name and can be instantiated strictly via code or routes.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the `linkedSignal()`?",
+          "answerHtml": "<p>A signal whose value is derived from another signal but can also be manually updated (writable computed signal).</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is \"Partial Hydration\" in Angular SSR?",
+          "answerHtml": "<p>A technique where only specific interactive parts of the page are hydrated, while static parts remain pure HTML to save JS execution time.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the `output()` function in v18+?",
+          "answerHtml": "<p>A signal-safe replacement for the `@Output()` decorator, using the new `output()` API for cleaner event emission.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the difference between `npm install` and `npm ci`?",
+          "answerHtml": "<p>`install` can update the lockfile. `ci` (Clean Install) is for automated environments; it requires a lockfile and deletes `node_modules` before fresh install.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is an \"Injection Context\"?",
+          "answerHtml": "<p>A period during execution where `inject()` can be used (e.g., in a constructor or a factory function).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you optimize an Angular app for the \"First Contentful Paint\" (FCP)?",
+          "answerHtml": "<p>Using SSR, critical CSS inlining, image lazy-loading, and route-based code splitting.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is \"Hydration Mismatch\"?",
+          "answerHtml": "<p>An error when the server-rendered HTML doesn't match the client-side initial state, causing Angular to destroy and recreate the DOM.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you implement a \"Micro-Frontend\" using Native Federation?",
+          "answerHtml": "<p>By using the `@angular-architects/native-federation` package, which uses standard browser import maps instead of Webpack-specific logic.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the purpose of `ngSrc` directive?",
+          "answerHtml": "<p>A directive for optimized image loading that automatically handles lazy loading, priority, and responsive sizing.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is Angular? How is it different from AngularJS?",
+          "answerHtml": "<p>Angular (2+) is a complete TypeScript-based rewrite. AngularJS used JavaScript, controllers, and $scope. Angular uses components, TypeScript, hierarchical DI, and is vastly faster due to AOT compilation. They share nothing except the name.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is a component?",
+          "answerHtml": "<p>A reusable UI building block combining a TypeScript class (logic), an HTML template (view), and CSS (styles), linked by the <code>@Component()</code> decorator.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What are the four types of data binding?",
+          "answerHtml": "<p><strong>Interpolation</strong> <code>{{ }}</code>: display data. <strong>Property binding</strong> <code>[ ]</code>: set element properties. <strong>Event binding</strong> <code>( )</code>: react to actions. <strong>Two-way binding</strong> <code>[( )]</code>: read and write simultaneously.</p><div class=\"analogy\">[square brackets] = data goes IN. (parentheses) = data comes OUT. [(banana in a box)] = both directions."
+        },
+        {
+          "level": "basic",
+          "question": "What is the difference between ngOnInit and the constructor?",
+          "answerHtml": "<p>The <strong>constructor</strong> is a TypeScript/JS feature. Use it only for DI. <strong>ngOnInit</strong> is an Angular lifecycle hook called after inputs are set. Use it for API calls, subscriptions, and setup logic.</p><div class=\"analogy\">Constructor = you're born (only get your name). ngOnInit = first day of school (now you can start learning)."
+        },
+        {
+          "level": "basic",
+          "question": "What are directives? Name the three types.",
+          "answerHtml": "<p><strong>Component directives</strong> — components are directives with templates. <strong>Structural directives</strong> — add/remove DOM elements (<code>*ngIf</code>, <code>*ngFor</code>). <strong>Attribute directives</strong> — change appearance/behavior (<code>ngClass</code>, <code>ngStyle</code>).</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What are pipes? Give examples.",
+          "answerHtml": "<p>Pipes transform displayed data in templates without changing the underlying data. Built-in: <code>date</code>, <code>currency</code>, <code>uppercase</code>, <code>lowercase</code>, <code>percent</code>, <code>json</code>, <code>async</code>, <code>slice</code>, <code>keyvalue</code>, <code>titlecase</code>.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is a service in Angular?",
+          "answerHtml": "<p>A class decorated with <code>@Injectable()</code> that encapsulates reusable logic — API calls, auth, caching, logging. Typically singleton when provided in root. Services keep components lean.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is dependency injection?",
+          "answerHtml": "<p>A design pattern where classes receive their dependencies from the outside instead of creating them. Angular's DI system automatically creates, manages, and provides service instances.</p><div class=\"analogy\">Without DI: you cook every meal yourself. With DI: you call room service and it brings exactly what you need."
+        },
+        {
+          "level": "basic",
+          "question": "What is the Angular CLI?",
+          "answerHtml": "<p>A command-line tool (<code>ng</code>) that scaffolds projects, generates components/services, serves dev builds, runs tests, and builds for production. It enforces best practices and consistent structure.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the purpose of NgModule?",
+          "answerHtml": "<p>NgModule was the original way to group related components, directives, and pipes. It declares what belongs together, what to import, and what to export. Since Angular 14, standalone components replace the need for modules in most cases.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is interpolation?",
+          "answerHtml": "<p>Double curly braces <code>{{ expression }}</code> that evaluate a TypeScript expression and render the result as text in the DOM. Supports property access, ternary operators, pipe calls, and method calls (though methods should be avoided for performance).</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is *ngIf and how does @if differ?",
+          "answerHtml": "<p><code>*ngIf</code> is a structural directive that conditionally adds/removes an element from the DOM. <code>@if</code> (Angular 17+) is the new built-in control flow syntax — same function, but it's built into the template compiler (better performance, type narrowing, no extra import needed).</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is a template reference variable?",
+          "answerHtml": "<p>Declared with <code>#</code> syntax: <code>&lt;input #nameInput&gt;</code>. It gives you a reference to the DOM element or component instance, usable within the template: <code>(click)=\"greet(nameInput.value)\"</code>.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the async pipe?",
+          "answerHtml": "<p><code>| async</code> subscribes to an Observable or Promise in the template and automatically unsubscribes when the component is destroyed. It also triggers change detection on new values. It's the preferred way to handle async data.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is a standalone component?",
+          "answerHtml": "<p>A component with <code>standalone: true</code> that declares its own imports directly in the decorator, without needing an NgModule. This is the default and recommended approach since Angular 14.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the difference between [class] and [ngClass]?",
+          "answerHtml": "<p><code>[class.active]=\"isActive\"</code> toggles a single class. <code>[ngClass]</code> accepts strings, arrays, or objects to manage multiple classes. For one class, use <code>[class.x]</code>. For complex logic, use <code>[ngClass]</code>.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Explain change detection in Angular.",
+          "answerHtml": "<p>Zone.js monitors all async operations. When any complete, Angular runs change detection from the root component downward, comparing binding values. If different, it updates the DOM. OnPush strategy limits checks to input reference changes, internal events, async pipe emissions, or manual triggers.</p><div class=\"analogy\">Default = a paranoid guard checking every room every 5 minutes. OnPush = a smart alarm that only alerts when a specific door opens."
+        },
+        {
+          "level": "intermediate",
+          "question": "What is OnPush change detection? When should you use it?",
+          "answerHtml": "<p>OnPush tells Angular to skip checking this component unless: an @Input reference changes, an event fires inside it, an Observable emits via async pipe, a signal changes, or markForCheck() is called. Use it on <strong>every component</strong> — it's the single biggest performance optimisation.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Template-driven vs reactive forms — when use which?",
+          "answerHtml": "<p><strong>Template-driven</strong>: Logic in HTML via ngModel. Good for simple forms (login, search). <strong>Reactive</strong>: Logic in TypeScript via FormGroup/FormControl. Good for complex forms (multi-step, dynamic fields, custom validation). Reactive forms are easier to test because logic is in TypeScript.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Explain switchMap vs mergeMap vs concatMap vs exhaustMap.",
+          "answerHtml": "<p><strong>switchMap</strong>: cancels previous, uses latest. (Search typeahead) <strong>mergeMap</strong>: runs all in parallel. (File uploads) <strong>concatMap</strong>: sequential queue. (Ordered saves) <strong>exhaustMap</strong>: ignores new until current finishes. (Login button — prevents double-submit)</p><div class=\"analogy\">switchMap = \"Cancel my burger, I want pizza.\" mergeMap = \"Cook burger AND pizza simultaneously.\" concatMap = \"Finish the burger, then start pizza.\" exhaustMap = \"I'm still eating, ignore new orders.\""
+        },
+        {
+          "level": "intermediate",
+          "question": "What are route guards? List all types.",
+          "answerHtml": "<p><strong>canActivate</strong> — can user enter this route? <strong>canDeactivate</strong> — can user leave? (unsaved changes) <strong>canActivateChild</strong> — protect all children. <strong>canMatch</strong> — should this route definition even be considered? <strong>resolve</strong> — pre-fetch data before activation.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is lazy loading and why does it matter?",
+          "answerHtml": "<p>Lazy loading splits your app into chunks loaded on demand. Instead of downloading the entire app upfront, users only get the code for the current page. Implemented with <code>loadComponent</code> or <code>loadChildren</code>. Dramatically reduces initial load time.</p><div class=\"analogy\">Like Netflix: you stream the episode you're watching, not the entire catalog."
+        },
+        {
+          "level": "intermediate",
+          "question": "What is content projection (ng-content)?",
+          "answerHtml": "<p>Allows parent components to inject HTML into child component slots. Single-slot uses <code>&lt;ng-content /&gt;</code>. Multi-slot uses <code>select</code> attribute to target named slots. Essential for reusable wrappers like cards, modals, and tabs.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What are interceptors? Give real examples.",
+          "answerHtml": "<p>HTTP middleware that intercepts every request/response. Real uses: attach JWT tokens, global error handling (catch 401 → redirect to login), loading spinners, response caching, request retry logic, logging.</p><div class=\"analogy\">Like airport security: every passenger (request) passes through, gets checked, and potentially modified — without individual gates knowing."
+        },
+        {
+          "level": "intermediate",
+          "question": "What is ViewEncapsulation?",
+          "answerHtml": "<p><strong>Emulated</strong> (default): Scopes CSS via attribute selectors — styles don't leak out, but global styles can leak in. <strong>ShadowDom</strong>: Native Shadow DOM — complete isolation. <strong>None</strong>: No encapsulation — styles become global.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Explain the difference between Subject, BehaviorSubject, and ReplaySubject.",
+          "answerHtml": "<p><strong>Subject</strong>: No initial value. Late subscribers miss past emissions. <strong>BehaviorSubject</strong>: Has current value. New subscribers get the latest immediately. <strong>ReplaySubject</strong>: Buffers N past values. New subscribers get the replay. <strong>AsyncSubject</strong>: Only emits the last value on completion.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is trackBy (track) and why does it matter?",
+          "answerHtml": "<p>When Angular re-renders a list, it needs to know which items changed. Without tracking, it destroys and recreates all DOM elements. With <code>track item.id</code>, Angular reuses existing elements and only updates changed ones. Huge performance win for lists.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How does Angular handle security (XSS, CSRF)?",
+          "answerHtml": "<p><strong>XSS</strong>: Angular sanitizes all template bindings by default, stripping dangerous content from innerHTML, style, and URL bindings. <strong>CSRF</strong>: HttpClient auto-reads XSRF-TOKEN cookie and sends it as X-XSRF-TOKEN header.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is ng-container and when do you use it?",
+          "answerHtml": "<p><code>ng-container</code> is a grouping element that doesn't get rendered to the DOM. Use it when you need a structural directive but don't want an extra wrapper element. Common uses: wrapping multiple elements with *ngIf, combining *ngIf and *ngFor on the same content.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the purpose of environment files?",
+          "answerHtml": "<p>Environment files store configuration that varies between builds: API URLs, feature flags, analytics keys. Angular's build system swaps them at compile time. Use <code>fileReplacements</code> in <code>angular.json</code> to map <code>environment.ts</code> to <code>environment.prod.ts</code>.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Pure vs impure pipes — what's the difference?",
+          "answerHtml": "<p><strong>Pure</strong> (default): Only re-runs when the input reference changes. Efficient, works with immutable data. <strong>Impure</strong>: Re-runs on every change detection cycle. Needed to detect mutations inside arrays/objects, but very expensive. Prefer pure pipes + immutable updates.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How do you share data between unrelated components?",
+          "answerHtml": "<p><strong>1. Shared service</strong> with BehaviorSubject or signal — components inject the same service and read/write to the shared state. <strong>2. NgRx/SignalStore</strong> for complex state. <strong>3. Route params/query params</strong> for URL-driven state. The service approach covers 90% of cases.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What are resolvers?",
+          "answerHtml": "<p>Resolvers pre-fetch data before a route activates. The component receives the data immediately, avoiding loading states. Implemented as functions returning Observables, Promises, or plain values.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is AOT vs JIT compilation?",
+          "answerHtml": "<p><strong>AOT (Ahead-of-Time)</strong>: Templates compiled during build. Smaller bundles, faster rendering, catches template errors at build time. Used in production. <strong>JIT (Just-in-Time)</strong>: Templates compiled in the browser at runtime. Larger bundles, slower startup. Only used during development (and rarely now).</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between @ViewChild and @ContentChild?",
+          "answerHtml": "<p><code>@ViewChild</code> queries elements in the component's own template. <code>@ContentChild</code> queries elements projected via <code>ng-content</code> from the parent. ViewChild is available in <code>ngAfterViewInit</code>; ContentChild in <code>ngAfterContentInit</code>.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How do you create a custom structural directive?",
+          "answerHtml": "<p>Inject <code>TemplateRef</code> and <code>ViewContainerRef</code>. Based on your condition, call <code>viewContainer.createEmbeddedView(templateRef)</code> to show or <code>viewContainer.clear()</code> to hide. Use an <code>@Input</code> setter to react to condition changes.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is pathMatch: 'full' vs 'prefix'?",
+          "answerHtml": "<p><code>prefix</code> (default): Matches if the URL <strong>starts with</strong> the path. <code>full</code>: Matches only if the <strong>entire</strong> URL matches. Critical for redirects: <code>{ path: '', redirectTo: '/home', pathMatch: 'full' }</code> — without 'full', every URL would match the empty string prefix.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the host property in @Component?",
+          "answerHtml": "<p>The <code>host</code> property lets you bind classes, attributes, styles, and events directly to the component's host element (the custom HTML tag itself), without needing a wrapper <code>&lt;div&gt;</code> in the template.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is forRoot() vs forChild() pattern?",
+          "answerHtml": "<p>A convention for configuring NgModules. <code>forRoot()</code> provides services as singletons in the root module. <code>forChild()</code> provides only declarations, no singleton services. Prevents duplicate service instances in lazy-loaded modules. With standalone, <code>provideRouter()</code> and <code>provideHttpClient()</code> replace this pattern.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Explain Angular's hierarchical DI system in depth.",
+          "answerHtml": "<p>Two parallel trees: <strong>Environment injector tree</strong> (Root → Platform → lazy route injectors) and <strong>Element injector tree</strong> (mirrors component tree). Resolution walks up the element tree first, then the environment tree. Modifiers: <code>@Self</code>, <code>@SkipSelf</code>, <code>@Optional</code>, <code>@Host</code> control where to look. Providers can use <code>useClass</code>, <code>useValue</code>, <code>useFactory</code>, <code>useExisting</code>.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What are Angular Signals and how do they change the framework?",
+          "answerHtml": "<p>Signals are synchronous reactive primitives: <code>signal()</code> (writable), <code>computed()</code> (derived), <code>effect()</code> (side effects). Unlike RxJS, they always have a current value and don't need subscriptions. They enable fine-grained reactivity where only components reading a changed signal update. Long-term, they'll replace Zone.js entirely.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Explain Zone.js and what happens without it.",
+          "answerHtml": "<p>Zone.js monkey-patches all async APIs (setTimeout, Promise, addEventListener, XHR, fetch). It creates execution contexts that track async tasks, allowing Angular to know when to run change detection. Without it (zoneless mode), you rely on signals and explicit notifications. Benefits: ~15KB smaller bundle, cleaner stack traces, no monkey-patching quirks.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How does SSR and hydration work in Angular?",
+          "answerHtml": "<p>Angular Universal renders on the server → sends HTML to browser → fast FCP + SEO. <strong>Hydration</strong> (v16+): Instead of destroying server DOM and rebuilding, Angular \"attaches\" to existing nodes. <strong>Incremental hydration</strong> (v19+): Combines @defer with SSR — server renders HTML, but JS for deferred blocks loads only when triggered.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you optimize a large Angular application?",
+          "answerHtml": "<p><strong>1.</strong> OnPush everywhere. <strong>2.</strong> Lazy load routes. <strong>3.</strong> @defer for heavy components. <strong>4.</strong> track by ID in @for. <strong>5.</strong> Virtual scrolling for long lists. <strong>6.</strong> Preload lazy chunks. <strong>7.</strong> Signals over BehaviorSubject. <strong>8.</strong> SSR with hydration. <strong>9.</strong> Bundle analysis. <strong>10.</strong> Web Workers for heavy computation. <strong>11.</strong> Avoid function calls in templates. <strong>12.</strong> Use CDK's scrolling and drag-drop modules.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the inject() function vs constructor injection?",
+          "answerHtml": "<p><code>inject()</code> works in field initializers, constructors, and factory functions. Advantages: enables composable utility functions, works in functional guards/interceptors, cleaner syntax. Limitation: can only be called during construction (injection context), not in methods called later.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the difference between markForCheck() and detectChanges()?",
+          "answerHtml": "<p><code>markForCheck()</code>: Marks this component and all ancestors as dirty. Change detection will check them on the next cycle. Respects the normal top-down CD flow. <code>detectChanges()</code>: Immediately triggers CD for this component and its children, right now. Use sparingly — it breaks the normal flow and can cause issues.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Explain InjectionToken and when you'd use it.",
+          "answerHtml": "<p><code>InjectionToken</code> provides DI for non-class values (strings, numbers, objects, functions). Use cases: API URLs, configuration objects, feature flags, abstract interfaces. Tokens can include a factory function for tree-shakable defaults.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How does Angular animation work under the hood?",
+          "answerHtml": "<p>Angular animations use the Web Animations API under the hood. The <code>@angular/animations</code> module provides a declarative DSL: <code>trigger</code> defines an animation name, <code>state</code> defines named states with styles, <code>transition</code> defines how to animate between states, <code>animate</code> specifies duration/easing/delay. Complex features include <code>query</code> (animate children), <code>stagger</code> (delayed sequential animations), and <code>group</code> (parallel animations).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Explain deferrable views (@defer) and their impact on performance.",
+          "answerHtml": "<p><code>@defer</code> enables component-level code splitting in templates. The deferred component's code is split into a separate chunk and loaded when triggered (viewport, idle, interaction, hover, timer, or boolean condition). Supports @placeholder, @loading (with minimum duration to prevent flicker), and @error blocks. Replaces complex lazy loading patterns for many use cases.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the resource() API?",
+          "answerHtml": "<p><code>resource()</code> is a signal-based API for async data fetching. It takes a <code>request</code> function (returns params derived from signals) and a <code>loader</code> function (fetches data). It auto-refetches when request signal dependencies change and provides <code>.value()</code>, <code>.isLoading()</code>, <code>.error()</code>, and <code>.status()</code> signals. <code>rxResource()</code> is the Observable-based variant.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is linkedSignal?",
+          "answerHtml": "<p><code>linkedSignal</code> (Angular 19+) creates a writable signal that auto-resets when its source signal changes, but can also be set manually. Use case: a selected tab that resets to the first tab when the tab list changes, but the user can still click to select a different one.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you handle complex state management?",
+          "answerHtml": "<p><strong>Level 1 — Service + Signals:</strong> For most apps. Simple, testable. <strong>Level 2 — NgRx SignalStore:</strong> Structured store with features. <strong>Level 3 — NgRx Store (Redux):</strong> Actions, reducers, effects, selectors. Maximum predictability for very large apps. Don't reach for NgRx until services become hard to reason about.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What are Angular schematics?",
+          "answerHtml": "<p>Schematics are code generators/transformers used by the CLI. They describe changes to a file tree (create, modify, delete files). Libraries use <code>ng add</code> schematics for auto-setup, and <code>ng update</code> schematics for migrations. You can create custom schematics for your team's patterns.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Explain how Angular handles i18n.",
+          "answerHtml": "<p>Angular's built-in i18n uses <code>i18n</code> attribute on elements. At build time, Angular extracts marked text into XLIFF/XMB files for translation. It builds a separate bundle per locale — each is a fully compiled app. Supports pluralization and ICU expressions. Alternative: runtime libraries like ngx-translate or Transloco for single-bundle translations.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What design patterns do you use in Angular architecture?",
+          "answerHtml": "<p><strong>Smart/Dumb</strong> — Separate data from presentation. <strong>Facade</strong> — Simplify complex service interactions. <strong>Repository</strong> — Abstract data access for testability. <strong>Adapter</strong> — Transform API data at the boundary. <strong>Strategy</strong> — Swap implementations via InjectionTokens. <strong>Observer</strong> — RxJS Observables/Subjects. <strong>Mediator</strong> — Central service coordinating sibling components.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a multi-provider and when would you use it?",
+          "answerHtml": "<p>Setting <code>multi: true</code> on a provider lets multiple providers for the same token coexist. Instead of overriding, Angular collects all into an array. Use cases: multiple HTTP interceptors, multiple validators, plugin systems where multiple implementations register themselves.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you implement a custom form control (ControlValueAccessor)?",
+          "answerHtml": "<p>Implement <code>ControlValueAccessor</code> interface with 4 methods: <code>writeValue()</code> — receive value from form. <code>registerOnChange()</code> — store callback to push changes. <code>registerOnTouched()</code> — store callback for blur/touched. <code>setDisabledState()</code> — handle disabled. Register as <code>NG_VALUE_ACCESSOR</code> provider. This makes custom components work with ngModel and formControl.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Explain ExpressionChangedAfterItHasBeenChecked error.",
+          "answerHtml": "<p>Angular runs change detection twice in dev mode (the second is a verification pass). If a binding's value changes between the two runs, you get this error. Common causes: modifying state in ngAfterViewInit, modifying parent state from child lifecycle hooks. Fixes: use setTimeout, move logic to ngOnInit, or use signals which batch updates correctly.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is withComponentInputBinding() and why is it useful?",
+          "answerHtml": "<p>A router feature that automatically binds route params, query params, and resolved data to matching component <code>@Input()</code> properties. Instead of injecting ActivatedRoute and extracting params manually, the router does it for you. Cleaner, less boilerplate, works with signal inputs too.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the Renderer2 and when would you use it?",
+          "answerHtml": "<p><code>Renderer2</code> is an abstraction over DOM manipulation. Instead of directly accessing <code>nativeElement</code>, use Renderer2 methods (<code>addClass</code>, <code>setStyle</code>, <code>setAttribute</code>, <code>listen</code>). Benefits: platform-agnostic (works in SSR, Web Workers), testable, and secure (avoids direct DOM access that bypasses sanitization).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What are Angular elements (custom elements)?",
+          "answerHtml": "<p>Angular Elements lets you package Angular components as standard Web Components (Custom Elements). They can be used in any HTML page, even without Angular. Use <code>createCustomElement()</code> from <code>@angular/elements</code>. Great for: micro-frontends, embeddable widgets, gradual migration from other frameworks.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the DestroyRef and takeUntilDestroyed?",
+          "answerHtml": "<p><code>DestroyRef</code> (Angular 16+) provides a way to register cleanup callbacks. <code>takeUntilDestroyed()</code> is a pipe operator that automatically completes an Observable when the component/service is destroyed. It's the cleanest way to handle unsubscription, replacing the Subject + takeUntil pattern.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between providedIn: 'root' and providing in a component?",
+          "answerHtml": "<p><code>providedIn: 'root'</code>: One singleton instance for the entire app. Tree-shakable if unused. <code>providers: [Service]</code> in a component: Creates a new instance for each instance of that component and its descendants. Use component-level for services that should NOT be shared globally.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How do you handle errors in HTTP requests?",
+          "answerHtml": "<p><strong>Component level:</strong> <code>catchError</code> operator in the pipe chain. <strong>Global level:</strong> Error interceptor that catches specific status codes (401 → login redirect, 500 → error page). <strong>Retry:</strong> <code>retry({ count: 3, delay: 1000 })</code> for transient failures. Always transform errors into user-friendly messages.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is *ngFor and how does @for differ?",
+          "answerHtml": "<p><code>*ngFor</code> is a structural directive for iterating arrays. <code>@for</code> (Angular 17+) is the new built-in control flow — same purpose but compiled by Angular's template compiler for better performance. <code>@for</code> requires <code>track</code> and supports <code>@empty</code> blocks.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is two-way data binding and how does it work?",
+          "answerHtml": "<p>Two-way binding combines property binding and event binding. <code>[(ngModel)]=\"name\"</code> is shorthand for <code>[ngModel]=\"name\" (ngModelChange)=\"name = $event\"</code>. It syncs the model and the view — when either changes, the other updates.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is ngTemplateOutlet?",
+          "answerHtml": "<p><code>ngTemplateOutlet</code> instantiates an ng-template with an optional context object. It lets you render templates dynamically and pass data via context. Use cases: customisable table rows, configurable list item templates, dynamic form layouts.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the async/await equivalent in Angular (with Observables)?",
+          "answerHtml": "<p>Use <code>firstValueFrom()</code> or <code>lastValueFrom()</code> to convert Observables to Promises: <code>const user = await firstValueFrom(this.http.get('/api/user'))</code>. However, the RxJS pipe approach is usually better because it supports cancellation, retry, and composition.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a dynamic component and how do you create one?",
+          "answerHtml": "<p>Use <code>ViewContainerRef.createComponent()</code> to instantiate components programmatically at runtime. Pass a component class reference. Set inputs via <code>componentRef.setInput()</code>. Use cases: modals, dynamic form fields, plugin architectures. With @defer, many dynamic component use cases are now simpler.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is tree-shaking and how does Angular support it?",
+          "answerHtml": "<p>Tree-shaking removes unused code from the final bundle. Angular supports it through: <code>providedIn: 'root'</code> (services only included if imported), standalone components (only bundled when imported), and AOT compilation (dead code analysis at build time). The build tool (esbuild/webpack) performs the actual tree-shaking.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you implement a global error handler?",
+          "answerHtml": "<p>Provide a custom <code>ErrorHandler</code>: <code>{ provide: ErrorHandler, useClass: GlobalErrorHandler }</code>. The <code>handleError(error)</code> method catches all unhandled errors. Use it for: logging to external services (Sentry, DataDog), showing user-friendly error toasts, tracking error metrics. Combine with HTTP error interceptor for API errors.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the router-outlet?",
+          "answerHtml": "<p><code>&lt;router-outlet&gt;</code> is a placeholder directive where the router renders matched components. You can have multiple named outlets for auxiliary routes: <code>&lt;router-outlet name=\"sidebar\"&gt;</code>. The component rendered inside changes based on the current URL.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between forwardRef and regular references?",
+          "answerHtml": "<p><code>forwardRef()</code> lets you reference a class that hasn't been defined yet (declared later in the file). TypeScript/JavaScript normally requires classes to be defined before they're referenced. Common use: circular dependencies, NG_VALUE_ACCESSOR providers referencing the component class being defined.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Explain the difference between effect() and computed() in signals.",
+          "answerHtml": "<p><code>computed()</code> derives a new value from other signals — it's pure, has no side effects, and is lazy (only recalculates when read). <code>effect()</code> runs side effects when signals change — logging, API calls, DOM manipulation. Key rule: never write to signals inside computed(), but you can inside effect() (though it's discouraged).</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is signal-based change detection (zoneless)?",
+          "answerHtml": "<p>In zoneless Angular, there's no Zone.js. Change detection is driven entirely by signals. When a signal changes, Angular schedules an update only for components that read that signal. This is true fine-grained reactivity — no more checking the entire tree. Enable with <code>provideExperimentalZonelessChangeDetection()</code>.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the CDK (Component Dev Kit)?",
+          "answerHtml": "<p>The CDK provides behavior primitives without opinionated styling: virtual scrolling, drag-and-drop, overlays (dialogs, tooltips), accessibility (focus trap, live announcer), clipboard, layout (breakpoint observer). It's the foundation Angular Material is built on, but you can use it with any design system.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you implement micro-frontends with Angular?",
+          "answerHtml": "<p>Options: <strong>1. Module Federation</strong> (webpack) — share dependencies at runtime between separately deployed Angular apps. <strong>2. Angular Elements</strong> — wrap components as Web Components, embed in any shell app. <strong>3. Native Federation</strong> — framework-agnostic alternative using import maps. <strong>4. Single-SPA</strong> — orchestrate multiple framework apps. Challenges: shared state, routing coordination, dependency versioning.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What are Signal Forms in Angular 21? How do they differ from Reactive Forms?",
+          "answerHtml": "<p>Signal Forms (experimental in v21) replace RxJS-based form state with signals. Instead of <code>new FormGroup()</code>, you use a <code>form()</code> function that wraps a signal model. Form values, validity, dirty/touched state are all signals — read them directly with <code>.value()</code>, <code>.valid()</code>. No more <code>valueChanges.subscribe()</code> or <code>takeUntilDestroyed()</code>. They combine the simplicity of template-driven forms with the power of reactive forms while being fully type-safe.</p><div class=\"analogy\">Reactive Forms = you subscribe to a newspaper and wait for delivery. Signal Forms = the newspaper is always on your desk, automatically updated — you just look at it whenever you want."
+        },
+        {
+          "level": "intermediate",
+          "question": "What does \"zoneless Angular\" mean and why is it the default in v21?",
+          "answerHtml": "<p>Zoneless means Angular no longer depends on Zone.js to detect changes. Instead, change detection is driven entirely by signals. When a signal changes, only components reading that signal update. Benefits: ~15KB smaller bundle, faster INP (Interaction to Next Paint), native async/await without issues, cleaner stack traces. Angular 21 makes this the default for new projects because all signal primitives became stable in v20.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How do you migrate an existing Angular app from Zone.js to zoneless?",
+          "answerHtml": "<p><strong>1.</strong> Run <code>ng generate @angular/core:zoneless</code> schematic. <strong>2.</strong> Ensure all components use <code>OnPush</code> change detection. <strong>3.</strong> Replace manual state mutations with signals. <strong>4.</strong> Replace <code>.subscribe()</code> in components with <code>async</code> pipe or signal-based patterns. <strong>5.</strong> Replace <code>provideZoneChangeDetection()</code> with <code>provideZonelessChangeDetection()</code>. <strong>6.</strong> Remove <code>zone.js</code> from polyfills. <strong>7.</strong> Test thoroughly — any component relying on Zone.js auto-detection will need manual updates.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is Vitest and why did Angular 21 adopt it over Karma?",
+          "answerHtml": "<p>Vitest is a Vite-native test runner that's significantly faster than Karma/Jasmine. Angular 21 makes it the default because: it runs zoneless by default (matching the new runtime), supports modern features like fake timers, snapshots, and parallelisation, uses the intuitive <code>vi</code> mocking API, and doesn't require a browser to run. Migrate existing projects with <code>ng generate @angular/core:karma-to-vitest</code>.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the Angular MCP Server?",
+          "answerHtml": "<p>The MCP (Model Context Protocol) Server bridges your Angular codebase with AI models like Gemini or Claude. Launched via <code>ng mcp</code>, it provides tools: <code>find_examples</code> (curated code examples), <code>get_best_practices</code> (Angular best practices), <code>ai_tutor</code> (interactive learning), <code>search_documentation</code> (official docs search), <code>onpush_zoneless_migration</code> (migration help), and <code>modernize</code> (legacy code modernisation). It enables context-aware AI code generation that understands YOUR project structure.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is @angular/aria?",
+          "answerHtml": "<p>A new library (developer preview in v21) providing unstyled, accessible UI directives implementing WAI-ARIA patterns. Includes tree views, tabs, accordions, listboxes, dialogs — each with keyboard navigation, ARIA attributes, focus management, and screen reader support built in. Designed as foundations for custom component libraries, not for direct app use. Important for EU Accessibility Act compliance.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is Hot Module Replacement (HMR) in Angular?",
+          "answerHtml": "<p>HMR updates your app in the browser instantly when you save a file, without a full page reload. Angular 19 introduced CSS and template HMR, and Angular 20 graduated template HMR to stable. This means editing a template or style file reflects immediately — no losing component state or waiting for recompilation.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What are selectorless components (expected in Angular 22)?",
+          "answerHtml": "<p>Currently, components require a string <code>selector: 'app-user-card'</code>. Selectorless components would remove this requirement — you'd import the component class directly in templates. Benefits: better refactorability (rename the class, all references update), type safety (no string matching), and simpler mental model. This aligns with the standalone-first architecture where components are self-describing.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What Angular CVEs were disclosed in late 2025 and what did they affect?",
+          "answerHtml": "<p>Three major CVEs: <strong>CVE-2025-59052</strong> (CVSS 7.1) — SSR race condition leaking request-scoped data between concurrent requests. <strong>CVE-2025-66035</strong> (CVSS 7.7) — HttpClient leaking XSRF tokens via protocol-relative URLs. <strong>CVE-2025-66412</strong> (CVSS High) — Stored XSS in template compiler via SVG/MathML attributes. All patched in v19.2+, v20, v21. This demonstrates why running EOL versions is a serious security risk.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the evolution of signals across Angular versions?",
+          "answerHtml": "<p><strong>v16</strong>: Signals introduced (developer preview). <strong>v17</strong>: Signal inputs, model inputs, view queries added. <strong>v18</strong>: linkedSignal, resource() added. <strong>v19</strong>: Signal primitives polished. <strong>v20</strong>: ALL signal primitives graduated to stable (signal, computed, effect, linkedSignal, signal queries, signal inputs). <strong>v21</strong>: Signal Forms (experimental), zoneless-by-default (signals drive CD). <strong>v22</strong>: Signal Forms expected to stabilise, OnPush expected as default.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How does Angular 21 handle testing in a zoneless world?",
+          "answerHtml": "<p>With Vitest as default, tests run zoneless — matching the runtime. Signal-based state is synchronous, so assertions work without <code>fakeAsync</code> or <code>tick()</code> for signal updates. For async operations, Vitest's fake timers replace Angular's zone-based testing utilities. <code>fixture.detectChanges()</code> still works but is needed less often since signal-based components update more predictably. The key shift: test signal values directly rather than querying DOM.</p>"
+        }
+      ],
+      "hasFilterBar": true
+    }
+  ]
+}

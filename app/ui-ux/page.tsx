@@ -1,18 +1,12 @@
-import { EncyclopediaPage } from "@/components/EncyclopediaPage";
-import content from "@/content/standalone-uxui.json";
+import { TopicPage } from "@/components/renderer/TopicPage";
+import type { TopicData } from "@/types/topic";
+import data from "@/data/topics/uxui.json";
 
 export const metadata = {
   title: "UX/UI Design — The Complete Mastery Encyclopedia",
-  description: "Gestalt principles, accessibility, design tokens, and 48+ interview Q&A.",
+  description: "Design systems, Gestalt, accessibility, patterns and 61+ interview Q&A.",
 };
 
 export default function UxUiPage() {
-  return (
-    <EncyclopediaPage
-      css={content.css}
-      body={content.body}
-      scripts={content.scripts}
-      scopeId="ui-ux"
-    />
-  );
+  return <TopicPage data={data as TopicData} accentColor="#f472b6" />;
 }

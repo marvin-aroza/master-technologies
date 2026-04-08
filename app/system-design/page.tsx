@@ -1,18 +1,12 @@
-import { EncyclopediaPage } from "@/components/EncyclopediaPage";
-import content from "@/content/standalone-system-design.json";
+import { TopicPage } from "@/components/renderer/TopicPage";
+import type { TopicData } from "@/types/topic";
+import data from "@/data/topics/system-design.json";
 
 export const metadata = {
   title: "System Design — The Complete Mastery Encyclopedia",
-  description: "System Design architectures, patterns, and 62+ interview Q&A.",
+  description: "Frontend architecture, scalable patterns and 88+ interview Q&A. 6 chapters.",
 };
 
 export default function SystemDesignPage() {
-  return (
-    <EncyclopediaPage
-      css={content.css}
-      body={content.body}
-      scripts={content.scripts}
-      scopeId="system-design"
-    />
-  );
+  return <TopicPage data={data as TopicData} accentColor="#60a5fa" />;
 }

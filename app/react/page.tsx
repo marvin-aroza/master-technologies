@@ -1,18 +1,12 @@
-import { EncyclopediaPage } from "@/components/EncyclopediaPage";
-import content from "@/content/standalone-react.json";
+import { TopicPage } from "@/components/renderer/TopicPage";
+import type { TopicData } from "@/types/topic";
+import data from "@/data/topics/react.json";
 
 export const metadata = {
   title: "React — The Complete Mastery Encyclopedia",
-  description: "Every React hook, pattern, and concept + 138+ interview Q&A.",
+  description: "Every React hook, pattern, and concept + 127+ interview Q&A. 14 chapters.",
 };
 
 export default function ReactPage() {
-  return (
-    <EncyclopediaPage
-      css={content.css}
-      body={content.body}
-      scripts={content.scripts}
-      scopeId="react"
-    />
-  );
+  return <TopicPage data={data as TopicData} accentColor="#61dafb" />;
 }
