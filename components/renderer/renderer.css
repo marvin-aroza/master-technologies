@@ -2,15 +2,15 @@
    renderer.css  —  Topic page renderer  (no media queries)
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ── SHARED COLUMN ────────────────────────────────────────────────────── */
+/* ── SHARED COLUMN — matches topnav and home page ─────────────────────── */
 .topic-hero-content,
 .chapter-nav-inner,
 .topic-content {
-  max-width: 1060px;
+  max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
-  padding-left: clamp(1.25rem, 4vw, 2.5rem);
-  padding-right: clamp(1.25rem, 4vw, 2.5rem);
+  padding-left: clamp(1.25rem, 2.5vw, 2rem);
+  padding-right: clamp(1.25rem, 2.5vw, 2rem);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -20,8 +20,8 @@
 
 .topic-hero {
   position: relative;
-  padding-top: clamp(3rem, 6vw, 5rem);
-  padding-bottom: clamp(3rem, 5vw, 4rem);
+  padding-top: clamp(2.5rem, 4vw, 3.5rem);
+  padding-bottom: clamp(2rem, 3vw, 2.75rem);
   overflow: hidden;
   isolation: isolate;
   border-bottom: 1px solid #12122a;
