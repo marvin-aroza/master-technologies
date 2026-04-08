@@ -33,7 +33,9 @@ export function TopicPage({ data, accentColor }: TopicPageProps) {
     [data.sections, activeId]
   );
 
-  const totalCards = data.sections.reduce((s, sec) => s + sec.cards.length, 0);
+  const activeCards = activeSection?.cards ?? [];
+
+  const totalCards = data.sections.reduce((s, sec) => s + (sec.cards?.length ?? 0), 0);
   const totalQA    = data.sections.reduce((s, sec) => s + (sec.qa?.length ?? 0), 0);
 
   // Chapter-level prev/next
@@ -73,9 +75,9 @@ export function TopicPage({ data, accentColor }: TopicPageProps) {
               <p className="section-intro-text">{activeSection.intro}</p>
             )}
 
-            {activeSection.cards.length > 0 && (
+            {activeCards.length > 0 && (
               <div className="cards-grid">
-                {activeSection.cards.map((card, i) => (
+                {activeCards.map((card, i) => (
                   <ContentCard key={i} card={card} />
                 ))}
               </div>
