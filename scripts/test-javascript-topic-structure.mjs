@@ -43,9 +43,26 @@ assert.deepEqual(
   { label: "Updated", value: "2026" }
 );
 
+const populatedChapterIds = new Set([
+  "origins-ecmascript-runtimes",
+  "values-types-identity",
+  "variables-scope-closures",
+  "functions-invocation-mechanics",
+]);
+
 assert.ok(
-  topic.sections.every((section) => Array.isArray(section.blocks) && section.blocks.length === 0),
-  "Task 5 should leave each section with an explicitly empty blocks array"
+  topic.sections.every((section) => {
+    if (!Array.isArray(section.blocks)) {
+      return false;
+    }
+
+    if (populatedChapterIds.has(section.id)) {
+      return section.blocks.length > 0;
+    }
+
+    return section.blocks.length === 0;
+  }),
+  "Chapters 1-4 should be populated while the remaining chapters stay in skeleton form"
 );
 assert.ok(
   topic.sections.every((section) => !section.cards || section.cards.length === 0),

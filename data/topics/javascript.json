@@ -82,22 +82,246 @@
     {
       "id": "origins-ecmascript-runtimes",
       "intro": "Learn where JavaScript came from, how ECMAScript evolves, and how runtimes host the language.",
-      "blocks": []
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "What JavaScript Actually Is",
+          "html": "<p>JavaScript is the programming language developers write, but the language is only one layer of the system. The ECMAScript specification defines syntax, values, objects, functions, modules, and runtime semantics, while each host runtime adds its own APIs and execution environment on top.</p><ul><li>The language gives you variables, functions, objects, promises, classes, and modules.</li><li>The host decides which globals and APIs exist around the language.</li><li>The same core JavaScript can run in browsers, Node.js, and edge runtimes.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "JavaScript vs ECMAScript vs Host Runtime",
+          "items": [
+            {
+              "label": "JavaScript",
+              "html": "<p>The practical language developers use every day. When people say ?JavaScript,? they usually mean the language plus the ecosystem around it.</p>"
+            },
+            {
+              "label": "ECMAScript",
+              "html": "<p>The official language standard. ECMA-262 is the authoritative spec, and the current draft includes the most recent yearly snapshot plus finished proposals that reached Stage 4.</p>"
+            },
+            {
+              "label": "Host runtime",
+              "html": "<p>The environment that executes JavaScript and exposes platform APIs. Browsers add the DOM and web APIs, Node.js adds server and system APIs, and edge runtimes tend to expose a smaller, Web-API-first surface.</p>"
+            }
+          ]
+        },
+        {
+          "type": "richText",
+          "title": "Browser vs Node.js vs Edge runtimes",
+          "html": "<p>You should think in terms of capabilities, not just ?frontend? or ?backend.?</p><ul><li><strong>Browsers</strong> provide the DOM, events, rendering, storage, and other web platform APIs.</li><li><strong>Node.js</strong> runs JavaScript outside the browser and supports both CommonJS and ECMAScript modules, along with server, filesystem, process, stream, and networking APIs.</li><li><strong>Edge runtimes</strong> often use isolate-based execution and many browser-style APIs, but usually expose fewer process and filesystem capabilities than Node.js.</li></ul>"
+        },
+        {
+          "type": "mechanics",
+          "title": "How JavaScript Starts Running",
+          "steps": [
+            "The host loads a script or resolves a module graph before execution begins.",
+            "Source code is parsed; syntax errors stop execution before the program runs.",
+            "The host creates the global execution context and establishes top-level bindings.",
+            "Declarations are processed before line-by-line evaluation, but initialization timing still differs for var, let, const, function, and class.",
+            "Top-level code executes; in module code, dependency linking and evaluation happen before the module body becomes usable to importers."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Script entry point vs module entry point",
+          "language": "html",
+          "code": "<script src=\"./legacy.js\"></script>\n<script type=\"module\">\n  import { boot } from \"./app.js\";\n  boot();\n</script>",
+          "caption": "Scripts execute directly; modules participate in a dependency graph and use import/export semantics."
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 1 recap",
+          "items": [
+            "JavaScript is the language; ECMAScript is the specification; the host runtime provides the surrounding APIs.",
+            "Browsers, Node.js, and edge runtimes share the core language but expose different capabilities.",
+            "Execution begins only after loading, parsing, binding setup, and host-specific startup rules are satisfied."
+          ]
+        }
+      ]
     },
     {
       "id": "values-types-identity",
       "intro": "Build a precise mental model for values, coercion, equality, and how identity works in JavaScript.",
-      "blocks": []
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Primitives, Objects, and Identity",
+          "html": "<p>Primitive values behave like immutable values, while objects are mutable references. Two different objects can have identical shape and contents but still compare as different because equality for objects is based on identity, not structure.</p><ul><li>Primitives like strings, numbers, booleans, bigint, symbol, null, and undefined are compared by value semantics.</li><li>Objects, arrays, and functions are reference values: assignment copies the reference, not the structure.</li><li>Functions are also objects, which is why they can carry properties and methods.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Loose Equality vs Strict Equality vs Object.is()",
+          "items": [
+            {
+              "label": "==",
+              "html": "<p>Loose equality may perform type conversion before comparing values. It is compact, but it also creates surprising cases such as <code>\"0\" == 0</code> and <code>[] == 0</code>.</p>"
+            },
+            {
+              "label": "===",
+              "html": "<p>Strict equality compares without type coercion. It is the default comparison you should reach for in application code.</p>"
+            },
+            {
+              "label": "Object.is()",
+              "html": "<p><code>Object.is()</code> also avoids coercion, but unlike <code>===</code> it treats <code>NaN</code> as equal to itself and distinguishes <code>-0</code> from <code>+0</code>.</p>"
+            }
+          ]
+        },
+        {
+          "type": "richText",
+          "title": "Coercion, conversion, and sameness",
+          "html": "<p>JavaScript is dynamically and weakly typed, so the language often converts values when an operator or API expects a different type. Coercion is not random; it follows specification rules such as object-to-primitive conversion and numeric or string conversion depending on the operator.</p><ul><li>If one operand of <code>+</code> is a string, concatenation wins.</li><li>Loose equality can coerce objects to primitives before comparing.</li><li>Structural similarity is never enough for object equality; two distinct objects are distinct identities.</li></ul>"
+        },
+        {
+          "type": "code",
+          "title": "Identity and coercion examples",
+          "language": "js",
+          "code": "console.log({} === {});            // false\nconsole.log(Object.is(NaN, NaN)); // true\nconsole.log(-0 === 0);            // true\nconsole.log(Object.is(-0, 0));    // false\nconsole.log([] == 0);             // true\nconsole.log([] === 0);            // false",
+          "caption": "Identity, equality, and coercion are related, but they are not the same rule."
+        },
+        {
+          "type": "trap",
+          "title": "Coercion trap: [] == ![]",
+          "tone": "pitfall",
+          "html": "<p>This expression evaluates to <code>true</code>. First <code>![]</code> becomes <code>false</code> because arrays are truthy. Then the comparison becomes <code>[] == false</code>. Loose equality converts <code>false</code> to <code>0</code> and the array to a primitive, which becomes the empty string and then <code>0</code>. The final comparison is <code>0 == 0</code>.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: predict the comparisons",
+          "prompt": "Without running the code, predict the result of each expression: Object.is(-0, 0), NaN === NaN, Object.is(NaN, NaN), [] == 0, and [] === 0.",
+          "answerHtml": "<p><strong>Answers:</strong> <code>Object.is(-0, 0)</code> is <code>false</code>; <code>NaN === NaN</code> is <code>false</code>; <code>Object.is(NaN, NaN)</code> is <code>true</code>; <code>[] == 0</code> is <code>true</code>; and <code>[] === 0</code> is <code>false</code>. The point of the drill is to separate coercion rules from identity rules.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 2 recap",
+          "items": [
+            "Objects compare by identity, not by structural shape.",
+            "JavaScript gives you three important equality operations: ==, ===, and Object.is().",
+            "Coercion follows rules, but those rules are surprising enough that you should use them consciously, not accidentally."
+          ]
+        }
+      ]
     },
     {
       "id": "variables-scope-closures",
       "intro": "Understand lexical scope, declaration behavior, and why closures power real JavaScript architecture.",
-      "blocks": []
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Lexical Scope and Environment Records",
+          "html": "<p>JavaScript uses lexical scoping, which means identifier lookup depends on where a variable is declared in source code, not where a function is later called. Every execution context gets an environment record, and nested code can walk outward through those environments.</p><ul><li><code>var</code> binds to function or global scope.</li><li><code>let</code> and <code>const</code> are block scoped.</li><li>Modules introduce module scope, which closures can also capture.</li></ul>"
+        },
+        {
+          "type": "mechanics",
+          "title": "How scope lookup works",
+          "steps": [
+            "The current execution context checks its own environment record for the requested identifier.",
+            "If the name is not found locally, lookup walks outward to the next lexical environment.",
+            "The process repeats until the name is found or the global/module boundary is reached.",
+            "If no binding exists anywhere in the chain, JavaScript throws a ReferenceError when the identifier is accessed."
+          ]
+        },
+        {
+          "type": "richText",
+          "title": "Closures in real architecture",
+          "html": "<p>A closure is a function bundled with references to its surrounding lexical environment, and JavaScript creates closures every time a function is created. This is why factories, event handlers, async callbacks, and module patterns can retain private state after outer code has finished running.</p><ul><li>Closures power function factories like <code>makeAdder</code>.</li><li>They are useful for encapsulation and private state.</li><li>They can also retain more memory than you intended if they keep references alive.</li></ul>"
+        },
+        {
+          "type": "code",
+          "title": "Closure factory and private state",
+          "language": "js",
+          "code": "function makeCounter() {\n  let count = 0;\n  return {\n    inc() { count += 1; },\n    value() { return count; },\n  };\n}\n\nconst counter = makeCounter();\ncounter.inc();\nconsole.log(counter.value()); // 1",
+          "caption": "The returned methods keep access to count even after makeCounter() has returned."
+        },
+        {
+          "type": "trap",
+          "title": "Closure loop trap",
+          "tone": "pitfall",
+          "html": "<p>When you create callbacks inside a loop with <code>var</code>, every callback closes over the same binding. By the time the callbacks run, the loop has already advanced, so all of them observe the final value instead of the per-iteration value you expected. Use <code>let</code> for a fresh binding each iteration or create a factory function.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: why do all callbacks log 3?",
+          "prompt": "Explain the output of: for (var i = 0; i < 3; i++) { setTimeout(() => console.log(i), 0); } and then explain the simplest fix.",
+          "answerHtml": "<p>It logs <code>3</code> three times because each callback closes over the same <code>var i</code> binding. After the loop finishes, that shared binding holds <code>3</code>, so every callback reads the same final value. Replacing <code>var</code> with <code>let</code> creates a fresh per-iteration binding, which makes the callbacks log <code>0</code>, <code>1</code>, and <code>2</code>.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 3 recap",
+          "items": [
+            "Lexical scope depends on where bindings are declared in source code.",
+            "Closures are created when functions are created, not when they are later invoked.",
+            "The classic loop bug is a shared-binding problem, not a timer problem."
+          ]
+        }
+      ]
     },
     {
       "id": "functions-invocation-mechanics",
       "intro": "Go from basic functions to call-site rules, higher-order design, and invocation mechanics that interviewers probe deeply.",
-      "blocks": []
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Function Forms and Invocation Patterns",
+          "html": "<p>JavaScript has function declarations, function expressions, arrow functions, methods, constructors, and higher-order functions, but the key mastery point is this: regular function behavior depends heavily on how a function is invoked. The same function body can produce a different <code>this</code> value depending on its call-site.</p><ul><li>Functions are callable objects.</li><li>Regular functions get <code>this</code> from the call-site.</li><li>Arrow functions capture <code>this</code> lexically from the surrounding scope.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "call() vs apply() vs bind()",
+          "items": [
+            {
+              "label": "call()",
+              "html": "<p>Invokes the target function immediately with an explicit <code>this</code> value and arguments passed one by one.</p>"
+            },
+            {
+              "label": "apply()",
+              "html": "<p>Invokes the target function immediately with an explicit <code>this</code> value and arguments provided as an array or array-like object.</p>"
+            },
+            {
+              "label": "bind()",
+              "html": "<p>Creates a new function whose <code>this</code> value is pre-bound and whose leading arguments can also be pre-filled for later calls.</p>"
+            }
+          ]
+        },
+        {
+          "type": "richText",
+          "title": "Regular functions vs arrow functions",
+          "html": "<p>The value of <code>this</code> depends on how a regular function is called, not where it was defined. Arrow functions are different: they inherit <code>this</code> from the surrounding scope and do not create their own <code>this</code> binding, which means <code>bind()</code>, <code>apply()</code>, and <code>call()</code> cannot retarget them.</p><ul><li>Use regular functions when method-style call-site binding matters.</li><li>Use arrows when lexical <code>this</code> is the goal.</li><li>Do not treat arrows as ?shorter methods? without checking the binding behavior you need.</li></ul>"
+        },
+        {
+          "type": "code",
+          "title": "Invocation and this",
+          "language": "js",
+          "code": "const workshop = {\n  title: \"JS Mastery\",\n  regular() { return this.title; },\n  arrow: () => this,\n};\n\nconst detached = workshop.regular;\nconsole.log(workshop.regular());     // \"JS Mastery\"\nconsole.log(detached());             // undefined in strict mode\nconsole.log(detached.bind(workshop)()); // \"JS Mastery\"",
+          "caption": "The body is the same; the call-site is what changes the outcome for regular functions."
+        },
+        {
+          "type": "trap",
+          "title": "`this` binding confusion",
+          "tone": "interview",
+          "html": "<p><code>const fn = obj.method; fn()</code> usually loses the original receiver because the call-site is no longer <code>obj.method()</code>. In strict mode, a standalone regular call produces <code>undefined</code> for <code>this</code>. This is why event handlers, timers, and extracted methods so often need wrappers, arrows, or <code>bind()</code>.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: what does this log?",
+          "prompt": "Predict the output of: const obj = { value: 7, get() { return this.value; } }; const read = obj.get; console.log(read()); console.log(read.bind(obj)());",
+          "answerHtml": "<p>The first call logs <code>undefined</code> in strict mode because <code>read()</code> is a standalone invocation with no receiver object. The second call logs <code>7</code> because <code>bind(obj)</code> creates a new function whose <code>this</code> is permanently set to <code>obj</code>.</p>"
+        },
+        {
+          "type": "richText",
+          "title": "Function design patterns",
+          "html": "<p>Once call-site rules are clear, you can design functions more intentionally.</p><ul><li>Prefer small, explicit functions whose inputs are easy to test.</li><li>Use higher-order functions to parameterize behavior instead of copy-pasting logic.</li><li>Use partial application or binding when you want to pre-configure a function for later use.</li></ul>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 4 recap",
+          "items": [
+            "Regular functions get this from the call-site; arrow functions inherit it lexically.",
+            "call() and apply() invoke immediately; bind() returns a new pre-configured function.",
+            "Most this bugs come from method extraction or callback invocation, not from syntax alone."
+          ]
+        }
+      ]
     },
     {
       "id": "objects-prototypes-classes",
