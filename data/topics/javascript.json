@@ -580,17 +580,205 @@
     {
       "id": "browser-apis-dom-platform",
       "intro": "Connect the language to the browser platform: DOM, events, storage, fetch, workers, streams, and rendering lifecycle.",
-      "blocks": []
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "DOM events and delegation",
+          "html": "<p>The browser exposes the document as a tree of nodes, and events move through that tree in a defined order. Event delegation takes advantage of bubbling: instead of attaching a listener to every child, you attach one stable listener to a shared ancestor and inspect the event to decide what actually happened.</p><ul><li>Delegation reduces listener churn when lists are large or dynamic.</li><li>Not every event bubbles, so delegation depends on the event type.</li><li>The DOM is a platform boundary: JavaScript describes behavior, but the browser owns parsing, layout, painting, and native event dispatch.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "event.target vs event.currentTarget",
+          "items": [
+            {
+              "label": "event.target",
+              "html": "<p>The original node the event was dispatched on. In delegated handlers, this is often the child that the user actually interacted with.</p>"
+            },
+            {
+              "label": "event.currentTarget",
+              "html": "<p>The node whose listener is currently running. In a delegated handler attached to a list, this stays equal to the list element even when a button inside the list was clicked.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Delegated event handling",
+          "language": "js",
+          "code": "const list = document.querySelector(\"[data-results]\");\n\nlist.addEventListener(\"click\", (event) => {\n  const button = event.target.closest(\"button[data-id]\");\n  if (!button || !list.contains(button)) return;\n\n  openResult(button.dataset.id);\n});",
+          "caption": "A single listener on the ancestor handles clicks for current and future buttons without rebinding every child."
+        },
+        {
+          "type": "richText",
+          "title": "Fetch, storage, and URL state",
+          "html": "<p>Modern browser applications coordinate network, persistence, and navigation through Web APIs. <code>fetch()</code> is promise-based and can be cancelled with <code>AbortController</code>. <code>localStorage</code> persists per origin across sessions, while <code>sessionStorage</code> is scoped to the current page session. <code>URLSearchParams</code>, <code>history.pushState()</code>, and <code>history.replaceState()</code> let you treat the URL as part of your application's state model.</p><ul><li>Prefer the URL for shareable, bookmarkable state such as filters, sort order, and pagination.</li><li>Prefer storage for client-only preferences that should survive reloads.</li><li>Treat fetch cancellation as a correctness tool, not just a performance trick, because stale responses can overwrite newer UI state.</li></ul>"
+        },
+        {
+          "type": "mechanics",
+          "title": "What happens during event dispatch",
+          "steps": [
+            "The browser creates an Event object and determines the target node.",
+            "Capture listeners run from outer ancestors toward the target if registered for capture.",
+            "Target listeners run on the target node itself.",
+            "If the event bubbles, bubble listeners then run from the target back up through ancestors.",
+            "Default browser behavior happens unless code prevented it and the event is cancelable."
+          ]
+        },
+        {
+          "type": "richText",
+          "title": "Observers and workers",
+          "html": "<p>Observer APIs let the browser notify you when something meaningful changes instead of forcing you to poll on every frame. <code>IntersectionObserver</code> helps with lazy loading and visibility-driven work, while APIs such as <code>MutationObserver</code> watch DOM changes. Web Workers move JavaScript off the main thread so expensive parsing, transformation, or data crunching does not block input and rendering.</p><ul><li>Observers are asynchronous coordination tools; they help you react after the browser detects a threshold or mutation.</li><li>Workers communicate by posting messages, so design the boundary around messages and transferable data.</li><li>Workers can use APIs such as <code>fetch()</code>, but they do not get direct access to the DOM.</li></ul>"
+        },
+        {
+          "type": "trap",
+          "title": "Platform trap: duplicating the same state in DOM, storage, and memory",
+          "tone": "warning",
+          "html": "<p>Applications become fragile when the source of truth lives in too many places at once. If a filter value is stored in a DOM attribute, a local variable, <code>localStorage</code>, and the URL, you now have four places that can drift. Decide which layer is authoritative and derive the rest from it.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 9 recap",
+          "items": [
+            "The browser platform provides DOM, events, networking, storage, history, and worker APIs on top of the JavaScript language.",
+            "Event delegation works because bubbling lets an ancestor observe work that originated in descendants.",
+            "Use observers and workers when the browser or a background thread can do coordination more efficiently than a tight main-thread loop."
+          ]
+        }
+      ]
     },
     {
       "id": "error-handling-defensive-coding",
       "intro": "Design safer code paths with clear failure handling, validation strategy, and defensive boundaries.",
-      "blocks": []
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Custom errors and error boundaries",
+          "html": "<p>Errors are part of your program's contract. A good custom error tells you what failed, where it failed, and which upstream cause triggered it. In larger systems, an <strong>error boundary</strong> is the architectural edge that catches failures, logs them, and decides whether the system can recover, retry, degrade gracefully, or must stop the current flow.</p><ul><li>Extend <code>Error</code> when you need a domain-specific error type such as <code>ValidationError</code> or <code>NetworkTimeoutError</code>.</li><li>Use the <code>cause</code> option when rethrowing so the original failure is still inspectable.</li><li>Catch errors at boundaries such as request handlers, job runners, or UI task coordinators instead of scattering tiny catch blocks everywhere.</li></ul>"
+        },
+        {
+          "type": "code",
+          "title": "Wrapping an error with context",
+          "language": "js",
+          "code": "class ValidationError extends Error {\n  constructor(message, details) {\n    super(message);\n    this.name = \"ValidationError\";\n    this.details = details;\n  }\n}\n\nasync function loadProfile(id) {\n  try {\n    const response = await fetch(`/api/profiles/${id}`);\n    if (!response.ok) {\n      throw new Error(`Unexpected status: ${response.status}`);\n    }\n    return await response.json();\n  } catch (error) {\n    throw new Error(\"Profile loading failed\", { cause: error });\n  }\n}",
+          "caption": "Rethrow with a clearer message, but keep the original cause so debugging and logging retain the real origin."
+        },
+        {
+          "type": "compare",
+          "title": "Recoverable vs unrecoverable errors",
+          "items": [
+            {
+              "label": "Recoverable",
+              "html": "<p>The operation failed, but the application can still continue with a retry, fallback, degraded experience, or validation message. A transient network failure or invalid user input often belongs here.</p>"
+            },
+            {
+              "label": "Unrecoverable",
+              "html": "<p>The current execution path cannot continue safely. Corrupted assumptions, impossible state, or missing critical dependencies usually require aborting the current task and surfacing a high-signal failure.</p>"
+            }
+          ]
+        },
+        {
+          "type": "richText",
+          "title": "Validation strategy and defensive coding",
+          "html": "<p>Validate inputs at the boundaries of your system, not after bad data has already spread. Defensive coding means making invalid states harder to create, checking assumptions that come from untrusted sources, and failing in ways that preserve signal instead of hiding the problem.</p><ul><li>Parse first, then validate shape, value ranges, and business rules.</li><li>Prefer small invariant checks near boundaries over blanket <code>try/catch</code> around whole features.</li><li>Return actionable validation feedback for user mistakes, but throw or log high-signal errors for programmer mistakes and impossible states.</li></ul>"
+        },
+        {
+          "type": "mechanics",
+          "title": "How thrown errors travel",
+          "steps": [
+            "A throw immediately stops normal execution in the current frame.",
+            "The runtime unwinds the call stack until it finds a matching catch or reaches the top-level boundary.",
+            "A finally block runs before control fully exits the try statement.",
+            "If nothing handles the failure, the runtime reports an uncaught exception or unhandled rejection."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Error-handling trap: swallowing the original failure",
+          "tone": "interview",
+          "html": "<p>A catch block that logs a generic message and returns as if everything is fine destroys the debugging trail. If you transform an error, preserve the original via <code>cause</code>. If you cannot recover, rethrow or let the boundary handle it.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: should you catch or rethrow?",
+          "prompt": "A form submission helper catches every error from fetch, logs \"something went wrong\", returns null, and the caller keeps rendering as if the save succeeded. What is wrong with this pattern, and when should the helper catch versus rethrow?",
+          "answerHtml": "<p>The helper is erasing the difference between user-facing failure and success. Catch locally only if the helper can actually recover, translate the failure into a domain result, or add useful context. Otherwise preserve the failure by rethrowing so the boundary that owns the user flow can decide whether to retry, show an error state, or abort.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 10 recap",
+          "items": [
+            "Custom errors and the Error cause option help you keep failure information precise across layers.",
+            "Recoverable failures should become explicit control flow; unrecoverable failures should surface quickly and clearly.",
+            "Defensive coding starts at boundaries: validate inputs, protect invariants, and avoid catch blocks that hide real bugs."
+          ]
+        }
+      ]
     },
     {
       "id": "performance-memory",
       "intro": "Study the engine, the garbage collector, and the performance costs that show up in real JavaScript applications.",
-      "blocks": []
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Rendering cost awareness",
+          "html": "<p>On the web, JavaScript performance is inseparable from rendering performance. Slow code does not only mean slow arithmetic; it also means delayed input handling, forced layout work, extra style recalculation, and missed frames. A useful mental model is that the main thread has to coordinate JavaScript, style, layout, paint, and compositing work while still staying responsive to user input.</p><ul><li>Batch DOM reads together and DOM writes together to avoid layout thrashing.</li><li>Prefer doing less work over doing the same work faster.</li><li>Measure the actual slow path before optimizing; many perceived hot spots are not the real bottleneck.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Debounce vs throttle",
+          "items": [
+            {
+              "label": "Debounce",
+              "html": "<p>Wait until activity stops for a chosen delay, then run once. Use it for search inputs, autosave, or resize work where the final settled value matters more than every intermediate change.</p>"
+            },
+            {
+              "label": "Throttle",
+              "html": "<p>Allow execution at most once per interval. Use it for scroll, pointer, or resize handlers when you need periodic updates during continuous activity.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Debounced input work",
+          "language": "js",
+          "code": "function debounce(fn, delay) {\n  let timeoutId;\n  return (...args) => {\n    clearTimeout(timeoutId);\n    timeoutId = setTimeout(() => fn(...args), delay);\n  };\n}\n\nconst runSearch = debounce((query) => {\n  fetchResults(query);\n}, 250);\n\nsearchInput.addEventListener(\"input\", (event) => {\n  runSearch(event.target.value);\n});",
+          "caption": "Debouncing keeps bursty input from triggering expensive work on every keystroke."
+        },
+        {
+          "type": "mechanics",
+          "title": "From interaction to visible frame",
+          "steps": [
+            "A user input or timer schedules JavaScript work on the main thread.",
+            "JavaScript may read or mutate the DOM, which can trigger style and layout work.",
+            "The browser paints changed pixels and composites layers for display.",
+            "If this whole path takes too long, the browser drops or delays frames and the interface feels janky."
+          ]
+        },
+        {
+          "type": "richText",
+          "title": "Memory leaks and garbage collection",
+          "html": "<p>Garbage collection reclaims objects that are no longer reachable, but it cannot free memory that your code still references. Leaks are usually about unintended reachability: detached DOM nodes kept alive by listeners or arrays, long-lived caches that never evict, intervals that continue forever, or closures that hold onto more state than intended.</p><ul><li>Reachability, not visual disappearance, determines whether objects can be collected.</li><li><code>WeakMap</code> and <code>WeakSet</code> help for object-keyed metadata that should not keep the key alive.</li><li>Frequent garbage collection cycles can also hurt performance because script execution pauses while collection runs.</li></ul>"
+        },
+        {
+          "type": "richText",
+          "title": "Profiling mindset",
+          "html": "<p>Performance work begins with observation. Use browser performance tools to inspect long tasks, paint behavior, layout work, and event timing. Use memory tools to look for steadily growing heaps, detached DOM trees, or suspicious allocation patterns. Then test on the classes of devices your users actually have, because a page that feels fine on a fast laptop can still fail badly on a lower-powered phone.</p><ul><li>Profile before and after changes so you know whether the optimization actually mattered.</li><li>Look for user-facing symptoms first: jank, lag, slow startup, or memory growth over time.</li><li>Treat performance as part of architecture: data shape, rendering strategy, event strategy, and code loading all contribute.</li></ul>"
+        },
+        {
+          "type": "trap",
+          "title": "Performance trap: optimizing blind",
+          "tone": "warning",
+          "html": "<p>Micro-optimizing syntax while ignoring the real bottleneck is one of the fastest ways to waste engineering time. Replacing a loop with a different loop rarely matters if the real problem is repeated layout, too many DOM nodes, a giant bundle, or a leaking cache.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 11 recap",
+          "items": [
+            "Performance on the web is shared work between JavaScript and the browser's rendering pipeline.",
+            "Debounce and throttle solve different event-rate problems; choose based on whether the final value or periodic updates matter.",
+            "Memory issues are usually about accidental reachability, so cleanup strategy and ownership matter as much as raw code speed."
+          ]
+        }
+      ]
     },
     {
       "id": "security-reliability",
