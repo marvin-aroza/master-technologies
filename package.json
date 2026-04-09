@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test:javascript-topic": "node scripts/test-javascript-topic.mjs",
     "test:renderer": "node scripts/test-content-block-renderer.mjs"
   },
   "dependencies": {
