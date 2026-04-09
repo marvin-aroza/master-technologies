@@ -63,59 +63,333 @@
   "sections": [
     {
       "id": "origins-standards-browser-parsing",
-      "intro": "Start with the document model, the standards process, and how the browser turns bytes into a DOM tree.",
+      "intro": "HTML starts as a parsed document, not a canvas. This chapter builds the mental model for standards mode, browser repair rules, and the DOM tree that every later topic depends on.",
       "blocks": [
         {
           "type": "richText",
-          "title": "HTML as a document language",
-          "html": "<p>HTML defines document structure, not styling. The parser, tree construction rules, and standards mode all shape how the browser interprets a page.</p>"
+          "title": "What HTML Actually Is",
+          "html": "<p>HTML is the document language of the web. It describes structure, meaning, and relationships so the browser can construct a node tree, apply CSS, expose semantics to assistive tech, and hand a live document to JavaScript.</p><p>In 2026, mastery means thinking in terms of parser behavior and document meaning, not just memorizing tags. The browser does a large amount of repair and inference for you, which is powerful when you understand it and dangerous when you do not.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "HTML vs CSS vs JavaScript",
+          "items": [
+            {
+              "label": "HTML",
+              "html": "<p>Defines document structure, semantics, metadata, and native controls.</p>"
+            },
+            {
+              "label": "CSS",
+              "html": "<p>Controls presentation, layout, visual states, and responsive styling.</p>"
+            },
+            {
+              "label": "JavaScript",
+              "html": "<p>Reads and changes the DOM, coordinates behavior, and reacts to events.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How the HTML parser builds a DOM",
+          "steps": [
+            "The browser reads bytes, decodes characters, and tokenizes markup into tags, text, comments, and attributes.",
+            "The tree-construction algorithm turns those tokens into nodes while applying HTML-specific insertion rules.",
+            "Invalid or incomplete markup is often repaired automatically, which changes the final DOM from the raw source.",
+            "Once the DOM exists, CSS and JavaScript operate on the parsed tree, not on the original source text."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Bytes to DOM starts with a document shell",
+          "language": "html",
+          "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <title>Parser demo</title>\n  </head>\n  <body>\n    <main>\n      <h1>Hello</h1>\n      <p>The parser turns this into a DOM tree.</p>\n    </main>\n  </body>\n</html>",
+          "caption": "A valid document gives the parser a clean starting point and keeps the page in no-quirks mode."
+        },
+        {
+          "type": "trap",
+          "title": "Trap: HTML is not strict XML",
+          "tone": "warning",
+          "html": "<p>Browsers do not reject most invalid HTML. They repair it. If you assume the source markup is identical to the final DOM, nesting bugs, form bugs, and accessibility bugs become much harder to diagnose.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: predict what the parser repairs",
+          "prompt": "What DOM shape do you expect from `<p>One<div>Two</div>Three</p>` after the browser parses it?",
+          "answerHtml": "<p>The parser closes the paragraph before the block-level <code>&lt;div&gt;</code>. In practice, the repaired structure becomes a paragraph with <code>One</code>, then a sibling <code>&lt;div&gt;Two&lt;/div&gt;</code>, then a new paragraph for the trailing <code>Three</code>. The key lesson is that invalid nesting changes the final DOM tree.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Origins recap",
+          "items": [
+            "HTML is a parsed document language, not a paint instruction list.",
+            "The DOM is the parsed tree the platform actually uses.",
+            "Doctype keeps the page in standards mode and avoids quirks-mode rendering.",
+            "Invalid markup is often repaired, which is why parser literacy matters."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What does `<!doctype html>` do in a modern document?",
+          "answerHtml": "<p>Its job is to keep the browser in no-quirks mode so layout and parsing follow modern standards behavior instead of legacy compatibility behavior.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between HTML source and the DOM?",
+          "answerHtml": "<p>The source is the text you wrote. The DOM is the parsed node tree the browser produced after applying tokenization, tree-construction rules, and error recovery.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why do invalid nesting bugs matter in interviews and production?",
+          "answerHtml": "<p>Because the browser silently repairs invalid HTML, the final DOM can differ from what the developer intended. That affects layout, accessibility, event handling, and test expectations.</p>"
         }
       ]
     },
     {
       "id": "document-structure-head-body-metadata",
-      "intro": "Learn the required document scaffolding and the metadata that controls rendering, indexing, and responsiveness.",
+      "intro": "A document is more than visible content. The shell, metadata, and loading hints in the head control rendering mode, encoding, indexing, responsiveness, and script behavior.",
       "blocks": [
         {
-          "type": "mechanics",
-          "title": "Document shell",
-          "steps": [
-            "Start with doctype and standards mode",
-            "Separate metadata in head from visible content in body",
-            "Use metadata to guide rendering and discovery"
+          "type": "richText",
+          "title": "Document shell and standards mode",
+          "html": "<p>A robust HTML document starts with doctype, a root <code>&lt;html&gt;</code> element, and a clear split between metadata in the head and visible content in the body. This is the structural contract that the browser expects.</p><p>The head is not decorative. It contains instructions and descriptive metadata that affect decoding, layout, indexing, previews, and asset loading before a user ever sees the page content.</p>"
+        },
+        {
+          "type": "code",
+          "title": "A modern HTML document scaffold",
+          "language": "html",
+          "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Article title</title>\n    <meta name=\"description\" content=\"Search-facing page summary\" />\n    <link rel=\"canonical\" href=\"https://example.com/articles/html-shell\" />\n    <script src=\"app.js\" defer></script>\n  </head>\n  <body>\n    <main>...</main>\n  </body>\n</html>",
+          "caption": "This shell separates metadata, visible content, and deferred behavior cleanly."
+        },
+        {
+          "type": "compare",
+          "title": "Metadata that changes behavior vs metadata that describes",
+          "items": [
+            {
+              "label": "Behavioral metadata",
+              "html": "<p><code>charset</code>, <code>viewport</code>, preload hints, and script attributes influence parsing, layout, or loading behavior.</p>"
+            },
+            {
+              "label": "Descriptive metadata",
+              "html": "<p><code>title</code>, description, canonical, robots, and social metadata describe the document to browsers, crawlers, and external platforms.</p>"
+            }
           ]
+        },
+        {
+          "type": "mechanics",
+          "title": "What the browser uses from the head",
+          "steps": [
+            "Early metadata such as charset helps the browser decode the document correctly.",
+            "Viewport metadata affects initial layout and scaling behavior on small screens.",
+            "Title and descriptive metadata feed tabs, bookmarks, search engines, and social previews.",
+            "Script and link tags influence when resources are requested and when code executes; classic scripts often need <code>defer</code> or <code>async</code>, while module scripts are deferred by default."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: metadata is not decorative",
+          "tone": "pitfall",
+          "html": "<p>Leaving out or misplacing critical head metadata causes real bugs: broken character decoding, poor mobile layout, weak search snippets, duplicate-content issues, and render-blocking script behavior.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: audit the head",
+          "prompt": "A page is missing charset, viewport, title, and canonical metadata, and it loads its main script without <code>defer</code>. What problems would you expect first?",
+          "answerHtml": "<p>Start with decoding and layout risk: missing charset can produce broken text, missing viewport harms mobile layout, missing title and canonical weaken discoverability, and a parser-blocking script can delay DOM construction and first render.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Document shell recap",
+          "items": [
+            "The head controls both browser behavior and document discoverability.",
+            "Place charset early and define viewport deliberately.",
+            "Use title, description, and canonical metadata as part of the document contract.",
+            "Script loading strategy belongs in document architecture, not just JavaScript setup."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why should the charset declaration appear early in the head?",
+          "answerHtml": "<p>Because the browser should know how to decode bytes into characters as early as possible. Late charset declarations are less reliable and can lead to broken text rendering.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the practical difference between a page title and a meta description?",
+          "answerHtml": "<p>The title is the primary document label used in tabs, history, and search titles, while the meta description is a descriptive summary often used in search snippets and previews.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is `defer` usually the safer default for an app script than a plain script tag?",
+          "answerHtml": "<p>A deferred classic script downloads in parallel but waits to execute until parsing is complete, which avoids blocking DOM construction and makes document startup more predictable. Module scripts also defer by default, so the real skill is choosing the right loading model for the document.</p>"
         }
       ]
     },
     {
       "id": "text-semantics-links-urls-meaning",
-      "intro": "Understand how text-level semantics, anchors, and URL structure communicate meaning to browsers and users.",
+      "intro": "Text markup is about meaning, not styling. This chapter covers semantic emphasis, real links, and how URLs and link behavior shape navigation, accessibility, and trust.",
       "blocks": [
         {
+          "type": "richText",
+          "title": "Text semantics communicate meaning",
+          "html": "<p>Semantic text elements tell browsers, assistive technologies, and readers what a piece of text means. That is why <code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;abbr&gt;</code>, <code>&lt;code&gt;</code>, and <code>&lt;time&gt;</code> matter beyond visuals.</p><p>Links work the same way: a real anchor is a navigation contract with built-in keyboard behavior, focusability, URL semantics, and browser affordances that a clickable generic element does not provide.</p>"
+        },
+        {
           "type": "compare",
-          "title": "Meaningful text choices",
+          "title": "`strong` and `em` vs `b` and `i`",
           "items": [
             {
-              "label": "Strong/emphasis",
-              "html": "<p>Use semantic meaning for important or emphasized text.</p>"
+              "label": "Meaningful emphasis",
+              "html": "<p>Use <code>&lt;strong&gt;</code> and <code>&lt;em&gt;</code> when the importance or emphasis is part of the document meaning.</p>"
             },
             {
-              "label": "b/i/span",
-              "html": "<p>Use presentational wrappers only when no semantic alternative fits.</p>"
+              "label": "Alternate voice or conventional offset",
+              "html": "<p><code>&lt;b&gt;</code> and <code>&lt;i&gt;</code> are not just generic styling hooks. They are for offset text or an alternate voice when the content does not carry the stronger importance or emphasis communicated by <code>&lt;strong&gt;</code> and <code>&lt;em&gt;</code>.</p>"
             }
           ]
+        },
+        {
+          "type": "code",
+          "title": "Link markup that survives real use",
+          "language": "html",
+          "code": "<p>Read the <a href=\"/guide/html-links\">HTML links guide</a>.</p>\n<p>Open the docs in a new tab: <a href=\"https://developer.mozilla.org/\" target=\"_blank\" rel=\"noopener noreferrer\">MDN</a></p>\n<p>Jump to the main content: <a href=\"#main-content\">Skip to content</a></p>",
+          "caption": "Anchors represent navigation targets. Add <code>rel=\"noopener noreferrer\"</code> when opening an external page in a new tab."
+        },
+        {
+          "type": "mechanics",
+          "title": "How browsers resolve links",
+          "steps": [
+            "A relative URL resolves against the current document URL or an explicit base URL.",
+            "Fragment links target an element in the same document by id.",
+            "Anchors participate in browser history, status previews, keyboard navigation, and context menus automatically.",
+            "Opening a new browsing context with <code>target=\"_blank\"</code> changes both UX and security expectations."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: click handlers are not links",
+          "tone": "warning",
+          "html": "<p>If clicking an element navigates somewhere, it should usually be an anchor. Replacing links with generic elements plus JavaScript removes native navigation semantics, browser affordances, and often keyboard access.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: choose the right text or link element",
+          "prompt": "You need to mark up a publication date, an acronym expansion, a keyboard shortcut, and a navigation target to another page. Which native elements fit each job best?",
+          "answerHtml": "<p>Use <code>&lt;time&gt;</code> for the date, <code>&lt;abbr&gt;</code> with a title for the acronym, <code>&lt;kbd&gt;</code> for the shortcut, and a real <code>&lt;a&gt;</code> with an href for the navigation target.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Text and links recap",
+          "items": [
+            "Text semantics communicate meaning, not just visual style.",
+            "Real links use anchors because navigation is a native browser behavior.",
+            "Relative, absolute, and fragment URLs serve different navigation roles.",
+            "External new-tab links need both UX clarity and security hygiene."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "When should you use an anchor instead of a button?",
+          "answerHtml": "<p>Use an anchor when the interaction navigates to a URL or document location. Use a button when the interaction performs an action in the current page or app state.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why is `rel=\"noopener noreferrer\"` commonly paired with `target=\"_blank\"`?",
+          "answerHtml": "<p>It prevents the newly opened page from using <code>window.opener</code> to reach back into the original page and also suppresses the referrer header for added privacy.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the practical benefit of semantic text elements over generic spans?",
+          "answerHtml": "<p>They preserve meaning in the accessibility tree, improve document clarity, and make the markup self-descriptive even before styling is applied.</p>"
         }
       ]
     },
     {
       "id": "sectioning-landmarks-page-architecture",
-      "intro": "Build page structure with landmarks, headings, and sectioning elements that support navigation and assistive tech.",
+      "intro": "A strong page architecture gives users and assistive technologies a clear map of the document. This chapter focuses on landmarks, headings, and the difference between sections that mean something and wrappers that only group content.",
       "blocks": [
         {
+          "type": "richText",
+          "title": "Landmarks and page architecture",
+          "html": "<p>Sectioning content is about making the document navigable. Elements such as <code>&lt;main&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;section&gt;</code>, and <code>&lt;aside&gt;</code> communicate purpose, not just grouping.</p><p>Landmark behavior depends on context. For example, top-level <code>&lt;header&gt;</code> and <code>&lt;footer&gt;</code> can expose banner or contentinfo landmarks, but nested ones inside sectioning content are usually just local structure.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "`section` vs `article` vs `div`",
+          "items": [
+            {
+              "label": "section",
+              "html": "<p>Use for a thematically grouped part of the document that usually deserves its own heading.</p>"
+            },
+            {
+              "label": "article",
+              "html": "<p>Use for self-contained content that could stand on its own, such as a post, card, comment, or news item.</p>"
+            },
+            {
+              "label": "div",
+              "html": "<p>Use only when you need a generic wrapper and no semantic element expresses the purpose.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "A resilient page outline",
+          "language": "html",
+          "code": "<body>\n  <a href=\"#main-content\" class=\"skip-link\">Skip to content</a>\n  <header>\n    <nav aria-label=\"Primary\">...</nav>\n  </header>\n  <main id=\"main-content\">\n    <article>\n      <h1>Release notes</h1>\n      <section>\n        <h2>What changed</h2>\n        <p>...</p>\n      </section>\n      <aside>Related resources</aside>\n    </article>\n  </main>\n  <footer>...</footer>\n</body>",
+          "caption": "Landmarks, headings, and self-contained content make the page easier to navigate and reason about."
+        },
+        {
+          "type": "mechanics",
+          "title": "How assistive tech navigates a page",
+          "steps": [
+            "Landmarks expose major regions such as main content, navigation, and complementary content, while header and footer landmark behavior depends on whether they are top-level or nested.",
+            "Heading order gives users a quick structural outline of the visible document.",
+            "Repeated landmarks like multiple nav regions usually need distinct labels to stay understandable.",
+            "Semantic regions work best when the underlying content purpose is real, not guessed after the fact."
+          ]
+        },
+        {
           "type": "trap",
-          "title": "Common structure mistake",
-          "html": "<p>A page full of generic divs is harder to navigate, style, and understand than one built with landmarks and heading order.</p>",
-          "tone": "warning"
+          "title": "Trap: the old outline algorithm myth",
+          "tone": "interview",
+          "html": "<p>Do not rely on a magical HTML outline algorithm to fix heading structure for you. In practice, you should still write clear, sequential headings and meaningful regions so humans and assistive tech can navigate the page predictably.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: repair the page architecture",
+          "prompt": "A page has three generic div wrappers, no main landmark, two unlabeled nav regions, and headings that jump from h1 to h4. What would you fix first?",
+          "answerHtml": "<p>Add a real <code>&lt;main&gt;</code>, convert genuine regions into semantic elements such as <code>&lt;nav&gt;</code>, <code>&lt;article&gt;</code>, or <code>&lt;aside&gt;</code>, label repeated nav landmarks, and repair the heading sequence so the document structure can be followed logically.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Page architecture recap",
+          "items": [
+            "Landmarks make major regions discoverable to assistive technologies.",
+            "Use sectioning elements when they express real document purpose.",
+            "A section should usually have a heading; a div has no built-in meaning.",
+            "Clear heading order and labeled landmarks beat clever but semantically empty wrappers."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "When should you choose `<article>` instead of `<section>`?",
+          "answerHtml": "<p>Choose <code>&lt;article&gt;</code> when the content is self-contained and could stand on its own. Choose <code>&lt;section&gt;</code> for a thematically grouped part of a larger document.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why do repeated navigation regions often need labels?",
+          "answerHtml": "<p>Because multiple nav landmarks can sound identical to assistive tech users. Labels such as <code>aria-label=\"Primary\"</code> and <code>aria-label=\"Footer\"</code> distinguish their purpose.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is a div-heavy page architecture harder to maintain and audit?",
+          "answerHtml": "<p>Generic wrappers hide intent. That makes accessibility audits, content refactors, styling decisions, and interview reasoning all harder because the markup no longer explains what each region is for.</p>"
         }
       ]
     },
