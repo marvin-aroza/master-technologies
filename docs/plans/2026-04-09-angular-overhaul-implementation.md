@@ -38,7 +38,7 @@ Write a gap map covering:
 Capture specific terminology updates such as:
 - Angular `21.x` being the active stable line on `April 9, 2026`
 - standalone authoring being the modern default
-- zoneless being stable but opt-in
+- zoneless being the Angular `v21+` default, with `v20` using `provideZonelessChangeDetection()`
 - Vitest being the default testing setup for new CLI projects
 - `httpResource` remaining experimental
 

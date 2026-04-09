@@ -71,7 +71,7 @@ Official Angular references checked for 2026-sensitive guidance:
   - `^22.0` planned for the week of `2026-05-18`
   This means the live stable Angular line on `April 9, 2026` is still Angular `21.x`, not `22`.
 - The current topic says standalone is the default "since Angular 14". That is too loose. Standalone APIs arrived earlier, but the official roadmap says new application authoring switched to standalone in `v17`.
-- The current topic says zoneless is the default in v21. The official API docs instead say `NgZone`-based change detection is already provided by default, while `provideZonelessChangeDetection()` is stable since `v20.2` and opt-in.
+- The current topic says zoneless is the default in v21. The current official zoneless guide now agrees with that for Angular `v21+`, while also clarifying that `provideZonelessChangeDetection()` was the stable opt-in path in Angular `v20`.
 - The current topic still teaches `provideExperimentalZonelessChangeDetection()` in some places. That is outdated relative to the stable `provideZonelessChangeDetection()` API.
 - The current topic often frames Signal Forms as both central and already settled. The official docs now include a dedicated Signal Forms guide, but learner-facing wording should avoid stronger stability claims than the docs themselves make.
 - `httpResource` is still explicitly labeled experimental since `v19.2`, so it should be taught as an important modern option, not as a universally stable default.
@@ -110,7 +110,7 @@ Official Angular references checked for 2026-sensitive guidance:
 - Modern change detection reasoning that matches current docs:
   - `ChangeDetectionStrategy.OnPush`
   - `ChangeDetectionStrategy.Eager`
-  - zoneless as opt-in
+  - zoneless as the Angular `v21+` default, with explicit update-notification expectations
 - Standalone-first bootstrapping and environment providers.
 - A proper chapter on testing, debugging, and reliability with current Vitest guidance.
 - A production chapter that treats security, a11y, i18n, and deployment as real engineering topics.
