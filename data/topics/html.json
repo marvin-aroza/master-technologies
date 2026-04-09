@@ -978,50 +978,242 @@
     },
     {
       "id": "accessibility-semantics-aria-form-accessibility",
-      "intro": "Connect semantic HTML, ARIA boundaries, focus behavior, and form accessibility into one usable mental model.",
+      "intro": "Accessibility is not a bolt-on. It emerges from good semantics first, then from deliberate naming, relationships, focus handling, and careful ARIA use when native HTML runs out of expressive power.",
       "blocks": [
         {
+          "type": "richText",
+          "title": "Accessibility starts with semantics",
+          "html": "<p>The most reliable accessibility work happens when the HTML already tells the truth. Real buttons, links, labels, headings, landmarks, and form controls usually outperform custom widgets with ARIA pasted on afterward.</p><p>ARIA is valuable, but it is a repair and extension layer. The first question should always be whether native HTML already expresses the interaction correctly.</p>"
+        },
+        {
           "type": "compare",
-          "title": "Accessibility basics",
+          "title": "`aria-label` vs `aria-labelledby` vs `aria-describedby`",
           "items": [
             {
-              "label": "Native elements",
-              "html": "<p>Prefer the browser's built-in semantics, keyboard support, and focus behavior.</p>"
+              "label": "aria-label",
+              "html": "<p>Provides a direct accessible name when there is no suitable visible text to reference.</p>"
             },
             {
-              "label": "ARIA overlays",
-              "html": "<p>Use only when native semantics are not enough and you need to expose relationships or state.</p>"
+              "label": "aria-labelledby",
+              "html": "<p>Builds the accessible name from existing visible text elsewhere in the document.</p>"
+            },
+            {
+              "label": "aria-describedby",
+              "html": "<p>Adds supporting description or help text without replacing the primary accessible name.</p>"
             }
           ]
+        },
+        {
+          "type": "code",
+          "title": "Accessible naming and form guidance",
+          "language": "html",
+          "code": "<label for=\"email\">Email address</label>\n<input id=\"email\" name=\"email\" type=\"email\" aria-describedby=\"email-help\" />\n<p id=\"email-help\">Use the address linked to your work account.</p>\n\n<button aria-label=\"Close settings\">?</button>",
+          "caption": "Prefer visible labels when you have them, then use ARIA to clarify names and descriptions rather than inventing a separate semantic layer."
+        },
+        {
+          "type": "mechanics",
+          "title": "How accessible names and descriptions are formed",
+          "steps": [
+            "A control needs an accessible name so assistive technologies can identify what it is.",
+            "Visible labels and referenced text usually make stronger, more durable names than hidden custom strings.",
+            "Descriptions add supporting context but should not replace the primary name.",
+            "When semantics, labels, and relationships disagree, the experience becomes confusing very quickly."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: ARIA is not a paint bucket",
+          "tone": "warning",
+          "html": "<p>Adding roles and ARIA state to the wrong element does not magically create a correct widget. If native semantics are available, use them. If they are not, be prepared to implement the keyboard and state model fully.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: repair the accessible form",
+          "prompt": "A search form has no visible label, uses placeholder text as the only cue, puts an error message in plain text with no relationship to the field, and hides an icon-only submit button from screen readers. What would you fix first?",
+          "answerHtml": "<p>Add a real visible label or a strong referenced accessible name, connect the error/help text with <code>aria-describedby</code> when appropriate, and make sure the icon button exposes a real accessible name. Start by restoring the semantic relationships before styling the UI.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Accessibility recap",
+          "items": [
+            "Good semantics are the first accessibility layer.",
+            "Accessible names and descriptions should come from clear, intentional relationships.",
+            "ARIA should extend or repair meaning, not replace correct native elements.",
+            "Form accessibility depends on labels, focus, errors, and relationship mapping working together."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why is a visible label usually better than relying only on `aria-label`?",
+          "answerHtml": "<p>Because visible labels help everyone, not just assistive technology users, and they keep the interface and accessibility model aligned.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When should you use `aria-describedby` instead of `aria-labelledby`?",
+          "answerHtml": "<p>Use <code>aria-labelledby</code> for the primary accessible name and <code>aria-describedby</code> for supporting help text or longer explanation.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can a technically focusable widget still be inaccessible?",
+          "answerHtml": "<p>Because focus alone is not enough. The control also needs the correct role, state, name, keyboard model, and relationship mapping so assistive technologies can interpret it properly.</p>"
         }
       ]
     },
     {
       "id": "performance-resource-loading",
-      "intro": "Teach how HTML participates in resource prioritization, loading, and layout stability.",
+      "intro": "HTML has a direct hand in how quickly a page becomes useful. Markup decisions influence request priority, render blocking, layout stability, and the quality of the first visible experience.",
       "blocks": [
         {
-          "type": "mechanics",
-          "title": "Loading and performance",
-          "steps": [
-            "Prioritize critical assets",
-            "Reserve layout space early",
-            "Use native loading hints where they fit"
+          "type": "richText",
+          "title": "Performance starts in the markup",
+          "html": "<p>Performance is not only a JavaScript problem. The order of your tags, the hints you add, the dimensions you supply, and the type of resource-loading strategy you choose can change how quickly a page becomes readable and stable.</p><p>The goal is not to add every possible optimization. The goal is to help the browser fetch the right things early, avoid unnecessary blocking, and reduce layout instability.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "`preload` vs `prefetch` vs `preconnect` vs `fetchpriority`",
+          "items": [
+            {
+              "label": "preload",
+              "html": "<p>Use when the current page definitely needs a critical resource soon.</p>"
+            },
+            {
+              "label": "prefetch",
+              "html": "<p>Use for resources that may help a likely future navigation rather than the current render path.</p>"
+            },
+            {
+              "label": "preconnect",
+              "html": "<p>Use to warm up the connection to an important external origin before the full request begins.</p>"
+            },
+            {
+              "label": "fetchpriority",
+              "html": "<p>Use as a hint to adjust how urgently the browser should fetch a resource, especially for LCP-relevant assets.</p>"
+            }
           ]
+        },
+        {
+          "type": "code",
+          "title": "Markup that helps loading and layout",
+          "language": "html",
+          "code": "<link rel=\"preconnect\" href=\"https://images.examplecdn.com\" />\n<link rel=\"preload\" as=\"image\" href=\"/hero-1280.jpg\" fetchpriority=\"high\" />\n\n<img\n  src=\"/hero-1280.jpg\"\n  width=\"1280\"\n  height=\"720\"\n  alt=\"Team auditing semantic HTML\"\n  fetchpriority=\"high\"\n/>\n\n<script type=\"module\" src=\"/app.js\"></script>",
+          "caption": "Good markup helps the browser decide what to fetch early and how to reserve space before pixels arrive."
+        },
+        {
+          "type": "mechanics",
+          "title": "How HTML affects LCP, CLS, and loading order",
+          "steps": [
+            "Critical resources discovered early can begin downloading earlier, which helps the largest visible content render sooner.",
+            "Explicit width and height reduce layout shifts by reserving space before media loads.",
+            "Parser-blocking resources delay DOM construction and can postpone first render.",
+            "Hints are only valuable when they match reality; too many urgent hints can compete with each other and reduce their benefit."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: too many priority hints can backfire",
+          "tone": "warning",
+          "html": "<p>If everything is marked critical, nothing is. Preload, preconnect, and fetchpriority should be used selectively for assets that materially affect the current page experience.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: reduce markup-driven performance cost",
+          "prompt": "A page loads five third-party origins up front, omits image dimensions, eagerly loads below-the-fold media, and injects a blocking script in the head. Which markup changes would likely help first?",
+          "answerHtml": "<p>Start by removing or deferring unnecessary early work, reserve media dimensions, limit eager loading to resources that matter for the initial view, and stop blocking the parser with scripts that could be deferred or modularized.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Performance recap",
+          "items": [
+            "Markup order and loading hints directly affect startup performance.",
+            "Reserve media space early to reduce CLS.",
+            "Use preload, prefetch, preconnect, and fetchpriority selectively and deliberately.",
+            "Performance-friendly HTML is about helping the browser make better early decisions."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the difference between preload and prefetch?",
+          "answerHtml": "<p>Preload is for a resource the current page needs soon, while prefetch is for a resource that may be useful for a likely future navigation.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why do width and height attributes on images still matter in 2026?",
+          "answerHtml": "<p>They still help the browser reserve layout space early, which is one of the easiest ways to reduce cumulative layout shift.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is `fetchpriority` a hint rather than a guarantee?",
+          "answerHtml": "<p>Because the browser still makes the final scheduling decision based on its own loading model. The attribute can influence priority, but it does not override the browser completely.</p>"
         }
       ]
     },
     {
       "id": "native-browser-apis-platform-features-interview-mastery",
-      "intro": "Finish with the platform features and interview bank that make the chapter useful for revision and pressure testing.",
+      "intro": "The web platform extends beyond core HTML elements. This chapter connects HTML to templates, Web Components, observers, storage, and the broader native API layer, then closes with the full interview capstone.",
       "blocks": [
+        {
+          "type": "richText",
+          "title": "Native browser APIs extend HTML",
+          "html": "<p>HTML gives you the document structure, but the broader platform adds APIs that observe, extend, and instantiate that structure. This is where templates, custom elements, observers, storage, drag-and-drop, and other browser-native tools come into play.</p><p>Good engineering judgment here means knowing when HTML alone is enough, when a native API is the right next step, and when you are about to overbuild a problem that the platform already solved.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "`template` vs Web Components vs observers",
+          "items": [
+            {
+              "label": "template",
+              "html": "<p>Use for inert markup that should be cloned and inserted later without rendering immediately.</p>"
+            },
+            {
+              "label": "Web Components",
+              "html": "<p>Use when you need custom elements, encapsulation, or reusable platform-native components with an explicit lifecycle.</p>"
+            },
+            {
+              "label": "Observers",
+              "html": "<p>Use when your code needs to react to visibility, size, or DOM changes rather than define new markup semantics.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "When HTML stops and the platform begins",
+          "language": "html",
+          "code": "<template id=\"card-template\">\n  <article class=\"card\">\n    <h2></h2>\n    <p></p>\n  </article>\n</template>\n\n<script type=\"module\">\n  customElements.define(\"app-note\", class extends HTMLElement {});\n  const observer = new IntersectionObserver((entries) => {\n    console.log(entries[0]?.isIntersecting);\n  });\n</script>",
+          "caption": "HTML describes the document, then native APIs let you observe, instantiate, and extend it."
+        },
+        {
+          "type": "mechanics",
+          "title": "When HTML stops and the platform begins",
+          "steps": [
+            "Start with native HTML whenever the document alone can express the requirement.",
+            "Reach for templates when you need inert reusable markup, and for custom elements when you need a real component primitive at the platform level.",
+            "Use observer APIs when your code needs to react to DOM conditions such as visibility, size, or mutation.",
+            "The strongest interview answer is often a boundary answer: which part is HTML, which part is browser API, and which part is framework abstraction."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: not every platform feature belongs in the first solution",
+          "tone": "warning",
+          "html": "<p>Native APIs are powerful, but they still have cost. Do not reach for a custom element, observer, or editable region just because it sounds advanced. Use them when the problem actually needs them.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: choose the right native API",
+          "prompt": "You need inert markup for cloning, visibility-based lazy behavior, a reusable browser-native component, and local persistent key-value storage. Which native APIs fit those jobs best?",
+          "answerHtml": "<p>Use <code>&lt;template&gt;</code> for inert markup, <code>IntersectionObserver</code> for visibility-driven behavior, Custom Elements for a browser-native reusable component, and a storage API such as localStorage or IndexedDB depending on the persistence and data-shape needs.</p>"
+        },
         {
           "type": "recap",
           "title": "Platform recap",
           "items": [
-            "Native HTML can replace a surprising amount of JavaScript",
-            "Good markup improves accessibility and SEO at the same time",
-            "Performance and semantics reinforce each other"
+            "HTML is the document layer; platform APIs observe, extend, and interact with that layer.",
+            "Templates, custom elements, observers, and storage solve different classes of problems.",
+            "The right tool is often the simplest native primitive that matches the requirement.",
+            "Good interview answers explain the boundary between markup, browser APIs, and frameworks."
           ]
         }
       ],

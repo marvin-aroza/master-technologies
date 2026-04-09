@@ -192,3 +192,58 @@ Source files reviewed:
 ## Summary
 
 The current HTML topic already contains most of the knowledge needed for a strong 2026 HTML encyclopedia. What it does not yet have is a clean teaching shape. The rewrite should preserve the existing knowledge, separate pure HTML from CSS and platform spillover, and reorganize the material into the approved 14-chapter blueprint with distributed interview reinforcement.
+
+## Handoff Notes After Implementation
+
+### What transferred cleanly from earlier rewrites
+
+- The block rhythm used in JavaScript, React, Next.js, and Angular transferred well to HTML:
+  - `richText` for mental models
+  - `compare` for element and attribute tradeoffs
+  - `mechanics` for browser behavior
+  - `trap` for anti-patterns
+  - `drill` for interview and debugging pressure
+  - `recap` for fast revision
+- The structure-first approach also transferred cleanly:
+  - write the topic structure harness first
+  - reshape the topic into the 14-chapter skeleton
+  - add chapter-batch tests before each content pass
+- Distributed chapter-level Q&A is much better than one giant final interview dump. HTML especially benefits from small, chapter-local reinforcement because so many mistakes are conceptual rather than algorithmic.
+
+### HTML-specific patterns that worked best
+
+- Parser and browser-behavior framing made the early chapters much stronger than a plain tag glossary.
+- Compare blocks were especially useful for:
+  - `strong/em` vs `b/i`
+  - `section` vs `article` vs `div`
+  - `img` vs `picture` vs `figure`
+  - `data-*` vs ARIA vs structured-data-oriented markup
+  - `preload` vs `prefetch` vs `preconnect` vs `fetchpriority`
+- HTML needed extra care around “works in the browser” vs “is structurally correct.” Trap blocks were valuable because many HTML bugs render fine while still failing in accessibility, SEO, or maintainability.
+- The later applied chapters were the right place for:
+  - SEO
+  - accessibility and ARIA boundaries
+  - performance/resource loading
+  - native browser APIs that interact with HTML
+
+### Content reserved for the CSS rewrite
+
+- CSS-specific sections removed from the HTML learning path:
+  - `hc-modern`
+  - `css-2025`
+- CSS-only interview material originally mixed into `html-iq`, including questions about:
+  - `box-sizing`
+  - `z-index`
+  - Flexbox alignment
+  - BEM
+  - stacking contexts
+  - container units and grid-only mechanics
+- The HTML rewrite intentionally filtered those questions out of the HTML capstone bank so the topic stayed honest. They should be reintroduced during the CSS overhaul instead of being recreated from scratch.
+
+### Anti-patterns to avoid in future foundational topics
+
+- Do not leave mixed-domain interview banks attached to the wrong topic just because the raw volume looks impressive.
+- Do not keep cheat-sheet sections as primary chapters when they are really recap material.
+- Do not treat browser rendering success as proof that the markup or content model is correct.
+- Do not let a final capstone bank absorb the whole teaching burden; chapter-level Q&A matters more than total question count for learning flow.
+- Do not copy legacy source text blindly. HTML content in particular tends to carry malformed tag examples, encoding noise, or mixed semantic claims that should be treated as rewrite-time bugs.
