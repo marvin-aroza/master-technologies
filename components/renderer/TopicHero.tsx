@@ -1,5 +1,7 @@
 "use client";
 
+import type { TopicStat } from "../../types/topic";
+
 interface TopicHeroProps {
   title: string;
   subtitle: string;
@@ -7,6 +9,7 @@ interface TopicHeroProps {
   totalCards: number;
   totalQA: number;
   tabCount: number;
+  heroStats?: TopicStat[];
 }
 
 export function TopicHero({
@@ -16,7 +19,14 @@ export function TopicHero({
   totalCards,
   totalQA,
   tabCount,
+  heroStats,
 }: TopicHeroProps) {
+  const stats = heroStats ?? [
+    { value: String(tabCount), label: "Chapters" },
+    { value: String(totalCards), label: "Concepts" },
+    { value: `${totalQA}+`, label: "Q&A" },
+  ];
+
   return (
     <div className="topic-hero" style={{ "--accent": accentColor } as React.CSSProperties}>
       <div className="topic-hero-glow" />
@@ -27,18 +37,12 @@ export function TopicHero({
         <h1 className="topic-hero-title">{title}</h1>
         <p className="topic-hero-sub">{subtitle}</p>
         <div className="topic-hero-stats">
-          <div className="topic-hero-stat">
-            <b>{tabCount}</b>
-            <span>Chapters</span>
-          </div>
-          <div className="topic-hero-stat">
-            <b>{totalCards}</b>
-            <span>Concepts</span>
-          </div>
-          <div className="topic-hero-stat">
-            <b>{totalQA}+</b>
-            <span>Q&amp;A</span>
-          </div>
+          {stats.map((stat) => (
+            <div className="topic-hero-stat" key={`${stat.label}-${stat.value}`}>
+              <b>{stat.value}</b>
+              <span>{stat.label}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>

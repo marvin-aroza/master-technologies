@@ -1,144 +1,995 @@
 {
   "id": "javascript",
-  "title": "JavaScript Mastery Bible",
-  "subtitle": "ES2025, async patterns & core foundations",
+  "title": "JavaScript Mastery Encyclopedia",
+  "subtitle": "Language foundations, runtime internals, browser APIs, architecture, and interview readiness for 2026.",
+  "heroStats": [
+    {
+      "label": "Chapters",
+      "value": "14"
+    },
+    {
+      "label": "Core Q&A",
+      "value": "148"
+    },
+    {
+      "label": "Coverage",
+      "value": "Language+Platform"
+    },
+    {
+      "label": "Updated",
+      "value": "2026"
+    }
+  ],
   "tabs": [
     {
-      "id": "js-modern",
-      "label": "Modern JS & Web APIs"
+      "id": "origins-ecmascript-runtimes",
+      "label": "Origins & Runtimes"
     },
     {
-      "id": "js-ts",
-      "label": "TypeScript Fundamentals"
+      "id": "values-types-identity",
+      "label": "Values, Types & Identity"
     },
     {
-      "id": "ts-expert",
-      "label": "TypeScript Expert Patterns"
+      "id": "variables-scope-closures",
+      "label": "Scope & Closures"
     },
     {
-      "id": "js-memory",
-      "label": "Memory & Performance Mastery"
+      "id": "functions-invocation-mechanics",
+      "label": "Functions & Invocation"
     },
     {
-      "id": "jcs",
-      "label": "Interview Cheat Sheet (Fast Recall)"
+      "id": "objects-prototypes-classes",
+      "label": "Objects, Prototypes & Classes"
     },
     {
-      "id": "js-iq",
-      "label": "Interview Q&A (194)"
+      "id": "arrays-collections-iteration",
+      "label": "Collections & Iteration"
+    },
+    {
+      "id": "modules-tooling-project-structure",
+      "label": "Modules & Tooling"
+    },
+    {
+      "id": "asynchrony-event-loop",
+      "label": "Asynchrony & Event Loop"
+    },
+    {
+      "id": "browser-apis-dom-platform",
+      "label": "Browser APIs & DOM"
+    },
+    {
+      "id": "error-handling-defensive-coding",
+      "label": "Errors & Defensive Coding"
+    },
+    {
+      "id": "performance-memory",
+      "label": "Performance & Memory"
+    },
+    {
+      "id": "security-reliability",
+      "label": "Security & Reliability"
+    },
+    {
+      "id": "architecture-large-scale-javascript",
+      "label": "Architecture at Scale"
+    },
+    {
+      "id": "mastery-interview-readiness",
+      "label": "Mastery & Interviews"
     }
   ],
   "sections": [
     {
-      "id": "js-modern",
-      "intro": "Harnessing the latest ECMAScript features and modern browser APIs.",
-      "cards": [
+      "id": "origins-ecmascript-runtimes",
+      "intro": "Learn where JavaScript came from, how ECMAScript evolves, and how runtimes host the language.",
+      "blocks": [
         {
-          "title": "ECMAScript 2024+ (ES15)",
-          "contentHtml": "<ul>\n        <li><b>Object.groupBy / Map.groupBy:</b> Natively groups an array of objects into an object (or Map) based on a string returned by a callback. Replaces the need for Lodash `_.groupBy`.</li>\n        <li><b>Promise.withResolvers:</b> Returns an object containing a new Promise and its `resolve` and `reject` functions. Fixes the old awkward pattern of extracting resolvers from the Promise constructor.</li>\n        <li><b>Array.prototype.with:</b> Safe array mutation. `arr.with(index, value)` returns a *new* array with the element at `index` replaced by `value`, leaving the original array intact. Great for React/Redux!</li>\n        <li><b>Temporal API (Draft):</b> The modern replacement for the broken `Date` object, providing full timezone awareness, calendar math, and immutable date objects.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>// Example of Promise.withResolvers\nconst { promise, resolve, reject } = Promise.withResolvers();\n\nsetTimeout(() =&gt; resolve(\"Done!\"), 1000);\npromise.then(console.log); // \"Done!\" after 1s\n</code></pre>\n      </div>"
+          "type": "richText",
+          "title": "What JavaScript Actually Is",
+          "html": "<p>JavaScript is the programming language developers write, but the language is only one layer of the system. The ECMAScript specification defines syntax, values, objects, functions, modules, and runtime semantics, while each host runtime adds its own APIs and execution environment on top.</p><ul><li>The language gives you variables, functions, objects, promises, classes, and modules.</li><li>The host decides which globals and APIs exist around the language.</li><li>The same core JavaScript can run in browsers, Node.js, and edge runtimes.</li></ul>"
         },
         {
-          "title": "Modern Web APIs",
-          "contentHtml": "<ul>\n        <li><b>IntersectionObserver:</b> Asynchronously observe changes in the intersection of a target element with an ancestor or the viewport. Crucial for lazy-loading images and infinite scrolling without hurting performance via massive scroll event listeners.</li>\n        <li><b>ResizeObserver:</b> Reports changes to the dimensions of an element's content or border box. Provides a performant way to build truly responsive elements independently of the viewport (container queries in JS).</li>\n        <li><b>MutationObserver:</b> Watches the DOM tree for changes (nodes added/removed, attributes modified) and fires a callback. Used internally by frameworks, but vital for writing extensions or observing 3rd party injects.</li>\n        <li><b>Web Workers:</b> Runs scripts in background threads. The worker thread can perform computations without interfering with the user interface (main thread). Cannot access the DOM directly.</li>\n      </ul>"
+          "type": "compare",
+          "title": "JavaScript vs ECMAScript vs Host Runtime",
+          "items": [
+            {
+              "label": "JavaScript",
+              "html": "<p>The practical language developers use every day. When people say ?JavaScript,? they usually mean the language plus the ecosystem around it.</p>"
+            },
+            {
+              "label": "ECMAScript",
+              "html": "<p>The official language standard. ECMA-262 is the authoritative spec, and the current draft includes the most recent yearly snapshot plus finished proposals that reached Stage 4.</p>"
+            },
+            {
+              "label": "Host runtime",
+              "html": "<p>The environment that executes JavaScript and exposes platform APIs. Browsers add the DOM and web APIs, Node.js adds server and system APIs, and edge runtimes tend to expose a smaller, Web-API-first surface.</p>"
+            }
+          ]
         },
         {
-          "title": "JS Design Patterns",
-          "contentHtml": "<ul>\n        <li><b>Singleton:</b> Ensures a class has only one single instance and provides a global access point to it (e.g., establishing a single database connection or global store).</li>\n        <li><b>Observer / Pub-Sub:</b> A subject maintains a list of dependents (observers) and notifies them automatically of state changes (e.g., Redux, RxJS Subjects, DOM Event listeners).</li>\n        <li><b>Factory:</b> A function or method that creates objects without specifying the exact class of object that will be created. Simplifies complex object initialization.</li>\n        <li><b>Proxy:</b> The modern ES6 `Proxy` object lets you wrap an object and intercept fundamental operations (reading/writing properties). Used extensively by Vue 3 and Zustand to track reactive state dependencies.</li>\n      </ul>"
+          "type": "richText",
+          "title": "Browser vs Node.js vs Edge runtimes",
+          "html": "<p>You should think in terms of capabilities, not just ?frontend? or ?backend.?</p><ul><li><strong>Browsers</strong> provide the DOM, events, rendering, storage, and other web platform APIs.</li><li><strong>Node.js</strong> runs JavaScript outside the browser and supports both CommonJS and ECMAScript modules, along with server, filesystem, process, stream, and networking APIs.</li><li><strong>Edge runtimes</strong> often use isolate-based execution and many browser-style APIs, but usually expose fewer process and filesystem capabilities than Node.js.</li></ul>"
+        },
+        {
+          "type": "mechanics",
+          "title": "How JavaScript Starts Running",
+          "steps": [
+            "The host loads a script or resolves a module graph before execution begins.",
+            "Source code is parsed; syntax errors stop execution before the program runs.",
+            "The host creates the global execution context and establishes top-level bindings.",
+            "Declarations are processed before line-by-line evaluation, but initialization timing still differs for var, let, const, function, and class.",
+            "Top-level code executes; in module code, dependency linking and evaluation happen before the module body becomes usable to importers."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Script entry point vs module entry point",
+          "language": "html",
+          "code": "<script src=\"./legacy.js\"></script>\n<script type=\"module\">\n  import { boot } from \"./app.js\";\n  boot();\n</script>",
+          "caption": "Scripts execute directly; modules participate in a dependency graph and use import/export semantics."
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 1 recap",
+          "items": [
+            "JavaScript is the language; ECMAScript is the specification; the host runtime provides the surrounding APIs.",
+            "Browsers, Node.js, and edge runtimes share the core language but expose different capabilities.",
+            "Execution begins only after loading, parsing, binding setup, and host-specific startup rules are satisfied."
+          ]
         }
       ]
     },
     {
-      "id": "js-ts",
-      "intro": "Extending JavaScript with static typing to build robust, scalable applications.",
-      "cards": [
+      "id": "values-types-identity",
+      "intro": "Build a precise mental model for values, coercion, equality, and how identity works in JavaScript.",
+      "blocks": [
         {
-          "title": "Types vs Interfaces",
-          "contentHtml": "<p>Both are used to define custom structures in TypeScript, but they have subtle differences.</p>\n      <ul>\n        <li><b>Interface:</b> Strictly for object shapes. Can be merged via \"Declaration Merging\" (if you declare the same interface twice, TS combines their properties). Ideal for public API definitions.</li>\n        <li><b>Type Aliases (`type`):</b> More flexible. Can define primitives, unions, intersections, and mapped types. Cannot be declaration-merged. Ideal for internal component definitions and complex utility types.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>// Interface (Object Shape)\ninterface User { id: number; name: string; }\n\n// Type (Union)\ntype Status = \"idle\" | \"loading\" | \"success\" | \"error\";\n\n// Intersection (Combining shapes)\ntype AdminUser = User &amp; { role: \"admin\" | \"superadmin\" };\n</code></pre>\n      </div>"
+          "type": "richText",
+          "title": "Primitives, Objects, and Identity",
+          "html": "<p>Primitive values behave like immutable values, while objects are mutable references. Two different objects can have identical shape and contents but still compare as different because equality for objects is based on identity, not structure.</p><ul><li>Primitives like strings, numbers, booleans, bigint, symbol, null, and undefined are compared by value semantics.</li><li>Objects, arrays, and functions are reference values: assignment copies the reference, not the structure.</li><li>Functions are also objects, which is why they can carry properties and methods.</li></ul>"
         },
         {
-          "title": "Generics & Utility Types",
-          "contentHtml": "<p>Generics allow you to write reusable code that works across multiple types.</p>\n      <ul>\n        <li><b>`T` as an Argument:&lt;/b&gt; Think of a generic `<t>` like a type variable passed into a function.</t></b></li><b>\n        <li><b>Partial&lt;T&gt;:</b> Makes all properties in T optional. Useful for update/patch payloads.</li>\n        <li><b>Omit&lt;T, K&gt;:</b> Creates a type by removing specific keys `K` from `T`.</li>\n        <li><b>Record&lt;K, T&gt;:</b> Creates an object type where keys are of type `K` and values are of type `T`.</li>\n      </b></ul><b>\n      <div class=\"code-block\">\n<pre><code>// Generic Function: infers type T from the input array\nfunction getFirstItem&lt;T&gt;(items: T[]): T | undefined {\n  return items[0];\n}\n\nconst num = getFirstItem([1, 2, 3]); // Hover: num is number\nconst str = getFirstItem([\"a\", \"b\"]); // Hover: str is string\n</code></pre>\n      </div>\n    </b>"
+          "type": "compare",
+          "title": "Loose Equality vs Strict Equality vs Object.is()",
+          "items": [
+            {
+              "label": "==",
+              "html": "<p>Loose equality may perform type conversion before comparing values. It is compact, but it also creates surprising cases such as <code>\"0\" == 0</code> and <code>[] == 0</code>.</p>"
+            },
+            {
+              "label": "===",
+              "html": "<p>Strict equality compares without type coercion. It is the default comparison you should reach for in application code.</p>"
+            },
+            {
+              "label": "Object.is()",
+              "html": "<p><code>Object.is()</code> also avoids coercion, but unlike <code>===</code> it treats <code>NaN</code> as equal to itself and distinguishes <code>-0</code> from <code>+0</code>.</p>"
+            }
+          ]
+        },
+        {
+          "type": "richText",
+          "title": "Coercion, conversion, and sameness",
+          "html": "<p>JavaScript is dynamically and weakly typed, so the language often converts values when an operator or API expects a different type. Coercion is not random; it follows specification rules such as object-to-primitive conversion and numeric or string conversion depending on the operator.</p><ul><li>If one operand of <code>+</code> is a string, concatenation wins.</li><li>Loose equality can coerce objects to primitives before comparing.</li><li>Structural similarity is never enough for object equality; two distinct objects are distinct identities.</li></ul>"
+        },
+        {
+          "type": "code",
+          "title": "Identity and coercion examples",
+          "language": "js",
+          "code": "console.log({} === {});            // false\nconsole.log(Object.is(NaN, NaN)); // true\nconsole.log(-0 === 0);            // true\nconsole.log(Object.is(-0, 0));    // false\nconsole.log([] == 0);             // true\nconsole.log([] === 0);            // false",
+          "caption": "Identity, equality, and coercion are related, but they are not the same rule."
+        },
+        {
+          "type": "trap",
+          "title": "Coercion trap: [] == ![]",
+          "tone": "pitfall",
+          "html": "<p>This expression evaluates to <code>true</code>. First <code>![]</code> becomes <code>false</code> because arrays are truthy. Then the comparison becomes <code>[] == false</code>. Loose equality converts <code>false</code> to <code>0</code> and the array to a primitive, which becomes the empty string and then <code>0</code>. The final comparison is <code>0 == 0</code>.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: predict the comparisons",
+          "prompt": "Without running the code, predict the result of each expression: Object.is(-0, 0), NaN === NaN, Object.is(NaN, NaN), [] == 0, and [] === 0.",
+          "answerHtml": "<p><strong>Answers:</strong> <code>Object.is(-0, 0)</code> is <code>false</code>; <code>NaN === NaN</code> is <code>false</code>; <code>Object.is(NaN, NaN)</code> is <code>true</code>; <code>[] == 0</code> is <code>true</code>; and <code>[] === 0</code> is <code>false</code>. The point of the drill is to separate coercion rules from identity rules.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 2 recap",
+          "items": [
+            "Objects compare by identity, not by structural shape.",
+            "JavaScript gives you three important equality operations: ==, ===, and Object.is().",
+            "Coercion follows rules, but those rules are surprising enough that you should use them consciously, not accidentally."
+          ]
         }
       ]
     },
     {
-      "id": "ts-expert",
-      "intro": "Advanced type gymnastics, branded types, and sophisticated generic architectures for 100% type safety.",
-      "cards": [
+      "id": "variables-scope-closures",
+      "intro": "Understand lexical scope, declaration behavior, and why closures power real JavaScript architecture.",
+      "blocks": [
         {
-          "title": "Type Gymnastics: Recursion",
-          "contentHtml": "<p>Using recursive conditional types to create deep, complex object transformations:</p>\n      <pre><code>// Deep Readonly Pattern\ntype DeepReadonly&lt;T&gt; = {\n  readonly [P in keyof T]: T[P] extends object \n    ? DeepReadonly&lt;T[P]&gt; \n    : T[P];\n};\n\n// JSON Safety Pattern\ntype JSONValue =\n  | string | number | boolean | null\n  | { [key: string]: JSONValue }\n  | JSONValue[];</code></pre>"
+          "type": "richText",
+          "title": "Lexical Scope and Environment Records",
+          "html": "<p>JavaScript uses lexical scoping, which means identifier lookup depends on where a variable is declared in source code, not where a function is later called. Every execution context gets an environment record, and nested code can walk outward through those environments.</p><ul><li><code>var</code> binds to function or global scope.</li><li><code>let</code> and <code>const</code> are block scoped.</li><li>Modules introduce module scope, which closures can also capture.</li></ul>"
         },
         {
-          "title": "Branded Types (Nominal Simulation)",
-          "contentHtml": "<p>TS is structural, but branding ensures data integrity for IDs, Emails, and sensitive primitives:</p>\n      <pre><code>type Brand&lt;K, T&gt; = K &amp; { __brand: T };\n\ntype UserID = Brand&lt;string, \"UserID\"&gt;;\ntype OrderID = Brand&lt;string, \"OrderID\"&gt;;\n\nconst u: UserID = \"123\" as UserID;\nconst o: OrderID = u; // Error: OrderID !== UserID</code></pre>"
+          "type": "mechanics",
+          "title": "How scope lookup works",
+          "steps": [
+            "The current execution context checks its own environment record for the requested identifier.",
+            "If the name is not found locally, lookup walks outward to the next lexical environment.",
+            "The process repeats until the name is found or the global/module boundary is reached.",
+            "If no binding exists anywhere in the chain, JavaScript throws a ReferenceError when the identifier is accessed."
+          ]
         },
         {
-          "title": "Mapped Type Remapping",
-          "contentHtml": "<p>Using the <code>as</code> clause to dynamically rename keys based on templates:</p>\n      <pre><code>interface User {\n  id: number;\n  name: string;\n}\n\ntype Getters&lt;T&gt; = {\n  [K in keyof T as `get${Capitalize&lt;string &amp; K&gt;}`]: () =&gt; T[K]\n};\n\ntype UserGetters = Getters&lt;User&gt;;\n// { getName: () =&gt; string; getId: () =&gt; number; }</code></pre>"
+          "type": "richText",
+          "title": "Closures in real architecture",
+          "html": "<p>A closure is a function bundled with references to its surrounding lexical environment, and JavaScript creates closures every time a function is created. This is why factories, event handlers, async callbacks, and module patterns can retain private state after outer code has finished running.</p><ul><li>Closures power function factories like <code>makeAdder</code>.</li><li>They are useful for encapsulation and private state.</li><li>They can also retain more memory than you intended if they keep references alive.</li></ul>"
         },
         {
-          "title": "Satisfies vs Explicit Annotations",
-          "contentHtml": "<p>The <code>satisfies</code> operator (TS 4.9+) allows validation WITHOUT widening inferred types:</p>\n      <pre><code>type Palette = Record&lt;string, string | number[]&gt;;\n\nconst colors = {\n  primary: \"#00f\",\n  secondary: [0, 0, 255]\n} satisfies Palette;\n\n// colors.primary remains \"#00f\" (literal)\n// NOT widened to string | number[]</code></pre>"
+          "type": "code",
+          "title": "Closure factory and private state",
+          "language": "js",
+          "code": "function makeCounter() {\n  let count = 0;\n  return {\n    inc() { count += 1; },\n    value() { return count; },\n  };\n}\n\nconst counter = makeCounter();\ncounter.inc();\nconsole.log(counter.value()); // 1",
+          "caption": "The returned methods keep access to count even after makeCounter() has returned."
+        },
+        {
+          "type": "trap",
+          "title": "Closure loop trap",
+          "tone": "pitfall",
+          "html": "<p>When you create callbacks inside a loop with <code>var</code>, every callback closes over the same binding. By the time the callbacks run, the loop has already advanced, so all of them observe the final value instead of the per-iteration value you expected. Use <code>let</code> for a fresh binding each iteration or create a factory function.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: why do all callbacks log 3?",
+          "prompt": "Explain the output of: for (var i = 0; i < 3; i++) { setTimeout(() => console.log(i), 0); } and then explain the simplest fix.",
+          "answerHtml": "<p>It logs <code>3</code> three times because each callback closes over the same <code>var i</code> binding. After the loop finishes, that shared binding holds <code>3</code>, so every callback reads the same final value. Replacing <code>var</code> with <code>let</code> creates a fresh per-iteration binding, which makes the callbacks log <code>0</code>, <code>1</code>, and <code>2</code>.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 3 recap",
+          "items": [
+            "Lexical scope depends on where bindings are declared in source code.",
+            "Closures are created when functions are created, not when they are later invoked.",
+            "The classic loop bug is a shared-binding problem, not a timer problem."
+          ]
         }
       ]
     },
     {
-      "id": "js-memory",
-      "intro": "Architecture of the V8 engine, Garbage Collection internals, and high-performance threading.",
-      "cards": [
+      "id": "functions-invocation-mechanics",
+      "intro": "Go from basic functions to call-site rules, higher-order design, and invocation mechanics that interviewers probe deeply.",
+      "blocks": [
         {
-          "title": "V8 Engine Architecture",
-          "contentHtml": "<p>Modern JS engines like V8 (Chrome/Node) use a sophisticated pipeline to achieve near-native speeds:</p>\n      <ul>\n        <li><strong>Ignition:</strong> A baseline bytecode interpreter that executes code quickly with minimal overhead.</li>\n        <li><strong>TurboFan:</strong> The optimizing JIT compiler. It uses profiling data from Ignition to compile \"Hot\" functions into highly optimized machine code.</li>\n        <li><strong>Speculative Optimization:</strong> V8 assumes types based on previous execution. If a function always receives integers, it stays optimized; if a string is suddenly passed, it triggers a \"Deoptimization\" (bailout).</li>\n      </ul>"
+          "type": "richText",
+          "title": "Function Forms and Invocation Patterns",
+          "html": "<p>JavaScript has function declarations, function expressions, arrow functions, methods, constructors, and higher-order functions, but the key mastery point is this: regular function behavior depends heavily on how a function is invoked. The same function body can produce a different <code>this</code> value depending on its call-site.</p><ul><li>Functions are callable objects.</li><li>Regular functions get <code>this</code> from the call-site.</li><li>Arrow functions capture <code>this</code> lexically from the surrounding scope.</li></ul>"
         },
         {
-          "title": "Garbage Collection Internals",
-          "contentHtml": "<p>V8 uses a <strong>Generational GC</strong> strategy based on the \"Infant Mortality\" hypothesis (most objects die young):</p>\n      <ul>\n        <li><strong>Young Generation (New Space):</strong> Small (1-64MB), fast area for new objects. Uses \"Scavenge\" algorithm with parallel processing.</li>\n        <li><strong>Old Generation (Old Space):</strong> Where long-lived objects are moved. Uses \"Mark-Sweep-Compact\" which is more thorough but slower.</li>\n        <li><strong>Orinoco:</strong> The modern parallel/incremental/concurrent engine that performs GC work on background threads to minimize main-thread \"Stop-the-World\" pauses.</li>\n      </ul>"
+          "type": "compare",
+          "title": "call() vs apply() vs bind()",
+          "items": [
+            {
+              "label": "call()",
+              "html": "<p>Invokes the target function immediately with an explicit <code>this</code> value and arguments passed one by one.</p>"
+            },
+            {
+              "label": "apply()",
+              "html": "<p>Invokes the target function immediately with an explicit <code>this</code> value and arguments provided as an array or array-like object.</p>"
+            },
+            {
+              "label": "bind()",
+              "html": "<p>Creates a new function whose <code>this</code> value is pre-bound and whose leading arguments can also be pre-filled for later calls.</p>"
+            }
+          ]
         },
         {
-          "title": "Memory Management Tools",
-          "contentHtml": "<p>Strategies for handling large data sets without memory leaks:</p>\n      <pre><code>// WeakRef: Reference without preventing GC\nlet heavyObj = { data: new Array(1000000) };\nconst ref = new WeakRef(heavyObj);\n\n// FinalizationRegistry: Cleanup callback\nconst registry = new FinalizationRegistry((heldValue) =&gt; {\n  console.log(`${heldValue} was collected!`);\n});\nregistry.register(heavyObj, \"Big Data\");\n\nheavyObj = null; // Eligible for GC</code></pre>"
+          "type": "richText",
+          "title": "Regular functions vs arrow functions",
+          "html": "<p>The value of <code>this</code> depends on how a regular function is called, not where it was defined. Arrow functions are different: they inherit <code>this</code> from the surrounding scope and do not create their own <code>this</code> binding, which means <code>bind()</code>, <code>apply()</code>, and <code>call()</code> cannot retarget them.</p><ul><li>Use regular functions when method-style call-site binding matters.</li><li>Use arrows when lexical <code>this</code> is the goal.</li><li>Do not treat arrows as ?shorter methods? without checking the binding behavior you need.</li></ul>"
         },
         {
-          "title": "Advanced Threading: Workers",
-          "contentHtml": "<p>Moving heavy computation off the main thread to ensure 60fps responsiveness:</p>\n      <ul>\n        <li><strong>Web Workers:</strong> Truly parallel execution using separate OS threads. Communicates via structured cloning.</li>\n        <li><strong>SharedArrayBuffer:</strong> Allows memory sharing between threads. Must be used with <strong>Atomics</strong> to prevent race conditions.</li>\n        <li><strong>SharedWorkers:</strong> Accessible from multiple windows/tabs from the same origin, ideal for coordinating state across tabs.</li>\n      </ul>"
+          "type": "code",
+          "title": "Invocation and this",
+          "language": "js",
+          "code": "const workshop = {\n  title: \"JS Mastery\",\n  regular() { return this.title; },\n  arrow: () => this,\n};\n\nconst detached = workshop.regular;\nconsole.log(workshop.regular());     // \"JS Mastery\"\nconsole.log(detached());             // undefined in strict mode\nconsole.log(detached.bind(workshop)()); // \"JS Mastery\"",
+          "caption": "The body is the same; the call-site is what changes the outcome for regular functions."
+        },
+        {
+          "type": "trap",
+          "title": "`this` binding confusion",
+          "tone": "interview",
+          "html": "<p><code>const fn = obj.method; fn()</code> usually loses the original receiver because the call-site is no longer <code>obj.method()</code>. In strict mode, a standalone regular call produces <code>undefined</code> for <code>this</code>. This is why event handlers, timers, and extracted methods so often need wrappers, arrows, or <code>bind()</code>.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: what does this log?",
+          "prompt": "Predict the output of: const obj = { value: 7, get() { return this.value; } }; const read = obj.get; console.log(read()); console.log(read.bind(obj)());",
+          "answerHtml": "<p>The first call logs <code>undefined</code> in strict mode because <code>read()</code> is a standalone invocation with no receiver object. The second call logs <code>7</code> because <code>bind(obj)</code> creates a new function whose <code>this</code> is permanently set to <code>obj</code>.</p>"
+        },
+        {
+          "type": "richText",
+          "title": "Function design patterns",
+          "html": "<p>Once call-site rules are clear, you can design functions more intentionally.</p><ul><li>Prefer small, explicit functions whose inputs are easy to test.</li><li>Use higher-order functions to parameterize behavior instead of copy-pasting logic.</li><li>Use partial application or binding when you want to pre-configure a function for later use.</li></ul>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 4 recap",
+          "items": [
+            "Regular functions get this from the call-site; arrow functions inherit it lexically.",
+            "call() and apply() invoke immediately; bind() returns a new pre-configured function.",
+            "Most this bugs come from method extraction or callback invocation, not from syntax alone."
+          ]
         }
       ]
     },
     {
-      "id": "jcs",
-      "intro": "The JavaScript 'Cheat Sheet' for clearing your interview. Master these high-density recall points and you are in the top 1% of candidates globally.",
-      "cards": [
+      "id": "objects-prototypes-classes",
+      "intro": "Trace how objects inherit behavior, how property lookup really works, and when classes help or hide complexity.",
+      "blocks": [
         {
-          "title": "V8 Engine Mastery",
-          "contentHtml": "<ul>\n    <li><b>Ignition (Interpreter):</b> Generates bytecode for instant execution.</li>\n    <li><b>TurboFan (JIT Compiler):</b> Compiles 'Hot' functions to machine code. It uses 'Speculative Optimization' based on types.</li>\n    <li><b>Deoptimization:</b> If a function's argument type changes suddenly, V8 'bails out' and reverts to the interpreter (huge perf hit).</li>\n    <li><b>Hidden Classes:</b> V8 optimizes object property access by sharing static 'hidden classes' between identical objects. Avoid changing property order to benefit.</li>\n  </ul>"
+          "type": "richText",
+          "title": "Property Lookup and Object Identity",
+          "html": "<p>When you read <code>obj.value</code>, JavaScript first checks whether <code>value</code> exists directly on <code>obj</code>. If not, it walks the object's prototype chain until it finds the property or reaches <code>null</code>. This means objects can share behavior through prototypes without copying methods onto every instance.</p><ul><li>Own properties live directly on the object itself.</li><li>Inherited properties are found by walking upward through the prototype chain.</li><li>Writing to an object usually creates or updates an own property instead of mutating an inherited one.</li></ul>"
         },
         {
-          "title": "Garbage Collection Internals",
-          "contentHtml": "<ul>\n    <li><b>Generational Hypotheses:</b> Most objects die young. V8 uses <b>New Space</b> (Scavenge) and <b>Old Space</b> (Mark-Sweep).</li>\n    <li><b>Scavenge:</b> Moving GC for the Young Generation. Fast but requires double the memory.</li>\n    <li><b>Mark-Sweep-Compact:</b> For long-lived objects. Compacts memory to prevent fragmentation.</li>\n    <li><b>Orinoco:</b> The modern concurrent GC engine that runs on background threads to minimize 'Stop-the-World' pauses.</li>\n  </ul>"
+          "type": "mechanics",
+          "title": "How prototype lookup works",
+          "steps": [
+            "JavaScript checks the current object for an own property matching the requested key.",
+            "If the property is not present, JavaScript follows the internal prototype link to the next object in the chain.",
+            "Lookup repeats at each prototype until the property is found or the chain ends at null.",
+            "If the property is never found, the result of the lookup is undefined."
+          ]
         },
         {
-          "title": "Event Loop & Priority Tasks",
-          "contentHtml": "<ul>\n    <li><b>Microtasks (P1):</b> <code>Promise.then</code>, <code>queueMicrotask</code>, <code>MutationObserver</code>. Emptied fully before macrotasks.</li>\n    <li><b>Macrotasks (P2):</b> <code>setTimeout</code>, <code>setInterval</code>, <code>setImmediate</code> (Node), I/O.</li>\n    <li><b>Node.js Specific:</b> <code>process.nextTick</code> has higher priority than Promise microtasks. The 'Timers' phase is distinct from 'Poll'.</li>\n    <li><b>Expert Point:</b> JS is single-threaded, but the libuv (Node) or browser APIs handle concurrency via OS threads.</li>\n  </ul>"
+          "type": "code",
+          "title": "`new`, prototypes, and shared methods",
+          "language": "js",
+          "code": "function Workshop(title) {\n  this.title = title;\n}\n\nWorkshop.prototype.describe = function () {\n  return `Workshop: ${this.title}`;\n};\n\nconst js = new Workshop(\"JavaScript Internals\");\nconsole.log(js.describe()); // Workshop: JavaScript Internals\nconsole.log(Object.getPrototypeOf(js) === Workshop.prototype); // true",
+          "caption": "The new operator creates an object, links its prototype, invokes the constructor with that object as this, and returns the object unless the constructor explicitly returns another object."
         },
         {
-          "title": "Closures & Memory Leaks",
-          "contentHtml": "<ul>\n    <li><b>The Closure Trap:</b> Closures retain the <i>entire</i> lexical scope, not just the used variables. This can prevent garbage collection of large objects.</li>\n    <li><b>Detached DOM:</b> Referencing a DOM element in JS prevents it from being GC'd even if removed from the tree.</li>\n    <li><b>Fixes:</b> Use <code>WeakMap</code> for caches, <code>WeakRef</code> for non-essential references, and always <code>clearTimeout</code>.</li>\n  </ul>"
+          "type": "richText",
+          "title": "Classes are syntax over prototypes",
+          "html": "<p><code>class</code> syntax changes how JavaScript code looks, but it does not replace prototypes with a different inheritance model. Instance methods still live on the prototype, constructors still initialize instance state, and <code>extends</code> still builds a prototype chain under the hood.</p><ul><li>Classes make intent clearer and provide <code>super</code>, private fields, and a cleaner method syntax.</li><li>They do not make JavaScript a class-based language in the same sense as Java or C#.</li><li>Understanding the prototype model explains what classes are really doing for you.</li></ul>"
         },
         {
-          "title": "State of JS (ES2024 - 2026)",
-          "contentHtml": "<ul>\n    <li><b>Temporal API:</b> Immutable, timezone-aware dates. No more 0-indexed months or leap-year bugs.</li>\n    <li><b>Promise.withResolvers:</b> Eliminates the 'extraction' boilerplate for manual promise control.</li>\n    <li><b>Type Annotations (Proposal):</b> 'Type Stripping' where native engines ignore TS-like syntax (Stage 3).</li>\n    <li><b>SharedArrayBuffer + Atomics:</b> For high-performance synchronization between Web Workers.</li>\n  </ul>"
+          "type": "compare",
+          "title": "Composition vs inheritance",
+          "items": [
+            {
+              "label": "Composition",
+              "html": "<p>Build objects from smaller capabilities instead of forcing them into a rigid hierarchy. Composition is often easier to evolve because you can swap or combine behaviors without deep inheritance trees.</p>"
+            },
+            {
+              "label": "Inheritance",
+              "html": "<p>Inheritance can be useful when there is a genuine \"is-a\" relationship, but it also couples subclasses tightly to parent behavior. In JavaScript, overusing inheritance often produces fragile class chains that are harder to reason about than composed objects or functions.</p>"
+            }
+          ]
         },
         {
-          "title": "The Prototype Chain (Recall)",
-          "contentHtml": "<ul>\n    <li><b>Chain:</b> Lookup order: Instance -> Prototype -> Object.prototype -> null.</li>\n    <li><b>Object.create(null):</b> Creates an object with NO prototype (no <code>toString</code>, <code>hasOwnProperty</code>). Safe for dictionaries.</li>\n    <li><b>Shadowing:</b> Adding a property to an instance hides the prototype's property; removing it reveals the prototype one back.</li>\n  </ul>"
+          "type": "trap",
+          "title": "Prototype mutation trap",
+          "tone": "warning",
+          "html": "<p>Changing an object's prototype shape after many instances already exist can make the system harder to reason about and can hurt performance in modern engines. Even when it is technically possible, treating prototypes as stable contracts is usually safer than mutating them at arbitrary times.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 5 recap",
+          "items": [
+            "Property access starts on the object itself and falls back to the prototype chain only when needed.",
+            "The new operator links instances to a prototype and then runs constructor logic.",
+            "Classes improve syntax and ergonomics, but the underlying inheritance model is still prototype-based.",
+            "Composition is often the more maintainable default in JavaScript application design."
+          ]
         }
       ]
     },
     {
-      "id": "js-iq",
-      "intro": "95 core questions — basic to very advanced. Click any question to reveal the answer.",
-      "cards": [],
+      "id": "arrays-collections-iteration",
+      "intro": "Choose the right collection type, reason about iteration, and understand the tradeoffs behind common data operations.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Array methods and iteration style",
+          "html": "<p>Arrays are the default sequence structure in JavaScript, but mastery means choosing the right style of iteration for the problem. Methods like <code>map</code>, <code>filter</code>, <code>reduce</code>, <code>some</code>, and <code>every</code> make data flow easier to read when you are transforming or testing a collection.</p><ul><li>Use <code>map</code> when every input element should produce an output element.</li><li>Use <code>filter</code> when you are selecting a subset.</li><li>Use loops when control flow, early exits, or side effects are the main concern.</li></ul>"
+        },
+        {
+          "type": "richText",
+          "title": "Iterables vs iterators",
+          "html": "<p>An <strong>iterable</strong> is a value that knows how to create an iterator through <code>Symbol.iterator</code>. An <strong>iterator</strong> is the object that produces the sequence one step at a time via <code>next()</code>. Arrays, strings, Maps, and Sets are iterable, which is why <code>for...of</code>, spread syntax, and destructuring all work on them.</p>"
+        },
+        {
+          "type": "code",
+          "title": "Custom iterable example",
+          "language": "js",
+          "code": "const countdown = {\n  from: 3,\n  [Symbol.iterator]() {\n    let current = this.from;\n    return {\n      next() {\n        if (current < 0) {\n          return { done: true };\n        }\n        return { value: current--, done: false };\n      },\n    };\n  },\n};\n\nconsole.log([...countdown]); // [3, 2, 1, 0]",
+          "caption": "Iterables create iterators. The iterator is what actually yields values during iteration."
+        },
+        {
+          "type": "compare",
+          "title": "Object vs Map vs Set",
+          "items": [
+            {
+              "label": "Object",
+              "html": "<p>Best for simple records with a known shape, especially when property access by dot notation makes the code clearer. Objects are not ideal when you primarily need a general-purpose key-value collection.</p>"
+            },
+            {
+              "label": "Map",
+              "html": "<p>Best when keys are dynamic, when insertion order matters, or when you want collection-oriented methods like <code>size</code>, <code>get</code>, and <code>has</code>. Maps can use any value as a key.</p>"
+            },
+            {
+              "label": "Set",
+              "html": "<p>Best when the question is membership rather than key-value storage. Sets store unique values and are useful for deduplication, lookup, and tracking visited items.</p>"
+            }
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Array iteration trap: for...in",
+          "tone": "pitfall",
+          "html": "<p><code>for...in</code> iterates enumerable property keys, not array values. On arrays it gives you string keys and may also include inherited enumerable properties. For array values, prefer <code>for...of</code> or array methods like <code>map</code> and <code>filter</code>.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: pick the right collection",
+          "prompt": "Choose the best structure for each scenario: a user profile with fixed fields, a cache keyed by DOM elements, a deduplicated list of visited route ids, and a value->handler registry whose keys are not limited to strings.",
+          "answerHtml": "<p>A fixed user profile is a strong fit for an object. A cache keyed by DOM elements is a good fit for a <code>WeakMap</code> because the keys are objects and should not be kept alive unnecessarily. A deduplicated list of visited route ids fits a <code>Set</code>. A value-to-handler registry with arbitrary key types fits a <code>Map</code>.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 6 recap",
+          "items": [
+            "Array methods are great for data transformation, but loops are still valid when control flow matters more than elegance.",
+            "Iterables create iterators; iterators produce values one step at a time.",
+            "Use objects for records, Maps for dynamic keyed collections, and Sets for uniqueness and membership."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "modules-tooling-project-structure",
+      "intro": "See how JavaScript is organized in modern projects, from import/export syntax to bundlers and code-splitting.",
+      "blocks": [
+        {
+          "type": "compare",
+          "title": "ES modules vs CommonJS",
+          "items": [
+            {
+              "label": "ES modules",
+              "html": "<p>Use <code>import</code> and <code>export</code>, are statically analyzable, and expose live bindings. That static structure is what enables tree shaking, better tooling, and module-graph analysis.</p>"
+            },
+            {
+              "label": "CommonJS",
+              "html": "<p>Uses <code>require()</code> and <code>module.exports</code>. It is still important in the Node ecosystem, but its runtime-oriented loading model makes static analysis harder and changes some interop rules.</p>"
+            }
+          ]
+        },
+        {
+          "type": "richText",
+          "title": "How module resolution feels in practice",
+          "html": "<p>Module resolution is the process of turning an import specifier into an actual file or package entry. In browsers, module specifiers are URL-oriented. In Node.js, package resolution includes rules around file extensions, the <code>type</code> field, bare specifiers, and modern package entry points like <code>exports</code> and <code>imports</code>.</p><ul><li>Relative specifiers point to nearby files.</li><li>Bare specifiers usually refer to packages.</li><li>Modern Node package resolution uses <code>package.json</code> metadata to determine which entry point is public and which module system applies.</li></ul>"
+        },
+        {
+          "type": "code",
+          "title": "Static imports and dynamic imports",
+          "language": "js",
+          "code": "import { buildIndex } from \"./search/index.js\";\n\nexport async function boot() {\n  const { startInspector } = await import(\"./debug/inspector.js\");\n  buildIndex();\n  startInspector();\n}",
+          "caption": "Static imports participate in the module graph up front; dynamic import() creates an async loading boundary that tools can use for code splitting."
+        },
+        {
+          "type": "richText",
+          "title": "Bundling, tree shaking, and code splitting",
+          "html": "<p>Bundlers analyze a module graph and package code for delivery. <strong>Tree shaking</strong> removes unused exports when the graph is statically analyzable. <strong>Code splitting</strong> breaks the graph into separately loadable chunks so you do not ship every feature on the initial page load.</p><ul><li>Tree shaking works best with ESM because exports and imports are statically declared.</li><li>Code splitting commonly uses route boundaries or <code>import()</code> boundaries.</li><li>Bundling strategy is part of architecture: it affects performance, cacheability, and deployment behavior.</li></ul>"
+        },
+        {
+          "type": "trap",
+          "title": "Module-system mismatch trap",
+          "tone": "warning",
+          "html": "<p>Interop mistakes between ESM and CommonJS often look like missing default exports, incorrect <code>require()</code> usage, or environment-specific resolution failures. When a module issue appears “mysterious,” check the package's module system, file extension rules, and public entry points before assuming the import statement itself is wrong.</p>"
+        },
+        {
+          "type": "richText",
+          "title": "Project structure and public boundaries",
+          "html": "<p>Mature JavaScript projects benefit from clear module boundaries. Keep internal helpers internal, publish intentional entry points, and avoid deep imports into private files unless the package explicitly documents them as stable.</p><ul><li>Use folders and package entry points to communicate what is public.</li><li>Prefer stable import paths over reaching into internal implementation directories.</li><li>Think of the module graph as part of your architecture, not just a bundler detail.</li></ul>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 7 recap",
+          "items": [
+            "ES modules are the modern default because they support static analysis and live bindings.",
+            "CommonJS still matters, especially in Node.js, so interop is part of real-world JavaScript mastery.",
+            "Bundling, tree shaking, and code splitting are consequences of how the module graph is structured."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "asynchrony-event-loop",
+      "intro": "Master promises, async functions, microtasks, timers, and the event loop behavior that explains real-world timing bugs.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Promises, async functions, and sequencing",
+          "html": "<p>Promises model the eventual result of asynchronous work. <code>async</code> functions build on promises and let you write sequential-looking code for async steps, but the underlying control flow is still promise-based.</p><ul><li>A promise can be pending, fulfilled, or rejected.</li><li><code>await</code> pauses only the async function, not the whole runtime.</li><li><code>Promise.all()</code> is for concurrent waiting; plain <code>await</code> one-after-another is sequential.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Promise.all() vs Promise.allSettled() vs Promise.race()",
+          "items": [
+            {
+              "label": "Promise.all()",
+              "html": "<p>Waits for every input promise to fulfill, but rejects immediately when one promise rejects. Use it when all results are required together.</p>"
+            },
+            {
+              "label": "Promise.allSettled()",
+              "html": "<p>Waits for every promise to settle and gives you per-item status. Use it when partial failure is acceptable and you want the full outcome picture.</p>"
+            },
+            {
+              "label": "Promise.race()",
+              "html": "<p>Settles as soon as the first input settles. It is useful for timeouts and winner-takes-first behavior, but it does not cancel the other work for you.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Microtasks vs tasks",
+          "steps": [
+            "Synchronous code runs on the current call stack first.",
+            "When the stack becomes empty, the runtime flushes the microtask queue before taking the next task.",
+            "Promise reactions and queueMicrotask callbacks run as microtasks.",
+            "Timers, user events, and other host-scheduled callbacks run as tasks, so they wait until microtasks are exhausted."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Event loop ordering example",
+          "language": "js",
+          "code": "console.log(\"A\");\nsetTimeout(() => console.log(\"timer\"), 0);\nPromise.resolve().then(() => console.log(\"promise\"));\nqueueMicrotask(() => console.log(\"microtask\"));\nconsole.log(\"B\");",
+          "caption": "The synchronous logs happen first, then microtasks, and only then does the timer callback run."
+        },
+        {
+          "type": "richText",
+          "title": "Cancellation and race conditions",
+          "html": "<p>JavaScript promises do not cancel themselves automatically. Cancellation is usually modeled through external signals such as <code>AbortController</code> or by ignoring stale results when a newer request supersedes an older one.</p><ul><li>Use <code>AbortController</code> when the underlying API supports it, such as <code>fetch()</code>.</li><li>Guard against race conditions by tracking request identity or freshness.</li><li>Remember that <code>Promise.race()</code> chooses a winner, but it does not stop the losers.</li></ul>"
+        },
+        {
+          "type": "trap",
+          "title": "Async iteration trap: forEach + await",
+          "tone": "pitfall",
+          "html": "<p><code>await</code> inside <code>forEach()</code> does not make the loop wait the way many developers expect, because <code>forEach()</code> does not await returned promises. Use <code>for...of</code> for sequential async loops or build an explicit promise array for concurrent work.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: event loop ordering",
+          "prompt": "Predict the output order of: console.log(\"start\"); setTimeout(() => console.log(\"timeout\"), 0); Promise.resolve().then(() => console.log(\"then\")); queueMicrotask(() => console.log(\"queueMicrotask\")); console.log(\"end\");",
+          "answerHtml": "<p>The order is <code>start</code>, <code>end</code>, <code>then</code>, <code>queueMicrotask</code>, and finally <code>timeout</code>. The exact relative ordering between the two microtasks depends on the order they were queued, but both microtasks run before the timer task.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 8 recap",
+          "items": [
+            "Promises model eventual outcomes; async/await is syntax over promise-based control flow.",
+            "Microtasks run before the next task, which is why promise callbacks beat timers in common interview drills.",
+            "Cancellation and race protection require explicit design rather than hope."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "browser-apis-dom-platform",
+      "intro": "Connect the language to the browser platform: DOM, events, storage, fetch, workers, streams, and rendering lifecycle.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "DOM events and delegation",
+          "html": "<p>The browser exposes the document as a tree of nodes, and events move through that tree in a defined order. Event delegation takes advantage of bubbling: instead of attaching a listener to every child, you attach one stable listener to a shared ancestor and inspect the event to decide what actually happened.</p><ul><li>Delegation reduces listener churn when lists are large or dynamic.</li><li>Not every event bubbles, so delegation depends on the event type.</li><li>The DOM is a platform boundary: JavaScript describes behavior, but the browser owns parsing, layout, painting, and native event dispatch.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "event.target vs event.currentTarget",
+          "items": [
+            {
+              "label": "event.target",
+              "html": "<p>The original node the event was dispatched on. In delegated handlers, this is often the child that the user actually interacted with.</p>"
+            },
+            {
+              "label": "event.currentTarget",
+              "html": "<p>The node whose listener is currently running. In a delegated handler attached to a list, this stays equal to the list element even when a button inside the list was clicked.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Delegated event handling",
+          "language": "js",
+          "code": "const list = document.querySelector(\"[data-results]\");\n\nlist.addEventListener(\"click\", (event) => {\n  const button = event.target.closest(\"button[data-id]\");\n  if (!button || !list.contains(button)) return;\n\n  openResult(button.dataset.id);\n});",
+          "caption": "A single listener on the ancestor handles clicks for current and future buttons without rebinding every child."
+        },
+        {
+          "type": "richText",
+          "title": "Fetch, storage, and URL state",
+          "html": "<p>Modern browser applications coordinate network, persistence, and navigation through Web APIs. <code>fetch()</code> is promise-based and can be cancelled with <code>AbortController</code>. <code>localStorage</code> persists per origin across sessions, while <code>sessionStorage</code> is scoped to the current page session. <code>URLSearchParams</code>, <code>history.pushState()</code>, and <code>history.replaceState()</code> let you treat the URL as part of your application's state model.</p><ul><li>Prefer the URL for shareable, bookmarkable state such as filters, sort order, and pagination.</li><li>Prefer storage for client-only preferences that should survive reloads.</li><li>Treat fetch cancellation as a correctness tool, not just a performance trick, because stale responses can overwrite newer UI state.</li></ul>"
+        },
+        {
+          "type": "richText",
+          "title": "Streams and rendering lifecycle",
+          "html": "<p>The browser platform also gives you timing and streaming primitives that sit between raw JavaScript and user-visible rendering. A fetch response body is exposed as a <code>ReadableStream</code>, which means data can be processed chunk by chunk instead of waiting for the entire payload to arrive. On the rendering side, lifecycle timing matters: <code>DOMContentLoaded</code> tells you the document has been parsed, <code>load</code> waits for dependent resources, and <code>requestAnimationFrame()</code> lets you schedule visual work just before the next repaint.</p><ul><li>Use streams when incremental delivery or large payload handling matters more than one giant buffered read.</li><li>Use <code>requestAnimationFrame()</code> for visual coordination, not generic background work.</li><li>Know which lifecycle signal you actually need before wiring startup code, because parsing, loading, and repaint timing are different events.</li></ul>"
+        },
+        {
+          "type": "mechanics",
+          "title": "What happens during event dispatch",
+          "steps": [
+            "The browser creates an Event object and determines the target node.",
+            "Capture listeners run from outer ancestors toward the target if registered for capture.",
+            "Target listeners run on the target node itself.",
+            "If the event bubbles, bubble listeners then run from the target back up through ancestors.",
+            "Default browser behavior happens unless code prevented it and the event is cancelable."
+          ]
+        },
+        {
+          "type": "richText",
+          "title": "Observers and workers",
+          "html": "<p>Observer APIs let the browser notify you when something meaningful changes instead of forcing you to poll on every frame. <code>IntersectionObserver</code> helps with lazy loading and visibility-driven work, while APIs such as <code>MutationObserver</code> watch DOM changes. Web Workers move JavaScript off the main thread so expensive parsing, transformation, or data crunching does not block input and rendering.</p><ul><li>Observers are asynchronous coordination tools; they help you react after the browser detects a threshold or mutation.</li><li>Workers communicate by posting messages, so design the boundary around messages and transferable data.</li><li>Workers can use APIs such as <code>fetch()</code>, but they do not get direct access to the DOM.</li></ul>"
+        },
+        {
+          "type": "trap",
+          "title": "Platform trap: duplicating the same state in DOM, storage, and memory",
+          "tone": "warning",
+          "html": "<p>Applications become fragile when the source of truth lives in too many places at once. If a filter value is stored in a DOM attribute, a local variable, <code>localStorage</code>, and the URL, you now have four places that can drift. Decide which layer is authoritative and derive the rest from it.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: pick the right browser primitive",
+          "prompt": "You are building a searchable activity feed. The search text should be shareable by URL, the results request should cancel when the user types again, a large CSV export should be processed in chunks, and row clicks should work for items inserted later. Which browser primitives fit each need?",
+          "answerHtml": "<p>Use <code>URLSearchParams</code> plus the History API for shareable filter state, <code>AbortController</code> with <code>fetch()</code> for cancellable requests, a <code>ReadableStream</code> for chunked CSV processing, and event delegation on a stable ancestor for dynamically inserted rows.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 9 recap",
+          "items": [
+            "The browser platform provides DOM, events, networking, storage, history, and worker APIs on top of the JavaScript language.",
+            "Event delegation works because bubbling lets an ancestor observe work that originated in descendants.",
+            "Use observers and workers when the browser or a background thread can do coordination more efficiently than a tight main-thread loop."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "error-handling-defensive-coding",
+      "intro": "Design safer code paths with clear failure handling, validation strategy, and defensive boundaries.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Custom errors and error boundaries",
+          "html": "<p>Errors are part of your program's contract. A good custom error tells you what failed, where it failed, and which upstream cause triggered it. In larger systems, an <strong>error boundary</strong> is the architectural edge that catches failures, logs them, and decides whether the system can recover, retry, degrade gracefully, or must stop the current flow.</p><ul><li>Extend <code>Error</code> when you need a domain-specific error type such as <code>ValidationError</code> or <code>NetworkTimeoutError</code>.</li><li>Use the <code>cause</code> option when rethrowing so the original failure is still inspectable.</li><li>Catch errors at boundaries such as request handlers, job runners, or UI task coordinators instead of scattering tiny catch blocks everywhere.</li></ul>"
+        },
+        {
+          "type": "code",
+          "title": "Wrapping an error with context",
+          "language": "js",
+          "code": "class ValidationError extends Error {\n  constructor(message, details) {\n    super(message);\n    this.name = \"ValidationError\";\n    this.details = details;\n  }\n}\n\nasync function loadProfile(id) {\n  try {\n    const response = await fetch(`/api/profiles/${id}`);\n    if (!response.ok) {\n      throw new Error(`Unexpected status: ${response.status}`);\n    }\n    return await response.json();\n  } catch (error) {\n    throw new Error(\"Profile loading failed\", { cause: error });\n  }\n}",
+          "caption": "Rethrow with a clearer message, but keep the original cause so debugging and logging retain the real origin."
+        },
+        {
+          "type": "compare",
+          "title": "Recoverable vs unrecoverable errors",
+          "items": [
+            {
+              "label": "Recoverable",
+              "html": "<p>The operation failed, but the application can still continue with a retry, fallback, degraded experience, or validation message. A transient network failure or invalid user input often belongs here.</p>"
+            },
+            {
+              "label": "Unrecoverable",
+              "html": "<p>The current execution path cannot continue safely. Corrupted assumptions, impossible state, or missing critical dependencies usually require aborting the current task and surfacing a high-signal failure.</p>"
+            }
+          ]
+        },
+        {
+          "type": "richText",
+          "title": "Validation strategy and defensive coding",
+          "html": "<p>Validate inputs at the boundaries of your system, not after bad data has already spread. Defensive coding means making invalid states harder to create, checking assumptions that come from untrusted sources, and failing in ways that preserve signal instead of hiding the problem.</p><ul><li>Parse first, then validate shape, value ranges, and business rules.</li><li>Prefer small invariant checks near boundaries over blanket <code>try/catch</code> around whole features.</li><li>Return actionable validation feedback for user mistakes, but throw or log high-signal errors for programmer mistakes and impossible states.</li></ul>"
+        },
+        {
+          "type": "mechanics",
+          "title": "How thrown errors travel",
+          "steps": [
+            "A throw immediately stops normal execution in the current frame.",
+            "The runtime unwinds the call stack until it finds a matching catch or reaches the top-level boundary.",
+            "A finally block runs before control fully exits the try statement.",
+            "If nothing handles the failure, the runtime reports an uncaught exception or unhandled rejection."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Error-handling trap: swallowing the original failure",
+          "tone": "interview",
+          "html": "<p>A catch block that logs a generic message and returns as if everything is fine destroys the debugging trail. If you transform an error, preserve the original via <code>cause</code>. If you cannot recover, rethrow or let the boundary handle it.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: should you catch or rethrow?",
+          "prompt": "A form submission helper catches every error from fetch, logs \"something went wrong\", returns null, and the caller keeps rendering as if the save succeeded. What is wrong with this pattern, and when should the helper catch versus rethrow?",
+          "answerHtml": "<p>The helper is erasing the difference between user-facing failure and success. Catch locally only if the helper can actually recover, translate the failure into a domain result, or add useful context. Otherwise preserve the failure by rethrowing so the boundary that owns the user flow can decide whether to retry, show an error state, or abort.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 10 recap",
+          "items": [
+            "Custom errors and the Error cause option help you keep failure information precise across layers.",
+            "Recoverable failures should become explicit control flow; unrecoverable failures should surface quickly and clearly.",
+            "Defensive coding starts at boundaries: validate inputs, protect invariants, and avoid catch blocks that hide real bugs."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "performance-memory",
+      "intro": "Study the engine, the garbage collector, and the performance costs that show up in real JavaScript applications.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Rendering cost awareness",
+          "html": "<p>On the web, JavaScript performance is inseparable from rendering performance. Slow code does not only mean slow arithmetic; it also means delayed input handling, forced layout work, extra style recalculation, and missed frames. A useful mental model is that the main thread has to coordinate JavaScript, style, layout, paint, and compositing work while still staying responsive to user input.</p><ul><li>Batch DOM reads together and DOM writes together to avoid layout thrashing.</li><li>Prefer doing less work over doing the same work faster.</li><li>Measure the actual slow path before optimizing; many perceived hot spots are not the real bottleneck.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Debounce vs throttle",
+          "items": [
+            {
+              "label": "Debounce",
+              "html": "<p>Wait until activity stops for a chosen delay, then run once. Use it for search inputs, autosave, or resize work where the final settled value matters more than every intermediate change.</p>"
+            },
+            {
+              "label": "Throttle",
+              "html": "<p>Allow execution at most once per interval. Use it for scroll, pointer, or resize handlers when you need periodic updates during continuous activity.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Debounced input work",
+          "language": "js",
+          "code": "function debounce(fn, delay) {\n  let timeoutId;\n  return (...args) => {\n    clearTimeout(timeoutId);\n    timeoutId = setTimeout(() => fn(...args), delay);\n  };\n}\n\nconst runSearch = debounce((query) => {\n  fetchResults(query);\n}, 250);\n\nsearchInput.addEventListener(\"input\", (event) => {\n  runSearch(event.target.value);\n});",
+          "caption": "Debouncing keeps bursty input from triggering expensive work on every keystroke."
+        },
+        {
+          "type": "mechanics",
+          "title": "From interaction to visible frame",
+          "steps": [
+            "A user input or timer schedules JavaScript work on the main thread.",
+            "JavaScript may read or mutate the DOM, which can trigger style and layout work.",
+            "The browser paints changed pixels and composites layers for display.",
+            "If this whole path takes too long, the browser drops or delays frames and the interface feels janky."
+          ]
+        },
+        {
+          "type": "richText",
+          "title": "Memory leaks and garbage collection",
+          "html": "<p>Garbage collection reclaims objects that are no longer reachable, but it cannot free memory that your code still references. Leaks are usually about unintended reachability: detached DOM nodes kept alive by listeners or arrays, long-lived caches that never evict, intervals that continue forever, or closures that hold onto more state than intended.</p><ul><li>Reachability, not visual disappearance, determines whether objects can be collected.</li><li><code>WeakMap</code> and <code>WeakSet</code> help for object-keyed metadata that should not keep the key alive.</li><li>Frequent garbage collection cycles can also hurt performance because script execution pauses while collection runs.</li></ul>"
+        },
+        {
+          "type": "richText",
+          "title": "Profiling mindset",
+          "html": "<p>Performance work begins with observation. Use browser performance tools to inspect long tasks, paint behavior, layout work, and event timing. Use memory tools to look for steadily growing heaps, detached DOM trees, or suspicious allocation patterns. Then test on the classes of devices your users actually have, because a page that feels fine on a fast laptop can still fail badly on a lower-powered phone.</p><ul><li>Profile before and after changes so you know whether the optimization actually mattered.</li><li>Look for user-facing symptoms first: jank, lag, slow startup, or memory growth over time.</li><li>Treat performance as part of architecture: data shape, rendering strategy, event strategy, and code loading all contribute.</li></ul>"
+        },
+        {
+          "type": "trap",
+          "title": "Performance trap: optimizing blind",
+          "tone": "warning",
+          "html": "<p>Micro-optimizing syntax while ignoring the real bottleneck is one of the fastest ways to waste engineering time. Replacing a loop with a different loop rarely matters if the real problem is repeated layout, too many DOM nodes, a giant bundle, or a leaking cache.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: find the real bottleneck",
+          "prompt": "A dashboard feels slow while scrolling, and memory usage climbs after opening and closing a details panel many times. Which questions should you ask before optimizing code style or changing array methods?",
+          "answerHtml": "<p>First ask whether the scroll path is dominated by event frequency, layout work, paint cost, or too many DOM nodes, because those are more likely bottlenecks than loop syntax. Then ask what is keeping memory reachable: detached DOM nodes, persistent listeners, timers, or a cache that never evicts. Profile the interaction and inspect memory snapshots before changing implementation details.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 11 recap",
+          "items": [
+            "Performance on the web is shared work between JavaScript and the browser's rendering pipeline.",
+            "Debounce and throttle solve different event-rate problems; choose based on whether the final value or periodic updates matter.",
+            "Memory issues are usually about accidental reachability, so cleanup strategy and ownership matter as much as raw code speed."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "security-reliability",
+      "intro": "Learn the security mindset JavaScript developers need when code handles user input, browser APIs, and shared state.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Unsafe DOM insertion and XSS",
+          "html": "<p>Cross-site scripting happens when attacker-controlled input is treated as executable HTML or JavaScript inside a page. The browser does not know whether a string came from a trusted CMS entry or a hostile query parameter, so your code must choose APIs that keep untrusted data as data instead of turning it into markup.</p><ul><li>Any DOM insertion sink that parses HTML can become an XSS boundary if the value is not sanitized for that exact context.</li><li>Escaping rules depend on context: HTML text, attributes, URLs, CSS, and inline script all have different rules.</li><li>Treat every string from users, external services, and storage as untrusted until you have validated or sanitized it appropriately.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "textContent vs innerHTML vs insertAdjacentHTML",
+          "items": [
+            {
+              "label": "textContent",
+              "html": "<p>Safest default for rendering plain text. The browser inserts the string as text, not HTML, so markup characters do not become executable DOM.</p>"
+            },
+            {
+              "label": "innerHTML",
+              "html": "<p>Parses the string as HTML and writes it into the DOM. Powerful but dangerous: it is an injection sink unless the value is trusted or sanitized for HTML.</p>"
+            },
+            {
+              "label": "insertAdjacentHTML",
+              "html": "<p>Also parses HTML and should be treated with the same caution as <code>innerHTML</code>. It is useful for efficient insertion, not for reducing XSS risk.</p>"
+            }
+          ]
+        },
+        {
+          "type": "richText",
+          "title": "Prototype pollution awareness",
+          "html": "<p>Prototype pollution happens when untrusted keys such as <code>__proto__</code>, <code>constructor</code>, or <code>prototype</code> are merged into objects in a way that changes inherited behavior. The bug often starts in generic deep-merge helpers or unsafe object assignment paths, then spreads into surprising authorization, validation, or rendering failures.</p><ul><li>Do not deep-merge untrusted objects into application config without allowlisting keys.</li><li>Prefer explicit schemas and key validation over \"accept any object\" APIs.</li><li>Use null-prototype objects or maps for untrusted dictionary-like data when appropriate.</li></ul>"
+        },
+        {
+          "type": "richText",
+          "title": "eval() and Function() hazards",
+          "html": "<p><code>eval()</code> and the <code>Function</code> constructor turn strings into executable code. That makes them dangerous by default because any path that feeds attacker-controlled input into them becomes code execution. They also make tooling, optimization, and reasoning harder because code shape is no longer statically obvious.</p><ul><li>Use <code>JSON.parse()</code>, structured data, or explicit dispatch tables instead of executing strings.</li><li>The <code>Function</code> constructor runs in the global scope and still carries major security and maintainability risk.</li><li>Content Security Policy and Trusted Types reduce risk, but they are not excuses to keep string-eval patterns around.</li></ul>"
+        },
+        {
+          "type": "richText",
+          "title": "Safer data handling",
+          "html": "<p>Secure JavaScript is mostly about reducing ambiguity at boundaries. Validate shape and allowed values early, keep secrets out of places that are easy to exfiltrate, and choose platform features that narrow the space of unsafe operations. In supporting browsers, Trusted Types and <code>TrustedHTML</code> can reduce DOM XSS risk by forcing HTML-producing code through explicit policies.</p><ul><li>Prefer allowlists to deny-lists when validating keys, command names, or feature flags.</li><li>Use context-appropriate encoding or sanitization rather than one generic \"escape everything\" function.</li><li>Avoid storing sensitive tokens in broadly readable storage when a more constrained mechanism exists.</li></ul>"
+        },
+        {
+          "type": "richText",
+          "title": "Origin boundaries, cookies, and CSRF",
+          "html": "<p>The browser's origin model is a major security boundary. The Same-Origin Policy limits which responses a page can read, while CORS is the server-controlled exception mechanism for sharing across origins. CSRF is different: a hostile site may still cause the browser to send a state-changing request with the user's cookies attached, even if it cannot read the response. That is why cookie-backed applications still need CSRF defenses such as SameSite cookies, anti-CSRF tokens, and origin-aware server checks.</p><ul><li>CORS protects response sharing, not automatic request sending.</li><li>Cookies are convenient but security-sensitive because the browser can attach them automatically.</li><li>Think in layers: origin restrictions, cookie settings, server-side validation, and idempotent or replay-safe APIs all contribute to reliability.</li></ul>"
+        },
+        {
+          "type": "trap",
+          "title": "Security trap: sanitizing in the wrong context",
+          "tone": "warning",
+          "html": "<p>HTML escaping does not automatically make a value safe for a URL, JavaScript string, CSS rule, or attribute. Security bugs often come from using the right idea in the wrong context. Ask where the value will land and defend that context specifically.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: spot the injection sink",
+          "prompt": "A teammate wants to render user bios with `profile.innerHTML = user.bio`, build a search URL with raw string concatenation, and merge query parameters into a config object with a generic deep-merge helper. Which parts are risky, and what safer replacements would you choose?",
+          "answerHtml": "<p><code>innerHTML</code> is an injection sink for untrusted bios, so use <code>textContent</code> for plain text or a well-reviewed HTML sanitization path for trusted rich text. Raw URL concatenation can create encoding and injection bugs, so use <code>URL</code> and <code>URLSearchParams</code>. Deep-merging untrusted query parameters into config risks prototype pollution, so validate keys and build a new object from an allowlisted schema.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 12 recap",
+          "items": [
+            "Treat untrusted data as data, not markup or code.",
+            "Prototype pollution is usually a boundary-validation bug disguised as a generic object utility.",
+            "Safer JavaScript comes from constrained APIs, explicit schemas, and context-aware encoding or sanitization."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "architecture-large-scale-javascript",
+      "intro": "Move from isolated language features to designing large JavaScript systems that stay understandable over time.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "State modeling before UI wiring",
+          "html": "<p>Large JavaScript systems stay manageable when state is modeled intentionally instead of being discovered accidentally through scattered variables. Before choosing a framework hook, store, or event bus, decide what the real domain entities are, which values are derived, and which transitions are valid.</p><ul><li>Separate persistent domain state from short-lived UI state and from network/request state.</li><li>Make illegal states harder to represent by using explicit status fields and small, well-named objects.</li><li>Prefer derivation over duplication so one source of truth can drive multiple views.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Pure functions vs side effects",
+          "items": [
+            {
+              "label": "Pure functions",
+              "html": "<p>Given the same inputs, they return the same outputs and do not mutate outside state. They are easier to test, cache, and reason about because behavior is local and predictable.</p>"
+            },
+            {
+              "label": "Side effects",
+              "html": "<p>Effects talk to the outside world: DOM writes, logging, storage, timers, network calls, and mutable shared state. Effects are necessary, but systems stay healthier when they are isolated behind deliberate boundaries.</p>"
+            }
+          ]
+        },
+        {
+          "type": "richText",
+          "title": "Modularity and file boundaries",
+          "html": "<p>Modules are architectural boundaries, not just folders. A good module exposes a small public surface, hides unstable details, and keeps dependencies flowing in understandable directions. When everything imports everything else, the codebase loses the ability to change locally.</p><ul><li>Group files by capability or domain responsibility, not by random technical trivia.</li><li>Keep public entry points intentional so consumers are not coupled to private implementation files.</li><li>Watch for circular dependencies; they often signal a boundary that has not been modeled cleanly yet.</li></ul>"
+        },
+        {
+          "type": "richText",
+          "title": "Event-driven design without chaos",
+          "html": "<p>Event-driven patterns can decouple features, but they also make control flow harder to trace if every feature shouts into a global bus. Use events for genuine cross-boundary notifications, not as an excuse to avoid modeling ownership.</p><ul><li>Name events after domain facts, not UI trivia, when the event is meant to travel.</li><li>Keep payload shapes explicit and versionable.</li><li>If nobody can answer \"who owns this state and who is allowed to change it?\", the architecture is already drifting.</li></ul>"
+        },
+        {
+          "type": "mechanics",
+          "title": "A maintainable flow through a JavaScript feature",
+          "steps": [
+            "Accept input at a boundary and validate it before it enters the core flow.",
+            "Transform the input through pure domain logic where possible.",
+            "Perform effects such as storage, network, logging, or rendering in dedicated boundary functions.",
+            "Return a result shape that the caller can interpret without guessing hidden side effects."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Architecture trap: utility files that know too much",
+          "tone": "pitfall",
+          "html": "<p>A file named <code>utils.js</code> often becomes a dumping ground for unrelated logic that quietly couples domains together. When a helper needs knowledge of API payloads, DOM structure, storage keys, and business rules at once, it is not a generic utility anymore. Give that responsibility a real boundary and a real name.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: choose the architectural boundary",
+          "prompt": "A search feature currently reads directly from the DOM, fetches data, writes to localStorage, updates URL params, and renders results all inside one function. How would you split that flow into clearer boundaries without overengineering it?",
+          "answerHtml": "<p>Separate the feature into input parsing, domain/query-state modeling, an effect layer for fetch/storage/history writes, and a rendering adapter. Keep the orchestration function small: collect input, validate it, call the domain logic, then delegate effects and rendering to named boundaries. That keeps reasoning local without introducing a giant framework of abstractions.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 13 recap",
+          "items": [
+            "Architecture starts with state ownership and boundary design, not with choosing a pattern name.",
+            "Pure logic is easiest to test and scale when effects are isolated rather than woven through every function.",
+            "Events and modules should clarify ownership, not hide it."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mastery-interview-readiness",
+      "intro": "Use this capstone chapter for rapid recall, interview depth, debugging drills, and synthesis across the full roadmap.",
+      "blocks": [
+        {
+          "type": "recap",
+          "title": "Fast recall anchors",
+          "items": [
+            "Execution contexts explain scope, hoisting, closures, and `this` more reliably than memorizing isolated rules.",
+            "Objects inherit through the prototype chain; classes are syntax over that model, not a separate runtime.",
+            "Promises and async functions sit on top of the event loop, where microtasks run before the next task.",
+            "The browser platform adds DOM, fetch, history, storage, observers, streams, workers, and rendering timing on top of the language.",
+            "Security and performance are architecture concerns: data boundaries, rendering strategy, and cleanup discipline all matter.",
+            "Strong interview answers name tradeoffs, internal mechanics, and failure modes instead of stopping at surface syntax."
+          ]
+        },
+        {
+          "type": "compare",
+          "title": "Explain it like an interviewer asked badly",
+          "items": [
+            {
+              "label": "\"Is JavaScript single-threaded?\"",
+              "html": "<p>Good answer pattern: the main thread executes JavaScript on a single call stack, but the platform can coordinate many concurrent tasks through the event loop, browser APIs, and workers.</p>"
+            },
+            {
+              "label": "\"Why is this code async?\"",
+              "html": "<p>Translate the question into queues and boundaries: which work is synchronous, which callbacks enter the microtask queue, which enter the task queue, and which host API is coordinating the delay?</p>"
+            },
+            {
+              "label": "\"What is inheritance in JS?\"",
+              "html": "<p>Do not jump straight to <code>class extends</code>. Start with objects, property lookup, and the prototype chain, then explain how classes map onto that runtime behavior.</p>"
+            }
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Debugging prompt: explain the bug",
+          "prompt": "A typeahead component sometimes shows stale results from an older request, leaks memory after navigating away, and occasionally highlights the wrong clicked row in a delegated list handler. Which JavaScript concepts would you use to explain and fix the bug?",
+          "answerHtml": "<p>There are three different failure classes: stale results point to async race conditions and missing cancellation or freshness guards; memory growth suggests listeners, timers, detached nodes, or caches that stay reachable after teardown; wrong row handling points to event delegation and confusion between <code>event.target</code> and <code>event.currentTarget</code>. A strong answer names the specific runtime model behind each symptom before proposing fixes.</p>"
+        },
+        {
+          "type": "richText",
+          "title": "How to answer under-specified questions",
+          "html": "<p>Interview questions are often vague on purpose or vague by accident. When the wording is sloppy, translate it into a sharper question before answering. State the runtime layer you are talking about, the common tradeoff, and one realistic failure mode. That keeps your answer grounded even if the prompt was not.</p><ul><li>Clarify whether the question is about the language, the browser platform, or application architecture.</li><li>Answer the core mechanism first, then add one practical implication.</li><li>If there are multiple valid answers, say which assumption you are making.</li></ul>"
+        },
+        {
+          "type": "recap",
+          "title": "Capstone mental checklist",
+          "items": [
+            "Can I explain the mechanism, not just the syntax?",
+            "Can I say when this tool should be avoided or replaced?",
+            "Can I predict the common failure mode or debugging symptom?",
+            "Can I connect the language feature to browser/runtime behavior?",
+            "Can I explain the production tradeoff in one or two sentences?"
+          ]
+        }
+      ],
       "qa": [
         {
           "level": "basic",
@@ -286,131 +1137,6 @@
           "answerHtml": "<p>Syntax is identical (`...`). Spread EXPANDS an array/object into individual elements (e.g., `let newArr = [...old]`). Rest COLLECTS multiple elements and condenses them into a single array element (e.g., in function args: `function f(...args)`).</p>"
         },
         {
-          "level": "basic",
-          "question": "What is TypeScript?",
-          "answerHtml": "<p>A structural, strongly typed superset of JavaScript developed by Microsoft. It compiles to plain JavaScript and adds static typing, identifying errors at compile-time instead of runtime.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is the difference between implicit and explicit typing?",
-          "answerHtml": "<p>Explicit: You declare the type: `let count: number = 5;`. Implicit (Inference): TypeScript figures it out automatically: `let count = 5;` (TS knows it's a number).</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is the \"any\" type?",
-          "answerHtml": "<p>It allows any type of value, effectively opting out of type-checking completely for that variable. It ruins TypeScript's benefits and should be strictly avoided in production code.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is the \"unknown\" type?",
-          "answerHtml": "<p>A safer alternative to `any`. You can assign anything to `unknown`, but to operate on it, TS forces you to perform a type check (type narrowing/guard) first to prove you know its structural shape.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is the \"void\" vs \"never\" type?",
-          "answerHtml": "<p>`void` is used for a function that returns nothing (implicitly returns undefined). `never` is used for a function that WILL NEVER return anything (e.g., it always throws an Error, or has an infinite `while(true)` loop).</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What is Duck Typing / Structural Typing in TS?",
-          "answerHtml": "<p>TypeScript focuses on the SHAPE of data. If an object has all the properties required by an Interface, TS accepts it, regardless of whether it explicitly \"implements\" that interface. \"If it walks like a duck and quacks like a duck...\"</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What is an Interface in TypeScript?",
-          "answerHtml": "<p>A way to name an object type. Interfaces can be extended with the `extends` keyword and can be merged automatically if declared twice.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What is a Type Alias (`type`)?",
-          "answerHtml": "<p>Creates a new name for any type. Unlike Interfaces, it can describe primitives, unions, and intersections. In modern TS, objects defined via `type` vs `interface` are almost functionally identical.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What is a Tuple?",
-          "answerHtml": "<p>An array with a fixed number of elements whose types are known. Example: `let person: [string, number] = [\"Alice\", 25];`</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What is an Enum?",
-          "answerHtml": "<p>A way to give more friendly names to sets of numeric or string constants. However, TS Enums actively generate JS runtime code (unlike Interfaces), so string literal unions (`type Status = \"OK\" | \"FAIL\"`) are often heavily preferred instead.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What are Generics?",
-          "answerHtml": "<p>Generics provide a way to make components work over a variety of types rather than a single one. It creates a variable for a type, e.g., `<T>`. `function identity<T>(arg: T): T`.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What is a Type Guard (Type Narrowing)?",
-          "answerHtml": "<p>Using standard JS checks (like `typeof x === \"string\"`, `instanceof Array`, or `in` operator) allowing TypeScript to infer the variable's specific type within a narrower conditional block.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is a custom Type Predicate?",
-          "answerHtml": "<p>A function that returns a boolean, where the return type is explicitly cast as `parameterName is Type`. It tells the TS compiler to narrow the type if the function evaluates to true. Ex: `function isString(v: any): v is string`.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is Intersection vs Union?",
-          "answerHtml": "<p>Union (`|`): a value that can be one of several types. Intersection (`&`): a value that combines multiple types into one single type, meaning the object must have ALL the properties of the intersected types.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What are Utility Types in TS?",
-          "answerHtml": "<p>Built-in generic tools that transform types. Examples: `Partial<T>` (all props optional), `Readonly<T>` (all props readonly), `Pick<T, K>` (select specific props), `Omit<T, K>` (remove specific props).</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is keyof?",
-          "answerHtml": "<p>An operator that returns a Union type composed of the names of the keys of an Object type. E.g., `type Keys = keyof { name: string; age: number }` results in `\"name\" | \"age\"`.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is typeof (in TS type context)?",
-          "answerHtml": "<p>Allows you to extract the TS type from an existing runtime JavaScript variable. `let obj = {x: 1}; type ObjType = typeof obj;`</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What are Conditional Types?",
-          "answerHtml": "<p>They select one of two possible types based on a condition expressed as a type relationship test: `T extends U ? X : Y`. Extremely powerful in building dynamic utility types.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is the `infer` keyword?",
-          "answerHtml": "<p>Used strictly within Conditional Types to pause resolution and declare a new, dynamically inferred type variable. Essential for extracting the return type of a function: `T extends (...args: any[]) => infer R ? R : any`.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What does `strict: true` do in tsconfig.json?",
-          "answerHtml": "<p>It enables a broad suite of strict type-checking behavior (including `noImplicitAny`, `strictNullChecks`, `strictFunctionTypes`, and `strictBindCallApply`). Highly recommended for all enterprise projects.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is a Discriminated Union?",
-          "answerHtml": "<p>A pattern combining Union types, type guards, and a common shared property (the discriminator) to guarantee exhaustive structural safety (often used in Redux actions or state machines).</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is Declaration Merging?",
-          "answerHtml": "<p>The compiler merges two separate declarations declared with the exact same name into a single definition. This is why Interfaces are the standard for public APIs (consumers can easily augment your `Window` interface, for example).</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is Type Variance (Covariance, Contravariance)?",
-          "answerHtml": "<p>Advanced concepts defining how complex types (like arrays or functions) relate to each other based on their internal structural types. TS functions are contravariant in parameters, but covariant in return types to ensure safety.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is \"Index Signature\"?",
-          "answerHtml": "<p>Syntax allowing you to type objects with dynamic or unknown keys but a specific value type. `interface Dict { [key: string]: number; }`.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What does `as const` do (Const Assertions)?",
-          "answerHtml": "<p>Normally, TS widens string literals. `const obj = { a: \"hello\" }` implies `a` is a `string`. Suffixing it with `as const` implies `a` is specifically the strict read-only literal type `\"hello\"`. Deeply useful for config arrays and objects.</p>"
-        },
-        {
           "level": "expert",
           "question": "What is `Promise.withResolvers()`?",
           "answerHtml": "<p>A new ES2024 feature that returns an object containing a new Promise and its `resolve` and `reject` functions. It eliminates the need to manually extract those functions from the Promise executor callback.</p>"
@@ -452,11 +1178,6 @@
         },
         {
           "level": "expert",
-          "question": "Explain \"Shadow Realms\" (Proposed).",
-          "answerHtml": "<p>A new global environment that provides a completely isolated JS execution context. It allows running code with its own global object and built-ins, preventing side effects or data leakage into the main execution realm.</p>"
-        },
-        {
-          "level": "expert",
           "question": "What is `Array.fromAsync()`?",
           "answerHtml": "<p>A recent addition that creates a new array from an async iterable, iterable, or array-like object. It awaits each element if necessary, making it superior to `Promise.all(arr.map(async...))` in some sequential scenarios.</p>"
         },
@@ -464,11 +1185,6 @@
           "level": "expert",
           "question": "How do you detect memory leaks using Chrome DevTools?",
           "answerHtml": "<p>Capture a \"Heap Snapshot\". Look for objects that are \"Detached\" (not in DOM but still referenced in JS). Use the \"Allocation Instrumentation\" timeline to see objects allocated but never released during specific interactions.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "Explain the \"Pipeline Operator\" (`|>`) proposal.",
-          "answerHtml": "<p>It facilitates functional pipe-lining by piping the result of one expression as an argument to the next function: `val |> f |> g` is equivalent to `g(f(val))`. It significantly improves readability in nested logic.</p>"
         },
         {
           "level": "expert",
@@ -484,81 +1200,6 @@
           "level": "expert",
           "question": "What is \"Hydration\" in a JavaScript context?",
           "answerHtml": "<p>The process where client-side JavaScript attaches event listeners to static HTML sent from the server (SSR), making it interactive. Optimization techniques like \"Resumability\" (Qwik) or \"Progressive Hydration\" aim to reduce this costly step.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is a \"Branded Type\" (Nominal Typing)?",
-          "answerHtml": "<p>TS is structural, but branding simulates nominal typing by adding a unique \"tag\" property: `type Email = string & { __brand: \"Email\" }`. This prevents passing a generic string into a function expecting an Email.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "Explain \"Recursive Types\" in TS.",
-          "answerHtml": "<p>A type that references itself. Useful for deep object trees or JSON structures: `type JSONValue = string | number | boolean | null | JSONObject | JSONArray;`. TS 4.1+ improved support for deep recursion limits.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How do \"Template Literal Types\" work?",
-          "answerHtml": "<p>They allow building types based on string literals: `type Direction = \"top\" | \"bottom\"; type Padded = `padding-${Direction}`;`. They enable massive type safety for CSS classes, event names, and i18n keys.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Distributive Conditional Types\"?",
-          "answerHtml": "<p>When a conditional type (`T extends U ? X : Y`) is checking a Union type `T`, TS automatically distributes the check over each member of the union. Use `[T] extends [U]` to disable this \"distribution\".</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How do you extract the return type of a function dynamicallly?",
-          "answerHtml": "<p>Using the `ReturnType<T>` utility, which internally uses the `infer` keyword: `T extends (...args: any) => infer R ? R : any`.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is the `satisfies` operator?",
-          "answerHtml": "<p>Introduced in TS 4.9, it validates that an expression matches a type WITHOUT widening or changing the inferred type. `const colors = { red: \"#f00\" } satisfies Record<string, string>;` keeps the specific key `\"red\"` instead of widening to `string`.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "Explain \"Assertion Functions\" in TS.",
-          "answerHtml": "<p>Functions that throw an error if a condition isn't met. By using the `asserts condition` return type, TS knows the condition is guaranteed to be true for the rest of the scope if the function returns normally.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Module Augmentation\"?",
-          "answerHtml": "<p>A way to add declarations to an existing module. Useful when using 3rd party libraries that have missing or outdated types: `declare module \"some-lib\" { ... }`.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What are \"Global Type Declarations\" (`.d.ts`)?",
-          "answerHtml": "<p>Files that provide type information for code that already exists in JavaScript but doesn't have types. They are purely for the compiler and emit no JS code.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How does \"Const Type Parameters\" (``) work?",
-          "answerHtml": "<p>Introduced in TS 5.0, it allows generics to be inferred as literal `const` values by default, avoiding the need for the user to append `as const` manually to arguments.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Exhaustiveness Checking\"?",
-          "answerHtml": "<p>A pattern using the `never` type in a `switch` default case to ensure all possible members of a Union type are handled. If a new member is added to the union, TS will alert you that the code is no longer exhaustive.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "Explain \"Covariance\" vs \"Contravariance\" in TS.",
-          "answerHtml": "<p>Covariance: `T` can be replaced by a more specific type (Standard for properties). Contravariance: `T` can be replaced by a more general type (Standard for function parameters). TS enforces these rules to ensure type safety across inheritance.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is the \"Omit\" vs \"Exclude\" utility type?",
-          "answerHtml": "<p>`Exclude<Union, Members>` removes members from a UNION type. `Omit<Object, Keys>` removes specific properties from an OBJECT type.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How do you handle \"Branded Strings\" with Template Literals?",
-          "answerHtml": "<p>By creating a type that combines a string with a unique intersection: `type UserID = `user_${string}` & { __brand: \"UserID\" }`. This ensures any ID used must match the prefix AND be explicitly cast/verified.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Mapped Type Remapping\"?",
-          "answerHtml": "<p>Using the `as` clause inside a mapped type to change key names: `type Getters<T> = { [K in keyof T as `get${Capitalize<string & K>}`]: () => T[K] }`.</p>"
         },
         {
           "level": "expert",
@@ -582,11 +1223,6 @@
         },
         {
           "level": "expert",
-          "question": "How do \"Private Class Features\" (#prefix) differ from `private` keyword in TS?",
-          "answerHtml": "<p>`#private` is a native JS feature that provides hard runtime encapsulation; the field is truly inaccessible outside the class. TS `private` is a compile-time check only; the field is still accessible in the emitted JavaScript.</p>"
-        },
-        {
-          "level": "expert",
           "question": "What is \"BigInt\" and why can't it be mixed with \"Number\"?",
           "answerHtml": "<p>`BigInt` handles integers larger than $2^{53}-1$. Mixing them with standard `Number` is prohibited because it would lead to silent precision loss during implicit type conversion.</p>"
         },
@@ -594,41 +1230,6 @@
           "level": "expert",
           "question": "Explain \"Top-level await\" and its impact on module loading.",
           "answerHtml": "<p>It allows using `await` at the top level of a module. While convenient, it makes the module (and its importers) wait for the promise to resolve before execution continues, which can delay application startup if used poorly.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Structural\" vs \"Nominal\" typing in depth?",
-          "answerHtml": "<p>Structural (TS): Types are compatible if their members match. Nominal (Java/C#): Types are only compatible if they have the same name/declaration. TS uses structural typing for flexibility, but can simulate nominal typing via branding.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Type Argument Inference\" for functions?",
-          "answerHtml": "<p>The process where TS automatically determines the types for generic parameters based on the values passed to the function. If inference fails, you must provide them explicitly: `f<string>(\"val\")`.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How do you handle \"Recursive Conditional Types\"?",
-          "answerHtml": "<p>By having a conditional type reference itself in its branches. TS 4.1+ allows this as long as there is a clear base case, enabling complex types like `DeepPartial<T>` or `DeepReadonly<T>`.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is the \"NoInfer\" intrinsic type?",
-          "answerHtml": "<p>Introduced in TS 5.4, it prevents a generic type parameter from being a candidate for type inference in a specific location, forcing TS to use the inference from other locations instead.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "Explain \"String Mapping Types\" (Uppercase, Lowercase, etc.).",
-          "answerHtml": "<p>Intrinsic type operators that transform string literal types. Invaluable when used with Template Literal Types to enforce casing conventions across API keys or file paths.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is a \"Global augmentation\" vs \"Module augmentation\"?",
-          "answerHtml": "<p>Module: Adds to a specific exported module. Global: Adds to the global namespace (e.g., adding a new property to the `Window` object or `ProcessEnv`).</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How does \"Discriminated Union\" Exhaustiveness with `default` work?",
-          "answerHtml": "<p>By assigning the `default` case to a variable of type `never`. If a new case is added to the union but not handled in the switch, the assignment `const _exhaustiveCheck: never = member` will cause a compile error.</p>"
         },
         {
           "level": "expert",
@@ -1082,11 +1683,6 @@
         },
         {
           "level": "advanced",
-          "question": "What is the Temporal API (Stage 3)?",
-          "answerHtml": "<p>Modern date/time API replacing the broken Date object. <code>Temporal.Now.instant()</code>, <code>Temporal.PlainDate.from('2025-01-15')</code>, <code>Temporal.ZonedDateTime</code>. Features: immutable, timezone-aware, calendar support, duration arithmetic, no month-indexing issues (January is 1 not 0). Still Stage 3 but polyfillable. Will eventually obsolete moment.js and date-fns for most use cases.</p>"
-        },
-        {
-          "level": "advanced",
           "question": "Implement pipe and compose functions.",
           "answerHtml": "<p><code>const pipe = (...fns) =&gt; (x) =&gt; fns.reduce((v, fn) =&gt; fn(v), x);</code> Left-to-right composition. <code>const compose = (...fns) =&gt; (x) =&gt; fns.reduceRight((v, fn) =&gt; fn(v), x);</code> Right-to-left. Usage: <code>const transform = pipe(trim, lowercase, capitalize); transform(' HELLO ')</code>. Fundamental functional programming pattern. TC39 has a pipeline operator proposal (<code>x |&gt; fn</code>).</p>"
         },
@@ -1109,6 +1705,31 @@
           "level": "advanced",
           "question": "What are SharedArrayBuffer and Atomics?",
           "answerHtml": "<p><strong>SharedArrayBuffer</strong>: memory shared between main thread and workers (unlike regular ArrayBuffer which is transferred/copied). <strong>Atomics</strong>: provides thread-safe operations on shared memory — <code>Atomics.add()</code>, <code>Atomics.load()</code>, <code>Atomics.store()</code>, <code>Atomics.wait()/notify()</code> for synchronization. Required for high-performance parallel computing in JS. Requires cross-origin isolation headers (COOP/COEP) due to Spectre mitigations.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why does CORS not stop CSRF?",
+          "answerHtml": "<p>CORS controls whether a page may read a cross-origin response, but it does not stop the browser from sending a request in the first place. If a site relies on cookies for authentication, a cross-site form post or fetch may still carry those cookies unless defenses like SameSite, anti-CSRF tokens, and server-side origin validation are in place.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the difference between escaping, sanitizing, and validating input?",
+          "answerHtml": "<p>Validation checks whether input is allowed at all. Escaping encodes data for a specific output context so it is treated as data instead of control characters. Sanitization transforms risky content into a safer subset, often for controlled rich-text use cases. They solve different problems and are often needed together.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How can prototype pollution happen in JavaScript apps?",
+          "answerHtml": "<p>It usually starts when untrusted keys like <code>__proto__</code> or <code>constructor.prototype</code> are merged into ordinary objects. That can poison inherited behavior for later code paths, which is why deep-merge utilities, config builders, and request-to-object mapping layers need explicit key allowlists and schema validation.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you separate pure logic from side effects in a JavaScript feature?",
+          "answerHtml": "<p>Keep parsing, validation, derivation, and state transitions in small pure functions, then isolate DOM writes, storage, timers, logging, and network calls in boundary functions. The orchestration layer should stay thin so tests can cover the core logic without needing the whole runtime environment.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When should you prefer events over direct function calls in architecture?",
+          "answerHtml": "<p>Prefer direct calls when ownership is clear and the dependency should remain explicit. Prefer events when one part of the system is announcing a domain fact that multiple independent consumers may react to. If events are being used just to avoid choosing an owner, the architecture is becoming harder to trace instead of more decoupled.</p>"
         }
       ],
       "hasFilterBar": true
