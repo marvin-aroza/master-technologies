@@ -326,22 +326,256 @@
     {
       "id": "objects-prototypes-classes",
       "intro": "Trace how objects inherit behavior, how property lookup really works, and when classes help or hide complexity.",
-      "blocks": []
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Property Lookup and Object Identity",
+          "html": "<p>When you read <code>obj.value</code>, JavaScript first checks whether <code>value</code> exists directly on <code>obj</code>. If not, it walks the object's prototype chain until it finds the property or reaches <code>null</code>. This means objects can share behavior through prototypes without copying methods onto every instance.</p><ul><li>Own properties live directly on the object itself.</li><li>Inherited properties are found by walking upward through the prototype chain.</li><li>Writing to an object usually creates or updates an own property instead of mutating an inherited one.</li></ul>"
+        },
+        {
+          "type": "mechanics",
+          "title": "How prototype lookup works",
+          "steps": [
+            "JavaScript checks the current object for an own property matching the requested key.",
+            "If the property is not present, JavaScript follows the internal prototype link to the next object in the chain.",
+            "Lookup repeats at each prototype until the property is found or the chain ends at null.",
+            "If the property is never found, the result of the lookup is undefined."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "`new`, prototypes, and shared methods",
+          "language": "js",
+          "code": "function Workshop(title) {\n  this.title = title;\n}\n\nWorkshop.prototype.describe = function () {\n  return `Workshop: ${this.title}`;\n};\n\nconst js = new Workshop(\"JavaScript Internals\");\nconsole.log(js.describe()); // Workshop: JavaScript Internals\nconsole.log(Object.getPrototypeOf(js) === Workshop.prototype); // true",
+          "caption": "The new operator creates an object, links its prototype, invokes the constructor with that object as this, and returns the object unless the constructor explicitly returns another object."
+        },
+        {
+          "type": "richText",
+          "title": "Classes are syntax over prototypes",
+          "html": "<p><code>class</code> syntax changes how JavaScript code looks, but it does not replace prototypes with a different inheritance model. Instance methods still live on the prototype, constructors still initialize instance state, and <code>extends</code> still builds a prototype chain under the hood.</p><ul><li>Classes make intent clearer and provide <code>super</code>, private fields, and a cleaner method syntax.</li><li>They do not make JavaScript a class-based language in the same sense as Java or C#.</li><li>Understanding the prototype model explains what classes are really doing for you.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Composition vs inheritance",
+          "items": [
+            {
+              "label": "Composition",
+              "html": "<p>Build objects from smaller capabilities instead of forcing them into a rigid hierarchy. Composition is often easier to evolve because you can swap or combine behaviors without deep inheritance trees.</p>"
+            },
+            {
+              "label": "Inheritance",
+              "html": "<p>Inheritance can be useful when there is a genuine \"is-a\" relationship, but it also couples subclasses tightly to parent behavior. In JavaScript, overusing inheritance often produces fragile class chains that are harder to reason about than composed objects or functions.</p>"
+            }
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Prototype mutation trap",
+          "tone": "warning",
+          "html": "<p>Changing an object's prototype shape after many instances already exist can make the system harder to reason about and can hurt performance in modern engines. Even when it is technically possible, treating prototypes as stable contracts is usually safer than mutating them at arbitrary times.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 5 recap",
+          "items": [
+            "Property access starts on the object itself and falls back to the prototype chain only when needed.",
+            "The new operator links instances to a prototype and then runs constructor logic.",
+            "Classes improve syntax and ergonomics, but the underlying inheritance model is still prototype-based.",
+            "Composition is often the more maintainable default in JavaScript application design."
+          ]
+        }
+      ]
     },
     {
       "id": "arrays-collections-iteration",
       "intro": "Choose the right collection type, reason about iteration, and understand the tradeoffs behind common data operations.",
-      "blocks": []
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Array methods and iteration style",
+          "html": "<p>Arrays are the default sequence structure in JavaScript, but mastery means choosing the right style of iteration for the problem. Methods like <code>map</code>, <code>filter</code>, <code>reduce</code>, <code>some</code>, and <code>every</code> make data flow easier to read when you are transforming or testing a collection.</p><ul><li>Use <code>map</code> when every input element should produce an output element.</li><li>Use <code>filter</code> when you are selecting a subset.</li><li>Use loops when control flow, early exits, or side effects are the main concern.</li></ul>"
+        },
+        {
+          "type": "richText",
+          "title": "Iterables vs iterators",
+          "html": "<p>An <strong>iterable</strong> is a value that knows how to create an iterator through <code>Symbol.iterator</code>. An <strong>iterator</strong> is the object that produces the sequence one step at a time via <code>next()</code>. Arrays, strings, Maps, and Sets are iterable, which is why <code>for...of</code>, spread syntax, and destructuring all work on them.</p>"
+        },
+        {
+          "type": "code",
+          "title": "Custom iterable example",
+          "language": "js",
+          "code": "const countdown = {\n  from: 3,\n  [Symbol.iterator]() {\n    let current = this.from;\n    return {\n      next() {\n        if (current < 0) {\n          return { done: true };\n        }\n        return { value: current--, done: false };\n      },\n    };\n  },\n};\n\nconsole.log([...countdown]); // [3, 2, 1, 0]",
+          "caption": "Iterables create iterators. The iterator is what actually yields values during iteration."
+        },
+        {
+          "type": "compare",
+          "title": "Object vs Map vs Set",
+          "items": [
+            {
+              "label": "Object",
+              "html": "<p>Best for simple records with a known shape, especially when property access by dot notation makes the code clearer. Objects are not ideal when you primarily need a general-purpose key-value collection.</p>"
+            },
+            {
+              "label": "Map",
+              "html": "<p>Best when keys are dynamic, when insertion order matters, or when you want collection-oriented methods like <code>size</code>, <code>get</code>, and <code>has</code>. Maps can use any value as a key.</p>"
+            },
+            {
+              "label": "Set",
+              "html": "<p>Best when the question is membership rather than key-value storage. Sets store unique values and are useful for deduplication, lookup, and tracking visited items.</p>"
+            }
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Array iteration trap: for...in",
+          "tone": "pitfall",
+          "html": "<p><code>for...in</code> iterates enumerable property keys, not array values. On arrays it gives you string keys and may also include inherited enumerable properties. For array values, prefer <code>for...of</code> or array methods like <code>map</code> and <code>filter</code>.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: pick the right collection",
+          "prompt": "Choose the best structure for each scenario: a user profile with fixed fields, a cache keyed by DOM elements, a deduplicated list of visited route ids, and a value->handler registry whose keys are not limited to strings.",
+          "answerHtml": "<p>A fixed user profile is a strong fit for an object. A cache keyed by DOM elements is a good fit for a <code>WeakMap</code> because the keys are objects and should not be kept alive unnecessarily. A deduplicated list of visited route ids fits a <code>Set</code>. A value-to-handler registry with arbitrary key types fits a <code>Map</code>.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 6 recap",
+          "items": [
+            "Array methods are great for data transformation, but loops are still valid when control flow matters more than elegance.",
+            "Iterables create iterators; iterators produce values one step at a time.",
+            "Use objects for records, Maps for dynamic keyed collections, and Sets for uniqueness and membership."
+          ]
+        }
+      ]
     },
     {
       "id": "modules-tooling-project-structure",
       "intro": "See how JavaScript is organized in modern projects, from import/export syntax to bundlers and code-splitting.",
-      "blocks": []
+      "blocks": [
+        {
+          "type": "compare",
+          "title": "ES modules vs CommonJS",
+          "items": [
+            {
+              "label": "ES modules",
+              "html": "<p>Use <code>import</code> and <code>export</code>, are statically analyzable, and expose live bindings. That static structure is what enables tree shaking, better tooling, and module-graph analysis.</p>"
+            },
+            {
+              "label": "CommonJS",
+              "html": "<p>Uses <code>require()</code> and <code>module.exports</code>. It is still important in the Node ecosystem, but its runtime-oriented loading model makes static analysis harder and changes some interop rules.</p>"
+            }
+          ]
+        },
+        {
+          "type": "richText",
+          "title": "How module resolution feels in practice",
+          "html": "<p>Module resolution is the process of turning an import specifier into an actual file or package entry. In browsers, module specifiers are URL-oriented. In Node.js, package resolution includes rules around file extensions, the <code>type</code> field, bare specifiers, and modern package entry points like <code>exports</code> and <code>imports</code>.</p><ul><li>Relative specifiers point to nearby files.</li><li>Bare specifiers usually refer to packages.</li><li>Modern Node package resolution uses <code>package.json</code> metadata to determine which entry point is public and which module system applies.</li></ul>"
+        },
+        {
+          "type": "code",
+          "title": "Static imports and dynamic imports",
+          "language": "js",
+          "code": "import { buildIndex } from \"./search/index.js\";\n\nexport async function boot() {\n  const { startInspector } = await import(\"./debug/inspector.js\");\n  buildIndex();\n  startInspector();\n}",
+          "caption": "Static imports participate in the module graph up front; dynamic import() creates an async loading boundary that tools can use for code splitting."
+        },
+        {
+          "type": "richText",
+          "title": "Bundling, tree shaking, and code splitting",
+          "html": "<p>Bundlers analyze a module graph and package code for delivery. <strong>Tree shaking</strong> removes unused exports when the graph is statically analyzable. <strong>Code splitting</strong> breaks the graph into separately loadable chunks so you do not ship every feature on the initial page load.</p><ul><li>Tree shaking works best with ESM because exports and imports are statically declared.</li><li>Code splitting commonly uses route boundaries or <code>import()</code> boundaries.</li><li>Bundling strategy is part of architecture: it affects performance, cacheability, and deployment behavior.</li></ul>"
+        },
+        {
+          "type": "trap",
+          "title": "Module-system mismatch trap",
+          "tone": "warning",
+          "html": "<p>Interop mistakes between ESM and CommonJS often look like missing default exports, incorrect <code>require()</code> usage, or environment-specific resolution failures. When a module issue appears “mysterious,” check the package's module system, file extension rules, and public entry points before assuming the import statement itself is wrong.</p>"
+        },
+        {
+          "type": "richText",
+          "title": "Project structure and public boundaries",
+          "html": "<p>Mature JavaScript projects benefit from clear module boundaries. Keep internal helpers internal, publish intentional entry points, and avoid deep imports into private files unless the package explicitly documents them as stable.</p><ul><li>Use folders and package entry points to communicate what is public.</li><li>Prefer stable import paths over reaching into internal implementation directories.</li><li>Think of the module graph as part of your architecture, not just a bundler detail.</li></ul>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 7 recap",
+          "items": [
+            "ES modules are the modern default because they support static analysis and live bindings.",
+            "CommonJS still matters, especially in Node.js, so interop is part of real-world JavaScript mastery.",
+            "Bundling, tree shaking, and code splitting are consequences of how the module graph is structured."
+          ]
+        }
+      ]
     },
     {
       "id": "asynchrony-event-loop",
       "intro": "Master promises, async functions, microtasks, timers, and the event loop behavior that explains real-world timing bugs.",
-      "blocks": []
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Promises, async functions, and sequencing",
+          "html": "<p>Promises model the eventual result of asynchronous work. <code>async</code> functions build on promises and let you write sequential-looking code for async steps, but the underlying control flow is still promise-based.</p><ul><li>A promise can be pending, fulfilled, or rejected.</li><li><code>await</code> pauses only the async function, not the whole runtime.</li><li><code>Promise.all()</code> is for concurrent waiting; plain <code>await</code> one-after-another is sequential.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Promise.all() vs Promise.allSettled() vs Promise.race()",
+          "items": [
+            {
+              "label": "Promise.all()",
+              "html": "<p>Waits for every input promise to fulfill, but rejects immediately when one promise rejects. Use it when all results are required together.</p>"
+            },
+            {
+              "label": "Promise.allSettled()",
+              "html": "<p>Waits for every promise to settle and gives you per-item status. Use it when partial failure is acceptable and you want the full outcome picture.</p>"
+            },
+            {
+              "label": "Promise.race()",
+              "html": "<p>Settles as soon as the first input settles. It is useful for timeouts and winner-takes-first behavior, but it does not cancel the other work for you.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Microtasks vs tasks",
+          "steps": [
+            "Synchronous code runs on the current call stack first.",
+            "When the stack becomes empty, the runtime flushes the microtask queue before taking the next task.",
+            "Promise reactions and queueMicrotask callbacks run as microtasks.",
+            "Timers, user events, and other host-scheduled callbacks run as tasks, so they wait until microtasks are exhausted."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Event loop ordering example",
+          "language": "js",
+          "code": "console.log(\"A\");\nsetTimeout(() => console.log(\"timer\"), 0);\nPromise.resolve().then(() => console.log(\"promise\"));\nqueueMicrotask(() => console.log(\"microtask\"));\nconsole.log(\"B\");",
+          "caption": "The synchronous logs happen first, then microtasks, and only then does the timer callback run."
+        },
+        {
+          "type": "richText",
+          "title": "Cancellation and race conditions",
+          "html": "<p>JavaScript promises do not cancel themselves automatically. Cancellation is usually modeled through external signals such as <code>AbortController</code> or by ignoring stale results when a newer request supersedes an older one.</p><ul><li>Use <code>AbortController</code> when the underlying API supports it, such as <code>fetch()</code>.</li><li>Guard against race conditions by tracking request identity or freshness.</li><li>Remember that <code>Promise.race()</code> chooses a winner, but it does not stop the losers.</li></ul>"
+        },
+        {
+          "type": "trap",
+          "title": "Async iteration trap: forEach + await",
+          "tone": "pitfall",
+          "html": "<p><code>await</code> inside <code>forEach()</code> does not make the loop wait the way many developers expect, because <code>forEach()</code> does not await returned promises. Use <code>for...of</code> for sequential async loops or build an explicit promise array for concurrent work.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: event loop ordering",
+          "prompt": "Predict the output order of: console.log(\"start\"); setTimeout(() => console.log(\"timeout\"), 0); Promise.resolve().then(() => console.log(\"then\")); queueMicrotask(() => console.log(\"queueMicrotask\")); console.log(\"end\");",
+          "answerHtml": "<p>The order is <code>start</code>, <code>end</code>, <code>then</code>, <code>queueMicrotask</code>, and finally <code>timeout</code>. The exact relative ordering between the two microtasks depends on the order they were queued, but both microtasks run before the timer task.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 8 recap",
+          "items": [
+            "Promises model eventual outcomes; async/await is syntax over promise-based control flow.",
+            "Microtasks run before the next task, which is why promise callbacks beat timers in common interview drills.",
+            "Cancellation and race protection require explicit design rather than hope."
+          ]
+        }
+      ]
     },
     {
       "id": "browser-apis-dom-platform",

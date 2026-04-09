@@ -48,6 +48,10 @@ const populatedChapterIds = new Set([
   "values-types-identity",
   "variables-scope-closures",
   "functions-invocation-mechanics",
+  "objects-prototypes-classes",
+  "arrays-collections-iteration",
+  "modules-tooling-project-structure",
+  "asynchrony-event-loop",
 ]);
 
 assert.ok(
@@ -62,7 +66,7 @@ assert.ok(
 
     return section.blocks.length === 0;
   }),
-  "Chapters 1-4 should be populated while the remaining chapters stay in skeleton form"
+  "Chapters 1-8 should be populated while the remaining chapters stay in skeleton form"
 );
 assert.ok(
   topic.sections.every((section) => !section.cards || section.cards.length === 0),
