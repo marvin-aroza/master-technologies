@@ -1,5 +1,6 @@
 import { spawnSync } from "node:child_process";
-import { rmSync } from "node:fs";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import Module, { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -10,6 +11,31 @@ const outDir = join(
   `.tmp-render-tests-${process.pid}-${Date.now()}`
 );
 const tscCli = join(repoRoot, "node_modules", "typescript", "bin", "tsc");
+const tempTsconfig = join(outDir, "tsconfig.renderer-tests.json");
+const testFiles = [
+  "components/renderer/ContentBlockRenderer.test.tsx",
+  "components/renderer/TopicPage.test.tsx",
+];
+
+mkdirSync(outDir, { recursive: true });
+writeFileSync(
+  tempTsconfig,
+  JSON.stringify(
+    {
+      extends: join(repoRoot, "tsconfig.json"),
+      compilerOptions: {
+        noEmit: false,
+        outDir,
+        module: "commonjs",
+        moduleResolution: "node",
+        incremental: false,
+      },
+      files: testFiles.map((file) => join(repoRoot, file)),
+    },
+    null,
+    2
+  )
+);
 
 const compile = spawnSync(
   process.execPath,
@@ -17,22 +43,8 @@ const compile = spawnSync(
     tscCli,
     "--pretty",
     "false",
-    "--skipLibCheck",
-    "--outDir",
-    outDir,
-    "--module",
-    "commonjs",
-    "--target",
-    "es2020",
-    "--jsx",
-    "react-jsx",
-    "--esModuleInterop",
-    "true",
-    "--moduleResolution",
-    "node",
-    "components/renderer/ContentBlockRenderer.test.tsx",
-    "components/renderer/ContentBlockRenderer.tsx",
-    "types/topic.ts",
+    "--project",
+    tempTsconfig,
   ],
   { cwd: repoRoot, stdio: "inherit" }
 );
@@ -45,15 +57,35 @@ if (compile.status !== 0) {
   process.exit(compile.status ?? 1);
 }
 
-const run = spawnSync(
-  process.execPath,
-  [join(outDir, "components", "renderer", "ContentBlockRenderer.test.js")],
-  { cwd: repoRoot, stdio: "inherit" }
-);
+const require = createRequire(import.meta.url);
+const originalResolveFilename = Module._resolveFilename;
 
-if (run.error) {
-  throw run.error;
+Module._resolveFilename = function resolveFilename(request, parent, isMain, options) {
+  if (request.startsWith("@/")) {
+    return originalResolveFilename.call(
+      this,
+      join(outDir, ...request.slice(2).split("/")),
+      parent,
+      isMain,
+      options
+    );
+  }
+
+  return originalResolveFilename.call(this, request, parent, isMain, options);
+};
+
+let runStatus = 0;
+
+for (const testFile of testFiles) {
+  try {
+    require(join(outDir, testFile.replace(/\.tsx$/, ".js")));
+  } catch (error) {
+    runStatus = 1;
+    throw error;
+  }
 }
+
+Module._resolveFilename = originalResolveFilename;
 
 try {
   rmSync(outDir, { recursive: true, force: true });
@@ -61,4 +93,4 @@ try {
   // Best-effort cleanup: a locked temp folder should not fail the test itself.
 }
 
-process.exit(run.status ?? 1);
+process.exit(runStatus);
