@@ -373,8 +373,79 @@
       "blocks": [
         {
           "type": "richText",
-          "title": "Scaffold Focus",
-          "html": "<p>The rewrite will turn the surviving server-side data examples into a real chapter on ownership, request coordination, and server-first fetching strategy.</p>"
+          "title": "Keep trusted data ownership on the server",
+          "html": "<p>In App Router, the most reliable default is to fetch trusted data where the truth already lives: on the server. That means Server Components can call <code>fetch</code>, an ORM, or a database client directly without shipping credentials or query logic to the browser.</p><p>This reduces client bundle weight, keeps secrets off the client, and prevents a common architecture smell: bouncing internal reads through your own HTTP layer just because the UI happens to be React.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Sequential waterfalls vs parallel fetching",
+          "items": [
+            {
+              "label": "Sequential waterfalls",
+              "html": "<p>One request waits for the previous request to finish. This is correct when the second request truly depends on the first result, but it slows routes down when the dependency is artificial.</p>"
+            },
+            {
+              "label": "Parallel fetching",
+              "html": "<p>Independent work starts eagerly and resolves together. This is the better default when route data sources do not depend on each other.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How server-side data ownership reduces confusion",
+          "steps": [
+            "A route segment starts rendering on the server, where it can access trusted resources directly.",
+            "Layouts and pages begin in parallel by default, so each segment can start its own data work as soon as it renders.",
+            "Inside a component, separate awaits can still create a waterfall if one call is started only after another resolves.",
+            "When requests are independent, start them early and resolve them together with Promise.all or by passing promises downward.",
+            "Only pass plain, serializable data into Client Components, and keep the privileged query logic on the server."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Start independent work early",
+          "language": "tsx",
+          "code": "type PageProps = {\\n  params: Promise<{ accountId: string }>\\n};\\n\\nasync function getAccount(accountId: string) {\\n  return db.account.findUnique({ where: { id: accountId } });\\n}\\n\\nasync function getInvoices(accountId: string) {\\n  return db.invoice.findMany({ where: { accountId } });\\n}\\n\\nexport default async function Page({ params }: PageProps) {\\n  const { accountId } = await params;\\n\\n  const accountPromise = getAccount(accountId);\\n  const invoicesPromise = getInvoices(accountId);\\n\\n  const [account, invoices] = await Promise.all([\\n    accountPromise,\\n    invoicesPromise\\n  ]);\\n\\n  return <Dashboard account={account} invoices={invoices} />;\\n}",
+          "caption": "If the work is independent, start it together. App Router renders segments in parallel, but a single component can still create its own waterfall if you await requests one by one."
+        },
+        {
+          "type": "trap",
+          "title": "Trap: bouncing trusted reads through your own Route Handler",
+          "tone": "pitfall",
+          "html": "<p>If only your own route tree needs the data, calling your own Route Handler from a Server Component usually adds an unnecessary HTTP hop, extra serialization, and more places for auth and caching bugs to hide. Reach for a Route Handler when you truly need an HTTP boundary, not by default.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: fix the waterfall",
+          "prompt": "A dashboard route awaits <code>getTeam()</code>, then <code>getProjects()</code>, then <code>getNotifications()</code>. Only <code>getProjects()</code> depends on the team id. What should you change first?",
+          "answerHtml": "<p>Keep the dependent chain where it is needed, but pull unrelated work forward. For example, start <code>getNotifications()</code> before awaiting <code>getTeam()</code>, then resolve both branches together. The goal is to keep only the true dependency, not the accidental ones.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 5 recap",
+          "items": [
+            "Server Components are the natural place for trusted reads with fetch, ORMs, or direct database access.",
+            "Layouts and pages start in parallel, but individual components can still create waterfalls if they await sequentially.",
+            "Use Promise.all or promise-passing when requests are independent.",
+            "Only introduce an HTTP boundary when you actually need one."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why is server-side data ownership the default recommendation in App Router?",
+          "answerHtml": "<p>Because the server can access trusted resources directly, keep credentials out of the browser, and send only the data the UI needs instead of shipping query logic to the client.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How can a component still create a waterfall even though App Router renders segments in parallel?",
+          "answerHtml": "<p>Parallel segment rendering does not prevent a single component from awaiting requests one after another. If you start the second request only after the first resolves, you have created a local waterfall.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When is a Route Handler a better choice than direct server-side fetching in a route?",
+          "answerHtml": "<p>Choose a Route Handler when you need a real HTTP boundary, such as a webhook, external client, upload endpoint, or a non-UI caller. For internal route rendering, direct server access is usually simpler and faster.</p>"
         }
       ]
     },
@@ -384,8 +455,88 @@
       "blocks": [
         {
           "type": "richText",
-          "title": "Scaffold Focus",
-          "html": "<p>This chapter will rebuild the old caching material around the Next 16 model, with practical rules for <code>revalidatePath</code>, <code>revalidateTag</code>, and freshness tradeoffs.</p>"
+          "title": "Cache Components make caching explicit",
+          "html": "<p>Next.js 16 changes the caching mental model: request-time execution is the default, and caching becomes an explicit choice through Cache Components and <code>use cache</code>. That is a big shift from the earlier App Router story where caching often felt implicit and surprising.</p><p>The upside is clarity. You mark the work that should be reusable, attach cache semantics to it, and then invalidate it deliberately when mutations happen.</p>"
+        },
+        {
+          "type": "mechanics",
+          "title": "How a use cache scope becomes reusable work",
+          "steps": [
+            "Enable Cache Components with <code>cacheComponents: true</code> in Next config.",
+            "Add <code>&quot;use cache&quot;</code> at the file, component, or async function level to mark work as cacheable.",
+            "Arguments and closed-over values become part of the cache key, so different inputs produce different cache entries.",
+            "Use <code>cacheLife</code> and <code>cacheTag</code> to define freshness and invalidation semantics close to the cached work.",
+            "After a mutation, use path-based or tag-based invalidation APIs to decide whether users should see stale content briefly or fresh data immediately."
+          ]
+        },
+        {
+          "type": "compare",
+          "title": "revalidatePath vs revalidateTag vs updateTag",
+          "items": [
+            {
+              "label": "revalidatePath",
+              "html": "<p>Refresh a specific page or layout path. This is useful when the route itself needs fresh data or when you want to target a concrete UI surface.</p>"
+            },
+            {
+              "label": "revalidateTag",
+              "html": "<p>Mark tagged data as stale across every page that uses the tag. With <code>profile=&quot;max&quot;</code>, this follows stale-while-revalidate behavior.</p>"
+            },
+            {
+              "label": "updateTag",
+              "html": "<p>Expire tagged cached data immediately for read-your-own-writes flows. This is designed for Server Actions when the user should see fresh data right away after a mutation.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Tag cached data close to the source",
+          "language": "ts",
+          "code": "import { cacheLife, cacheTag } from 'next/cache';\\n\\nexport async function getProducts(category: string) {\\n  'use cache';\\n\\n  cacheLife('hours');\\n  cacheTag(`products:${category}`);\\n\\n  return db.product.findMany({\\n    where: { category },\\n    orderBy: { updatedAt: 'desc' }\\n  });\\n}",
+          "caption": "Cache the computation where it happens, then tag it so mutations can invalidate the same data consistently across the app."
+        },
+        {
+          "type": "richText",
+          "title": "Pass runtime data into cached scopes instead of reading it inside",
+          "html": "<p>Runtime APIs like <code>cookies()</code> and <code>headers()</code> do not belong inside a cached scope. Read the runtime value outside the cached function or component, then pass the value in as an argument so it becomes part of the cache key.</p><p>This keeps the cached work predictable and prevents accidental coupling between reusable cache entries and request-specific data.</p>"
+        },
+        {
+          "type": "trap",
+          "title": "Trap: mixing request-time APIs into cached work",
+          "tone": "warning",
+          "html": "<p>If you read <code>cookies()</code>, <code>headers()</code>, or other request-specific values inside a <code>use cache</code> scope, you break the clean line between reusable work and runtime data. Read request data first, then pass it into the cached function if it truly belongs in the cache key.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: pick the invalidation strategy",
+          "prompt": "An editor publishes a new article. The author should see the new article immediately on the dashboard, but the public catalog can tolerate a brief stale view while the background refresh happens. Which invalidation tools fit each side?",
+          "answerHtml": "<p>Use <code>updateTag</code> for the author-facing read-your-own-writes surface when immediate freshness matters, and use <code>revalidateTag</code> with a stale-while-revalidate profile for the broader catalog if brief staleness is acceptable. If a specific page shell also needs refreshing, pair either approach with <code>revalidatePath</code>.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 6 recap",
+          "items": [
+            "Next.js 16 makes request-time work the default and caching an explicit opt-in.",
+            "use cache can be applied at the route, component, or function level.",
+            "cacheLife and cacheTag define freshness and invalidation close to the cached work.",
+            "revalidatePath, revalidateTag, and updateTag solve different freshness problems."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What changed in the caching mental model in Next.js 16?",
+          "answerHtml": "<p>Next.js 16 makes request-time execution the default and moves caching into an explicit opt-in model with Cache Components and <code>use cache</code>.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When would you choose updateTag instead of revalidateTag?",
+          "answerHtml": "<p>Choose <code>updateTag</code> in a Server Action when the user needs fresh data immediately after a write. Choose <code>revalidateTag</code> when stale-while-revalidate behavior is acceptable.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is passing runtime data into a cached function better than reading cookies inside it?",
+          "answerHtml": "<p>Passing runtime data as an argument makes the cache key explicit and keeps the cached scope deterministic. Reading request APIs inside the cached scope couples reusable work to request-specific state and makes the cache boundary harder to reason about.</p>"
         }
       ]
     },
@@ -395,8 +546,84 @@
       "blocks": [
         {
           "type": "richText",
-          "title": "Scaffold Focus",
-          "html": "<p>The rewrite will explain when to choose static, dynamic, streaming, or PPR, how Suspense shapes the user experience, and how shell-versus-hole thinking improves architecture decisions.</p>"
+          "title": "Rendering is now a shell-plus-holes decision",
+          "html": "<p>With Cache Components, modern Next.js rendering is not a binary static-versus-dynamic decision for the whole route. You can prerender a stable shell, then stream the parts that depend on runtime or uncached data behind Suspense boundaries.</p><p>The right question becomes: what belongs in the first HTML shell, and what should arrive later as a streamed hole?</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Fully cached shell vs request-time hole",
+          "items": [
+            {
+              "label": "Fully cached shell",
+              "html": "<p>Content that is stable enough to prerender or cache should be included in the initial HTML so the route becomes visible quickly.</p>"
+            },
+            {
+              "label": "Request-time hole",
+              "html": "<p>Personalized, uncached, or runtime-dependent work should sit behind Suspense so it can stream in without blocking the whole route.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How streaming and PPR cooperate",
+          "steps": [
+            "During prerendering, Next.js builds the cached shell and the fallbacks for dynamic regions.",
+            "When a request arrives, the browser can receive that shell immediately instead of waiting for every slow dependency.",
+            "Uncached or runtime-dependent work behind Suspense keeps rendering on the server and streams into the open hole when ready.",
+            "Client hydration attaches interactivity to the relevant client boundaries without requiring the entire route to wait first.",
+            "In Next.js 16, Partial Prerendering is no longer a separate experimental flag; it is the rendering story completed by Cache Components."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Cached shell with a streamed personalized panel",
+          "language": "tsx",
+          "code": "import { Suspense } from 'react';\\nimport { cacheLife } from 'next/cache';\\nimport { cookies } from 'next/headers';\\n\\nasync function ProductCatalog() {\\n  'use cache';\\n  cacheLife('hours');\\n\\n  const products = await db.product.findMany();\\n  return <CatalogList products={products} />;\\n}\\n\\nasync function PersonalizedCart() {\\n  const cookieStore = await cookies();\\n  const cartId = cookieStore.get('cart')?.value;\\n  const cart = cartId ? await getCart(cartId) : null;\\n  return <CartPanel cart={cart} />;\\n}\\n\\nexport default function Page() {\\n  return (\\n    <>\\n      <ProductCatalog />\\n      <Suspense fallback={<CartSkeleton />}>\\n        <PersonalizedCart />\\n      </Suspense>\\n    </>\\n  );\\n}",
+          "caption": "The product catalog can live in the cached shell, while the personalized cart remains request-time work that streams through a Suspense boundary."
+        },
+        {
+          "type": "richText",
+          "title": "PPR moved into Cache Components in Next.js 16",
+          "html": "<p>Earlier Next.js releases introduced Partial Prerendering as a separate experimental idea. In Next.js 16, the framework reframes that behavior through Cache Components: you opt into cacheable shell work and stream the uncached pieces. That makes the rendering model easier to teach and easier to reason about in production.</p>"
+        },
+        {
+          "type": "trap",
+          "title": "Trap: thinking Suspense alone decides caching",
+          "tone": "pitfall",
+          "html": "<p>Suspense controls loading boundaries and streaming behavior, but it does not magically make data cached or dynamic. Your data access pattern and cache directives determine freshness; Suspense determines where the waiting becomes visible.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: choose the rendering strategy",
+          "prompt": "A marketing page has stable product copy, a personalized price box, and a live stock widget that may take a moment to load. What belongs in the shell, and what should stream later?",
+          "answerHtml": "<p>The stable marketing copy belongs in the cached shell. The personalized price box and live stock widget should sit behind Suspense boundaries as request-time work if they depend on user or fast-changing runtime data. The goal is to keep the first paint fast without pretending everything is static.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 7 recap",
+          "items": [
+            "Modern Next.js rendering is about shell design plus streamed holes, not only route-wide labels like SSR or SSG.",
+            "Suspense defines where waiting is visible and where streaming can happen.",
+            "Cache Components let one route mix cached shell content with request-time dynamic content.",
+            "Next.js 16 folds PPR into the Cache Components story."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What problem does streaming solve in App Router?",
+          "answerHtml": "<p>Streaming lets the browser see ready parts of a route sooner instead of waiting for every slow dependency to finish before anything appears.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How can one route be partly cached and partly dynamic?",
+          "answerHtml": "<p>Cache Components allow cached work to become part of the prerendered shell, while request-time work behind Suspense can stream later in the same route.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What changed about Partial Prerendering in Next.js 16?",
+          "answerHtml": "<p>Next.js 16 stops treating PPR as a separate experimental concept and completes that rendering model through Cache Components, where cached shell work and streamed dynamic holes live in the same route architecture.</p>"
         }
       ]
     },
@@ -406,8 +633,84 @@
       "blocks": [
         {
           "type": "richText",
-          "title": "Scaffold Focus",
-          "html": "<p>This chapter will turn scattered server-action material into one mutation chapter built around validation, redirect flows, cache invalidation, and write-path architecture.</p>"
+          "title": "Server Functions are the write path",
+          "html": "<p>Next.js uses React Server Functions for mutations. In an action or mutation context, the same idea is often called a Server Action. The important architectural point is that writes should move through a trusted server boundary where you can validate input, authorize the caller, mutate data, invalidate caches, and return updated UI in one flow.</p><p>Forms are the most ergonomic path because they integrate directly with the framework, support progressive enhancement, and line up naturally with mutation lifecycles.</p>"
+        },
+        {
+          "type": "mechanics",
+          "title": "Mutation flow from submit to fresh UI",
+          "steps": [
+            "A form or client event invokes a Server Function through a framework-managed network request.",
+            "The server receives FormData or explicit arguments and performs authentication, authorization, and validation.",
+            "If validation passes, the mutation writes to the database or another trusted backend.",
+            "The action invalidates paths or tags, or refreshes the current tree, depending on the freshness requirement.",
+            "If the UX should move elsewhere, call redirect after invalidation. Any code after redirect will not run."
+          ]
+        },
+        {
+          "type": "compare",
+          "title": "Server Function vs Route Handler for mutations",
+          "items": [
+            {
+              "label": "Server Function",
+              "html": "<p>Best when the caller is already inside your Next.js UI. It integrates with forms, pending state, cache invalidation, and route updates.</p>"
+            },
+            {
+              "label": "Route Handler",
+              "html": "<p>Best when you need a general HTTP endpoint for webhooks, third-party callers, uploads, or non-UI clients that should not depend on the React tree.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Validated create action with redirect",
+          "language": "ts",
+          "code": "'use server';\\n\\nimport { z } from 'zod';\\nimport { updateTag } from 'next/cache';\\nimport { redirect } from 'next/navigation';\\n\\nconst postSchema = z.object({\\n  title: z.string().min(3),\\n  body: z.string().min(20)\\n});\\n\\nexport async function createPost(formData: FormData) {\\n  const parsed = postSchema.safeParse({\\n    title: formData.get('title'),\\n    body: formData.get('body')\\n  });\\n\\n  if (!parsed.success) {\\n    return { errors: parsed.error.flatten().fieldErrors };\\n  }\\n\\n  const post = await db.post.create({ data: parsed.data });\\n\\n  updateTag('posts');\\n  updateTag(`post:${post.id}`);\\n\\n  redirect(`/posts/${post.id}`);\\n}",
+          "caption": "Validate first, write second, invalidate third, and redirect last. That order keeps mutation flows predictable."
+        },
+        {
+          "type": "richText",
+          "title": "Validation, pending state, and optimistic UI",
+          "html": "<p>Use server-side validation for the trusted result, and pair it with React's form helpers for the client experience. <code>useActionState</code> is useful when the action needs to return validation errors or status, <code>useFormStatus</code> helps nested submit buttons show pending state, and <code>useOptimistic</code> helps when users should see the optimistic result before the mutation finishes.</p><p>Server Components support progressive enhancement by default, so forms can still submit before the whole client bundle finishes hydrating.</p>"
+        },
+        {
+          "type": "trap",
+          "title": "Trap: calling redirect too early or expecting code after it to run",
+          "tone": "warning",
+          "html": "<p><code>redirect()</code> throws a framework-handled control-flow exception. If you call it before invalidation, or expect logging and cleanup after it, you will get surprising results. Perform required validation, writes, and freshness work first, then redirect last.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: design the mutation boundary",
+          "prompt": "A settings form updates the user's profile, should show inline validation errors, and should keep the user on the same page with fresh data after success. What should the mutation flow look like?",
+          "answerHtml": "<p>Use a Server Function invoked by the form. Validate on the server, return structured errors through <code>useActionState</code> when needed, write to the database on success, and then invalidate the relevant path or tags or call <code>refresh()</code> if the current tree should re-render in place. Redirect is unnecessary if the user stays on the same screen.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 8 recap",
+          "items": [
+            "Server Functions are the trusted write path for UI-driven mutations.",
+            "Forms align naturally with validation, pending state, progressive enhancement, and cache invalidation.",
+            "Perform validation, write, invalidation, and only then redirect if navigation is part of the UX.",
+            "UseActionState, useFormStatus, and useOptimistic improve mutation UX without moving business logic to the client."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the difference between a Server Function and a Server Action?",
+          "answerHtml": "<p>Server Function is the broader term for an async function that runs on the server and can be invoked from the client. In mutation or form contexts, that same pattern is commonly called a Server Action.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why are forms the most natural mutation path in modern Next.js?",
+          "answerHtml": "<p>Forms integrate directly with Server Functions, support progressive enhancement, fit naturally with validation and pending states, and let Next.js return updated UI and data in the same roundtrip.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the safe order of operations in a mutating Server Function?",
+          "answerHtml": "<p>Authenticate and authorize, validate input, perform the write, invalidate the relevant cache or refresh the current tree, and then redirect if navigation is required. Do not put essential work after <code>redirect()</code>.</p>"
         }
       ]
     },
