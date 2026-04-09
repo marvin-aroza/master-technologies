@@ -68,6 +68,7 @@ const disallowedMasteryQuestions = new Set([
   'What is the "void" vs "never" type?',
   "What is keyof?",
   "What does `strict: true` do in tsconfig.json?",
+  "What is the Temporal API (Stage 3)?",
   'Explain "Shadow Realms" (Proposed).',
   'Explain the "Pipeline Operator" (`|>`) proposal.',
 ]);
