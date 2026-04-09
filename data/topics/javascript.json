@@ -613,6 +613,11 @@
           "html": "<p>Modern browser applications coordinate network, persistence, and navigation through Web APIs. <code>fetch()</code> is promise-based and can be cancelled with <code>AbortController</code>. <code>localStorage</code> persists per origin across sessions, while <code>sessionStorage</code> is scoped to the current page session. <code>URLSearchParams</code>, <code>history.pushState()</code>, and <code>history.replaceState()</code> let you treat the URL as part of your application's state model.</p><ul><li>Prefer the URL for shareable, bookmarkable state such as filters, sort order, and pagination.</li><li>Prefer storage for client-only preferences that should survive reloads.</li><li>Treat fetch cancellation as a correctness tool, not just a performance trick, because stale responses can overwrite newer UI state.</li></ul>"
         },
         {
+          "type": "richText",
+          "title": "Streams and rendering lifecycle",
+          "html": "<p>The browser platform also gives you timing and streaming primitives that sit between raw JavaScript and user-visible rendering. A fetch response body is exposed as a <code>ReadableStream</code>, which means data can be processed chunk by chunk instead of waiting for the entire payload to arrive. On the rendering side, lifecycle timing matters: <code>DOMContentLoaded</code> tells you the document has been parsed, <code>load</code> waits for dependent resources, and <code>requestAnimationFrame()</code> lets you schedule visual work just before the next repaint.</p><ul><li>Use streams when incremental delivery or large payload handling matters more than one giant buffered read.</li><li>Use <code>requestAnimationFrame()</code> for visual coordination, not generic background work.</li><li>Know which lifecycle signal you actually need before wiring startup code, because parsing, loading, and repaint timing are different events.</li></ul>"
+        },
+        {
           "type": "mechanics",
           "title": "What happens during event dispatch",
           "steps": [
@@ -633,6 +638,12 @@
           "title": "Platform trap: duplicating the same state in DOM, storage, and memory",
           "tone": "warning",
           "html": "<p>Applications become fragile when the source of truth lives in too many places at once. If a filter value is stored in a DOM attribute, a local variable, <code>localStorage</code>, and the URL, you now have four places that can drift. Decide which layer is authoritative and derive the rest from it.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: pick the right browser primitive",
+          "prompt": "You are building a searchable activity feed. The search text should be shareable by URL, the results request should cancel when the user types again, a large CSV export should be processed in chunks, and row clicks should work for items inserted later. Which browser primitives fit each need?",
+          "answerHtml": "<p>Use <code>URLSearchParams</code> plus the History API for shareable filter state, <code>AbortController</code> with <code>fetch()</code> for cancellable requests, a <code>ReadableStream</code> for chunked CSV processing, and event delegation on a stable ancestor for dynamically inserted rows.</p>"
         },
         {
           "type": "recap",
@@ -768,6 +779,12 @@
           "title": "Performance trap: optimizing blind",
           "tone": "warning",
           "html": "<p>Micro-optimizing syntax while ignoring the real bottleneck is one of the fastest ways to waste engineering time. Replacing a loop with a different loop rarely matters if the real problem is repeated layout, too many DOM nodes, a giant bundle, or a leaking cache.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: find the real bottleneck",
+          "prompt": "A dashboard feels slow while scrolling, and memory usage climbs after opening and closing a details panel many times. Which questions should you ask before optimizing code style or changing array methods?",
+          "answerHtml": "<p>First ask whether the scroll path is dominated by event frequency, layout work, paint cost, or too many DOM nodes, because those are more likely bottlenecks than loop syntax. Then ask what is keeping memory reachable: detached DOM nodes, persistent listeners, timers, or a cache that never evicts. Profile the interaction and inspect memory snapshots before changing implementation details.</p>"
         },
         {
           "type": "recap",

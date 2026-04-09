@@ -13,6 +13,16 @@ const chapter9 = sectionById.get("browser-apis-dom-platform");
 const chapter10 = sectionById.get("error-handling-defensive-coding");
 const chapter11 = sectionById.get("performance-memory");
 
+function getBlockByTitle(chapter, title) {
+  return chapter.blocks.find((block) => block.title === title);
+}
+
+function expectBlock(chapter, title, type) {
+  const block = getBlockByTitle(chapter, title);
+  assert.ok(block, `expected "${title}" block to exist`);
+  assert.equal(block.type, type, `"${title}" should be a ${type} block`);
+}
+
 assert.ok(chapter9, "chapter 9 should exist");
 assert.ok(chapter10, "chapter 10 should exist");
 assert.ok(chapter11, "chapter 11 should exist");
@@ -24,33 +34,20 @@ for (const [index, chapter] of [chapter9, chapter10, chapter11].entries()) {
   );
 }
 
-const chapter9Titles = chapter9.blocks.map((block) => block.title ?? "");
-assert.ok(chapter9Titles.includes("DOM events and delegation"));
-assert.ok(chapter9Titles.includes("event.target vs event.currentTarget"));
-assert.ok(chapter9Titles.includes("Fetch, storage, and URL state"));
-assert.ok(chapter9Titles.includes("Observers and workers"));
+expectBlock(chapter9, "DOM events and delegation", "richText");
+expectBlock(chapter9, "event.target vs event.currentTarget", "compare");
+expectBlock(chapter9, "Fetch, storage, and URL state", "richText");
+expectBlock(chapter9, "Streams and rendering lifecycle", "richText");
+expectBlock(chapter9, "Observers and workers", "richText");
+expectBlock(chapter9, "Drill: pick the right browser primitive", "drill");
 
-const chapter10Titles = chapter10.blocks.map((block) => block.title ?? "");
-assert.ok(chapter10Titles.includes("Custom errors and error boundaries"));
-assert.ok(chapter10Titles.includes("Recoverable vs unrecoverable errors"));
-assert.ok(chapter10Titles.includes("Validation strategy and defensive coding"));
-assert.ok(chapter10Titles.includes("Drill: should you catch or rethrow?"));
+expectBlock(chapter10, "Custom errors and error boundaries", "richText");
+expectBlock(chapter10, "Recoverable vs unrecoverable errors", "compare");
+expectBlock(chapter10, "Validation strategy and defensive coding", "richText");
+expectBlock(chapter10, "Drill: should you catch or rethrow?", "drill");
 
-const chapter11Titles = chapter11.blocks.map((block) => block.title ?? "");
-assert.ok(chapter11Titles.includes("Rendering cost awareness"));
-assert.ok(chapter11Titles.includes("Debounce vs throttle"));
-assert.ok(chapter11Titles.includes("Memory leaks and garbage collection"));
-assert.ok(chapter11Titles.includes("Profiling mindset"));
-
-assert.ok(
-  chapter9.blocks.some((block) => block.type === "compare"),
-  "chapter 9 should include the target/currentTarget compare block"
-);
-assert.ok(
-  chapter10.blocks.some((block) => block.type === "compare"),
-  "chapter 10 should include the recoverable/unrecoverable compare block"
-);
-assert.ok(
-  chapter11.blocks.some((block) => block.type === "compare"),
-  "chapter 11 should include the debounce/throttle compare block"
-);
+expectBlock(chapter11, "Rendering cost awareness", "richText");
+expectBlock(chapter11, "Debounce vs throttle", "compare");
+expectBlock(chapter11, "Memory leaks and garbage collection", "richText");
+expectBlock(chapter11, "Profiling mindset", "richText");
+expectBlock(chapter11, "Drill: find the real bottleneck", "drill");
