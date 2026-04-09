@@ -50,10 +50,12 @@ assert.ok(
   "chapters 12 through 14 should each include a trap block"
 );
 
-assert.equal(chapter14.qa.length, 52, "the final chapter should expose a broad React interview bank");
+assert.equal(chapter14.qa.length, 178, "the final chapter should expose the restored legacy-plus-modern React interview bank");
 
 const chapter14Questions = chapter14.qa.map((item) => item.question);
 assert.ok(chapter14Questions.includes("What is JSX in React?"));
+assert.ok(chapter14Questions.includes("What is React?"));
+assert.ok(chapter14Questions.includes("What are props?"));
 assert.ok(chapter14Questions.includes("What causes a React component to re-render?"));
 assert.ok(chapter14Questions.includes("What is the difference between useTransition and useDeferredValue?"));
 assert.ok(chapter14Questions.includes("What causes hydration mismatch errors in React?"));

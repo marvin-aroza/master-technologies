@@ -26,10 +26,10 @@ const totalQuestions = topic.sections.reduce(
   0
 );
 
-assert.ok(totalQuestions >= 80, "the Next.js topic should contain a large interview bank");
+assert.ok(totalQuestions >= 157, "the Next.js topic should preserve the restored legacy-plus-modern interview bank");
 assert.ok(
-  capstone.qa.length >= 40,
-  "the capstone should retain a large advanced interview bank"
+  capstone.qa.length >= 116,
+  "the capstone should retain the restored legacy bank plus the modern advanced interview prompts"
 );
 
 const capstoneExpertCount = capstone.qa.filter(
@@ -60,4 +60,12 @@ assert.ok(
 assert.ok(
   capstoneQuestions.some((question) => question.includes("edge")),
   "the capstone should include runtime tradeoff coverage"
+);
+assert.ok(
+  capstoneQuestions.some((question) => question.includes("what is next.js")),
+  "the capstone should retain the legacy foundational Next.js questions"
+);
+assert.ok(
+  capstoneQuestions.some((question) => question.includes("server-side rendering")),
+  "the capstone should retain legacy SSR interview coverage"
 );

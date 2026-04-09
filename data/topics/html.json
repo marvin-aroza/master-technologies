@@ -1,312 +1,1222 @@
 {
   "id": "html",
   "title": "HTML Mastery Bible",
-  "subtitle": "Semantic tags, SEO, forms & native APIs",
+  "subtitle": "HTML-first mastery, with applied SEO, a11y, performance, and platform guidance",
   "tabs": [
     {
-      "id": "html-sem",
-      "label": "Semantics & Structure"
+      "id": "origins-standards-browser-parsing",
+      "label": "Origins & Parsing"
     },
     {
-      "id": "html-tables-lists",
-      "label": "Tables & Lists"
+      "id": "document-structure-head-body-metadata",
+      "label": "Document Structure"
     },
     {
-      "id": "html-media",
-      "label": "Media & APIs"
+      "id": "text-semantics-links-urls-meaning",
+      "label": "Text & Links"
     },
     {
-      "id": "html-advanced",
-      "label": "Advanced APIs"
+      "id": "sectioning-landmarks-page-architecture",
+      "label": "Page Architecture"
     },
     {
-      "id": "html-perf",
+      "id": "lists-tables-data-markup",
+      "label": "Lists & Tables"
+    },
+    {
+      "id": "media-embeds-responsive-asset-markup",
+      "label": "Media & Assets"
+    },
+    {
+      "id": "forms-controls-validation-submission",
+      "label": "Forms & Validation"
+    },
+    {
+      "id": "interactive-html-dialog-popover-templates",
+      "label": "Interactive HTML"
+    },
+    {
+      "id": "custom-data-attributes-dom-hooks-integration",
+      "label": "Attributes & DOM Hooks"
+    },
+    {
+      "id": "architecture-anti-patterns-browser-quirks-interview-traps",
+      "label": "Architecture & Traps"
+    },
+    {
+      "id": "seo-search-facing-markup",
+      "label": "SEO"
+    },
+    {
+      "id": "accessibility-semantics-aria-form-accessibility",
+      "label": "Accessibility"
+    },
+    {
+      "id": "performance-resource-loading",
       "label": "Performance"
     },
     {
-      "id": "hc-a11y",
-      "label": "Web Accessibility (A11y) & Core"
-    },
-    {
-      "id": "hc-modern",
-      "label": "Modern CSS Architecture"
-    },
-    {
-      "id": "css-2025",
-      "label": "Modern CSS & 2025 Features"
-    },
-    {
-      "id": "web-perf",
-      "label": "Advanced Web Performance"
-    },
-    {
-      "id": "html-tags",
-      "label": "Tag Reference"
-    },
-    {
-      "id": "hcs",
-      "label": "Interview Cheat Sheet (Fast Recall)"
-    },
-    {
-      "id": "html-iq",
-      "label": "Interview Q&A (160)"
+      "id": "native-browser-apis-platform-features-interview-mastery",
+      "label": "Platform APIs & Interviews"
     }
   ],
   "sections": [
     {
-      "id": "hcs",
-      "intro": "The HTML 'Cheat Sheet' for clearing your interview. Master these semantic and performance basics.",
-      "cards": [
+      "id": "origins-standards-browser-parsing",
+      "intro": "HTML starts as a parsed document, not a canvas. This chapter builds the mental model for standards mode, browser repair rules, and the DOM tree that every later topic depends on.",
+      "blocks": [
         {
-          "title": "Rendering Pipeline & Critical Path",
-          "contentHtml": "<ul><li><b>DOM + CSSOM = Render Tree:</b> The browser parses HTML (DOM) and CSS (CSSOM). Nodes only appear in the Render Tree if they are visible (<code>display: none</code> removes them).</li><li><b>Layout (Reflow):</b> Calculating exact geometry/position of every node.</li><li><b>Painting:</b> Filling in pixels. Compositing happens on the GPU.</li><li><b>Mastery Tip:</b> Optimize <b>Cumulative Layout Shift (CLS)</b> by setting explicit <code>width/height</code> on media to reserve space in the Layout phase.</li></ul>"
+          "type": "richText",
+          "title": "What HTML Actually Is",
+          "html": "<p>HTML is the document language of the web. It describes structure, meaning, and relationships so the browser can construct a node tree, apply CSS, expose semantics to assistive tech, and hand a live document to JavaScript.</p><p>In 2026, mastery means thinking in terms of parser behavior and document meaning, not just memorizing tags. The browser does a large amount of repair and inference for you, which is powerful when you understand it and dangerous when you do not.</p>"
         },
         {
-          "title": "Resource Prioritization Mastery",
-          "contentHtml": "<ul><li><b>Preconnect:</b> DNS + TCP + TLS handshake. Use for critical 3rd party domains (CDNs).</li><li><b>Preload:</b> Mandatory high-priority fetch for local critical assets (Fonts, Hero images).</li><li><b>Fetchpriority:</b> (Attribute) <code>fetchpriority=\"high\"</code> on an <code>&lt;img&gt;</code> tells the browser to bump it to the front of the queue even if it's below the fold.</li><li><b>Decoding=\"async\":</b> Offloads image decoding from the main thread during the Paint phase.</li></ul>"
+          "type": "compare",
+          "title": "HTML vs CSS vs JavaScript",
+          "items": [
+            {
+              "label": "HTML",
+              "html": "<p>Defines document structure, semantics, metadata, and native controls.</p>"
+            },
+            {
+              "label": "CSS",
+              "html": "<p>Controls presentation, layout, visual states, and responsive styling.</p>"
+            },
+            {
+              "label": "JavaScript",
+              "html": "<p>Reads and changes the DOM, coordinates behavior, and reacts to events.</p>"
+            }
+          ]
         },
         {
-          "title": "Modern SEO & Metadata Architecture",
-          "contentHtml": "<ul><li><b>JSON-LD:</b> Google's preferred structured data format. Lives in a <code>&lt;script type=\"application/ld+json\"&gt;</code>.</li><li><b>Canonical URL:</b> Not just a hint—it prevents duplicate content penalties by explicitly defining the 'source of truth' URL.</li><li><b>Noindex/Nofollow:</b> Controlled via <code>&lt;meta name=\"robots\"&gt;</code> to keep staging or private routes out of the index.</li></ul>"
+          "type": "mechanics",
+          "title": "How the HTML parser builds a DOM",
+          "steps": [
+            "The browser reads bytes, decodes characters, and tokenizes markup into tags, text, comments, and attributes.",
+            "The tree-construction algorithm turns those tokens into nodes while applying HTML-specific insertion rules.",
+            "Invalid or incomplete markup is often repaired automatically, which changes the final DOM from the raw source.",
+            "Once the DOM exists, CSS and JavaScript operate on the parsed tree, not on the original source text."
+          ]
         },
         {
-          "title": "Form Validation & ValidityState API",
-          "contentHtml": "<ul><li><b>Constraint Validation:</b> Native validation using <code>pattern</code>, <code>required</code>, <code>min/max</code>.</li><li><b>ValidityState Object:</b> Access via <code>input.validity</code>. Check properties like <code>valueMissing</code>, <code>patternMismatch</code>, or <code>typeMismatch</code> for custom error UI.</li><li><b>setCustomValidity():</b> A native method to set a custom string that blocks form submission until cleared.</li></ul>"
+          "type": "code",
+          "title": "Bytes to DOM starts with a document shell",
+          "language": "html",
+          "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <title>Parser demo</title>\n  </head>\n  <body>\n    <main>\n      <h1>Hello</h1>\n      <p>The parser turns this into a DOM tree.</p>\n    </main>\n  </body>\n</html>",
+          "caption": "A valid document gives the parser a clean starting point and keeps the page in no-quirks mode."
         },
         {
-          "title": "Accessibility (A11y) Tree & Relationships",
-          "contentHtml": "<ul><li><b>A11y Tree:</b> A subset of the DOM containing only information relevant to assistive technology.</li><li><b>aria-labelledby vs aria-describedby:</b> <code>labelledby</code> sets the 'Name' (short label); <code>describedby</code> sets the 'Description' (long hint).</li><li><b>aria-live:</b> <code>polite</code> (wait for silence), <code>assertive</code> (interrupt). Use for dynamic notifications.</li></ul>"
+          "type": "trap",
+          "title": "Trap: HTML is not strict XML",
+          "tone": "warning",
+          "html": "<p>Browsers do not reject most invalid HTML. They repair it. If you assume the source markup is identical to the final DOM, nesting bugs, form bugs, and accessibility bugs become much harder to diagnose.</p>"
         },
         {
-          "title": "Containment & Rendering Performance",
-          "contentHtml": "<ul><li><b>content-visibility: auto:</b> (CSS/HTML hybrid) Skips rendering/painting of offscreen elements. Use for heavy landing pages.</li><li><b>contain-intrinsic-size:</b> Reserves space for elements that aren't rendered yet, preventing scrollbar jumping (CLS).</li><li><b>will-change:</b> Informs the browser to promote an element to its own GPU layer. Use sparingly to avoid memory bloat.</li></ul>"
+          "type": "drill",
+          "title": "Drill: predict what the parser repairs",
+          "prompt": "What DOM shape do you expect from `<p>One<div>Two</div>Three</p>` after the browser parses it?",
+          "answerHtml": "<p>The parser closes the paragraph before the block-level <code>&lt;div&gt;</code>. In practice, the repaired structure becomes a paragraph with <code>One</code>, then a sibling <code>&lt;div&gt;Two&lt;/div&gt;</code>, then a new paragraph for the trailing <code>Three</code>. The key lesson is that invalid nesting changes the final DOM tree.</p>"
         },
         {
-          "title": "Web Components & Component Model",
-          "contentHtml": "<ul><li><b>Custom Elements:</b> Extending <code>HTMLElement</code> to create native reusable tags.</li><li><b>Shadow DOM:</b> Provides style and DOM scoping (encapsulation). Styles inside cannot leak out; global styles cannot leak in (mostly).</li><li><b>HTML Templates/Slots:</b> <code>&lt;template&gt;</code> is inert until cloned. <code>&lt;slot&gt;</code> allows for content projection (similar to React children).</li></ul>"
+          "type": "recap",
+          "title": "Origins recap",
+          "items": [
+            "HTML is a parsed document language, not a paint instruction list.",
+            "The DOM is the parsed tree the platform actually uses.",
+            "Doctype keeps the page in standards mode and avoids quirks-mode rendering.",
+            "Invalid markup is often repaired, which is why parser literacy matters."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What does `<!doctype html>` do in a modern document?",
+          "answerHtml": "<p>Its job is to keep the browser in no-quirks mode so layout and parsing follow modern standards behavior instead of legacy compatibility behavior.</p>"
         },
         {
-          "title": "HTML Security Architecture",
-          "contentHtml": "<ul><li><b>Subresource Integrity (SRI):</b> <code>integrity=\"hash\"</code> on scripts ensures the browser only executes the file if it hasn't been tampered with on the CDN.</li><li><b>CSP (Content Security Policy):</b> Prevents XSS by restricting which domains can execute scripts or load styles.</li><li><b>Trusted Types:</b> A browser API that requires 'wrapping' strings in a trusted object before injecting into sinks like <code>innerHTML</code>.</li></ul>"
+          "level": "intermediate",
+          "question": "What is the difference between HTML source and the DOM?",
+          "answerHtml": "<p>The source is the text you wrote. The DOM is the parsed node tree the browser produced after applying tokenization, tree-construction rules, and error recovery.</p>"
         },
         {
-          "title": "Storage & State Persistence",
-          "contentHtml": "<ul><li><b>IndexedDB:</b> High-capacity, asynchronous client-side storage for binary data/objects. The 'database' of the web.</li><li><b>LocalStorage:</b> 5MB limit, synchronous, persists until cleared. Blocking - use sparingly.</li><li><b>SameSite Cookie Attribute:</b> <code>Lax</code> (default), <code>Strict</code>, <code>None</code>. Critical for preventing CSRF attacks.</li></ul>"
-        },
-        {
-          "title": "Modern Media & Asset Loading",
-          "contentHtml": "<ul><li><b>picture > source:</b> Enables 'Art Direction' (changing images based on viewport) and format fallback (AVIF/WebP/JPG).</li><li><b>srcset & sizes:</b> Enables 'Resolution Switching'—browser picks the smallest file that fits the screen density.</li><li><b>VTT Tracks:</b> Native <code>&lt;track&gt;</code> for subtitles and captions, critical for WCAG compliance.</li></ul>"
+          "level": "advanced",
+          "question": "Why do invalid nesting bugs matter in interviews and production?",
+          "answerHtml": "<p>Because the browser silently repairs invalid HTML, the final DOM can differ from what the developer intended. That affects layout, accessibility, event handling, and test expectations.</p>"
         }
       ]
     },
     {
-      "id": "html-sem",
-      "intro": "HTML is the skeleton of every web page. Semantic HTML is the foundation of accessibility, SEO, and maintainable code.",
-      "cards": [
+      "id": "document-structure-head-body-metadata",
+      "intro": "A document is more than visible content. The shell, metadata, and loading hints in the head control rendering mode, encoding, indexing, responsiveness, and script behavior.",
+      "blocks": [
         {
-          "title": "HTML5 Document Structure",
-          "contentHtml": "<p>Every HTML document follows this structure. Understanding each part is crucial.</p>\n<pre><code><span class=\"c\">&lt;!DOCTYPE html&gt;</span>                <span class=\"c\">&lt;!-- Tells browser: use HTML5 standards mode --&gt;</span>\n&lt;html lang=<span class=\"s\">\"en\"</span>&gt;                  <span class=\"c\">&lt;!-- Root element. lang= helps screen readers --&gt;</span>\n&lt;head&gt;\n  &lt;meta charset=<span class=\"s\">\"UTF-8\"</span>&gt;          <span class=\"c\">&lt;!-- Character encoding (ALWAYS first) --&gt;</span>\n  &lt;meta name=<span class=\"s\">\"viewport\"</span> content=<span class=\"s\">\"width=device-width, initial-scale=1.0\"</span>&gt;\n  &lt;meta name=<span class=\"s\">\"description\"</span> content=<span class=\"s\">\"Page description for SEO\"</span>&gt;\n  &lt;title&gt;Page Title&lt;/title&gt;        <span class=\"c\">&lt;!-- Shows in tab, critical for SEO --&gt;</span>\n  &lt;link rel=<span class=\"s\">\"stylesheet\"</span> href=<span class=\"s\">\"styles.css\"</span>&gt;\n  &lt;link rel=<span class=\"s\">\"icon\"</span> href=<span class=\"s\">\"/favicon.ico\"</span>&gt;\n  &lt;link rel=<span class=\"s\">\"canonical\"</span> href=<span class=\"s\">\"https://example.com/page\"</span>&gt;\n  \n  <span class=\"c\">&lt;!-- Open Graph (social sharing) --&gt;</span>\n  &lt;meta property=<span class=\"s\">\"og:title\"</span> content=<span class=\"s\">\"Title\"</span>&gt;\n  &lt;meta property=<span class=\"s\">\"og:image\"</span> content=<span class=\"s\">\"https://example.com/og.png\"</span>&gt;\n  \n  <span class=\"c\">&lt;!-- Preload critical resources --&gt;</span>\n  &lt;link rel=<span class=\"s\">\"preload\"</span> href=<span class=\"s\">\"font.woff2\"</span> as=<span class=\"s\">\"font\"</span> crossorigin&gt;\n  &lt;link rel=<span class=\"s\">\"preconnect\"</span> href=<span class=\"s\">\"https://api.example.com\"</span>&gt;\n&lt;/head&gt;\n&lt;body&gt;\n  &lt;header&gt;...&lt;/header&gt;\n  &lt;main&gt;...&lt;/main&gt;\n  &lt;footer&gt;...&lt;/footer&gt;\n  &lt;script src=<span class=\"s\">\"app.js\"</span> defer&gt;&lt;/script&gt; <span class=\"c\">&lt;!-- defer = load after HTML parsed --&gt;</span>\n&lt;/body&gt;\n&lt;/html&gt;</code></pre>\n<div class=\"dp\"><strong>defer vs async:</strong> <code>defer</code> loads JS in parallel but executes AFTER HTML is parsed (in order). <code>async</code> loads in parallel and executes immediately when ready (out of order). Use defer for your app bundle, async for analytics scripts.</div>"
+          "type": "richText",
+          "title": "Document shell and standards mode",
+          "html": "<p>A robust HTML document starts with doctype, a root <code>&lt;html&gt;</code> element, and a clear split between metadata in the head and visible content in the body. This is the structural contract that the browser expects.</p><p>The head is not decorative. It contains instructions and descriptive metadata that affect decoding, layout, indexing, previews, and asset loading before a user ever sees the page content.</p>"
         },
         {
-          "title": "Semantic HTML — Every Element",
-          "contentHtml": "<p>Semantic elements describe their <strong>meaning</strong>, not just appearance. Critical for accessibility and SEO.</p>\n<h3>Page Structure</h3>\n<pre><code>&lt;header&gt;    <span class=\"c\">&lt;!-- Site/section header. Can contain nav, logo, search --&gt;</span>\n&lt;nav&gt;       <span class=\"c\">&lt;!-- Navigation links. Use aria-label for multiple navs --&gt;</span>\n&lt;main&gt;      <span class=\"c\">&lt;!-- Primary content. ONE per page. Skip-link target --&gt;</span>\n&lt;section&gt;   <span class=\"c\">&lt;!-- Thematic grouping WITH a heading --&gt;</span>\n&lt;article&gt;   <span class=\"c\">&lt;!-- Self-contained content (blog post, comment, card) --&gt;</span>\n&lt;aside&gt;     <span class=\"c\">&lt;!-- Tangentially related (sidebar, pull quote, ad) --&gt;</span>\n&lt;footer&gt;    <span class=\"c\">&lt;!-- Site/section footer. Copyright, links --&gt;</span>\n&lt;figure&gt;    <span class=\"c\">&lt;!-- Self-contained media with caption --&gt;</span>\n&lt;figcaption&gt; <span class=\"c\">&lt;!-- Caption for figure --&gt;</span>\n&lt;details&gt;   <span class=\"c\">&lt;!-- Expandable/collapsible content (no JS needed!) --&gt;</span>\n&lt;summary&gt;   <span class=\"c\">&lt;!-- Visible heading for details --&gt;</span>\n&lt;dialog&gt;    <span class=\"c\">&lt;!-- Native modal dialog. showModal() / close() --&gt;</span>\n&lt;time&gt;      <span class=\"c\">&lt;!-- Machine-readable date: &lt;time datetime=\"2026-04-06\"&gt; --&gt;</span>\n&lt;mark&gt;      <span class=\"c\">&lt;!-- Highlighted/relevant text --&gt;</span>\n&lt;abbr&gt;      <span class=\"c\">&lt;!-- Abbreviation: &lt;abbr title=\"HyperText...\"&gt;HTML&lt;/abbr&gt; --&gt;</span>\n&lt;address&gt;   <span class=\"c\">&lt;!-- Contact information for nearest article/body --&gt;</span></code></pre>\n<div class=\"an\"><strong>div</strong> and <strong>span</strong> have NO semantic meaning. They're for styling/grouping only. If you can replace a div with a semantic element (article, section, nav), always do it. Screen readers announce semantic elements — they skip divs.</div>"
+          "type": "code",
+          "title": "A modern HTML document scaffold",
+          "language": "html",
+          "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Article title</title>\n    <meta name=\"description\" content=\"Search-facing page summary\" />\n    <link rel=\"canonical\" href=\"https://example.com/articles/html-shell\" />\n    <script src=\"app.js\" defer></script>\n  </head>\n  <body>\n    <main>...</main>\n  </body>\n</html>",
+          "caption": "This shell separates metadata, visible content, and deferred behavior cleanly."
         },
         {
-          "title": "Forms — Complete Reference",
-          "contentHtml": "<pre><code>&lt;form action=<span class=\"s\">\"/submit\"</span> method=<span class=\"s\">\"post\"</span> novalidate&gt;\n  <span class=\"c\">&lt;!-- Text inputs --&gt;</span>\n  &lt;label for=<span class=\"s\">\"email\"</span>&gt;Email&lt;/label&gt;\n  &lt;input type=<span class=\"s\">\"email\"</span> id=<span class=\"s\">\"email\"</span> name=<span class=\"s\">\"email\"</span> required \n         placeholder=<span class=\"s\">\"you@example.com\"</span>\n         autocomplete=<span class=\"s\">\"email\"</span>\n         pattern=<span class=\"s\">\"[^@]+@[^@]+\\.[^@]+\"</span>&gt;\n  \n  <span class=\"c\">&lt;!-- ALL input types --&gt;</span>\n  &lt;input type=<span class=\"s\">\"text\"</span>&gt;       &lt;input type=<span class=\"s\">\"password\"</span>&gt;\n  &lt;input type=<span class=\"s\">\"number\"</span> min=<span class=\"s\">\"0\"</span> max=<span class=\"s\">\"100\"</span> step=<span class=\"s\">\"1\"</span>&gt;\n  &lt;input type=<span class=\"s\">\"tel\"</span>&gt;        &lt;input type=<span class=\"s\">\"url\"</span>&gt;\n  &lt;input type=<span class=\"s\">\"search\"</span>&gt;     &lt;input type=<span class=\"s\">\"date\"</span>&gt;\n  &lt;input type=<span class=\"s\">\"time\"</span>&gt;       &lt;input type=<span class=\"s\">\"datetime-local\"</span>&gt;\n  &lt;input type=<span class=\"s\">\"color\"</span>&gt;      &lt;input type=<span class=\"s\">\"range\"</span>&gt;\n  &lt;input type=<span class=\"s\">\"file\"</span> accept=<span class=\"s\">\"image/*\"</span> multiple&gt;\n  &lt;input type=<span class=\"s\">\"hidden\"</span> name=<span class=\"s\">\"csrf\"</span> value=<span class=\"s\">\"token\"</span>&gt;\n  \n  <span class=\"c\">&lt;!-- Select, Textarea, Datalist --&gt;</span>\n  &lt;select name=<span class=\"s\">\"country\"</span>&gt;\n    &lt;optgroup label=<span class=\"s\">\"Europe\"</span>&gt;\n      &lt;option value=<span class=\"s\">\"uk\"</span>&gt;United Kingdom&lt;/option&gt;\n    &lt;/optgroup&gt;\n  &lt;/select&gt;\n  \n  &lt;textarea rows=<span class=\"s\">\"4\"</span> maxlength=<span class=\"s\">\"500\"</span>&gt;&lt;/textarea&gt;\n  \n  &lt;input list=<span class=\"s\">\"fruits\"</span>&gt;\n  &lt;datalist id=<span class=\"s\">\"fruits\"</span>&gt;\n    &lt;option value=<span class=\"s\">\"Apple\"</span>&gt;\n  &lt;/datalist&gt;\n  \n  <span class=\"c\">&lt;!-- Validation attributes --&gt;</span>\n  required  minlength  maxlength  min  max  pattern  step\n  \n  &lt;button type=<span class=\"s\">\"submit\"</span>&gt;Send&lt;/button&gt;\n&lt;/form&gt;</code></pre>\n<div class=\"tp\">Always use <code>&lt;label&gt;</code> with <code>for=</code> matching input <code>id=</code>. Clicking the label focuses the input. This is essential for accessibility AND improves mobile UX (bigger tap target).</div>"
+          "type": "compare",
+          "title": "Metadata that changes behavior vs metadata that describes",
+          "items": [
+            {
+              "label": "Behavioral metadata",
+              "html": "<p><code>charset</code>, <code>viewport</code>, preload hints, and script attributes influence parsing, layout, or loading behavior.</p>"
+            },
+            {
+              "label": "Descriptive metadata",
+              "html": "<p><code>title</code>, description, canonical, robots, and social metadata describe the document to browsers, crawlers, and external platforms.</p>"
+            }
+          ]
         },
         {
-          "title": "Accessibility (a11y) — Critical Knowledge",
-          "contentHtml": "<p>Accessibility isn't optional — it's required by law in many countries (ADA, EAA, WCAG).</p>\n<h3>ARIA Attributes</h3>\n<pre><code><span class=\"c\">&lt;!-- Role: what the element IS --&gt;</span>\nrole=<span class=\"s\">\"button\"</span> role=<span class=\"s\">\"navigation\"</span> role=<span class=\"s\">\"dialog\"</span> role=<span class=\"s\">\"alert\"</span>\nrole=<span class=\"s\">\"tab\"</span> role=<span class=\"s\">\"tabpanel\"</span> role=<span class=\"s\">\"tablist\"</span>\nrole=<span class=\"s\">\"progressbar\"</span> role=<span class=\"s\">\"status\"</span> role=<span class=\"s\">\"search\"</span>\n\n<span class=\"c\">&lt;!-- State: current condition --&gt;</span>\naria-expanded=<span class=\"s\">\"true|false\"</span>     <span class=\"c\">&lt;!-- dropdown open/closed --&gt;</span>\naria-selected=<span class=\"s\">\"true\"</span>          <span class=\"c\">&lt;!-- tab/option selected --&gt;</span>\naria-hidden=<span class=\"s\">\"true\"</span>            <span class=\"c\">&lt;!-- hidden from screen readers --&gt;</span>\naria-disabled=<span class=\"s\">\"true\"</span>          <span class=\"c\">&lt;!-- not interactive --&gt;</span>\naria-checked=<span class=\"s\">\"true\"</span>           <span class=\"c\">&lt;!-- checkbox/toggle state --&gt;</span>\naria-current=<span class=\"s\">\"page\"</span>           <span class=\"c\">&lt;!-- current page in nav --&gt;</span>\n\n<span class=\"c\">&lt;!-- Properties: relationships --&gt;</span>\naria-label=<span class=\"s\">\"Close menu\"</span>       <span class=\"c\">&lt;!-- accessible name (no visible text) --&gt;</span>\naria-labelledby=<span class=\"s\">\"heading-id\"</span> <span class=\"c\">&lt;!-- references another element as label --&gt;</span>\naria-describedby=<span class=\"s\">\"help-id\"</span>   <span class=\"c\">&lt;!-- references description element --&gt;</span>\naria-live=<span class=\"s\">\"polite|assertive\"</span>  <span class=\"c\">&lt;!-- announce dynamic changes --&gt;</span>\naria-controls=<span class=\"s\">\"panel-id\"</span>     <span class=\"c\">&lt;!-- this controls that element --&gt;</span></code></pre>\n<h3>Focus Management</h3>\n<pre><code><span class=\"c\">&lt;!-- Skip link (first element in body) --&gt;</span>\n&lt;a href=<span class=\"s\">\"#main\"</span> class=<span class=\"s\">\"skip-link\"</span>&gt;Skip to content&lt;/a&gt;\n\n<span class=\"c\">&lt;!-- tabindex --&gt;</span>\ntabindex=<span class=\"s\">\"0\"</span>    <span class=\"c\">&lt;!-- Add to tab order (for custom interactive elements) --&gt;</span>\ntabindex=<span class=\"s\">\"-1\"</span>   <span class=\"c\">&lt;!-- Focusable via JS only (for focus management) --&gt;</span>\n<span class=\"c\">&lt;!-- NEVER use tabindex &gt; 0 — breaks natural tab order --&gt;</span>\n\n<span class=\"c\">&lt;!-- Focus trap for modals --&gt;</span>\n<span class=\"c\">&lt;!-- Trap focus inside dialog: first/last focusable elements --&gt;</span>\n<span class=\"c\">&lt;!-- Use inert attribute on background content --&gt;</span>\n&lt;div inert&gt;Background content&lt;/div&gt;</code></pre>\n<div class=\"wr\">First rule of ARIA: <strong>Don't use ARIA if a native HTML element does the job</strong>. <code>&lt;button&gt;</code> is better than <code>&lt;div role='button' tabindex='0'&gt;</code>. Native elements have built-in keyboard handling, focus management, and screen reader support.</div>"
+          "type": "mechanics",
+          "title": "What the browser uses from the head",
+          "steps": [
+            "Early metadata such as charset helps the browser decode the document correctly.",
+            "Viewport metadata affects initial layout and scaling behavior on small screens.",
+            "Title and descriptive metadata feed tabs, bookmarks, search engines, and social previews.",
+            "Script and link tags influence when resources are requested and when code executes; classic scripts often need <code>defer</code> or <code>async</code>, while module scripts are deferred by default."
+          ]
         },
         {
-          "title": "HTML APIs You Should Know",
-          "contentHtml": "<h3>Native Dialog</h3>\n<pre><code>&lt;dialog id=<span class=\"s\">\"modal\"</span>&gt;\n  &lt;h2&gt;Confirm&lt;/h2&gt;\n  &lt;p&gt;Are you sure?&lt;/p&gt;\n  &lt;form method=<span class=\"s\">\"dialog\"</span>&gt;  <span class=\"c\">&lt;!-- auto-closes dialog --&gt;</span>\n    &lt;button value=<span class=\"s\">\"cancel\"</span>&gt;Cancel&lt;/button&gt;\n    &lt;button value=<span class=\"s\">\"confirm\"</span>&gt;OK&lt;/button&gt;\n  &lt;/form&gt;\n&lt;/dialog&gt;\n<span class=\"c\">// modal.showModal(); — opens with backdrop, focus trap, Escape to close</span>\n<span class=\"c\">// modal.close(); — closes programmatically</span>\n<span class=\"c\">// modal.returnValue — which button was clicked</span></code></pre>\n<h3>Other HTML APIs</h3>\n<p><strong>Popover API:</strong> <code>popover</code> attribute + <code>popovertarget</code> — native tooltips/dropdowns without JS. <strong>View Transitions API:</strong> <code>document.startViewTransition()</code> — smooth page transitions. <strong>Intersection Observer:</strong> lazy loading, infinite scroll, scroll animations. <strong>Web Components:</strong> Custom Elements + Shadow DOM + Templates — framework-agnostic components.</p>"
+          "type": "trap",
+          "title": "Trap: metadata is not decorative",
+          "tone": "pitfall",
+          "html": "<p>Leaving out or misplacing critical head metadata causes real bugs: broken character decoding, poor mobile layout, weak search snippets, duplicate-content issues, and render-blocking script behavior.</p>"
         },
         {
-          "title": "SEO Essentials in HTML",
-          "contentHtml": "<p>Search engines read your HTML to understand your content. Structure matters.</p>\n<h3>Critical SEO Elements</h3>\n<p><strong>Title tag:</strong> 50-60 chars, unique per page, primary keyword first. <strong>Meta description:</strong> 150-160 chars, compelling, includes keywords. <strong>Heading hierarchy:</strong> One <code>h1</code> per page, h2-h6 in order (never skip levels). <strong>Canonical URL:</strong> prevents duplicate content penalties. <strong>Alt text:</strong> describe images for screen readers AND Google Image Search. <strong>Structured data:</strong> JSON-LD for rich snippets.</p>\n<pre><code><span class=\"c\">&lt;!-- Structured Data (JSON-LD) --&gt;</span>\n&lt;script type=<span class=\"s\">\"application/ld+json\"</span>&gt;\n{{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"Article\",\n  \"headline\": \"Article Title\",\n  \"author\": {{ \"@type\": \"Person\", \"name\": \"Author\" }},\n  \"datePublished\": \"2026-04-06\"\n}}\n&lt;/script&gt;</code></pre>"
+          "type": "drill",
+          "title": "Drill: audit the head",
+          "prompt": "A page is missing charset, viewport, title, and canonical metadata, and it loads its main script without <code>defer</code>. What problems would you expect first?",
+          "answerHtml": "<p>Start with decoding and layout risk: missing charset can produce broken text, missing viewport harms mobile layout, missing title and canonical weaken discoverability, and a parser-blocking script can delay DOM construction and first render.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Document shell recap",
+          "items": [
+            "The head controls both browser behavior and document discoverability.",
+            "Place charset early and define viewport deliberately.",
+            "Use title, description, and canonical metadata as part of the document contract.",
+            "Script loading strategy belongs in document architecture, not just JavaScript setup."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why should the charset declaration appear early in the head?",
+          "answerHtml": "<p>Because the browser should know how to decode bytes into characters as early as possible. Late charset declarations are less reliable and can lead to broken text rendering.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the practical difference between a page title and a meta description?",
+          "answerHtml": "<p>The title is the primary document label used in tabs, history, and search titles, while the meta description is a descriptive summary often used in search snippets and previews.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is `defer` usually the safer default for an app script than a plain script tag?",
+          "answerHtml": "<p>A deferred classic script downloads in parallel but waits to execute until parsing is complete, which avoids blocking DOM construction and makes document startup more predictable. Module scripts also defer by default, so the real skill is choosing the right loading model for the document.</p>"
         }
       ]
     },
     {
-      "id": "html-tables-lists",
-      "intro": "Tables, lists, and content elements — the building blocks of structured data display.",
-      "cards": [
+      "id": "text-semantics-links-urls-meaning",
+      "intro": "Text markup is about meaning, not styling. This chapter covers semantic emphasis, real links, and how URLs and link behavior shape navigation, accessibility, and trust.",
+      "blocks": [
         {
-          "title": "Tables — Complete Accessible Reference",
-          "contentHtml": "<pre><code>&lt;table&gt;\n  &lt;caption&gt;Quarterly Revenue&lt;/caption&gt;  <span class=\"c\">&lt;!-- Visible title, screen reader announcement --&gt;</span>\n  &lt;thead&gt;\n    &lt;tr&gt;\n      &lt;th scope=<span class=\"s\">\"col\"</span>&gt;Quarter&lt;/th&gt;  <span class=\"c\">&lt;!-- scope tells SR this heads a column --&gt;</span>\n      &lt;th scope=<span class=\"s\">\"col\"</span>&gt;Revenue&lt;/th&gt;\n      &lt;th scope=<span class=\"s\">\"col\"</span>&gt;Growth&lt;/th&gt;\n    &lt;/tr&gt;\n  &lt;/thead&gt;\n  &lt;tbody&gt;\n    &lt;tr&gt;\n      &lt;th scope=<span class=\"s\">\"row\"</span>&gt;Q1&lt;/th&gt;  <span class=\"c\">&lt;!-- Row header --&gt;</span>\n      &lt;td&gt;$1.2M&lt;/td&gt;\n      &lt;td&gt;+12%&lt;/td&gt;\n    &lt;/tr&gt;\n  &lt;/tbody&gt;\n  &lt;tfoot&gt;\n    &lt;tr&gt;&lt;th scope=<span class=\"s\">\"row\"</span>&gt;Total&lt;/th&gt;&lt;td colspan=<span class=\"s\">\"2\"</span>&gt;$4.8M&lt;/td&gt;&lt;/tr&gt;\n  &lt;/tfoot&gt;\n&lt;/table&gt;</code></pre>\n<div class=\"tp\">Always use <code>&lt;caption&gt;</code> and <code>scope</code> attributes. Screen readers use these to announce 'Revenue column, Q1 row: $1.2M' — without them, tables are incomprehensible to blind users.</div>"
+          "type": "richText",
+          "title": "Text semantics communicate meaning",
+          "html": "<p>Semantic text elements tell browsers, assistive technologies, and readers what a piece of text means. That is why <code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;abbr&gt;</code>, <code>&lt;code&gt;</code>, and <code>&lt;time&gt;</code> matter beyond visuals.</p><p>Links work the same way: a real anchor is a navigation contract with built-in keyboard behavior, focusability, URL semantics, and browser affordances that a clickable generic element does not provide.</p>"
         },
         {
-          "title": "Lists — Ordered, Unordered, Description",
-          "contentHtml": "<pre><code><span class=\"c\">&lt;!-- Unordered list (bullets) --&gt;</span>\n&lt;ul&gt;\n  &lt;li&gt;Item one&lt;/li&gt;\n  &lt;li&gt;Item two\n    &lt;ul&gt;&lt;li&gt;Nested item&lt;/li&gt;&lt;/ul&gt;  <span class=\"c\">&lt;!-- Nested list INSIDE li --&gt;</span>\n  &lt;/li&gt;\n&lt;/ul&gt;\n\n<span class=\"c\">&lt;!-- Ordered list (numbers) --&gt;</span>\n&lt;ol type=<span class=\"s\">\"1\"</span> start=<span class=\"s\">\"5\"</span> reversed&gt;\n  &lt;li value=<span class=\"s\">\"10\"</span>&gt;Custom numbering&lt;/li&gt;\n&lt;/ol&gt;\n\n<span class=\"c\">&lt;!-- Description list (key-value pairs, glossary, metadata) --&gt;</span>\n&lt;dl&gt;\n  &lt;dt&gt;HTML&lt;/dt&gt;\n  &lt;dd&gt;HyperText Markup Language&lt;/dd&gt;\n  &lt;dt&gt;CSS&lt;/dt&gt;\n  &lt;dd&gt;Cascading Style Sheets&lt;/dd&gt;\n&lt;/dl&gt;</code></pre>\n<div class=\"an\">Use <code>&lt;dl&gt;</code> for FAQ pages, metadata displays, settings panels — any key-value layout. It's more semantic than a table for term/description pairs.</div>"
+          "type": "compare",
+          "title": "`strong` and `em` vs `b` and `i`",
+          "items": [
+            {
+              "label": "Meaningful emphasis",
+              "html": "<p>Use <code>&lt;strong&gt;</code> and <code>&lt;em&gt;</code> when the importance or emphasis is part of the document meaning.</p>"
+            },
+            {
+              "label": "Alternate voice or conventional offset",
+              "html": "<p><code>&lt;b&gt;</code> and <code>&lt;i&gt;</code> are not just generic styling hooks. They are for offset text or an alternate voice when the content does not carry the stronger importance or emphasis communicated by <code>&lt;strong&gt;</code> and <code>&lt;em&gt;</code>.</p>"
+            }
+          ]
         },
         {
-          "title": "Details & Summary — Native Accordion",
-          "contentHtml": "<pre><code><span class=\"c\">&lt;!-- No JavaScript needed! --&gt;</span>\n&lt;details&gt;\n  &lt;summary&gt;What is your refund policy?&lt;/summary&gt;\n  &lt;p&gt;Full refund within 30 days of purchase...&lt;/p&gt;\n&lt;/details&gt;\n\n<span class=\"c\">&lt;!-- Exclusive accordion (name attribute, one open at a time) --&gt;</span>\n&lt;details name=<span class=\"s\">\"faq\"</span> open&gt;\n  &lt;summary&gt;Question 1&lt;/summary&gt;\n  &lt;p&gt;Answer 1&lt;/p&gt;\n&lt;/details&gt;\n&lt;details name=<span class=\"s\">\"faq\"</span>&gt;\n  &lt;summary&gt;Question 2&lt;/summary&gt;\n  &lt;p&gt;Answer 2&lt;/p&gt;\n&lt;/details&gt;</code></pre>\n<div class=\"tp\">The <code>name</code> attribute (2024) creates exclusive accordions — opening one closes others in the same group. Zero JavaScript. Perfect for FAQ pages.</div>"
+          "type": "code",
+          "title": "Link markup that survives real use",
+          "language": "html",
+          "code": "<p>Read the <a href=\"/guide/html-links\">HTML links guide</a>.</p>\n<p>Open the docs in a new tab: <a href=\"https://developer.mozilla.org/\" target=\"_blank\" rel=\"noopener noreferrer\">MDN</a></p>\n<p>Jump to the main content: <a href=\"#main-content\">Skip to content</a></p>",
+          "caption": "Anchors represent navigation targets. Add <code>rel=\"noopener noreferrer\"</code> when opening an external page in a new tab."
+        },
+        {
+          "type": "mechanics",
+          "title": "How browsers resolve links",
+          "steps": [
+            "A relative URL resolves against the current document URL or an explicit base URL.",
+            "Fragment links target an element in the same document by id.",
+            "Anchors participate in browser history, status previews, keyboard navigation, and context menus automatically.",
+            "Opening a new browsing context with <code>target=\"_blank\"</code> changes both UX and security expectations."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: click handlers are not links",
+          "tone": "warning",
+          "html": "<p>If clicking an element navigates somewhere, it should usually be an anchor. Replacing links with generic elements plus JavaScript removes native navigation semantics, browser affordances, and often keyboard access.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: choose the right text or link element",
+          "prompt": "You need to mark up a publication date, an acronym expansion, a keyboard shortcut, and a navigation target to another page. Which native elements fit each job best?",
+          "answerHtml": "<p>Use <code>&lt;time&gt;</code> for the date, <code>&lt;abbr&gt;</code> with a title for the acronym, <code>&lt;kbd&gt;</code> for the shortcut, and a real <code>&lt;a&gt;</code> with an href for the navigation target.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Text and links recap",
+          "items": [
+            "Text semantics communicate meaning, not just visual style.",
+            "Real links use anchors because navigation is a native browser behavior.",
+            "Relative, absolute, and fragment URLs serve different navigation roles.",
+            "External new-tab links need both UX clarity and security hygiene."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "When should you use an anchor instead of a button?",
+          "answerHtml": "<p>Use an anchor when the interaction navigates to a URL or document location. Use a button when the interaction performs an action in the current page or app state.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why is `rel=\"noopener noreferrer\"` commonly paired with `target=\"_blank\"`?",
+          "answerHtml": "<p>It prevents the newly opened page from using <code>window.opener</code> to reach back into the original page and also suppresses the referrer header for added privacy.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the practical benefit of semantic text elements over generic spans?",
+          "answerHtml": "<p>They preserve meaning in the accessibility tree, improve document clarity, and make the markup self-descriptive even before styling is applied.</p>"
         }
       ]
     },
     {
-      "id": "html-media",
-      "intro": "Images, video, responsive media, and performance optimization.",
-      "cards": [
+      "id": "sectioning-landmarks-page-architecture",
+      "intro": "A strong page architecture gives users and assistive technologies a clear map of the document. This chapter focuses on landmarks, headings, and the difference between sections that mean something and wrappers that only group content.",
+      "blocks": [
         {
-          "title": "Images — Complete Guide",
-          "contentHtml": "<pre><code><span class=\"c\">&lt;!-- Responsive image with art direction --&gt;</span>\n&lt;picture&gt;\n  &lt;source media=<span class=\"s\">\"(min-width: 800px)\"</span> srcset=<span class=\"s\">\"hero-wide.avif\"</span> type=<span class=\"s\">\"image/avif\"</span>&gt;\n  &lt;source media=<span class=\"s\">\"(min-width: 800px)\"</span> srcset=<span class=\"s\">\"hero-wide.webp\"</span> type=<span class=\"s\">\"image/webp\"</span>&gt;\n  &lt;source srcset=<span class=\"s\">\"hero-mobile.avif\"</span> type=<span class=\"s\">\"image/avif\"</span>&gt;\n  &lt;source srcset=<span class=\"s\">\"hero-mobile.webp\"</span> type=<span class=\"s\">\"image/webp\"</span>&gt;\n  &lt;img src=<span class=\"s\">\"hero-fallback.jpg\"</span> alt=<span class=\"s\">\"Description\"</span> \n       width=<span class=\"s\">\"1200\"</span> height=<span class=\"s\">\"600\"</span>\n       loading=<span class=\"s\">\"lazy\"</span>\n       decoding=<span class=\"s\">\"async\"</span>\n       fetchpriority=<span class=\"s\">\"high\"</span>&gt;  <span class=\"c\">&lt;!-- for hero/LCP image --&gt;</span>\n&lt;/picture&gt;\n\n<span class=\"c\">&lt;!-- Responsive srcset (resolution switching) --&gt;</span>\n&lt;img srcset=<span class=\"s\">\"img-320.jpg 320w, img-640.jpg 640w, img-1200.jpg 1200w\"</span>\n     sizes=<span class=\"s\">\"(max-width: 640px) 100vw, 50vw\"</span>\n     src=<span class=\"s\">\"img-640.jpg\"</span> alt=<span class=\"s\">\"...\"</span>&gt;</code></pre>\n<div class=\"tp\"><code>loading='lazy'</code> defers offscreen images. <code>fetchpriority='high'</code> on your LCP (Largest Contentful Paint) image tells the browser to prioritize it. Always set <code>width</code> and <code>height</code> to prevent layout shift (CLS).</div>"
+          "type": "richText",
+          "title": "Landmarks and page architecture",
+          "html": "<p>Sectioning content is about making the document navigable. Elements such as <code>&lt;main&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;section&gt;</code>, and <code>&lt;aside&gt;</code> communicate purpose, not just grouping.</p><p>Landmark behavior depends on context. For example, top-level <code>&lt;header&gt;</code> and <code>&lt;footer&gt;</code> can expose banner or contentinfo landmarks, but nested ones inside sectioning content are usually just local structure.</p>"
         },
         {
-          "title": "Video, Audio & Embeds",
-          "contentHtml": "<pre><code>&lt;video controls preload=<span class=\"s\">\"metadata\"</span> poster=<span class=\"s\">\"thumb.jpg\"</span>\n       width=<span class=\"s\">\"640\"</span> height=<span class=\"s\">\"360\"</span>&gt;\n  &lt;source src=<span class=\"s\">\"video.mp4\"</span> type=<span class=\"s\">\"video/mp4\"</span>&gt;\n  &lt;source src=<span class=\"s\">\"video.webm\"</span> type=<span class=\"s\">\"video/webm\"</span>&gt;\n  &lt;track kind=<span class=\"s\">\"subtitles\"</span> src=<span class=\"s\">\"subs-en.vtt\"</span> srclang=<span class=\"s\">\"en\"</span> label=<span class=\"s\">\"English\"</span> default&gt;\n  Your browser doesn't support video.\n&lt;/video&gt;\n\n<span class=\"c\">&lt;!-- Responsive iframe --&gt;</span>\n&lt;div style=<span class=\"s\">\"aspect-ratio: 16/9\"</span>&gt;\n  &lt;iframe src=<span class=\"s\">\"...\"</span> style=<span class=\"s\">\"width:100%;height:100%\"</span>\n          loading=<span class=\"s\">\"lazy\"</span> allow=<span class=\"s\">\"fullscreen\"</span>&gt;&lt;/iframe&gt;\n&lt;/div&gt;</code></pre>"
+          "type": "compare",
+          "title": "`section` vs `article` vs `div`",
+          "items": [
+            {
+              "label": "section",
+              "html": "<p>Use for a thematically grouped part of the document that usually deserves its own heading.</p>"
+            },
+            {
+              "label": "article",
+              "html": "<p>Use for self-contained content that could stand on its own, such as a post, card, comment, or news item.</p>"
+            },
+            {
+              "label": "div",
+              "html": "<p>Use only when you need a generic wrapper and no semantic element expresses the purpose.</p>"
+            }
+          ]
         },
         {
-          "title": "Web Components",
-          "contentHtml": "<pre><code><span class=\"c\">// Define a custom element</span>\n<span class=\"k\">class</span> <span class=\"f\">MyCard</span> <span class=\"k\">extends</span> HTMLElement {{\n  <span class=\"f\">constructor</span>() {{\n    <span class=\"k\">super</span>();\n    <span class=\"k\">this</span>.attachShadow({{ mode: <span class=\"s\">'open'</span> }});\n    <span class=\"k\">this</span>.shadowRoot.innerHTML = <span class=\"s\">`\n      &lt;style&gt;:host {{ display: block; border: 1px solid #ccc; padding: 1rem; }}&lt;/style&gt;\n      &lt;h2&gt;&lt;slot name=\"title\"&gt;&lt;/slot&gt;&lt;/h2&gt;\n      &lt;slot&gt;&lt;/slot&gt;\n    `</span>;\n  }}\n  <span class=\"k\">static get</span> observedAttributes() {{ <span class=\"k\">return</span> [<span class=\"s\">'variant'</span>]; }}\n  attributeChangedCallback(name, old, val) {{ <span class=\"c\">/* react to changes */</span> }}\n}}\ncustomElements.define(<span class=\"s\">'my-card'</span>, MyCard);\n\n<span class=\"c\">// Usage:</span>\n<span class=\"c\">// &lt;my-card&gt;&lt;span slot=\"title\"&gt;Hello&lt;/span&gt;Content here&lt;/my-card&gt;</span></code></pre>\n<div class=\"an\">Web Components are <strong>framework-agnostic</strong>. They work in React, Angular, Vue, or plain HTML. Use them for: design system primitives that must work across teams/frameworks, embeddable widgets, micro-frontends.</div>"
+          "type": "code",
+          "title": "A resilient page outline",
+          "language": "html",
+          "code": "<body>\n  <a href=\"#main-content\" class=\"skip-link\">Skip to content</a>\n  <header>\n    <nav aria-label=\"Primary\">...</nav>\n  </header>\n  <main id=\"main-content\">\n    <article>\n      <h1>Release notes</h1>\n      <section>\n        <h2>What changed</h2>\n        <p>...</p>\n      </section>\n      <aside>Related resources</aside>\n    </article>\n  </main>\n  <footer>...</footer>\n</body>",
+          "caption": "Landmarks, headings, and self-contained content make the page easier to navigate and reason about."
+        },
+        {
+          "type": "mechanics",
+          "title": "How assistive tech navigates a page",
+          "steps": [
+            "Landmarks expose major regions such as main content, navigation, and complementary content, while header and footer landmark behavior depends on whether they are top-level or nested.",
+            "Heading order gives users a quick structural outline of the visible document.",
+            "Repeated landmarks like multiple nav regions usually need distinct labels to stay understandable.",
+            "Semantic regions work best when the underlying content purpose is real, not guessed after the fact."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: the old outline algorithm myth",
+          "tone": "interview",
+          "html": "<p>Do not rely on a magical HTML outline algorithm to fix heading structure for you. In practice, you should still write clear, sequential headings and meaningful regions so humans and assistive tech can navigate the page predictably.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: repair the page architecture",
+          "prompt": "A page has three generic div wrappers, no main landmark, two unlabeled nav regions, and headings that jump from h1 to h4. What would you fix first?",
+          "answerHtml": "<p>Add a real <code>&lt;main&gt;</code>, convert genuine regions into semantic elements such as <code>&lt;nav&gt;</code>, <code>&lt;article&gt;</code>, or <code>&lt;aside&gt;</code>, label repeated nav landmarks, and repair the heading sequence so the document structure can be followed logically.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Page architecture recap",
+          "items": [
+            "Landmarks make major regions discoverable to assistive technologies.",
+            "Use sectioning elements when they express real document purpose.",
+            "A section should usually have a heading; a div has no built-in meaning.",
+            "Clear heading order and labeled landmarks beat clever but semantically empty wrappers."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "When should you choose `<article>` instead of `<section>`?",
+          "answerHtml": "<p>Choose <code>&lt;article&gt;</code> when the content is self-contained and could stand on its own. Choose <code>&lt;section&gt;</code> for a thematically grouped part of a larger document.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why do repeated navigation regions often need labels?",
+          "answerHtml": "<p>Because multiple nav landmarks can sound identical to assistive tech users. Labels such as <code>aria-label=\"Primary\"</code> and <code>aria-label=\"Footer\"</code> distinguish their purpose.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is a div-heavy page architecture harder to maintain and audit?",
+          "answerHtml": "<p>Generic wrappers hide intent. That makes accessibility audits, content refactors, styling decisions, and interview reasoning all harder because the markup no longer explains what each region is for.</p>"
         }
       ]
     },
     {
-      "id": "html-advanced",
-      "intro": "Advanced HTML — APIs, Web Components, and modern capabilities.",
-      "cards": [
+      "id": "lists-tables-data-markup",
+      "intro": "Lists and tables are not interchangeable containers. They exist to express relationships clearly, which is why misuse here hurts both accessibility and maintainability.",
+      "blocks": [
         {
-          "title": "Intersection Observer API",
-          "contentHtml": "<pre><code><span class=\"c\">// Lazy load images when they enter viewport</span>\n<span class=\"k\">const</span> observer = <span class=\"k\">new</span> IntersectionObserver((entries) =&gt; {{\n  entries.forEach(entry =&gt; {{\n    <span class=\"k\">if</span> (entry.isIntersecting) {{\n      <span class=\"k\">const</span> img = entry.target;\n      img.src = img.dataset.src;   <span class=\"c\">// Load real image</span>\n      observer.unobserve(img);      <span class=\"c\">// Stop observing</span>\n    }}\n  }});\n}}, {{\n  root: <span class=\"k\">null</span>,          <span class=\"c\">// viewport</span>\n  rootMargin: <span class=\"s\">'200px'</span>,  <span class=\"c\">// load 200px before visible</span>\n  threshold: <span class=\"n\">0</span>          <span class=\"c\">// trigger when any pixel visible</span>\n}});\n\ndocument.querySelectorAll(<span class=\"s\">'img[data-src]'</span>).forEach(img =&gt; observer.observe(img));</code></pre>\n<p>Other uses: infinite scroll triggers, scroll-based animations, impression tracking (ads), sticky header detection, lazy-loading components.</p>"
+          "type": "richText",
+          "title": "Lists and tables express relationships",
+          "html": "<p>Lists communicate collections. Tables communicate relationships between rows and columns of data. When you choose the right structure, the browser, assistive technologies, and future developers all understand the content more quickly.</p><p>The key question is not what looks convenient in CSS. The key question is what relationship the content actually has.</p>"
         },
         {
-          "title": "Resize Observer & Mutation Observer",
-          "contentHtml": "<pre><code><span class=\"c\">// Resize Observer — watch element size changes</span>\n<span class=\"k\">const</span> ro = <span class=\"k\">new</span> ResizeObserver(entries =&gt; {{\n  <span class=\"k\">for</span> (<span class=\"k\">const</span> entry <span class=\"k\">of</span> entries) {{\n    <span class=\"k\">const</span> {{ width, height }} = entry.contentRect;\n    entry.target.classList.toggle(<span class=\"s\">'compact'</span>, width &lt; <span class=\"n\">300</span>);\n  }}\n}});\nro.observe(element);\n<span class=\"c\">// Use case: container-query-like behavior in JS</span>\n\n<span class=\"c\">// Mutation Observer — watch DOM changes</span>\n<span class=\"k\">const</span> mo = <span class=\"k\">new</span> MutationObserver(mutations =&gt; {{\n  mutations.forEach(m =&gt; {{\n    <span class=\"k\">if</span> (m.type === <span class=\"s\">'childList'</span>) console.log(<span class=\"s\">'Children changed'</span>);\n    <span class=\"k\">if</span> (m.type === <span class=\"s\">'attributes'</span>) console.log(<span class=\"s\">'Attr changed:'</span>, m.attributeName);\n  }});\n}});\nmo.observe(element, {{ childList: <span class=\"k\">true</span>, attributes: <span class=\"k\">true</span>, subtree: <span class=\"k\">true</span> }});</code></pre>"
+          "type": "compare",
+          "title": "When a table is correct and when it is abuse",
+          "items": [
+            {
+              "label": "Real table",
+              "html": "<p>Use a table when users need to understand data through row and column relationships, headers, and cells.</p>"
+            },
+            {
+              "label": "Table abuse",
+              "html": "<p>Do not use tables for layout, spacing, or generic card grids. That hides meaning and creates noisy accessibility output.</p>"
+            }
+          ]
         },
         {
-          "title": "Web Storage & IndexedDB",
-          "contentHtml": "<pre><code><span class=\"c\">// localStorage: persists forever, 5-10MB, sync</span>\nlocalStorage.setItem(<span class=\"s\">'theme'</span>, <span class=\"s\">'dark'</span>);\nlocalStorage.getItem(<span class=\"s\">'theme'</span>);  <span class=\"c\">// 'dark'</span>\nlocalStorage.removeItem(<span class=\"s\">'theme'</span>);\n\n<span class=\"c\">// sessionStorage: same API, cleared on tab close</span>\n\n<span class=\"c\">// IndexedDB: large structured data, async, indexes</span>\n<span class=\"k\">const</span> request = indexedDB.open(<span class=\"s\">'myDB'</span>, <span class=\"n\">1</span>);\nrequest.onupgradeneeded = (e) =&gt; {{\n  <span class=\"k\">const</span> db = e.target.result;\n  <span class=\"k\">const</span> store = db.createObjectStore(<span class=\"s\">'users'</span>, {{ keyPath: <span class=\"s\">'id'</span> }});\n  store.createIndex(<span class=\"s\">'email'</span>, <span class=\"s\">'email'</span>, {{ unique: <span class=\"k\">true</span> }});\n}};\n<span class=\"c\">// Use Dexie.js wrapper for cleaner API</span>\n\n<span class=\"c\">// Cache API: for caching HTTP responses (Service Worker)</span>\n<span class=\"k\">const</span> cache = <span class=\"k\">await</span> caches.open(<span class=\"s\">'v1'</span>);\n<span class=\"k\">await</span> cache.put(request, response);\n<span class=\"k\">const</span> cached = <span class=\"k\">await</span> cache.match(request);</code></pre>"
+          "type": "code",
+          "title": "Structured list and accessible table example",
+          "language": "html",
+          "code": "<ul>\n  <li>HTML parser mental model</li>\n  <li>Semantic landmarks</li>\n  <li>Constraint validation</li>\n</ul>\n\n<table>\n  <caption>Quarterly signups</caption>\n  <thead>\n    <tr>\n      <th scope=\"col\">Quarter</th>\n      <th scope=\"col\">Signups</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th scope=\"row\">Q1</th>\n      <td>1240</td>\n    </tr>\n  </tbody>\n</table>",
+          "caption": "Lists group related items. Tables expose data relationships with captions and headers."
         },
         {
-          "title": "Drag and Drop API",
-          "contentHtml": "<pre><code><span class=\"c\">&lt;!-- Draggable element --&gt;</span>\n&lt;div draggable=<span class=\"s\">\"true\"</span>\n     ondragstart=<span class=\"s\">\"event.dataTransfer.setData('text/plain', this.id)\"</span>&gt;\n  Drag me\n&lt;/div&gt;\n\n<span class=\"c\">&lt;!-- Drop zone --&gt;</span>\n&lt;div ondragover=<span class=\"s\">\"event.preventDefault()\"</span>\n     ondrop=<span class=\"s\">\"handleDrop(event)\"</span>&gt;\n  Drop here\n&lt;/div&gt;\n\n<span class=\"c\">// Modern approach: use libraries</span>\n<span class=\"c\">// @dnd-kit (React), SortableJS, or CDK drag-drop (Angular)</span>\n<span class=\"c\">// Native API is functional but has many quirks</span></code></pre>"
+          "type": "mechanics",
+          "title": "How headers, captions, and scope shape a table",
+          "steps": [
+            "A caption gives the table a visible and accessible label for the dataset.",
+            "Column and row headers explain what each cell means in context.",
+            "The scope attribute helps assistive technologies connect header cells to the right data cells.",
+            "A table without meaningful headers is usually either incomplete or the wrong element choice."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: layout tables and fake list markup",
+          "tone": "warning",
+          "html": "<p>Turning a visual grid into a table or flattening a true list into generic divs makes the content harder to navigate, restyle, and audit. Structure should follow meaning, not the current screenshot.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: audit the table markup",
+          "prompt": "A pricing comparison uses a table with no caption, no header cells, and the first column is just styled td elements. What would you change first?",
+          "answerHtml": "<p>Add a caption that identifies the dataset, convert the real headers into <code>&lt;th&gt;</code> cells, and apply row or column scope where needed. If the content is not truly tabular, replace the table entirely.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Lists and tables recap",
+          "items": [
+            "Lists express collections; tables express relational data.",
+            "Captions and header cells are part of table meaning, not optional polish.",
+            "A div grid is not automatically a table, and a table should never be a layout shortcut.",
+            "Choose structure by relationship, not by appearance."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "When should you use a description list instead of an unordered list?",
+          "answerHtml": "<p>Use a description list when you are pairing terms with descriptions or names with values. Use an unordered list for a simple collection of peer items.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why are captions and header cells important in tables?",
+          "answerHtml": "<p>They tell users and assistive technologies what the dataset is and how each cell relates to a row or column heading.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is using tables for layout considered a semantic failure?",
+          "answerHtml": "<p>Because it communicates a false relationship to the browser and accessibility tree. Layout should come from CSS, while tables should be reserved for real tabular data.</p>"
         }
       ]
     },
     {
-      "id": "html-perf",
-      "intro": "HTML performance, resource hints, and page load optimization.",
-      "cards": [
+      "id": "media-embeds-responsive-asset-markup",
+      "intro": "Media markup is part semantics and part loading strategy. Images, video, audio, and embeds should be chosen with both meaning and performance in mind.",
+      "blocks": [
         {
-          "title": "Resource Hints — Preload, Prefetch, Preconnect",
-          "contentHtml": "<pre><code><span class=\"c\">&lt;!-- PRELOAD: download NOW, needed for current page --&gt;</span>\n&lt;link rel=<span class=\"s\">\"preload\"</span> href=<span class=\"s\">\"critical.css\"</span> as=<span class=\"s\">\"style\"</span>&gt;\n&lt;link rel=<span class=\"s\">\"preload\"</span> href=<span class=\"s\">\"hero.avif\"</span> as=<span class=\"s\">\"image\"</span> fetchpriority=<span class=\"s\">\"high\"</span>&gt;\n&lt;link rel=<span class=\"s\">\"preload\"</span> href=<span class=\"s\">\"font.woff2\"</span> as=<span class=\"s\">\"font\"</span> type=<span class=\"s\">\"font/woff2\"</span> crossorigin&gt;\n\n<span class=\"c\">&lt;!-- PREFETCH: download later, needed for NEXT page --&gt;</span>\n&lt;link rel=<span class=\"s\">\"prefetch\"</span> href=<span class=\"s\">\"/about\"</span>&gt;\n&lt;link rel=<span class=\"s\">\"prefetch\"</span> href=<span class=\"s\">\"next-page.js\"</span> as=<span class=\"s\">\"script\"</span>&gt;\n\n<span class=\"c\">&lt;!-- PRECONNECT: establish connection early (DNS + TCP + TLS) --&gt;</span>\n&lt;link rel=<span class=\"s\">\"preconnect\"</span> href=<span class=\"s\">\"https://api.example.com\"</span>&gt;\n&lt;link rel=<span class=\"s\">\"preconnect\"</span> href=<span class=\"s\">\"https://fonts.googleapis.com\"</span> crossorigin&gt;\n\n<span class=\"c\">&lt;!-- DNS-PREFETCH: only DNS lookup (less than preconnect) --&gt;</span>\n&lt;link rel=<span class=\"s\">\"dns-prefetch\"</span> href=<span class=\"s\">\"https://analytics.example.com\"</span>&gt;\n\n<span class=\"c\">&lt;!-- MODULEPRELOAD: preload ES modules --&gt;</span>\n&lt;link rel=<span class=\"s\">\"modulepreload\"</span> href=<span class=\"s\">\"app.js\"</span>&gt;</code></pre>\n<div class=\"dp\"><strong>Priority hints</strong>: <code>fetchpriority='high'</code> on your LCP image/above-fold resources. <code>fetchpriority='low'</code> on below-fold images. Browsers already prioritize, but hints override when you know better.</div>"
+          "type": "richText",
+          "title": "Media markup is a loading strategy",
+          "html": "<p>Every media element affects both meaning and page startup. Images need alt text and stable dimensions, videos may need captions and posters, and embeds often carry privacy, sizing, and performance tradeoffs.</p><p>Responsive media is not just about screen size. It is about giving the browser enough information to choose the right resource for the current context.</p>"
         },
         {
-          "title": "Script Loading Strategies",
-          "contentHtml": "<pre><code><span class=\"c\">&lt;!-- BLOCKING (default): stops HTML parsing --&gt;</span>\n&lt;script src=<span class=\"s\">\"app.js\"</span>&gt;&lt;/script&gt;\n\n<span class=\"c\">&lt;!-- DEFER: download in parallel, execute AFTER HTML parsed, IN ORDER --&gt;</span>\n&lt;script src=<span class=\"s\">\"app.js\"</span> defer&gt;&lt;/script&gt;\n<span class=\"c\">&lt;!-- Best for: your app bundle, anything that needs DOM ready --&gt;</span>\n\n<span class=\"c\">&lt;!-- ASYNC: download in parallel, execute IMMEDIATELY when ready, NO ORDER --&gt;</span>\n&lt;script src=<span class=\"s\">\"analytics.js\"</span> async&gt;&lt;/script&gt;\n<span class=\"c\">&lt;!-- Best for: independent scripts (analytics, ads, widgets) --&gt;</span>\n\n<span class=\"c\">&lt;!-- MODULE: deferred by default, strict mode, import/export --&gt;</span>\n&lt;script type=<span class=\"s\">\"module\"</span> src=<span class=\"s\">\"app.js\"</span>&gt;&lt;/script&gt;\n\n<span class=\"c\">&lt;!-- INLINE critical: theme/font flash prevention --&gt;</span>\n&lt;script&gt;\n  document.documentElement.dataset.theme =\n    localStorage.getItem(<span class=\"s\">'theme'</span>) || <span class=\"s\">'system'</span>;\n&lt;/script&gt;</code></pre>\n<div class=\"wr\"><code>defer</code> scripts execute in order. <code>async</code> scripts execute in download-completion order (unpredictable). If script B depends on script A, use <code>defer</code> on both — <code>async</code> might run B before A.</div>"
+          "type": "compare",
+          "title": "`img` vs `picture` vs `figure`",
+          "items": [
+            {
+              "label": "img",
+              "html": "<p>Use for a straightforward image, often with <code>srcset</code> and <code>sizes</code> when resolution switching is enough.</p>"
+            },
+            {
+              "label": "picture",
+              "html": "<p>Use when art direction or format fallback matters, such as switching crops or preferring AVIF/WebP before JPEG.</p>"
+            },
+            {
+              "label": "figure",
+              "html": "<p>Wrap media in <code>&lt;figure&gt;</code> when it has a self-contained meaning and should carry a caption.</p>"
+            }
+          ]
         },
         {
-          "title": "Meta Tags — Complete Reference",
-          "contentHtml": "<pre><code><span class=\"c\">&lt;!-- Essential --&gt;</span>\n&lt;meta charset=<span class=\"s\">\"UTF-8\"</span>&gt;                          <span class=\"c\">&lt;!-- ALWAYS first --&gt;</span>\n&lt;meta name=<span class=\"s\">\"viewport\"</span> content=<span class=\"s\">\"width=device-width, initial-scale=1\"</span>&gt;\n&lt;title&gt;Page Title (50-60 chars)&lt;/title&gt;\n&lt;meta name=<span class=\"s\">\"description\"</span> content=<span class=\"s\">\"150-160 chars\"</span>&gt;\n\n<span class=\"c\">&lt;!-- SEO --&gt;</span>\n&lt;link rel=<span class=\"s\">\"canonical\"</span> href=<span class=\"s\">\"https://example.com/page\"</span>&gt;\n&lt;meta name=<span class=\"s\">\"robots\"</span> content=<span class=\"s\">\"index, follow\"</span>&gt;\n&lt;meta name=<span class=\"s\">\"robots\"</span> content=<span class=\"s\">\"noindex, nofollow\"</span>&gt;  <span class=\"c\">&lt;!-- block crawling --&gt;</span>\n\n<span class=\"c\">&lt;!-- Open Graph (Facebook, LinkedIn, iMessage) --&gt;</span>\n&lt;meta property=<span class=\"s\">\"og:title\"</span> content=<span class=\"s\">\"Page Title\"</span>&gt;\n&lt;meta property=<span class=\"s\">\"og:description\"</span> content=<span class=\"s\">\"Description\"</span>&gt;\n&lt;meta property=<span class=\"s\">\"og:image\"</span> content=<span class=\"s\">\"https://example.com/og.png\"</span>&gt;\n&lt;meta property=<span class=\"s\">\"og:url\"</span> content=<span class=\"s\">\"https://example.com/page\"</span>&gt;\n&lt;meta property=<span class=\"s\">\"og:type\"</span> content=<span class=\"s\">\"website\"</span>&gt;\n\n<span class=\"c\">&lt;!-- Twitter Card --&gt;</span>\n&lt;meta name=<span class=\"s\">\"twitter:card\"</span> content=<span class=\"s\">\"summary_large_image\"</span>&gt;\n&lt;meta name=<span class=\"s\">\"twitter:title\"</span> content=<span class=\"s\">\"Title\"</span>&gt;\n\n<span class=\"c\">&lt;!-- Security --&gt;</span>\n&lt;meta http-equiv=<span class=\"s\">\"Content-Security-Policy\"</span> content=<span class=\"s\">\"default-src 'self'\"</span>&gt;\n&lt;meta http-equiv=<span class=\"s\">\"X-Content-Type-Options\"</span> content=<span class=\"s\">\"nosniff\"</span>&gt;\n\n<span class=\"c\">&lt;!-- PWA --&gt;</span>\n&lt;link rel=<span class=\"s\">\"manifest\"</span> href=<span class=\"s\">\"/manifest.json\"</span>&gt;\n&lt;meta name=<span class=\"s\">\"theme-color\"</span> content=<span class=\"s\">\"#6366f1\"</span>&gt;\n&lt;meta name=<span class=\"s\">\"apple-mobile-web-app-capable\"</span> content=<span class=\"s\">\"yes\"</span>&gt;</code></pre>"
+          "type": "code",
+          "title": "Responsive image and media scaffold",
+          "language": "html",
+          "code": "<figure>\n  <picture>\n    <source srcset=\"hero.avif\" type=\"image/avif\" />\n    <source srcset=\"hero.webp\" type=\"image/webp\" />\n    <img\n      src=\"hero.jpg\"\n      srcset=\"hero-640.jpg 640w, hero-1280.jpg 1280w\"\n      sizes=\"(max-width: 768px) 100vw, 60vw\"\n      width=\"1280\"\n      height=\"720\"\n      alt=\"Team reviewing a semantic HTML checklist\"\n      loading=\"lazy\"\n    />\n  </picture>\n  <figcaption>Semantic media with stable layout.</figcaption>\n</figure>",
+          "caption": "Width and height reserve space, while srcset and sizes help the browser choose an efficient asset."
         },
         {
-          "title": "HTML Performance Checklist",
-          "contentHtml": "<p><strong>1. Minimize render-blocking resources:</strong> Inline critical CSS, defer JS, preload fonts.</p>\n<p><strong>2. Optimize images:</strong> AVIF/WebP, responsive srcset, lazy loading, width/height attributes (prevent CLS), fetchpriority on LCP image.</p>\n<p><strong>3. Reduce HTML size:</strong> Remove unnecessary wrappers (use semantic elements), minify in production, enable Brotli/gzip compression.</p>\n<p><strong>4. Resource hints:</strong> Preconnect to API/CDN origins, preload critical resources, prefetch next-page assets.</p>\n<p><strong>5. Font optimization:</strong> <code>font-display: swap</code>, preload the WOFF2 file, subset fonts (only needed characters), self-host instead of Google Fonts CDN.</p>\n<p><strong>6. Third-party scripts:</strong> Load with <code>async</code>, defer non-critical (analytics, chat widgets) until after page load. Use <code>loading='lazy'</code> on iframes.</p>\n<p><strong>7. Reduce DOM size:</strong> Keep under 1,500 elements. Deep nesting hurts performance. Virtualize long lists. Use content-visibility: auto for offscreen sections.</p>\n<div class=\"tp\">Run Lighthouse on every PR. Set performance budgets: bundle &lt; 200KB gzipped, LCP &lt; 2.5s, CLS &lt; 0.1. Failing the budget blocks the deploy.</div>"
+          "type": "mechanics",
+          "title": "How the browser chooses an image candidate",
+          "steps": [
+            "The browser considers the rendered slot size, device pixel ratio, and the options listed in srcset.",
+            "The sizes attribute tells the browser how large the image is expected to render at different breakpoints.",
+            "Picture source elements let the browser choose a different file based on media conditions or supported formats.",
+            "Supplying width and height helps reserve layout space before the image finishes loading."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: media without dimensions or text alternatives",
+          "tone": "warning",
+          "html": "<p>If an informative image has no useful alt text, the meaning is lost. If media has no intrinsic dimensions in markup, layout stability suffers and CLS often follows.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: pick the responsive image strategy",
+          "prompt": "One hero image only needs resolution switching, while another needs a different crop on mobile and desktop. Which one should use srcset alone, and which one should use picture?",
+          "answerHtml": "<p>Use <code>srcset</code> alone when the same image can scale across densities and widths. Use <code>&lt;picture&gt;</code> when you need art direction, such as serving a different crop or format for different contexts.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Media recap",
+          "items": [
+            "Media elements carry both semantic meaning and loading consequences.",
+            "Use width and height to reserve space and reduce layout shift.",
+            "Use picture for art direction or format fallback, and srcset plus sizes for candidate selection.",
+            "Embeds and media should be evaluated for privacy, captions, and performance, not only appearance."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "When should you use `<picture>` instead of only `<img srcset>`?",
+          "answerHtml": "<p>Use <code>&lt;picture&gt;</code> when you need art direction or format fallback. Use <code>srcset</code> on a plain <code>&lt;img&gt;</code> when one image source is enough and only candidate selection changes.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why should an image often include explicit width and height attributes?",
+          "answerHtml": "<p>They help the browser reserve layout space before the image loads, which reduces cumulative layout shift.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the main semantic benefit of wrapping media in `<figure>` and `<figcaption>`?",
+          "answerHtml": "<p>It marks the media and its caption as one self-contained unit, which improves clarity for both readers and assistive technologies.</p>"
         }
       ]
     },
     {
-      "id": "hc-a11y",
-      "intro": "Building the web for everyone. Accessibility is not an afterthought; it is fundamental to modern markup.",
-      "cards": [
+      "id": "forms-controls-validation-submission",
+      "intro": "Forms are one of the strongest native browser systems on the platform. Mastery here means understanding controls, naming, submission, and constraint validation before adding custom JavaScript.",
+      "blocks": [
         {
-          "title": "Semantic HTML Boundaries",
-          "contentHtml": "<p>Semantic HTML natively provides meaning and keyboard functionality that plain `&lt;div&gt;`s lack.</p>\n      <ul>\n        <li><b>&lt;main&gt;:</b> The dominant content of the page. Only one visible per document.</li>\n        <li><b>&lt;article&gt; vs &lt;section&gt;:</b> An `article` is independently distributable (a blog post). A `section` groups related content structurally but isn't necessarily standalone.</li>\n        <li><b>&lt;nav&gt;:</b> Wrap major navigation blocks. Provide an `aria-label` like \"Main\" or \"Footer\" if multiple exist.</li>\n        <li><b>&lt;button&gt; vs &lt;a&gt;:</b> `&lt;a href&gt;` navigates. `&lt;button&gt;` performs an action on the page. Never use `&lt;div onClick&gt;` without adding `tabindex=\"0\"`, `role=\"button\"`, and handling the `Enter/Space` keys manually.</li>\n      </ul>"
+          "type": "richText",
+          "title": "Forms are a native browser system",
+          "html": "<p>HTML forms already know how to group controls, serialize named values, validate inputs, submit data, and expose accessible labels. A lot of broken form UX comes from replacing those native features instead of working with them.</p><p>The highest-leverage habit is to start with correct native controls and only add custom behavior when the native system no longer fits the requirement.</p>"
         },
         {
-          "title": "ARIA (Accessible Rich Internet Applications)",
-          "contentHtml": "<p>ARIA bridges the gap for complex interactive UI (tabs, modals, comboboxes) where native HTML falls short.</p>\n      <ul>\n        <li><b>First Rule of ARIA:</b> No ARIA is better than bad ARIA. Native elements are always preferred.</li>\n        <li><b>aria-hidden=\"true\":</b> Hides decorative elements (like SVG icons) from screen readers.</li>\n        <li><b>aria-label / aria-labelledby:</b> Provides an invisible text label for icon-only buttons (like a search magnifying glass).</li>\n        <li><b>aria-live:</b> Used on dynamically updated areas (e.g. error messages, toast notifications). Screen readers will interrupt and read `\"assertive\"` updates immediately, or wait for pauses for `\"polite\"` updates.</li>\n      </ul>"
+          "type": "code",
+          "title": "A robust form scaffold",
+          "language": "html",
+          "code": "<form action=\"/signup\" method=\"post\">\n  <fieldset>\n    <legend>Create an account</legend>\n\n    <label for=\"email\">Email</label>\n    <input id=\"email\" name=\"email\" type=\"email\" required autocomplete=\"email\" />\n\n    <label for=\"password\">Password</label>\n    <input id=\"password\" name=\"password\" type=\"password\" minlength=\"12\" required />\n\n    <button type=\"submit\">Create account</button>\n  </fieldset>\n</form>",
+          "caption": "Labels, names, types, and constraints are the foundation of usable form behavior."
+        },
+        {
+          "type": "mechanics",
+          "title": "How form submission and constraint validation work",
+          "steps": [
+            "Only successful controls with a name participate in submitted form data.",
+            "Native constraints such as required, type, pattern, min, max, and minlength produce a validity state.",
+            "The browser can block submission, surface validation messages, and expose validity through APIs like checkValidity and reportValidity.",
+            "Custom validation should extend the native model, not replace it without a strong reason."
+          ]
+        },
+        {
+          "type": "compare",
+          "title": "Native constraints vs custom JavaScript validation",
+          "items": [
+            {
+              "label": "Native constraints",
+              "html": "<p>Fast to implement, accessible by default, and integrated with form submission.</p>"
+            },
+            {
+              "label": "Custom logic",
+              "html": "<p>Useful for cross-field or business-specific rules, but it should build on top of the browser model rather than discarding it.</p>"
+            }
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: custom UI that breaks native semantics",
+          "tone": "warning",
+          "html": "<p>Styled divs that imitate selects, fake checkboxes without labels, and controls with no name or no label usually look fine in a screenshot but fail keyboard users, screen readers, or actual submission flows.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: fix the broken form",
+          "prompt": "A signup form uses placeholders instead of labels, the email field has no name, the submit button is a generic div, and validation only runs after an API error. What would you fix first?",
+          "answerHtml": "<p>Restore the native contract first: add real labels, give each successful control a name, use a real submit button, and move basic validation into native constraints so the browser can help before the request is sent.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Forms recap",
+          "items": [
+            "Forms already provide labeling, serialization, validation, and submission semantics.",
+            "A control without a name does not submit useful data.",
+            "Native constraints are part of the platform, not training wheels.",
+            "Custom UI should preserve the native behavior users already rely on."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why does an input need both a label and a name?",
+          "answerHtml": "<p>The label gives the control an accessible and visible identity, while the name determines the key used when the form data is submitted.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between checkValidity and reportValidity?",
+          "answerHtml": "<p><code>checkValidity()</code> tells you whether the control or form is valid, while <code>reportValidity()</code> also asks the browser to surface validation feedback to the user.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why are placeholders not a safe replacement for labels?",
+          "answerHtml": "<p>Placeholders disappear as users type, are often lower contrast, and do not provide the same durable accessible name behavior as a real label.</p>"
         }
       ]
     },
     {
-      "id": "hc-modern",
-      "intro": "Recent CSS evolutions drastically reduce the need for preprocessors and complex JS logic.",
-      "cards": [
+      "id": "interactive-html-dialog-popover-templates",
+      "intro": "Interactive HTML gives you native disclosure, overlay, and inert-template primitives that are often better than rebuilding the same behavior with generic elements.",
+      "blocks": [
         {
-          "title": "Game-Changing Selectors",
-          "contentHtml": "<ul>\n        <li><b>:has() (The Parent Selector):</b> Selects an element if it contains a certain descendent. Ex: `figure:has(figcaption)` selects only figures that have captions. It completely changes CSS architecture.</li>\n        <li><b>:is() and :where():</b> Groups selectors succinctly. `:is(h1, h2, h3) span` instead of writing them all out. `:where()` is identical but has zero specificity, perfect for library resets.</li>\n        <li><b>Native Nesting:</b> CSS now natively supports standard nesting (similar to SCSS/LESS) without build tools. `nav { ul { padding: 0; } }`</li>\n      </ul>"
+          "type": "richText",
+          "title": "Native interactive HTML is worth using",
+          "html": "<p>Modern HTML includes built-in primitives for common interaction patterns. That matters because native elements arrive with browser behavior, accessibility hooks, and platform integration that custom div-based widgets often have to reimplement imperfectly.</p><p>Using the right primitive also makes your intent clearer: disclosure is not the same thing as a modal, and a lightweight popover is not the same thing as a blocking dialog.</p>"
         },
         {
-          "title": "Layout & Responsiveness",
-          "contentHtml": "<ul>\n        <li><b>Container Queries (@container):</b> Instead of styling based on viewport width (`@media`), style based on the parent wrapper's width. This allows reusable components (like cards) to look totally different inside a tight sidebar vs a massive main grid.</li>\n        <li><b>CSS Subgrid:</b> Allows nested elements to perfectly align to their parent's grid tracks. If a Card has a Grid layout, `grid-template-rows: subgrid` allows headers and text across multiple sibling cards to perfectly align with each other.</li>\n        <li><b>text-wrap: balance / pretty:</b> Improves typography natively. `balance` prevents massive headlines with a single \"widow\" word on the final line by mathematically balancing the text block width.</li>\n      </ul>"
+          "type": "compare",
+          "title": "`details` vs `dialog` vs `popover`",
+          "items": [
+            {
+              "label": "details",
+              "html": "<p>Best for inline disclosure where the user expands and collapses nearby content.</p>"
+            },
+            {
+              "label": "dialog",
+              "html": "<p>Best for modal or modeless dialogs where focus management and top-layer behavior matter.</p>"
+            },
+            {
+              "label": "popover",
+              "html": "<p>Best for lightweight overlays such as menus, teaching UI, or anchored help that should not behave like a modal dialog.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Dialog and popover primitives",
+          "language": "html",
+          "code": "<button popovertarget=\"help-popover\">Show help</button>\n<div id=\"help-popover\" popover>Keyboard shortcuts and hints</div>\n\n<button onclick=\"settings.showModal()\">Open settings</button>\n<dialog id=\"settings\">\n  <form method=\"dialog\">\n    <p>Settings panel</p>\n    <button>Close</button>\n  </form>\n</dialog>\n\n<template id=\"card-template\">\n  <article class=\"card\">\n    <h2></h2>\n    <p></p>\n  </article>\n</template>",
+          "caption": "Popover, dialog, and template each solve a different class of interaction problem."
+        },
+        {
+          "type": "mechanics",
+          "title": "Top layer, focus, and dismissal behavior",
+          "steps": [
+            "Modal dialogs participate in top-layer behavior and usually need focused interaction until dismissed.",
+            "Popovers are lighter-weight overlays and do not automatically mean modal interaction.",
+            "Details and summary stay in normal document flow and are ideal for inline disclosure.",
+            "Templates are inert fragments that do not render or execute until your code clones and inserts them."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: rebuilding native behavior with divs",
+          "tone": "warning",
+          "html": "<p>When you replace a native dialog, disclosure, or popover with generic wrappers, you also inherit the burden of focus handling, dismissal behavior, keyboard support, and semantics. Many teams reproduce only part of that behavior.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: choose the right primitive",
+          "prompt": "You need an FAQ expander, a blocking confirmation flow, an anchored help bubble, and reusable inert markup for a card created in JavaScript. Which native primitives fit each case?",
+          "answerHtml": "<p>Use <code>&lt;details&gt;</code> for the FAQ expander, <code>&lt;dialog&gt;</code> for the blocking confirmation flow, <code>popover</code> for the anchored help bubble, and <code>&lt;template&gt;</code> for the inert reusable markup.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Interactive HTML recap",
+          "items": [
+            "Native interactive primitives communicate intent and reduce custom behavior debt.",
+            "Dialog, popover, and details are different tools with different UX and accessibility implications.",
+            "Top-layer behavior matters for overlays and modals.",
+            "Templates stay inert until your code intentionally instantiates them."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "When is `<details>` a better fit than a custom accordion widget?",
+          "answerHtml": "<p>When the interaction is simple inline disclosure. It gives you native toggle behavior with much less code and clearer semantics.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the practical difference between a dialog and a popover?",
+          "answerHtml": "<p>A dialog is for a more explicit interaction boundary, especially modal flows, while a popover is a lighter overlay for anchored or contextual UI that should not automatically behave like a full modal.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is `<template>` described as inert markup?",
+          "answerHtml": "<p>Because its contents are parsed but not rendered or activated as part of the live document until code clones and inserts them.</p>"
         }
       ]
     },
     {
-      "id": "css-2025",
-      "intro": "CSS Anchor Positioning, View Transitions, Cascade Layers, and the future of native layout.",
-      "cards": [
+      "id": "custom-data-attributes-dom-hooks-integration",
+      "intro": "Attributes are not just syntax details. They are how HTML exposes state, metadata, hooks, and cross-layer contracts to CSS, JavaScript, automation, and other platform features.",
+      "blocks": [
         {
-          "title": "Anchor Positioning API",
-          "contentHtml": "<p>Position elements relative to any other \"anchor\" without shared parents or JS libraries:</p>\n      <pre><code>.anchor { anchor-name: --my-btn; }\n\n.popover {\n  position: absolute;\n  position-anchor: --my-btn;\n  bottom: anchor(top);\n  left: anchor(center);\n}</code></pre>\n      <ul>\n        <li><strong>Native Popovers:</strong> Combined with `popover` attribute for top-layer rendering.</li>\n        <li><strong>Fallback Logic:</strong> Use `position-try-options` for safe repositioning.</li>\n      </ul>"
+          "type": "richText",
+          "title": "Data attributes are integration points, not a dumping ground",
+          "html": "<p>Custom data attributes let you attach extra information to standard semantic elements without inventing non-standard attributes. That makes them a useful bridge between HTML and JavaScript, especially for local metadata, testing hooks, or state that does not belong in visible text.</p><p>The danger is treating <code>data-*</code> as a junk drawer. If an attribute has accessibility meaning, search meaning, or native semantic meaning, there is usually a better attribute or element choice than hiding it in custom data.</p>"
         },
         {
-          "title": "View Transitions API",
-          "contentHtml": "<p>Seamlessly animate between DOM states (or pages) without complex JS libraries:</p>\n      <pre><code>function updateUI() {\n  document.startViewTransition(() =&gt; {\n    // Perform DOM modifications\n    renderNewPage(); \n  });\n}</code></pre>\n      <ul>\n        <li><strong>Pseudo-elements:</strong> Automatically creates snapshots `::view-transition-group`.</li>\n        <li><strong>Cross-Document:</strong> Supported in 2024/2025 for standard multi-page sites.</li>\n      </ul>"
+          "type": "compare",
+          "title": "`data-*` vs ARIA vs microdata",
+          "items": [
+            {
+              "label": "data-*",
+              "html": "<p>Best for custom element-associated data used by scripts, styles, or instrumentation.</p>"
+            },
+            {
+              "label": "ARIA",
+              "html": "<p>Best for accessibility relationships and interaction state when native semantics are not enough.</p>"
+            },
+            {
+              "label": "Microdata or structured data markup",
+              "html": "<p>Best when the goal is machine-readable meaning for consumers such as search engines, not generic app state.</p>"
+            }
+          ]
         },
         {
-          "title": "Cascade Layers (@layer)",
-          "contentHtml": "<p>Architectural control over specificity, solving the 3rd-party override library wars:</p>\n      <pre><code>@layer base, utility, components;\n\n@layer utility {\n  .p-10 { padding: 10px !important; }\n}\n\n@layer base {\n  /* Won't be overridden by higher layers \n     despite specificity */\n}</code></pre>"
+          "type": "code",
+          "title": "Attributes that create clean DOM hooks",
+          "language": "html",
+          "code": "<article\n  data-article-id=\"4821\"\n  data-state=\"featured\"\n  aria-labelledby=\"article-title\"\n>\n  <h2 id=\"article-title\">HTML hooks done carefully</h2>\n  <button type=\"button\" data-action=\"bookmark\">Save</button>\n</article>",
+          "caption": "Use data attributes for app-specific hooks, but keep accessibility relationships in native ids and ARIA when needed."
         },
         {
-          "title": "Relative Color Syntax (RCS)",
-          "contentHtml": "<p>Derive dynamic colors natively from existing variables:</p>\n      <pre><code>:root { --primary: #3498db; }\n\n.btn {\n  /* Extract R, G, B and add 50% alpha */\n  background: rgb(from var(--primary) r g b / 0.5);\n  /* Or oklch adjustments */\n  border-color: oklch(from var(--primary) calc(l + 0.1) c h);\n}</code></pre>"
+          "type": "mechanics",
+          "title": "How attributes become DOM hooks",
+          "steps": [
+            "Global and element-specific attributes become part of the parsed DOM and can be queried or read from JavaScript.",
+            "Custom data attributes surface through the dataset API, which maps names such as data-user-id to dataset.userId.",
+            "ARIA and other semantic attributes influence the accessibility tree or browser behavior, not just your scripts.",
+            "A good hook strategy keeps semantics, accessibility, automation, and app-specific metadata separate instead of overloading one attribute for every job."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: using `data-*` to avoid real semantics",
+          "tone": "warning",
+          "html": "<p>If a value affects navigation, form behavior, or accessibility state, hiding it in <code>data-*</code> can make the DOM harder to understand and easier to misuse. Custom data should extend HTML, not replace the native model.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: choose the right attribute strategy",
+          "prompt": "You need to identify a card for analytics, expose an expanded state to assistive tech, mark a paragraph as excluded from rich-result snippets, and associate a form control with help text. Which attributes belong in each case?",
+          "answerHtml": "<p>Use <code>data-*</code> for the analytics identifier, <code>aria-expanded</code> for the UI state, <code>data-nosnippet</code> for snippet control, and <code>aria-describedby</code> to connect the control to help text. The point is to choose the attribute by the consumer of the information.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Attributes and DOM hooks recap",
+          "items": [
+            "Use data attributes for app-specific metadata, not for every kind of meaning.",
+            "Keep accessibility state in ARIA and real semantics in native HTML when possible.",
+            "A hook strategy should separate browser meaning from application plumbing.",
+            "Attributes are part of the interface between markup, scripts, tools, and search consumers."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What problem do `data-*` attributes solve?",
+          "answerHtml": "<p>They let you attach custom, non-standard element-associated data to standard HTML without inventing invalid attributes.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why is ARIA not a substitute for `data-*`, and vice versa?",
+          "answerHtml": "<p>ARIA communicates accessibility meaning and state, while <code>data-*</code> is for app-specific metadata. They serve different consumers and should not be swapped casually.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When does a custom data attribute become a design smell?",
+          "answerHtml": "<p>When it starts carrying semantics that should have been expressed through real elements, accessible relationships, or documented API state instead of hidden app-specific metadata.</p>"
         }
       ]
     },
     {
-      "id": "web-perf",
-      "intro": "Core Web Vitals (INP, LCP, CLS), Resource Prioritization, and Interaction to Next Paint.",
-      "cards": [
+      "id": "architecture-anti-patterns-browser-quirks-interview-traps",
+      "intro": "HTML architecture often fails quietly. This chapter focuses on the markup decisions that create hidden accessibility problems, fragile DOM structure, or browser and security surprises.",
+      "blocks": [
         {
-          "title": "Interaction to Next Paint (INP)",
-          "contentHtml": "<p>The modern metric representing total interaction latency. INP tracks every click, tap, and keyboard interaction throughout the entire session:</p>\n      <ul>\n        <li><strong>Input Delay:</strong> Time between user interaction and event handler start (minimize main thread blocking).</li>\n        <li><strong>Processing Time:</strong> Time spent inside the event handler (optimize logic, use `setTimeout(0)` or `isInputPending`).</li>\n        <li><strong>Presentation Delay:</strong> Time spent painting the frame (avoid layout thrashing / heavy CSS).</li>\n      </ul>"
+          "type": "richText",
+          "title": "HTML architecture fails quietly",
+          "html": "<p>Unlike a syntax error in JavaScript, poor HTML often still renders. That is why bad markup survives for so long. The page seems to work until you test keyboard flow, screen reader output, form submission, or embedded and cross-origin behavior.</p><p>Mastery here means recognizing the class of bugs that HTML can hide: fake buttons, broken labels, meaningless wrappers, unsafe editing surfaces, and embeds that lack clear context.</p>"
         },
         {
-          "title": "Resource Prioritization",
-          "contentHtml": "<p>Telling the browser what strictly matters for the Critical Rendering Path:</p>\n      <pre><code><!-- High Priority LCP Image -->\n&lt;img src=\"hero.avif\" \n  fetchpriority=\"high\" \n  loading=\"eager\" \n  decoding=\"async\" \n  alt=\"LCP Hero\"&gt;\n\n<!-- Speculative Pre-rendering -->\n&lt;script type=\"speculationrules\"&gt;\n{\n  \"prerender\": [\n    { \"source\": \"list\", \"urls\": [\"/next-page\"] }\n  ]\n}\n&lt;/script&gt;</code></pre>"
+          "type": "compare",
+          "title": "Common anti-patterns and false semantics",
+          "items": [
+            {
+              "label": "Healthy markup",
+              "html": "<p>Uses real buttons, anchors, labels, landmarks, headings, and form controls for the jobs they were designed to do.</p>"
+            },
+            {
+              "label": "False semantics",
+              "html": "<p>Uses divs with click handlers, headings for styling only, placeholder-only inputs, or ARIA pasted onto the wrong element to imitate semantics after the fact.</p>"
+            }
+          ]
         },
         {
-          "title": "Image & Asset Optimization",
-          "contentHtml": "<p>Modern formats and strategies for minimizing cumulative layout shifts:</p>\n      <ul>\n        <li><strong>AVIF &amp; WebP:</strong> Native compression over 50% better than JPEG.</li>\n        <li><strong>Aspect Ratio:</strong> Reserve space before images load to prevent layout shifts.</li>\n        <li><strong>Source Set:</strong> Use `srcset` and `sizes` to deliver the perfect pixel density for the device.</li>\n      </ul>"
+          "type": "code",
+          "title": "Embedding and editing need explicit intent",
+          "language": "html",
+          "code": "<a href=\"https://external.example\" target=\"_blank\" rel=\"noopener noreferrer\">Read external guide</a>\n\n<iframe\n  src=\"https://player.example/video\"\n  title=\"Product demo video\"\n  loading=\"lazy\"\n></iframe>\n\n<div contenteditable=\"plaintext-only\" aria-label=\"Draft note\"></div>",
+          "caption": "Cross-origin navigation, embedded documents, and editable regions all need clear markup and explicit expectations."
         },
         {
-          "title": "Core Web Vital Thresholds",
-          "contentHtml": "<table style=\"width:100%; border-collapse:collapse;\">\n        <tbody><tr>\n          <th style=\"text-align:left; padding:8px;\">Metric</th>\n          <th style=\"text-align:left; padding:8px;\">Good</th>\n          <th style=\"text-align:left; padding:8px;\">Poor</th>\n        </tr>\n        <tr>\n          <td style=\"padding:8px;\"><strong>LCP</strong> (Paint)</td>\n          <td style=\"padding:8px; color:#27ae60;\">&lt; 2.5s</td>\n          <td style=\"padding:8px; color:#e74c3c;\">&gt; 4.0s</td>\n        </tr>\n        <tr>\n          <td style=\"padding:8px;\"><strong>INP</strong> (Latency)</td>\n          <td style=\"padding:8px; color:#27ae60;\">&lt; 200ms</td>\n          <td style=\"padding:8px; color:#e74c3c;\">&gt; 500ms</td>\n        </tr>\n        <tr>\n          <td style=\"padding:8px;\"><strong>CLS</strong> (Shift)</td>\n          <td style=\"padding:8px; color:#27ae60;\">&lt; 0.1</td>\n          <td style=\"padding:8px; color:#e74c3c;\">&gt; 0.25</td>\n        </tr>\n      </tbody></table>"
+          "type": "mechanics",
+          "title": "Editing, embedding, and cross-origin traps",
+          "steps": [
+            "Opening a new tab changes both UX and security, which is why links often need rel values such as noopener and noreferrer.",
+            "An iframe is a nested browsing context, so it needs a meaningful title and careful consideration of origin, loading, and user trust.",
+            "Contenteditable turns arbitrary regions into editing surfaces, which changes focus, paste behavior, and sanitization needs.",
+            "Markup that seems harmless can create hidden architectural bugs when embedding, editing, or cross-origin behavior is involved."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: a working page can still be structurally wrong",
+          "tone": "interview",
+          "html": "<p>Do not equate ?it renders? with ?it is well marked up.? HTML anti-patterns usually fail in assistive tech, search, automation, or long-term maintainability before they fail in a screenshot.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: audit the markup architecture",
+          "prompt": "A page uses clickable div cards for navigation, embeds a video iframe with no title, opens third-party links in new tabs without rel values, and uses rich contenteditable for comments. What are the biggest markup risks?",
+          "answerHtml": "<p>The navigation cards should probably be anchors, the iframe needs a descriptive title, external new-tab links need clearer security and UX handling, and rich <code>contenteditable</code> introduces editing and sanitization complexity that should be treated as a product decision, not a casual attribute.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Architecture and traps recap",
+          "items": [
+            "HTML bugs often survive because the page still renders.",
+            "False semantics create debt in accessibility, testing, and maintainability.",
+            "Embedding, editing, and cross-origin behavior deserve explicit markup decisions.",
+            "A structurally honest document is easier to trust, debug, and scale."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why should an iframe usually have a title attribute?",
+          "answerHtml": "<p>Because the title helps assistive technologies identify the purpose of the embedded browsing context.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why is `contenteditable` not a lightweight replacement for a real text editor model?",
+          "answerHtml": "<p>Because it changes focus, paste behavior, formatting, and sanitization responsibilities. Once users can edit rich content, the complexity rises quickly.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the architectural problem with fake-button or fake-link patterns?",
+          "answerHtml": "<p>They make the DOM lie about what the interaction really is, which weakens keyboard support, accessibility, browser affordances, and long-term maintainability.</p>"
         }
       ]
     },
     {
-      "id": "html-tags",
-      "intro": "Every HTML tag a frontend developer must know, organized by category.",
-      "cards": [
+      "id": "seo-search-facing-markup",
+      "intro": "Search-facing HTML is still ordinary HTML. Good SEO starts with crawlable, descriptive documents, then adds explicit metadata and structured hints where they genuinely help.",
+      "blocks": [
         {
-          "title": "Text & Inline Semantics",
-          "contentHtml": "<pre><code>&lt;p&gt;           &lt;!-- Paragraph --&gt;\n&lt;h1&gt; to &lt;h6&gt;  &lt;!-- Headings (one h1 per page, never skip levels) --&gt;\n&lt;span&gt;         &lt;!-- Generic inline container (no meaning) --&gt;\n&lt;a href&gt;       &lt;!-- Hyperlink (href, target, rel, download) --&gt;\n&lt;strong&gt;       &lt;!-- Strong importance (bold + semantic) --&gt;\n&lt;em&gt;           &lt;!-- Emphasis (italic + semantic) --&gt;\n&lt;b&gt; &lt;i&gt;        &lt;!-- Visual bold/italic ONLY (no semantic meaning) --&gt;\n&lt;u&gt;            &lt;!-- Unarticulated annotation (NOT for links!) --&gt;\n&lt;s&gt;            &lt;!-- Strikethrough (no longer accurate) --&gt;\n&lt;small&gt;        &lt;!-- Fine print, legal text, copyright --&gt;\n&lt;sub&gt; &lt;sup&gt;    &lt;!-- Subscript (H₂O) / Superscript (x²) --&gt;\n&lt;mark&gt;         &lt;!-- Highlighted text (search results) --&gt;\n&lt;del&gt; &lt;ins&gt;    &lt;!-- Tracked deletions/insertions --&gt;\n&lt;abbr title&gt;   &lt;!-- Abbreviation with expansion on hover --&gt;\n&lt;code&gt;         &lt;!-- Inline code snippet --&gt;\n&lt;pre&gt;          &lt;!-- Preformatted text (preserves whitespace) --&gt;\n&lt;kbd&gt;          &lt;!-- Keyboard input (Ctrl+C) --&gt;\n&lt;samp&gt;         &lt;!-- Sample output from a program --&gt;\n&lt;var&gt;          &lt;!-- Variable in math/programming --&gt;\n&lt;q&gt;            &lt;!-- Inline quote (auto adds quotation marks) --&gt;\n&lt;blockquote&gt;   &lt;!-- Block-level quotation --&gt;\n&lt;cite&gt;         &lt;!-- Title of a work (book, film, article) --&gt;\n&lt;br&gt;           &lt;!-- Line break (use CSS spacing instead when possible) --&gt;\n&lt;wbr&gt;          &lt;!-- Word break opportunity (for long URLs/code) --&gt;\n&lt;hr&gt;           &lt;!-- Thematic break (topic change, not just a line) --&gt;\n&lt;ruby&gt;&lt;rt&gt;     &lt;!-- Pronunciation guide (CJK languages) --&gt;\n&lt;bdi&gt;&lt;bdo&gt;     &lt;!-- Bidirectional text isolation/override --&gt;</code></pre>\n<div class=\"an\">Every one of these has a PURPOSE. Don't use &lt;b&gt; when you mean &lt;strong&gt;. Don't use &lt;br&gt; for spacing (use CSS margin). Don't use &lt;i&gt; when you mean &lt;em&gt;. Semantic elements help screen readers, SEO, and future developers reading your code.</div>"
+          "type": "richText",
+          "title": "SEO starts with crawlable HTML",
+          "html": "<p>Search engines work best when the page is a real document with meaningful titles, headings, links, metadata, and accessible content. SEO is not a separate layer that magically fixes weak markup.</p><p>In 2026, the durable rule is still the same: search-facing markup should clarify what the page is, which URL is authoritative, and what the important entities or content types are.</p>"
         },
         {
-          "title": "Interactive & Embedded Elements",
-          "contentHtml": "<pre><code>&lt;button&gt;       &lt;!-- Clickable (type=submit | button | reset) --&gt;\n&lt;details&gt;      &lt;!-- Native expandable/collapsible (no JS!) --&gt;\n&lt;summary&gt;      &lt;!-- Visible heading for details --&gt;\n&lt;dialog&gt;       &lt;!-- Modal/non-modal (.showModal() / .show()) --&gt;\n&lt;menu&gt;         &lt;!-- Toolbar or context menu container --&gt;\n&lt;output&gt;       &lt;!-- Result of calculation (for= links inputs) --&gt;\n&lt;progress&gt;     &lt;!-- Task completion (value/max) --&gt;\n&lt;meter&gt;        &lt;!-- Measurement gauge (value/min/max/low/high) --&gt;\n\nMEDIA:\n&lt;img&gt;          &lt;!-- Image (ALWAYS include alt, width, height) --&gt;\n&lt;picture&gt;      &lt;!-- Responsive image (art direction + formats) --&gt;\n&lt;video&gt;        &lt;!-- Video (controls, poster, preload, autoplay) --&gt;\n&lt;audio&gt;        &lt;!-- Audio player --&gt;\n&lt;source&gt;       &lt;!-- Media source (inside picture/video/audio) --&gt;\n&lt;track&gt;        &lt;!-- Subtitles/captions for video/audio --&gt;\n&lt;canvas&gt;       &lt;!-- 2D/WebGL drawing surface --&gt;\n&lt;svg&gt;          &lt;!-- Scalable vector graphics --&gt;\n&lt;iframe&gt;       &lt;!-- Embed another page (sandbox for security) --&gt;\n&lt;embed&gt;        &lt;!-- Embed external content --&gt;\n&lt;object&gt;       &lt;!-- Embed with fallback content --&gt;\n&lt;map&gt;&lt;area&gt;    &lt;!-- Image map with clickable regions --&gt;\n\nSCRIPTING:\n&lt;script&gt;       &lt;!-- JavaScript (defer | async | type=module) --&gt;\n&lt;noscript&gt;     &lt;!-- Fallback when JS disabled --&gt;\n&lt;template&gt;     &lt;!-- Inert template (not rendered until cloned) --&gt;\n&lt;slot&gt;         &lt;!-- Insertion point in Shadow DOM --&gt;</code></pre>"
+          "type": "compare",
+          "title": "Canonical, robots, and metadata signals",
+          "items": [
+            {
+              "label": "Canonical",
+              "html": "<p>Helps search systems understand the preferred representative URL among duplicate or near-duplicate pages.</p>"
+            },
+            {
+              "label": "Robots metadata",
+              "html": "<p>Controls indexing and snippet behavior at the page level when crawlers can access the document.</p>"
+            },
+            {
+              "label": "Descriptive metadata",
+              "html": "<p>Titles, descriptions, and social metadata help explain what the page is about in search and previews.</p>"
+            }
+          ]
         },
         {
-          "title": "Form Elements — Complete",
-          "contentHtml": "<pre><code>&lt;form&gt;         &lt;!-- Form container (action, method, novalidate) --&gt;\n&lt;input&gt;        &lt;!-- 22 types: text, email, password, number, tel,\n                    url, search, date, time, datetime-local,\n                    month, week, color, range, file, hidden,\n                    checkbox, radio, submit, reset, button, image --&gt;\n&lt;textarea&gt;     &lt;!-- Multi-line text (rows, cols, maxlength) --&gt;\n&lt;select&gt;       &lt;!-- Dropdown (multiple for multi-select) --&gt;\n&lt;optgroup&gt;     &lt;!-- Group options with label --&gt;\n&lt;option&gt;       &lt;!-- Select option (value, selected, disabled) --&gt;\n&lt;label&gt;        &lt;!-- Label (for= MUST match input id) --&gt;\n&lt;fieldset&gt;     &lt;!-- Group related fields --&gt;\n&lt;legend&gt;       &lt;!-- Fieldset caption --&gt;\n&lt;datalist&gt;     &lt;!-- Autocomplete suggestions for input --&gt;\n&lt;button&gt;       &lt;!-- Submit/reset/button (prefer over input type=submit) --&gt;\n\nVALIDATION ATTRIBUTES:\nrequired       &lt;!-- Must be filled --&gt;\nminlength/maxlength  &lt;!-- Text length --&gt;\nmin/max/step   &lt;!-- Number/date range --&gt;\npattern        &lt;!-- Regex validation --&gt;\nautocomplete   &lt;!-- Browser autofill hint (email, name, tel, etc.) --&gt;\ninputmode      &lt;!-- Virtual keyboard type (numeric, tel, email) --&gt;\nenterkeyhint   &lt;!-- Mobile Enter key label (search, send, go) --&gt;</code></pre>\n<div class=\"tp\">Always use <code>&lt;button type=\"button\"&gt;</code> for non-submit buttons inside forms. Without <code>type=\"button\"</code>, buttons default to <code>type=\"submit\"</code> and will submit the form when clicked!</div>"
+          "type": "code",
+          "title": "Search-facing metadata scaffold",
+          "language": "html",
+          "code": "<head>\n  <title>HTML SEO Checklist</title>\n  <meta name=\"description\" content=\"A practical checklist for semantic HTML, metadata, and crawlable pages.\" />\n  <link rel=\"canonical\" href=\"https://example.com/guides/html-seo-checklist\" />\n  <meta name=\"robots\" content=\"index,follow\" />\n  <script type=\"application/ld+json\">\n    {\"@context\":\"https://schema.org\",\"@type\":\"Article\",\"headline\":\"HTML SEO Checklist\"}\n  </script>\n</head>",
+          "caption": "Canonical URLs, robots metadata, and structured data should clarify the document rather than contradict it."
         },
         {
-          "title": "Structural & Semantic — Complete Map",
-          "contentHtml": "<pre><code>DOCUMENT:\n&lt;html&gt;         &lt;!-- Root (lang= for screen readers + SEO) --&gt;\n&lt;head&gt;         &lt;!-- Metadata container --&gt;\n&lt;body&gt;         &lt;!-- Visible content --&gt;\n&lt;title&gt;        &lt;!-- Page title (50-60 chars, unique per page) --&gt;\n&lt;meta&gt;         &lt;!-- Metadata (charset, viewport, description, og:*) --&gt;\n&lt;link&gt;         &lt;!-- External resource (CSS, favicon, preload) --&gt;\n&lt;style&gt;        &lt;!-- Embedded CSS --&gt;\n&lt;base&gt;         &lt;!-- Base URL for relative links (rarely used) --&gt;\n\nSEMANTIC STRUCTURE:\n&lt;header&gt;       &lt;!-- Page/section header (logo, nav, search) --&gt;\n&lt;nav&gt;          &lt;!-- Navigation links (aria-label if multiple) --&gt;\n&lt;main&gt;         &lt;!-- Primary content (ONE per page) --&gt;\n&lt;section&gt;      &lt;!-- Thematic grouping WITH a heading --&gt;\n&lt;article&gt;      &lt;!-- Self-contained content (blog post, card) --&gt;\n&lt;aside&gt;        &lt;!-- Tangentially related (sidebar, ad) --&gt;\n&lt;footer&gt;       &lt;!-- Page/section footer (copyright, links) --&gt;\n&lt;figure&gt;       &lt;!-- Self-contained media with caption --&gt;\n&lt;figcaption&gt;   &lt;!-- Caption for figure --&gt;\n&lt;address&gt;      &lt;!-- Contact info for nearest article/body --&gt;\n&lt;time&gt;         &lt;!-- Machine-readable date (datetime= attribute) --&gt;\n&lt;search&gt;       &lt;!-- Search form container (NEW in 2023) --&gt;\n&lt;hgroup&gt;       &lt;!-- Group heading + subtitle --&gt;\n\nLISTS:\n&lt;ul&gt;           &lt;!-- Unordered list --&gt;\n&lt;ol&gt;           &lt;!-- Ordered list (type, start, reversed) --&gt;\n&lt;li&gt;           &lt;!-- List item --&gt;\n&lt;dl&gt;           &lt;!-- Description list (glossary, FAQ, metadata) --&gt;\n&lt;dt&gt;           &lt;!-- Description term --&gt;\n&lt;dd&gt;           &lt;!-- Description detail --&gt;\n\nTABLE:\n&lt;table&gt;        &lt;!-- Data table (NOT for layout!) --&gt;\n&lt;caption&gt;      &lt;!-- Table title (screen reader announced) --&gt;\n&lt;thead&gt;        &lt;!-- Header rows --&gt;\n&lt;tbody&gt;        &lt;!-- Body rows --&gt;\n&lt;tfoot&gt;        &lt;!-- Footer rows (totals) --&gt;\n&lt;tr&gt;           &lt;!-- Table row --&gt;\n&lt;th&gt;           &lt;!-- Header cell (scope=col|row) --&gt;\n&lt;td&gt;           &lt;!-- Data cell (colspan, rowspan) --&gt;\n&lt;colgroup&gt;&lt;col&gt; &lt;!-- Column styling --&gt;</code></pre>\n<div class=\"wr\">Never use &lt;table&gt; for page layout — that's a 1990s practice. Tables are ONLY for tabular data. Use CSS Grid and Flexbox for layout. Screen readers announce tables as data grids, which confuses users when it's actually a page layout.</div>"
+          "type": "mechanics",
+          "title": "How search-facing markup influences interpretation",
+          "steps": [
+            "The title, headings, links, and body content establish the core meaning of the page.",
+            "Canonical metadata helps identify the preferred URL when duplicates or variants exist.",
+            "Robots metadata is only useful if crawlers can access and read the page containing it.",
+            "Structured data can improve machine understanding and eligibility for rich features, but correct markup does not guarantee enhanced presentation."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Structured data is a hint, not a cheat code",
+          "tone": "warning",
+          "html": "<p>Structured data should describe real page content honestly. It can support richer interpretation, but it does not override weak content, contradictory metadata, or inaccessible markup.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: repair the search signals",
+          "prompt": "A product page has a vague title, duplicate URL variants, no meta description, `noindex` on the page head, and JSON-LD that describes an article instead of a product. Where do you start?",
+          "answerHtml": "<p>Start with the core document truth: correct the title and on-page meaning, set the right canonical, remove or justify the robots rule, and align structured data with the actual page type. Search-facing markup should reinforce the document, not contradict it.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "SEO recap",
+          "items": [
+            "SEO starts with a crawlable, descriptive HTML document.",
+            "Canonical and robots metadata help clarify indexing and duplication decisions.",
+            "Structured data is a machine-readable hint, not a guarantee of rich results.",
+            "Search-facing markup should agree with the visible page content."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What problem does a canonical link solve?",
+          "answerHtml": "<p>It helps identify the preferred representative URL when the same or very similar content exists at multiple URLs.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why can `noindex` fail to behave as expected if a page is blocked from crawling?",
+          "answerHtml": "<p>If a crawler cannot access the page, it cannot read the page-level noindex directive. That is why crawl access and index directives have to be reasoned about together.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why should structured data match the visible page content exactly?",
+          "answerHtml": "<p>Because structured data is supposed to describe the document truthfully. If it contradicts the visible content, it becomes misleading and may lose eligibility for enhanced search presentation.</p>"
         }
       ]
     },
     {
-      "id": "html-iq",
-      "intro": "52 interview questions from very basic to very advanced. Click to reveal answers.",
-      "cards": [],
+      "id": "accessibility-semantics-aria-form-accessibility",
+      "intro": "Accessibility is not a bolt-on. It emerges from good semantics first, then from deliberate naming, relationships, focus handling, and careful ARIA use when native HTML runs out of expressive power.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Accessibility starts with semantics",
+          "html": "<p>The most reliable accessibility work happens when the HTML already tells the truth. Real buttons, links, labels, headings, landmarks, and form controls usually outperform custom widgets with ARIA pasted on afterward.</p><p>ARIA is valuable, but it is a repair and extension layer. The first question should always be whether native HTML already expresses the interaction correctly.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "`aria-label` vs `aria-labelledby` vs `aria-describedby`",
+          "items": [
+            {
+              "label": "aria-label",
+              "html": "<p>Provides a direct accessible name when there is no suitable visible text to reference.</p>"
+            },
+            {
+              "label": "aria-labelledby",
+              "html": "<p>Builds the accessible name from existing visible text elsewhere in the document.</p>"
+            },
+            {
+              "label": "aria-describedby",
+              "html": "<p>Adds supporting description or help text without replacing the primary accessible name.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Accessible naming and form guidance",
+          "language": "html",
+          "code": "<label for=\"email\">Email address</label>\n<input id=\"email\" name=\"email\" type=\"email\" aria-describedby=\"email-help\" />\n<p id=\"email-help\">Use the address linked to your work account.</p>\n\n<button aria-label=\"Close settings\">?</button>",
+          "caption": "Prefer visible labels when you have them, then use ARIA to clarify names and descriptions rather than inventing a separate semantic layer."
+        },
+        {
+          "type": "mechanics",
+          "title": "How accessible names and descriptions are formed",
+          "steps": [
+            "A control needs an accessible name so assistive technologies can identify what it is.",
+            "Visible labels and referenced text usually make stronger, more durable names than hidden custom strings.",
+            "Descriptions add supporting context but should not replace the primary name.",
+            "When semantics, labels, and relationships disagree, the experience becomes confusing very quickly."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: ARIA is not a paint bucket",
+          "tone": "warning",
+          "html": "<p>Adding roles and ARIA state to the wrong element does not magically create a correct widget. If native semantics are available, use them. If they are not, be prepared to implement the keyboard and state model fully.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: repair the accessible form",
+          "prompt": "A search form has no visible label, uses placeholder text as the only cue, puts an error message in plain text with no relationship to the field, and hides an icon-only submit button from screen readers. What would you fix first?",
+          "answerHtml": "<p>Add a real visible label or a strong referenced accessible name, connect the error/help text with <code>aria-describedby</code> when appropriate, and make sure the icon button exposes a real accessible name. Start by restoring the semantic relationships before styling the UI.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Accessibility recap",
+          "items": [
+            "Good semantics are the first accessibility layer.",
+            "Accessible names and descriptions should come from clear, intentional relationships.",
+            "ARIA should extend or repair meaning, not replace correct native elements.",
+            "Form accessibility depends on labels, focus, errors, and relationship mapping working together."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why is a visible label usually better than relying only on `aria-label`?",
+          "answerHtml": "<p>Because visible labels help everyone, not just assistive technology users, and they keep the interface and accessibility model aligned.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When should you use `aria-describedby` instead of `aria-labelledby`?",
+          "answerHtml": "<p>Use <code>aria-labelledby</code> for the primary accessible name and <code>aria-describedby</code> for supporting help text or longer explanation.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can a technically focusable widget still be inaccessible?",
+          "answerHtml": "<p>Because focus alone is not enough. The control also needs the correct role, state, name, keyboard model, and relationship mapping so assistive technologies can interpret it properly.</p>"
+        }
+      ]
+    },
+    {
+      "id": "performance-resource-loading",
+      "intro": "HTML has a direct hand in how quickly a page becomes useful. Markup decisions influence request priority, render blocking, layout stability, and the quality of the first visible experience.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Performance starts in the markup",
+          "html": "<p>Performance is not only a JavaScript problem. The order of your tags, the hints you add, the dimensions you supply, and the type of resource-loading strategy you choose can change how quickly a page becomes readable and stable.</p><p>The goal is not to add every possible optimization. The goal is to help the browser fetch the right things early, avoid unnecessary blocking, and reduce layout instability.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "`preload` vs `prefetch` vs `preconnect` vs `fetchpriority`",
+          "items": [
+            {
+              "label": "preload",
+              "html": "<p>Use when the current page definitely needs a critical resource soon.</p>"
+            },
+            {
+              "label": "prefetch",
+              "html": "<p>Use for resources that may help a likely future navigation rather than the current render path.</p>"
+            },
+            {
+              "label": "preconnect",
+              "html": "<p>Use to warm up the connection to an important external origin before the full request begins.</p>"
+            },
+            {
+              "label": "fetchpriority",
+              "html": "<p>Use as a hint to adjust how urgently the browser should fetch a resource, especially for LCP-relevant assets.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Markup that helps loading and layout",
+          "language": "html",
+          "code": "<link rel=\"preconnect\" href=\"https://images.examplecdn.com\" />\n<link rel=\"preload\" as=\"image\" href=\"/hero-1280.jpg\" fetchpriority=\"high\" />\n\n<img\n  src=\"/hero-1280.jpg\"\n  width=\"1280\"\n  height=\"720\"\n  alt=\"Team auditing semantic HTML\"\n  fetchpriority=\"high\"\n/>\n\n<script type=\"module\" src=\"/app.js\"></script>",
+          "caption": "Good markup helps the browser decide what to fetch early and how to reserve space before pixels arrive."
+        },
+        {
+          "type": "mechanics",
+          "title": "How HTML affects LCP, CLS, and loading order",
+          "steps": [
+            "Critical resources discovered early can begin downloading earlier, which helps the largest visible content render sooner.",
+            "Explicit width and height reduce layout shifts by reserving space before media loads.",
+            "Parser-blocking resources delay DOM construction and can postpone first render.",
+            "Hints are only valuable when they match reality; too many urgent hints can compete with each other and reduce their benefit."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: too many priority hints can backfire",
+          "tone": "warning",
+          "html": "<p>If everything is marked critical, nothing is. Preload, preconnect, and fetchpriority should be used selectively for assets that materially affect the current page experience.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: reduce markup-driven performance cost",
+          "prompt": "A page loads five third-party origins up front, omits image dimensions, eagerly loads below-the-fold media, and injects a blocking script in the head. Which markup changes would likely help first?",
+          "answerHtml": "<p>Start by removing or deferring unnecessary early work, reserve media dimensions, limit eager loading to resources that matter for the initial view, and stop blocking the parser with scripts that could be deferred or modularized.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Performance recap",
+          "items": [
+            "Markup order and loading hints directly affect startup performance.",
+            "Reserve media space early to reduce CLS.",
+            "Use preload, prefetch, preconnect, and fetchpriority selectively and deliberately.",
+            "Performance-friendly HTML is about helping the browser make better early decisions."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the difference between preload and prefetch?",
+          "answerHtml": "<p>Preload is for a resource the current page needs soon, while prefetch is for a resource that may be useful for a likely future navigation.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why do width and height attributes on images still matter in 2026?",
+          "answerHtml": "<p>They still help the browser reserve layout space early, which is one of the easiest ways to reduce cumulative layout shift.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is `fetchpriority` a hint rather than a guarantee?",
+          "answerHtml": "<p>Because the browser still makes the final scheduling decision based on its own loading model. The attribute can influence priority, but it does not override the browser completely.</p>"
+        }
+      ]
+    },
+    {
+      "id": "native-browser-apis-platform-features-interview-mastery",
+      "intro": "The web platform extends beyond core HTML elements. This chapter connects HTML to templates, Web Components, observers, storage, and the broader native API layer, then closes with the full interview capstone.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Native browser APIs extend HTML",
+          "html": "<p>HTML gives you the document structure, but the broader platform adds APIs that observe, extend, and instantiate that structure. This is where templates, custom elements, observers, storage, drag-and-drop, and other browser-native tools come into play.</p><p>Good engineering judgment here means knowing when HTML alone is enough, when a native API is the right next step, and when you are about to overbuild a problem that the platform already solved.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "`template` vs Web Components vs observers",
+          "items": [
+            {
+              "label": "template",
+              "html": "<p>Use for inert markup that should be cloned and inserted later without rendering immediately.</p>"
+            },
+            {
+              "label": "Web Components",
+              "html": "<p>Use when you need custom elements, encapsulation, or reusable platform-native components with an explicit lifecycle.</p>"
+            },
+            {
+              "label": "Observers",
+              "html": "<p>Use when your code needs to react to visibility, size, or DOM changes rather than define new markup semantics.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "When HTML stops and the platform begins",
+          "language": "html",
+          "code": "<template id=\"card-template\">\n  <article class=\"card\">\n    <h2></h2>\n    <p></p>\n  </article>\n</template>\n\n<script type=\"module\">\n  customElements.define(\"app-note\", class extends HTMLElement {});\n  const observer = new IntersectionObserver((entries) => {\n    console.log(entries[0]?.isIntersecting);\n  });\n</script>",
+          "caption": "HTML describes the document, then native APIs let you observe, instantiate, and extend it."
+        },
+        {
+          "type": "mechanics",
+          "title": "When HTML stops and the platform begins",
+          "steps": [
+            "Start with native HTML whenever the document alone can express the requirement.",
+            "Reach for templates when you need inert reusable markup, and for custom elements when you need a real component primitive at the platform level.",
+            "Use observer APIs when your code needs to react to DOM conditions such as visibility, size, or mutation.",
+            "The strongest interview answer is often a boundary answer: which part is HTML, which part is browser API, and which part is framework abstraction."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: not every platform feature belongs in the first solution",
+          "tone": "warning",
+          "html": "<p>Native APIs are powerful, but they still have cost. Do not reach for a custom element, observer, or editable region just because it sounds advanced. Use them when the problem actually needs them.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: choose the right native API",
+          "prompt": "You need inert markup for cloning, visibility-based lazy behavior, a reusable browser-native component, and local persistent key-value storage. Which native APIs fit those jobs best?",
+          "answerHtml": "<p>Use <code>&lt;template&gt;</code> for inert markup, <code>IntersectionObserver</code> for visibility-driven behavior, Custom Elements for a browser-native reusable component, and a storage API such as localStorage or IndexedDB depending on the persistence and data-shape needs.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Platform recap",
+          "items": [
+            "HTML is the document layer; platform APIs observe, extend, and interact with that layer.",
+            "Templates, custom elements, observers, and storage solve different classes of problems.",
+            "The right tool is often the simplest native primitive that matches the requirement.",
+            "Good interview answers explain the boundary between markup, browser APIs, and frameworks."
+          ]
+        }
+      ],
       "qa": [
         {
           "level": "basic",
@@ -325,7 +1235,7 @@
         },
         {
           "level": "basic",
-          "question": "What does the `defer` attribute do in a `` tag?",
+          "question": "What does the `defer` attribute do in a `<script>` tag?",
           "answerHtml": "<p>It tells the browser to download the script in the background while continuing to parse the HTML, and only execute the script *after* the HTML parsing is completely finished. Prevents render blocking.</p>"
         },
         {
@@ -350,7 +1260,7 @@
         },
         {
           "level": "basic",
-          "question": "What is the difference between `` and ``?",
+          "question": "What is the difference between `<b>` and `<strong>`?",
           "answerHtml": "<p>`<b>` simply makes text bold visually. `<strong>` makes text bold visually AND implies strong importance/urgency, which screen readers emphasize physically.</p>"
         },
         {
@@ -404,56 +1314,6 @@
           "answerHtml": "<p>`display: none` completely removes the element from the document layout (it takes up zero space). `visibility: hidden` hides the element visually, but it still takes up its precise spatial footprint.</p>"
         },
         {
-          "level": "basic",
-          "question": "What does `box-sizing: border-box` do?",
-          "answerHtml": "<p>It radically fixes the box model. Instead of padding and borders adding to the element's configured width/height, they are subtracted from it. `width: 100px` with `10px padding` is strictly `100px` total width.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "How does the `z-index` property work?",
-          "answerHtml": "<p>It controls the vertical stacking order of elements that overlap. Important: It ONLY works if the element has a `position` value other than `static` (like relative, absolute, fixed, or sticky).</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What are pseudo-classes vs pseudo-elements?",
-          "answerHtml": "<p>Pseudo-classes select an element's state (e.g., `:hover`, `:focus`). Pseudo-elements create/target specific virtual parts of an element that aren't in the DOM (e.g., `::before`, `::first-line`).</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is `rem` vs `em`?",
-          "answerHtml": "<p>`rem` is relative strictly to the root `<html>` font-size. `em` is relative to the font-size of the element's direct parent, which can cause chaotic compounding issues if nested deeply.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What is a Stacking Context?",
-          "answerHtml": "<p>A three-dimensional conceptualization of HTML elements. Certain properties (like `opacity < 1`, `transform`, `z-index`, `filter`) create a new local stacking context. Z-indexes inside a stacking context cannot physically break out and overlay elements in a higher parent stacking context.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "Explain absolute vs relative positioning.",
-          "answerHtml": "<p>`relative`: The element remains in the normal document flow, but can be visually shifted using top/left. `absolute`: The element is removed completely from normal flow and positioned relative to its closest positioned ancestor (any parent with non-static position).</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What does `justify-content` do in Flexbox?",
-          "answerHtml": "<p>It precisely aligns flex items along the main axis (horizontal in `flex-direction: row`).</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What does `align-items` vs `align-content` do in Flexbox/Grid?",
-          "answerHtml": "<p>`align-items` aligns items along the cross axis (vertical usually). `align-content` only works when there are MULTIPLE lines of items (like `flex-wrap: wrap`), determining spacing between the lines themselves.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is BEM?",
-          "answerHtml": "<p>Block, Element, Modifier. A highly scalable CSS naming convention. `.card` (Block), `.card__title` (Element), `.card--dark` (Modifier). It entirely prevents CSS scoping conflicts.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "How does `calc()` work?",
-          "answerHtml": "<p>It allows mathematical expressions natively mixing different CSS units. `width: calc(100vw - 50px);`. Invaluable for dynamic geometry.</p>"
-        },
-        {
           "level": "expert",
           "question": "What is Layout Thrashing?",
           "answerHtml": "<p>When JS radically toggles between reading the DOM (e.g. `offsetHeight`) and writing to the DOM (altering styles) sequentially inside a loop. This forces the browser to synchronously recalculate layout multiple times, annihilating 60fps performance. Fix: Batch all reads, then batch all writes using `requestAnimationFrame`.</p>"
@@ -462,11 +1322,6 @@
           "level": "advanced",
           "question": "What does `will-change` do?",
           "answerHtml": "<p>A hint to the browser that an element is about to change (e.g., `will-change: transform`). The browser preemptively allocates GPU layers to it. Overuse consumes massive memory; apply right before animation starts, remove when done.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "Explain Margin Collapsing.",
-          "answerHtml": "<p>When the vertical margins of adjoining blocks touch, they combine (\"collapse\") into a single margin whose size is the largest of the two. This does NOT happen with horizontal margins, or between flex/grid items, or if padding/borders stand between them.</p>"
         },
         {
           "level": "advanced",
@@ -480,68 +1335,8 @@
         },
         {
           "level": "expert",
-          "question": "What are \"Style Queries\" in Container Queries?",
-          "answerHtml": "<p>Unlike size queries that check width/height, style queries (`@container style(--theme: dark)`) allow styling an element based on the computed value of a custom property on its container.</p>"
-        },
-        {
-          "level": "expert",
           "question": "What is the \"Popover API\"?",
           "answerHtml": "<p>A native HTML attribute (`popover`) and JS API that provides consistent, accessible behavior for top-layer elements like menus or dialogs. It handles auto-dismiss, backdrop, and stacking order automatically.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How does `object-view-box` work?",
-          "answerHtml": "<p>Similar to SVG's viewBox, it allows you to \"crop\" a native image element (`<img>` or `<video>`) directly in CSS, displaying only a specific coordinate region without needing a wrapper with `overflow: hidden`.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How do \"Scroll-driven Animations\" work natively?",
-          "answerHtml": "<p>Using `scroll-timeline` or `view-timeline`, CSS animations can be linked to the progress of a scroll container or the visibility of an element within a viewport, enabling complex parallax effects without a single line of JS.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "Explain the \"Light-Dark\" color-scheme function.",
-          "answerHtml": "<p>`color: light-dark(#fff, #000)`. It automatically picks the first color for light mode and the second for dark mode based on the user's system preference or the `color-scheme` property, eliminating the need for complex `@media` blocks.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How does `field-sizing: content` work?",
-          "answerHtml": "<p>A new property for form elements (`<textarea>`, `<input>`) that causes them to automatically resize their height or width based on the content typed by the user, replacing hacks involving hidden mirror divs.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is the \"Interpolation-size\" property?",
-          "answerHtml": "<p>Allows animating an element from a fixed size (like `height: 100px`) to an intrinsic size (like `height: auto`), which was previously impossible without JavaScript or grid-template-rows hacks.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "Explain \"Shadow DOM Piercing\" selectors.",
-          "answerHtml": "<p>While `:host` and `::slotted` allow some interaction, some browsers support `::part()` which lets a parent document style specific, exported parts of a shadow tree. The older `/deep/` and `::shadow` selectors are deprecated.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How does `accent-color` improve accessibility?",
-          "answerHtml": "<p>It allows changing the primary brand color for native UI controls (checkboxes, radios, progress bars) with a single line, and the browser automatically ensures the checkmark or foreground color has sufficient contrast against the background.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Margin Trim\"?",
-          "answerHtml": "<p>`margin-trim: block` or `inline`. It automatically removes the margin from the last child element of a container that would otherwise cause unwanted overflow or spacing gaps at the end of the box.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "Explain the \"Individual Transform Properties\".",
-          "answerHtml": "<p>Instead of one `transform: scale(2) rotate(45deg)`, browsers now support individual `scale`, `rotate`, and `translate` properties. This allows them to be transitioned and animated independently without overriding each other.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "Explain \"Text Wrap: Balance\" vs \"Text Wrap: Pretty\".",
-          "answerHtml": "<p>`balance` targets short blocks (like headings) to ensure lines have roughly equal width. `pretty` targets longer paragraphs, specifically trying to prevent \"orphans\" (a single word on the last line).</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is the \"Dynamic Viewport Unit\" (dvH, dvW)?",
-          "answerHtml": "<p>Unlike `vh` (which often ignores mobile address bars), `dvh` always represents the *actual* visible height of the viewport as UI elements like the keyboard or URL bar hide and show.</p>"
         },
         {
           "level": "expert",
@@ -550,33 +1345,8 @@
         },
         {
           "level": "expert",
-          "question": "Explain \"Native Dialog\" (``) advantages.",
+          "question": "Explain \"Native Dialog\" (`<dialog>`) advantages.",
           "answerHtml": "<p>Native focus trapping, auto-dismiss on `Esc`, a high-contrast `::backdrop` pseudo-element, and it always renders in the \"Top Layer\", meaning it transcends any `overflow: hidden` or `z-index` limits of its parents.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is the \"Appearance\" property used for?",
-          "answerHtml": "<p>`appearance: none` removes the default native styling of UI controls (like the dropdown arrow on a `<select>`), allowing you to build or restyle them from scratch without browser-specific hacks.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "Explain the \"Linear-Easing\" function.",
-          "answerHtml": "<p>`easing: linear(0, 0.1, 0.5, 0.9, 1)`. It allows creating custom, complex easing curves (like a spring or \"bounce\" effect) by defining individual progress points, which was previously only possible with JS.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Mix-blend-mode\" in depth?",
-          "answerHtml": "<p>Defines how an element's content should blend with its direct background. Modes like `multiply`, `screen`, and `overlay` allow for complex Photoshop-like visual effects directly in the browser.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How do \"Search Queries\" (`@media (hover: hover)`) help UX?",
-          "answerHtml": "<p>They allow detecting the user's primary input type. `hover: hover` targets devices with a precise pointer (mouse), whereas `pointer: coarse` targets touch devices, allowing you to increase hit area sizes for mobile.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is `forced-colors` media query?",
-          "answerHtml": "<p>Crucial for accessibility. It detects if the user has enabled high-contrast mode at the OS level (like Windows High Contrast). Styles inside this block should focus on clarity and use system colors.</p>"
         },
         {
           "level": "expert",
@@ -645,18 +1415,8 @@
         },
         {
           "level": "expert",
-          "question": "What is the \"Reduced Motion\" media query?",
-          "answerHtml": "<p>Detects if the user has requested \"Reduced Motion\" at the OS level. Use it to disable or simplify non-essential animations: `@media (prefers-reduced-motion: reduce) { ... }`.</p>"
-        },
-        {
-          "level": "expert",
           "question": "How does `aria-description` differ from `aria-label`?",
           "answerHtml": "<p>`aria-label` provides a primary label (name) for an element. `aria-description` provides supplemental information, similar to a tooltip, which is announced after the label.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Focus-visible\" pseudo-class?",
-          "answerHtml": "<p>It allows styling the focus ring ONLY when the user is navigating via keyboard, but hiding it when they are using a mouse. This satisfies accessibility requirements without annoying mouse users.</p>"
         },
         {
           "level": "expert",
@@ -730,11 +1490,6 @@
         },
         {
           "level": "expert",
-          "question": "What is \"Z-index isolation\" with `isolation: isolate`?",
-          "answerHtml": "<p>It creates a new stacking context on an element without needing `position: relative` and `z-index`. This ensures that children elements don't accidentally interact with the z-indexes of elements outside their container.</p>"
-        },
-        {
-          "level": "expert",
           "question": "Explain \"Variable Fonts\" performance impact.",
           "answerHtml": "<p>A single font file that contains multiple variations (weights, widths, slants). While the file is larger than a single standard font, it is significantly smaller than loading 6-8 separate files for different weights.</p>"
         },
@@ -765,43 +1520,8 @@
         },
         {
           "level": "expert",
-          "question": "What is \"Prefers-Color-Scheme\" in depth?",
-          "answerHtml": "<p>A media query that lets you respond to the user's OS-level light/dark mode preference. Best practice: use CSS variables to define theme colors and toggle them inside this media query.</p>"
-        },
-        {
-          "level": "expert",
           "question": "Explain \"Preload\" for Dynamic Imports.",
           "answerHtml": "<p>Using `<link rel=\"modulepreload\">` for modules that will be dynamically imported via `import()` later. This ensures the module is already in the cache when the user triggers the interaction requiring it.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Aspect-Ratio\" property usage?",
-          "answerHtml": "<p>Allows you to reserve space for an element (like an image or video) before it even loads, preventing layout shifts (CLS). `aspect-ratio: 16 / 9; width: 100%;`.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How does `pointer-events: none` work?",
-          "answerHtml": "<p>It makes an element \"invisible\" to mouse and touch interactions. Clicks \"pass through\" it to whatever is behind. Useful for decorative overlays or icons inside buttons.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Scroll-Behavior: Smooth\"?",
-          "answerHtml": "<p>A pure CSS way to enable smooth scrolling when a user clicks an anchor link (`#hash`). `html { scroll-behavior: smooth; }`.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "Explain \"Scroll-Margin\" for anchor links.",
-          "answerHtml": "<p>Native property that adds an offset above a target element when it is jumped to via an anchor link. Crucial for fixed headers: `h2 { scroll-margin-top: 100px; }`.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Flex-Basis\" vs \"Width\"?",
-          "answerHtml": "<p>`flex-basis` defines the initial size of a flex item before free space is distributed. `width` is a more rigid constraint. In a flex container, `flex-basis` takes precedence over `width`.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Container Units\" (cqw, cqh)?",
-          "answerHtml": "<p>Similar to viewport units (`vw`/`vh`), but relative to the size of the nearest ancestor defined as a container. `10cqw` is 10% of the container's width.</p>"
         },
         {
           "level": "expert",
@@ -827,21 +1547,6 @@
           "level": "expert",
           "question": "How do \"Web Components\" handle accessibility?",
           "answerHtml": "<p>Native accessibility features like `tabindex` and `aria-*` attributes work normally. However, developers must take extra care to ensure focus management and aria-references cross the Shadow DOM boundary correctly.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Scroll-Padding\" in Flex/Grid?",
-          "answerHtml": "<p>Allows padding the scrollable area itself, which is very useful for ensuring that items in a horizontal scroll gallery aren't snapped flush to the edge of the container.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "Explain \"Grid Areas\" logic.",
-          "answerHtml": "<p>Naming specific regions of a grid: `grid-template-areas: \"header header\" \"nav main\"`. This allows for highly semantic and readable layout definitions that are easy to re-arrange in media queries.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is `scrollbar-gutter`?",
-          "answerHtml": "<p>A property that reserves space for the scrollbar, preventing layout shifts when a page goes from having no scrollbar to having one (or vice versa).</p>"
         },
         {
           "level": "expert",
@@ -1050,11 +1755,6 @@
         },
         {
           "level": "basic",
-          "question": "What is the difference between link and @import for CSS?",
-          "answerHtml": "<p><code>&lt;link&gt;</code> in HTML: loads CSS in parallel, non-blocking (with media attribute), recommended. <code>@import</code> in CSS: sequential loading (blocks), can't be conditional, creates waterfall. Always use <code>&lt;link&gt;</code> — @import adds extra round trips and slows rendering.</p>"
-        },
-        {
-          "level": "basic",
           "question": "What is the autocomplete attribute?",
           "answerHtml": "<p>Tells browser what data to auto-fill: <code>autocomplete='email'</code>, <code>'name'</code>, <code>'tel'</code>, <code>'address-line1'</code>, <code>'cc-number'</code>, <code>'new-password'</code>, <code>'current-password'</code>. Massive UX win — users fill forms 30% faster. Required for WCAG 1.3.5 compliance. Set <code>autocomplete='off'</code> to disable (use sparingly).</p>"
         },
@@ -1108,8 +1808,25 @@
           "question": "How do you implement a skip link?",
           "answerHtml": "<p><code>&lt;a href='#main' class='skip-link'&gt;Skip to content&lt;/a&gt;</code> — first element in body, visually hidden until focused, jumps to <code>&lt;main id='main'&gt;</code>. CSS: <code>.skip-link { position: absolute; transform: translateY(-100%); } .skip-link:focus { transform: translateY(0); }</code>. Essential for keyboard users to bypass repetitive navigation. WCAG 2.4.1 requirement.</p>"
         }
-      ],
-      "hasFilterBar": true
+      ]
+    }
+  ],
+  "heroStats": [
+    {
+      "label": "Chapters",
+      "value": "14"
+    },
+    {
+      "label": "Interview",
+      "value": "Capstone Ready"
+    },
+    {
+      "label": "Coverage",
+      "value": "HTML+Applied"
+    },
+    {
+      "label": "Updated",
+      "value": "2026"
     }
   ]
 }

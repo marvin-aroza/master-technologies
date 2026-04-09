@@ -13,7 +13,7 @@ const qaCountBySection = new Map(
 
 const totalQa = topic.sections.reduce((sum, section) => sum + (section.qa?.length ?? 0), 0);
 
-assert.equal(totalQa, 104, "react topic should expose a very deep interview bank across the full track");
+assert.equal(totalQa, 230, "react topic should preserve the restored legacy-plus-modern interview bank across the full track");
 
 const chapterIdsWithDistributedInterviewCoverage = [
   "react-origins-mental-model",
@@ -40,8 +40,8 @@ for (const id of chapterIdsWithDistributedInterviewCoverage) {
 
 assert.equal(
   qaCountBySection.get("architecture-ecosystem-interview-mastery"),
-  52,
-  "the final chapter should keep a large expert-heavy capstone interview bank"
+  178,
+  "the final chapter should keep the restored legacy bank plus the new expert-heavy capstone prompts"
 );
 
 const sectionById = new Map(topic.sections.map((section) => [section.id, section]));
@@ -72,4 +72,18 @@ assert.ok(
     (item) => item.question === "What does the 'use client' directive actually mark?"
   ),
   "chapter 12 should include server-boundary interview coverage"
+);
+
+assert.ok(
+  sectionById.get("architecture-ecosystem-interview-mastery").qa.some(
+    (item) => item.question === "What is React?"
+  ),
+  "the capstone should retain legacy React fundamentals questions"
+);
+
+assert.ok(
+  sectionById.get("architecture-ecosystem-interview-mastery").qa.some(
+    (item) => item.question === "What are props?"
+  ),
+  "the capstone should retain legacy prop-model interview coverage"
 );
