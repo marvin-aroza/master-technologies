@@ -727,44 +727,252 @@
     },
     {
       "id": "custom-data-attributes-dom-hooks-integration",
-      "intro": "Use data attributes and related hooks as clear integration points for JavaScript, CSS, and automation.",
+      "intro": "Attributes are not just syntax details. They are how HTML exposes state, metadata, hooks, and cross-layer contracts to CSS, JavaScript, automation, and other platform features.",
       "blocks": [
         {
+          "type": "richText",
+          "title": "Data attributes are integration points, not a dumping ground",
+          "html": "<p>Custom data attributes let you attach extra information to standard semantic elements without inventing non-standard attributes. That makes them a useful bridge between HTML and JavaScript, especially for local metadata, testing hooks, or state that does not belong in visible text.</p><p>The danger is treating <code>data-*</code> as a junk drawer. If an attribute has accessibility meaning, search meaning, or native semantic meaning, there is usually a better attribute or element choice than hiding it in custom data.</p>"
+        },
+        {
           "type": "compare",
-          "title": "Attributes that integrate well",
+          "title": "`data-*` vs ARIA vs microdata",
           "items": [
             {
               "label": "data-*",
-              "html": "<p>Good for local metadata and JS hooks.</p>"
+              "html": "<p>Best for custom element-associated data used by scripts, styles, or instrumentation.</p>"
             },
             {
               "label": "ARIA",
-              "html": "<p>Good for accessibility relationships and state when native semantics are not enough.</p>"
+              "html": "<p>Best for accessibility relationships and interaction state when native semantics are not enough.</p>"
+            },
+            {
+              "label": "Microdata or structured data markup",
+              "html": "<p>Best when the goal is machine-readable meaning for consumers such as search engines, not generic app state.</p>"
             }
           ]
+        },
+        {
+          "type": "code",
+          "title": "Attributes that create clean DOM hooks",
+          "language": "html",
+          "code": "<article\n  data-article-id=\"4821\"\n  data-state=\"featured\"\n  aria-labelledby=\"article-title\"\n>\n  <h2 id=\"article-title\">HTML hooks done carefully</h2>\n  <button type=\"button\" data-action=\"bookmark\">Save</button>\n</article>",
+          "caption": "Use data attributes for app-specific hooks, but keep accessibility relationships in native ids and ARIA when needed."
+        },
+        {
+          "type": "mechanics",
+          "title": "How attributes become DOM hooks",
+          "steps": [
+            "Global and element-specific attributes become part of the parsed DOM and can be queried or read from JavaScript.",
+            "Custom data attributes surface through the dataset API, which maps names such as data-user-id to dataset.userId.",
+            "ARIA and other semantic attributes influence the accessibility tree or browser behavior, not just your scripts.",
+            "A good hook strategy keeps semantics, accessibility, automation, and app-specific metadata separate instead of overloading one attribute for every job."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: using `data-*` to avoid real semantics",
+          "tone": "warning",
+          "html": "<p>If a value affects navigation, form behavior, or accessibility state, hiding it in <code>data-*</code> can make the DOM harder to understand and easier to misuse. Custom data should extend HTML, not replace the native model.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: choose the right attribute strategy",
+          "prompt": "You need to identify a card for analytics, expose an expanded state to assistive tech, mark a paragraph as excluded from rich-result snippets, and associate a form control with help text. Which attributes belong in each case?",
+          "answerHtml": "<p>Use <code>data-*</code> for the analytics identifier, <code>aria-expanded</code> for the UI state, <code>data-nosnippet</code> for snippet control, and <code>aria-describedby</code> to connect the control to help text. The point is to choose the attribute by the consumer of the information.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Attributes and DOM hooks recap",
+          "items": [
+            "Use data attributes for app-specific metadata, not for every kind of meaning.",
+            "Keep accessibility state in ARIA and real semantics in native HTML when possible.",
+            "A hook strategy should separate browser meaning from application plumbing.",
+            "Attributes are part of the interface between markup, scripts, tools, and search consumers."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What problem do `data-*` attributes solve?",
+          "answerHtml": "<p>They let you attach custom, non-standard element-associated data to standard HTML without inventing invalid attributes.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why is ARIA not a substitute for `data-*`, and vice versa?",
+          "answerHtml": "<p>ARIA communicates accessibility meaning and state, while <code>data-*</code> is for app-specific metadata. They serve different consumers and should not be swapped casually.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When does a custom data attribute become a design smell?",
+          "answerHtml": "<p>When it starts carrying semantics that should have been expressed through real elements, accessible relationships, or documented API state instead of hidden app-specific metadata.</p>"
         }
       ]
     },
     {
       "id": "architecture-anti-patterns-browser-quirks-interview-traps",
-      "intro": "Collect the mistakes, edge cases, and browser quirks that separate surface knowledge from interview-ready understanding.",
+      "intro": "HTML architecture often fails quietly. This chapter focuses on the markup decisions that create hidden accessibility problems, fragile DOM structure, or browser and security surprises.",
       "blocks": [
         {
+          "type": "richText",
+          "title": "HTML architecture fails quietly",
+          "html": "<p>Unlike a syntax error in JavaScript, poor HTML often still renders. That is why bad markup survives for so long. The page seems to work until you test keyboard flow, screen reader output, form submission, or embedded and cross-origin behavior.</p><p>Mastery here means recognizing the class of bugs that HTML can hide: fake buttons, broken labels, meaningless wrappers, unsafe editing surfaces, and embeds that lack clear context.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Common anti-patterns and false semantics",
+          "items": [
+            {
+              "label": "Healthy markup",
+              "html": "<p>Uses real buttons, anchors, labels, landmarks, headings, and form controls for the jobs they were designed to do.</p>"
+            },
+            {
+              "label": "False semantics",
+              "html": "<p>Uses divs with click handlers, headings for styling only, placeholder-only inputs, or ARIA pasted onto the wrong element to imitate semantics after the fact.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Embedding and editing need explicit intent",
+          "language": "html",
+          "code": "<a href=\"https://external.example\" target=\"_blank\" rel=\"noopener noreferrer\">Read external guide</a>\n\n<iframe\n  src=\"https://player.example/video\"\n  title=\"Product demo video\"\n  loading=\"lazy\"\n></iframe>\n\n<div contenteditable=\"plaintext-only\" aria-label=\"Draft note\"></div>",
+          "caption": "Cross-origin navigation, embedded documents, and editable regions all need clear markup and explicit expectations."
+        },
+        {
+          "type": "mechanics",
+          "title": "Editing, embedding, and cross-origin traps",
+          "steps": [
+            "Opening a new tab changes both UX and security, which is why links often need rel values such as noopener and noreferrer.",
+            "An iframe is a nested browsing context, so it needs a meaningful title and careful consideration of origin, loading, and user trust.",
+            "Contenteditable turns arbitrary regions into editing surfaces, which changes focus, paste behavior, and sanitization needs.",
+            "Markup that seems harmless can create hidden architectural bugs when embedding, editing, or cross-origin behavior is involved."
+          ]
+        },
+        {
           "type": "trap",
-          "title": "Anti-pattern radar",
-          "html": "<p>Watch for fake buttons, missing labels, heading misuse, layout tables, and ARIA applied where native HTML already solves the problem.</p>",
-          "tone": "pitfall"
+          "title": "Trap: a working page can still be structurally wrong",
+          "tone": "interview",
+          "html": "<p>Do not equate ?it renders? with ?it is well marked up.? HTML anti-patterns usually fail in assistive tech, search, automation, or long-term maintainability before they fail in a screenshot.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: audit the markup architecture",
+          "prompt": "A page uses clickable div cards for navigation, embeds a video iframe with no title, opens third-party links in new tabs without rel values, and uses rich contenteditable for comments. What are the biggest markup risks?",
+          "answerHtml": "<p>The navigation cards should probably be anchors, the iframe needs a descriptive title, external new-tab links need clearer security and UX handling, and rich <code>contenteditable</code> introduces editing and sanitization complexity that should be treated as a product decision, not a casual attribute.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Architecture and traps recap",
+          "items": [
+            "HTML bugs often survive because the page still renders.",
+            "False semantics create debt in accessibility, testing, and maintainability.",
+            "Embedding, editing, and cross-origin behavior deserve explicit markup decisions.",
+            "A structurally honest document is easier to trust, debug, and scale."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why should an iframe usually have a title attribute?",
+          "answerHtml": "<p>Because the title helps assistive technologies identify the purpose of the embedded browsing context.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why is `contenteditable` not a lightweight replacement for a real text editor model?",
+          "answerHtml": "<p>Because it changes focus, paste behavior, formatting, and sanitization responsibilities. Once users can edit rich content, the complexity rises quickly.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the architectural problem with fake-button or fake-link patterns?",
+          "answerHtml": "<p>They make the DOM lie about what the interaction really is, which weakens keyboard support, accessibility, browser affordances, and long-term maintainability.</p>"
         }
       ]
     },
     {
       "id": "seo-search-facing-markup",
-      "intro": "Treat SEO as a consequence of clear document structure, metadata, and crawlable HTML.",
+      "intro": "Search-facing HTML is still ordinary HTML. Good SEO starts with crawlable, descriptive documents, then adds explicit metadata and structured hints where they genuinely help.",
       "blocks": [
         {
           "type": "richText",
-          "title": "Search-facing markup",
-          "html": "<p>Titles, descriptions, canonicals, structured data, and heading hierarchy help search engines understand the page.</p>"
+          "title": "SEO starts with crawlable HTML",
+          "html": "<p>Search engines work best when the page is a real document with meaningful titles, headings, links, metadata, and accessible content. SEO is not a separate layer that magically fixes weak markup.</p><p>In 2026, the durable rule is still the same: search-facing markup should clarify what the page is, which URL is authoritative, and what the important entities or content types are.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Canonical, robots, and metadata signals",
+          "items": [
+            {
+              "label": "Canonical",
+              "html": "<p>Helps search systems understand the preferred representative URL among duplicate or near-duplicate pages.</p>"
+            },
+            {
+              "label": "Robots metadata",
+              "html": "<p>Controls indexing and snippet behavior at the page level when crawlers can access the document.</p>"
+            },
+            {
+              "label": "Descriptive metadata",
+              "html": "<p>Titles, descriptions, and social metadata help explain what the page is about in search and previews.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Search-facing metadata scaffold",
+          "language": "html",
+          "code": "<head>\n  <title>HTML SEO Checklist</title>\n  <meta name=\"description\" content=\"A practical checklist for semantic HTML, metadata, and crawlable pages.\" />\n  <link rel=\"canonical\" href=\"https://example.com/guides/html-seo-checklist\" />\n  <meta name=\"robots\" content=\"index,follow\" />\n  <script type=\"application/ld+json\">\n    {\"@context\":\"https://schema.org\",\"@type\":\"Article\",\"headline\":\"HTML SEO Checklist\"}\n  </script>\n</head>",
+          "caption": "Canonical URLs, robots metadata, and structured data should clarify the document rather than contradict it."
+        },
+        {
+          "type": "mechanics",
+          "title": "How search-facing markup influences interpretation",
+          "steps": [
+            "The title, headings, links, and body content establish the core meaning of the page.",
+            "Canonical metadata helps identify the preferred URL when duplicates or variants exist.",
+            "Robots metadata is only useful if crawlers can access and read the page containing it.",
+            "Structured data can improve machine understanding and eligibility for rich features, but correct markup does not guarantee enhanced presentation."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Structured data is a hint, not a cheat code",
+          "tone": "warning",
+          "html": "<p>Structured data should describe real page content honestly. It can support richer interpretation, but it does not override weak content, contradictory metadata, or inaccessible markup.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: repair the search signals",
+          "prompt": "A product page has a vague title, duplicate URL variants, no meta description, `noindex` on the page head, and JSON-LD that describes an article instead of a product. Where do you start?",
+          "answerHtml": "<p>Start with the core document truth: correct the title and on-page meaning, set the right canonical, remove or justify the robots rule, and align structured data with the actual page type. Search-facing markup should reinforce the document, not contradict it.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "SEO recap",
+          "items": [
+            "SEO starts with a crawlable, descriptive HTML document.",
+            "Canonical and robots metadata help clarify indexing and duplication decisions.",
+            "Structured data is a machine-readable hint, not a guarantee of rich results.",
+            "Search-facing markup should agree with the visible page content."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What problem does a canonical link solve?",
+          "answerHtml": "<p>It helps identify the preferred representative URL when the same or very similar content exists at multiple URLs.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why can `noindex` fail to behave as expected if a page is blocked from crawling?",
+          "answerHtml": "<p>If a crawler cannot access the page, it cannot read the page-level noindex directive. That is why crawl access and index directives have to be reasoned about together.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why should structured data match the visible page content exactly?",
+          "answerHtml": "<p>Because structured data is supposed to describe the document truthfully. If it contradicts the visible content, it becomes misleading and may lose eligibility for enhanced search presentation.</p>"
         }
       ]
     },
