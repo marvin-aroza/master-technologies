@@ -6,6 +6,7 @@ import type { TopicData } from "@/types/topic";
 import { TopicHero } from "./TopicHero";
 import { ChapterNav } from "./ChapterNav";
 import { ContentCard } from "./ContentCard";
+import { ContentBlockRenderer } from "./ContentBlockRenderer";
 import { QASection } from "./QASection";
 
 // Study order — used for cross-topic navigation at first/last chapter
@@ -33,7 +34,10 @@ export function TopicPage({ data, accentColor }: TopicPageProps) {
     [data.sections, activeId]
   );
 
-  const totalCards = data.sections.reduce((s, sec) => s + sec.cards.length, 0);
+  const activeBlocks = activeSection?.blocks ?? [];
+  const activeCards = activeSection?.cards ?? [];
+
+  const totalCards = data.sections.reduce((s, sec) => s + (sec.cards?.length ?? 0), 0);
   const totalQA    = data.sections.reduce((s, sec) => s + (sec.qa?.length ?? 0), 0);
 
   // Chapter-level prev/next
@@ -57,6 +61,7 @@ export function TopicPage({ data, accentColor }: TopicPageProps) {
         totalCards={totalCards}
         totalQA={totalQA}
         tabCount={data.tabs.length}
+        heroStats={data.heroStats}
       />
 
       <ChapterNav
@@ -73,9 +78,17 @@ export function TopicPage({ data, accentColor }: TopicPageProps) {
               <p className="section-intro-text">{activeSection.intro}</p>
             )}
 
-            {activeSection.cards.length > 0 && (
+            {activeBlocks.length > 0 && (
+              <div className="topic-block-stack">
+                {activeBlocks.map((block, i) => (
+                  <ContentBlockRenderer key={`${block.type}-${i}`} block={block} />
+                ))}
+              </div>
+            )}
+
+            {activeCards.length > 0 && (
               <div className="cards-grid">
-                {activeSection.cards.map((card, i) => (
+                {activeCards.map((card, i) => (
                   <ContentCard key={i} card={card} />
                 ))}
               </div>
