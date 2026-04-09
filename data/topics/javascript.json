@@ -9,7 +9,7 @@
     },
     {
       "label": "Core Q&A",
-      "value": "149"
+      "value": "143"
     },
     {
       "label": "Coverage",
@@ -800,17 +800,191 @@
     {
       "id": "security-reliability",
       "intro": "Learn the security mindset JavaScript developers need when code handles user input, browser APIs, and shared state.",
-      "blocks": []
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Unsafe DOM insertion and XSS",
+          "html": "<p>Cross-site scripting happens when attacker-controlled input is treated as executable HTML or JavaScript inside a page. The browser does not know whether a string came from a trusted CMS entry or a hostile query parameter, so your code must choose APIs that keep untrusted data as data instead of turning it into markup.</p><ul><li>Any DOM insertion sink that parses HTML can become an XSS boundary if the value is not sanitized for that exact context.</li><li>Escaping rules depend on context: HTML text, attributes, URLs, CSS, and inline script all have different rules.</li><li>Treat every string from users, external services, and storage as untrusted until you have validated or sanitized it appropriately.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "textContent vs innerHTML vs insertAdjacentHTML",
+          "items": [
+            {
+              "label": "textContent",
+              "html": "<p>Safest default for rendering plain text. The browser inserts the string as text, not HTML, so markup characters do not become executable DOM.</p>"
+            },
+            {
+              "label": "innerHTML",
+              "html": "<p>Parses the string as HTML and writes it into the DOM. Powerful but dangerous: it is an injection sink unless the value is trusted or sanitized for HTML.</p>"
+            },
+            {
+              "label": "insertAdjacentHTML",
+              "html": "<p>Also parses HTML and should be treated with the same caution as <code>innerHTML</code>. It is useful for efficient insertion, not for reducing XSS risk.</p>"
+            }
+          ]
+        },
+        {
+          "type": "richText",
+          "title": "Prototype pollution awareness",
+          "html": "<p>Prototype pollution happens when untrusted keys such as <code>__proto__</code>, <code>constructor</code>, or <code>prototype</code> are merged into objects in a way that changes inherited behavior. The bug often starts in generic deep-merge helpers or unsafe object assignment paths, then spreads into surprising authorization, validation, or rendering failures.</p><ul><li>Do not deep-merge untrusted objects into application config without allowlisting keys.</li><li>Prefer explicit schemas and key validation over “accept any object” APIs.</li><li>Use null-prototype objects or maps for untrusted dictionary-like data when appropriate.</li></ul>"
+        },
+        {
+          "type": "richText",
+          "title": "eval() and Function() hazards",
+          "html": "<p><code>eval()</code> and the <code>Function</code> constructor turn strings into executable code. That makes them dangerous by default because any path that feeds attacker-controlled input into them becomes code execution. They also make tooling, optimization, and reasoning harder because code shape is no longer statically obvious.</p><ul><li>Use <code>JSON.parse()</code>, structured data, or explicit dispatch tables instead of executing strings.</li><li>The <code>Function</code> constructor runs in the global scope and still carries major security and maintainability risk.</li><li>Content Security Policy and Trusted Types reduce risk, but they are not excuses to keep string-eval patterns around.</li></ul>"
+        },
+        {
+          "type": "richText",
+          "title": "Safer data handling",
+          "html": "<p>Secure JavaScript is mostly about reducing ambiguity at boundaries. Validate shape and allowed values early, keep secrets out of places that are easy to exfiltrate, and choose platform features that narrow the space of unsafe operations. In supporting browsers, Trusted Types and <code>TrustedHTML</code> can reduce DOM XSS risk by forcing HTML-producing code through explicit policies.</p><ul><li>Prefer allowlists to deny-lists when validating keys, command names, or feature flags.</li><li>Use context-appropriate encoding or sanitization rather than one generic “escape everything” function.</li><li>Avoid storing sensitive tokens in broadly readable storage when a more constrained mechanism exists.</li></ul>"
+        },
+        {
+          "type": "trap",
+          "title": "Security trap: sanitizing in the wrong context",
+          "tone": "warning",
+          "html": "<p>HTML escaping does not automatically make a value safe for a URL, JavaScript string, CSS rule, or attribute. Security bugs often come from using the right idea in the wrong context. Ask where the value will land and defend that context specifically.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: spot the injection sink",
+          "prompt": "A teammate wants to render user bios with `profile.innerHTML = user.bio`, build a search URL with raw string concatenation, and merge query parameters into a config object with a generic deep-merge helper. Which parts are risky, and what safer replacements would you choose?",
+          "answerHtml": "<p><code>innerHTML</code> is an injection sink for untrusted bios, so use <code>textContent</code> for plain text or a well-reviewed HTML sanitization path for trusted rich text. Raw URL concatenation can create encoding and injection bugs, so use <code>URL</code> and <code>URLSearchParams</code>. Deep-merging untrusted query parameters into config risks prototype pollution, so validate keys and build a new object from an allowlisted schema.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 12 recap",
+          "items": [
+            "Treat untrusted data as data, not markup or code.",
+            "Prototype pollution is usually a boundary-validation bug disguised as a generic object utility.",
+            "Safer JavaScript comes from constrained APIs, explicit schemas, and context-aware encoding or sanitization."
+          ]
+        }
+      ]
     },
     {
       "id": "architecture-large-scale-javascript",
       "intro": "Move from isolated language features to designing large JavaScript systems that stay understandable over time.",
-      "blocks": []
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "State modeling before UI wiring",
+          "html": "<p>Large JavaScript systems stay manageable when state is modeled intentionally instead of being discovered accidentally through scattered variables. Before choosing a framework hook, store, or event bus, decide what the real domain entities are, which values are derived, and which transitions are valid.</p><ul><li>Separate persistent domain state from short-lived UI state and from network/request state.</li><li>Make illegal states harder to represent by using explicit status fields and small, well-named objects.</li><li>Prefer derivation over duplication so one source of truth can drive multiple views.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Pure functions vs side effects",
+          "items": [
+            {
+              "label": "Pure functions",
+              "html": "<p>Given the same inputs, they return the same outputs and do not mutate outside state. They are easier to test, cache, and reason about because behavior is local and predictable.</p>"
+            },
+            {
+              "label": "Side effects",
+              "html": "<p>Effects talk to the outside world: DOM writes, logging, storage, timers, network calls, and mutable shared state. Effects are necessary, but systems stay healthier when they are isolated behind deliberate boundaries.</p>"
+            }
+          ]
+        },
+        {
+          "type": "richText",
+          "title": "Modularity and file boundaries",
+          "html": "<p>Modules are architectural boundaries, not just folders. A good module exposes a small public surface, hides unstable details, and keeps dependencies flowing in understandable directions. When everything imports everything else, the codebase loses the ability to change locally.</p><ul><li>Group files by capability or domain responsibility, not by random technical trivia.</li><li>Keep public entry points intentional so consumers are not coupled to private implementation files.</li><li>Watch for circular dependencies; they often signal a boundary that has not been modeled cleanly yet.</li></ul>"
+        },
+        {
+          "type": "richText",
+          "title": "Event-driven design without chaos",
+          "html": "<p>Event-driven patterns can decouple features, but they also make control flow harder to trace if every feature shouts into a global bus. Use events for genuine cross-boundary notifications, not as an excuse to avoid modeling ownership.</p><ul><li>Name events after domain facts, not UI trivia, when the event is meant to travel.</li><li>Keep payload shapes explicit and versionable.</li><li>If nobody can answer “who owns this state and who is allowed to change it?”, the architecture is already drifting.</li></ul>"
+        },
+        {
+          "type": "mechanics",
+          "title": "A maintainable flow through a JavaScript feature",
+          "steps": [
+            "Accept input at a boundary and validate it before it enters the core flow.",
+            "Transform the input through pure domain logic where possible.",
+            "Perform effects such as storage, network, logging, or rendering in dedicated boundary functions.",
+            "Return a result shape that the caller can interpret without guessing hidden side effects."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Architecture trap: utility files that know too much",
+          "tone": "pitfall",
+          "html": "<p>A file named <code>utils.js</code> often becomes a dumping ground for unrelated logic that quietly couples domains together. When a helper needs knowledge of API payloads, DOM structure, storage keys, and business rules at once, it is not a generic utility anymore. Give that responsibility a real boundary and a real name.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: choose the architectural boundary",
+          "prompt": "A search feature currently reads directly from the DOM, fetches data, writes to localStorage, updates URL params, and renders results all inside one function. How would you split that flow into clearer boundaries without overengineering it?",
+          "answerHtml": "<p>Separate the feature into input parsing, domain/query-state modeling, an effect layer for fetch/storage/history writes, and a rendering adapter. Keep the orchestration function small: collect input, validate it, call the domain logic, then delegate effects and rendering to named boundaries. That keeps reasoning local without introducing a giant framework of abstractions.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 13 recap",
+          "items": [
+            "Architecture starts with state ownership and boundary design, not with choosing a pattern name.",
+            "Pure logic is easiest to test and scale when effects are isolated rather than woven through every function.",
+            "Events and modules should clarify ownership, not hide it."
+          ]
+        }
+      ]
     },
     {
       "id": "mastery-interview-readiness",
       "intro": "Use this capstone chapter for rapid recall, interview depth, debugging drills, and synthesis across the full roadmap.",
-      "blocks": [],
+      "blocks": [
+        {
+          "type": "recap",
+          "title": "Fast recall anchors",
+          "items": [
+            "Execution contexts explain scope, hoisting, closures, and `this` more reliably than memorizing isolated rules.",
+            "Objects inherit through the prototype chain; classes are syntax over that model, not a separate runtime.",
+            "Promises and async functions sit on top of the event loop, where microtasks run before the next task.",
+            "The browser platform adds DOM, fetch, history, storage, observers, streams, workers, and rendering timing on top of the language.",
+            "Security and performance are architecture concerns: data boundaries, rendering strategy, and cleanup discipline all matter.",
+            "Strong interview answers name tradeoffs, internal mechanics, and failure modes instead of stopping at surface syntax."
+          ]
+        },
+        {
+          "type": "compare",
+          "title": "Explain it like an interviewer asked badly",
+          "items": [
+            {
+              "label": "\"Is JavaScript single-threaded?\"",
+              "html": "<p>Good answer pattern: the main thread executes JavaScript on a single call stack, but the platform can coordinate many concurrent tasks through the event loop, browser APIs, and workers.</p>"
+            },
+            {
+              "label": "\"Why is this code async?\"",
+              "html": "<p>Translate the question into queues and boundaries: which work is synchronous, which callbacks enter the microtask queue, which enter the task queue, and which host API is coordinating the delay?</p>"
+            },
+            {
+              "label": "\"What is inheritance in JS?\"",
+              "html": "<p>Do not jump straight to <code>class extends</code>. Start with objects, property lookup, and the prototype chain, then explain how classes map onto that runtime behavior.</p>"
+            }
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Debugging prompt: explain the bug",
+          "prompt": "A typeahead component sometimes shows stale results from an older request, leaks memory after navigating away, and occasionally highlights the wrong clicked row in a delegated list handler. Which JavaScript concepts would you use to explain and fix the bug?",
+          "answerHtml": "<p>There are three different failure classes: stale results point to async race conditions and missing cancellation or freshness guards; memory growth suggests listeners, timers, detached nodes, or caches that stay reachable after teardown; wrong row handling points to event delegation and confusion between <code>event.target</code> and <code>event.currentTarget</code>. A strong answer names the specific runtime model behind each symptom before proposing fixes.</p>"
+        },
+        {
+          "type": "richText",
+          "title": "How to answer under-specified questions",
+          "html": "<p>Interview questions are often vague on purpose or vague by accident. When the wording is sloppy, translate it into a sharper question before answering. State the runtime layer you are talking about, the common tradeoff, and one realistic failure mode. That keeps your answer grounded even if the prompt was not.</p><ul><li>Clarify whether the question is about the language, the browser platform, or application architecture.</li><li>Answer the core mechanism first, then add one practical implication.</li><li>If there are multiple valid answers, say which assumption you are making.</li></ul>"
+        },
+        {
+          "type": "recap",
+          "title": "Capstone mental checklist",
+          "items": [
+            "Can I explain the mechanism, not just the syntax?",
+            "Can I say when this tool should be avoided or replaced?",
+            "Can I predict the common failure mode or debugging symptom?",
+            "Can I connect the language feature to browser/runtime behavior?",
+            "Can I explain the production tradeoff in one or two sentences?"
+          ]
+        }
+      ],
       "qa": [
         {
           "level": "basic",
@@ -958,21 +1132,6 @@
           "answerHtml": "<p>Syntax is identical (`...`). Spread EXPANDS an array/object into individual elements (e.g., `let newArr = [...old]`). Rest COLLECTS multiple elements and condenses them into a single array element (e.g., in function args: `function f(...args)`).</p>"
         },
         {
-          "level": "basic",
-          "question": "What is the \"void\" vs \"never\" type?",
-          "answerHtml": "<p>`void` is used for a function that returns nothing (implicitly returns undefined). `never` is used for a function that WILL NEVER return anything (e.g., it always throws an Error, or has an infinite `while(true)` loop).</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is keyof?",
-          "answerHtml": "<p>An operator that returns a Union type composed of the names of the keys of an Object type. E.g., `type Keys = keyof { name: string; age: number }` results in `\"name\" | \"age\"`.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What does `strict: true` do in tsconfig.json?",
-          "answerHtml": "<p>It enables a broad suite of strict type-checking behavior (including `noImplicitAny`, `strictNullChecks`, `strictFunctionTypes`, and `strictBindCallApply`). Highly recommended for all enterprise projects.</p>"
-        },
-        {
           "level": "expert",
           "question": "What is `Promise.withResolvers()`?",
           "answerHtml": "<p>A new ES2024 feature that returns an object containing a new Promise and its `resolve` and `reject` functions. It eliminates the need to manually extract those functions from the Promise executor callback.</p>"
@@ -1014,11 +1173,6 @@
         },
         {
           "level": "expert",
-          "question": "Explain \"Shadow Realms\" (Proposed).",
-          "answerHtml": "<p>A new global environment that provides a completely isolated JS execution context. It allows running code with its own global object and built-ins, preventing side effects or data leakage into the main execution realm.</p>"
-        },
-        {
-          "level": "expert",
           "question": "What is `Array.fromAsync()`?",
           "answerHtml": "<p>A recent addition that creates a new array from an async iterable, iterable, or array-like object. It awaits each element if necessary, making it superior to `Promise.all(arr.map(async...))` in some sequential scenarios.</p>"
         },
@@ -1026,11 +1180,6 @@
           "level": "expert",
           "question": "How do you detect memory leaks using Chrome DevTools?",
           "answerHtml": "<p>Capture a \"Heap Snapshot\". Look for objects that are \"Detached\" (not in DOM but still referenced in JS). Use the \"Allocation Instrumentation\" timeline to see objects allocated but never released during specific interactions.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "Explain the \"Pipeline Operator\" (`|>`) proposal.",
-          "answerHtml": "<p>It facilitates functional pipe-lining by piping the result of one expression as an argument to the next function: `val |> f |> g` is equivalent to `g(f(val))`. It significantly improves readability in nested logic.</p>"
         },
         {
           "level": "expert",
@@ -1526,11 +1675,6 @@
           "level": "advanced",
           "question": "Implement deep clone without structuredClone.",
           "answerHtml": "<p><code>function deepClone(obj, seen = new WeakMap()) { if (obj === null || typeof obj !== 'object') return obj; if (seen.has(obj)) return seen.get(obj); if (obj instanceof Date) return new Date(obj); if (obj instanceof RegExp) return new RegExp(obj); const clone = Array.isArray(obj) ? [] : {}; seen.set(obj, clone); for (const key of Reflect.ownKeys(obj)) { clone[key] = deepClone(obj[key], seen); } return clone; }</code> Handles circular refs with WeakMap, preserves Date/RegExp, uses Reflect.ownKeys for symbols.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is the Temporal API (Stage 3)?",
-          "answerHtml": "<p>Modern date/time API replacing the broken Date object. <code>Temporal.Now.instant()</code>, <code>Temporal.PlainDate.from('2025-01-15')</code>, <code>Temporal.ZonedDateTime</code>. Features: immutable, timezone-aware, calendar support, duration arithmetic, no month-indexing issues (January is 1 not 0). Still Stage 3 but polyfillable. Will eventually obsolete moment.js and date-fns for most use cases.</p>"
         },
         {
           "level": "advanced",

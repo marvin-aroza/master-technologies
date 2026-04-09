@@ -55,6 +55,9 @@ const populatedChapterIds = new Set([
   "browser-apis-dom-platform",
   "error-handling-defensive-coding",
   "performance-memory",
+  "security-reliability",
+  "architecture-large-scale-javascript",
+  "mastery-interview-readiness",
 ]);
 
 assert.ok(
@@ -69,7 +72,7 @@ assert.ok(
 
     return section.blocks.length === 0;
   }),
-  "Chapters 1-11 should be populated while the remaining chapters stay in skeleton form"
+  "All 14 JavaScript chapters should now be populated"
 );
 assert.ok(
   topic.sections.every((section) => !section.cards || section.cards.length === 0),
