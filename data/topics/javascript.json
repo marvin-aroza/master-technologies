@@ -9,7 +9,7 @@
     },
     {
       "label": "Core Q&A",
-      "value": "194"
+      "value": "173"
     },
     {
       "label": "Coverage",
@@ -296,16 +296,6 @@
         },
         {
           "level": "basic",
-          "question": "What is TypeScript?",
-          "answerHtml": "<p>A structural, strongly typed superset of JavaScript developed by Microsoft. It compiles to plain JavaScript and adds static typing, identifying errors at compile-time instead of runtime.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is the difference between implicit and explicit typing?",
-          "answerHtml": "<p>Explicit: You declare the type: `let count: number = 5;`. Implicit (Inference): TypeScript figures it out automatically: `let count = 5;` (TS knows it's a number).</p>"
-        },
-        {
-          "level": "basic",
           "question": "What is the \"any\" type?",
           "answerHtml": "<p>It allows any type of value, effectively opting out of type-checking completely for that variable. It ruins TypeScript's benefits and should be strictly avoided in production code.</p>"
         },
@@ -320,64 +310,9 @@
           "answerHtml": "<p>`void` is used for a function that returns nothing (implicitly returns undefined). `never` is used for a function that WILL NEVER return anything (e.g., it always throws an Error, or has an infinite `while(true)` loop).</p>"
         },
         {
-          "level": "intermediate",
-          "question": "What is Duck Typing / Structural Typing in TS?",
-          "answerHtml": "<p>TypeScript focuses on the SHAPE of data. If an object has all the properties required by an Interface, TS accepts it, regardless of whether it explicitly \"implements\" that interface. \"If it walks like a duck and quacks like a duck...\"</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What is an Interface in TypeScript?",
-          "answerHtml": "<p>A way to name an object type. Interfaces can be extended with the `extends` keyword and can be merged automatically if declared twice.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What is a Type Alias (`type`)?",
-          "answerHtml": "<p>Creates a new name for any type. Unlike Interfaces, it can describe primitives, unions, and intersections. In modern TS, objects defined via `type` vs `interface` are almost functionally identical.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What is a Tuple?",
-          "answerHtml": "<p>An array with a fixed number of elements whose types are known. Example: `let person: [string, number] = [\"Alice\", 25];`</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What is an Enum?",
-          "answerHtml": "<p>A way to give more friendly names to sets of numeric or string constants. However, TS Enums actively generate JS runtime code (unlike Interfaces), so string literal unions (`type Status = \"OK\" | \"FAIL\"`) are often heavily preferred instead.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What are Generics?",
-          "answerHtml": "<p>Generics provide a way to make components work over a variety of types rather than a single one. It creates a variable for a type, e.g., `<T>`. `function identity<T>(arg: T): T`.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What is a Type Guard (Type Narrowing)?",
-          "answerHtml": "<p>Using standard JS checks (like `typeof x === \"string\"`, `instanceof Array`, or `in` operator) allowing TypeScript to infer the variable's specific type within a narrower conditional block.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is a custom Type Predicate?",
-          "answerHtml": "<p>A function that returns a boolean, where the return type is explicitly cast as `parameterName is Type`. It tells the TS compiler to narrow the type if the function evaluates to true. Ex: `function isString(v: any): v is string`.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is Intersection vs Union?",
-          "answerHtml": "<p>Union (`|`): a value that can be one of several types. Intersection (`&`): a value that combines multiple types into one single type, meaning the object must have ALL the properties of the intersected types.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What are Utility Types in TS?",
-          "answerHtml": "<p>Built-in generic tools that transform types. Examples: `Partial<T>` (all props optional), `Readonly<T>` (all props readonly), `Pick<T, K>` (select specific props), `Omit<T, K>` (remove specific props).</p>"
-        },
-        {
           "level": "advanced",
           "question": "What is keyof?",
           "answerHtml": "<p>An operator that returns a Union type composed of the names of the keys of an Object type. E.g., `type Keys = keyof { name: string; age: number }` results in `\"name\" | \"age\"`.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is typeof (in TS type context)?",
-          "answerHtml": "<p>Allows you to extract the TS type from an existing runtime JavaScript variable. `let obj = {x: 1}; type ObjType = typeof obj;`</p>"
         },
         {
           "level": "expert",
@@ -398,16 +333,6 @@
           "level": "advanced",
           "question": "What is a Discriminated Union?",
           "answerHtml": "<p>A pattern combining Union types, type guards, and a common shared property (the discriminator) to guarantee exhaustive structural safety (often used in Redux actions or state machines).</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is Declaration Merging?",
-          "answerHtml": "<p>The compiler merges two separate declarations declared with the exact same name into a single definition. This is why Interfaces are the standard for public APIs (consumers can easily augment your `Window` interface, for example).</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is Type Variance (Covariance, Contravariance)?",
-          "answerHtml": "<p>Advanced concepts defining how complex types (like arrays or functions) relate to each other based on their internal structural types. TS functions are contravariant in parameters, but covariant in return types to ensure safety.</p>"
         },
         {
           "level": "advanced",
@@ -501,11 +426,6 @@
         },
         {
           "level": "expert",
-          "question": "Explain \"Recursive Types\" in TS.",
-          "answerHtml": "<p>A type that references itself. Useful for deep object trees or JSON structures: `type JSONValue = string | number | boolean | null | JSONObject | JSONArray;`. TS 4.1+ improved support for deep recursion limits.</p>"
-        },
-        {
-          "level": "expert",
           "question": "How do \"Template Literal Types\" work?",
           "answerHtml": "<p>They allow building types based on string literals: `type Direction = \"top\" | \"bottom\"; type Padded = `padding-${Direction}`;`. They enable massive type safety for CSS classes, event names, and i18n keys.</p>"
         },
@@ -518,16 +438,6 @@
           "level": "expert",
           "question": "How do you extract the return type of a function dynamicallly?",
           "answerHtml": "<p>Using the `ReturnType<T>` utility, which internally uses the `infer` keyword: `T extends (...args: any) => infer R ? R : any`.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is the `satisfies` operator?",
-          "answerHtml": "<p>Introduced in TS 4.9, it validates that an expression matches a type WITHOUT widening or changing the inferred type. `const colors = { red: \"#f00\" } satisfies Record<string, string>;` keeps the specific key `\"red\"` instead of widening to `string`.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "Explain \"Assertion Functions\" in TS.",
-          "answerHtml": "<p>Functions that throw an error if a condition isn't met. By using the `asserts condition` return type, TS knows the condition is guaranteed to be true for the rest of the scope if the function returns normally.</p>"
         },
         {
           "level": "expert",
@@ -551,11 +461,6 @@
         },
         {
           "level": "expert",
-          "question": "Explain \"Covariance\" vs \"Contravariance\" in TS.",
-          "answerHtml": "<p>Covariance: `T` can be replaced by a more specific type (Standard for properties). Contravariance: `T` can be replaced by a more general type (Standard for function parameters). TS enforces these rules to ensure type safety across inheritance.</p>"
-        },
-        {
-          "level": "expert",
           "question": "What is the \"Omit\" vs \"Exclude\" utility type?",
           "answerHtml": "<p>`Exclude<Union, Members>` removes members from a UNION type. `Omit<Object, Keys>` removes specific properties from an OBJECT type.</p>"
         },
@@ -563,11 +468,6 @@
           "level": "expert",
           "question": "How do you handle \"Branded Strings\" with Template Literals?",
           "answerHtml": "<p>By creating a type that combines a string with a unique intersection: `type UserID = `user_${string}` & { __brand: \"UserID\" }`. This ensures any ID used must match the prefix AND be explicitly cast/verified.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Mapped Type Remapping\"?",
-          "answerHtml": "<p>Using the `as` clause inside a mapped type to change key names: `type Getters<T> = { [K in keyof T as `get${Capitalize<string & K>}`]: () => T[K] }`.</p>"
         },
         {
           "level": "expert",
@@ -588,11 +488,6 @@
           "level": "expert",
           "question": "What is a \"User-Agent Client Hints\" (UA-CH)?",
           "answerHtml": "<p>A modern, more privacy-preserving alternative to the `User-Agent` string. It allows browsers to selectively share device/browser metadata with servers via HTTP headers or JS API, reducing passive fingerprinting.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How do \"Private Class Features\" (#prefix) differ from `private` keyword in TS?",
-          "answerHtml": "<p>`#private` is a native JS feature that provides hard runtime encapsulation; the field is truly inaccessible outside the class. TS `private` is a compile-time check only; the field is still accessible in the emitted JavaScript.</p>"
         },
         {
           "level": "expert",

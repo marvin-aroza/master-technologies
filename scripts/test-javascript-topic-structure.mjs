@@ -39,10 +39,6 @@ assert.deepEqual(
   { label: "Chapters", value: "14" }
 );
 assert.deepEqual(
-  topic.heroStats.find((stat) => stat.label === "Core Q&A"),
-  { label: "Core Q&A", value: "194" }
-);
-assert.deepEqual(
   topic.heroStats.find((stat) => stat.label === "Updated"),
   { label: "Updated", value: "2026" }
 );
@@ -57,12 +53,50 @@ assert.ok(
 );
 
 const sectionsWithQA = topic.sections.filter((section) => (section.qa?.length ?? 0) > 0);
+const coreQaStat = topic.heroStats.find((stat) => stat.label === "Core Q&A");
 
 assert.deepEqual(
   sectionsWithQA.map((section) => section.id),
   ["mastery-interview-readiness"]
 );
-assert.equal(sectionsWithQA[0].qa.length, 194);
+assert.ok(coreQaStat, "heroStats should include the Core Q&A summary");
+assert.equal(coreQaStat.value, String(sectionsWithQA[0].qa.length));
+
+const tsHeavyPatterns = [
+  /\bTypeScript\b/i,
+  /\bTS\b/,
+  /\bimplicit and explicit typing\b/i,
+  /\b"any" type\b/i,
+  /\b"unknown" type\b/i,
+  /\b"void" vs "never" type\b/i,
+  /\bInterface\b/i,
+  /\bType Alias\b/i,
+  /\bTuple\b/i,
+  /\bEnum\b/i,
+  /\bGenerics\b/i,
+  /\bType Guard\b/i,
+  /\bType Predicate\b/i,
+  /\bIntersection vs Union\b/i,
+  /\bUtility Types\b/i,
+  /\btypeof \(in TS type context\)\b/i,
+  /\bDeclaration Merging\b/i,
+  /\bRecursive Types\b/i,
+  /\bsatisfies\b/i,
+  /\bAssertion Functions\b/i,
+  /\bCovariance\b.*\bContravariance\b/i,
+  /\bMapped Type Remapping\b/i,
+  /`private` keyword in TS/i,
+];
+
+const tsHeavyQuestions = sectionsWithQA[0].qa.filter((item) =>
+  tsHeavyPatterns.some((pattern) => pattern.test(item.question))
+);
+
+assert.deepEqual(
+  tsHeavyQuestions.map((item) => item.question),
+  [],
+  "The JavaScript interview bank should not keep the TypeScript-heavy legacy Q&A cluster"
+);
 
 assert.ok(topic.tabs.every((tab) => !/TypeScript/i.test(tab.label)));
 assert.ok(topic.tabs.every((tab) => !/Cheat Sheet/i.test(tab.label)));
