@@ -395,58 +395,333 @@
     },
     {
       "id": "lists-tables-data-markup",
-      "intro": "Use lists and tables when the content is genuinely structured data, not just for layout or visual grouping.",
+      "intro": "Lists and tables are not interchangeable containers. They exist to express relationships clearly, which is why misuse here hurts both accessibility and maintainability.",
       "blocks": [
         {
           "type": "richText",
-          "title": "Lists and tables with purpose",
-          "html": "<p>Lists represent ordered or unordered collections. Tables represent relational data with headers, scope, and accessible structure.</p>"
+          "title": "Lists and tables express relationships",
+          "html": "<p>Lists communicate collections. Tables communicate relationships between rows and columns of data. When you choose the right structure, the browser, assistive technologies, and future developers all understand the content more quickly.</p><p>The key question is not what looks convenient in CSS. The key question is what relationship the content actually has.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "When a table is correct and when it is abuse",
+          "items": [
+            {
+              "label": "Real table",
+              "html": "<p>Use a table when users need to understand data through row and column relationships, headers, and cells.</p>"
+            },
+            {
+              "label": "Table abuse",
+              "html": "<p>Do not use tables for layout, spacing, or generic card grids. That hides meaning and creates noisy accessibility output.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Structured list and accessible table example",
+          "language": "html",
+          "code": "<ul>\n  <li>HTML parser mental model</li>\n  <li>Semantic landmarks</li>\n  <li>Constraint validation</li>\n</ul>\n\n<table>\n  <caption>Quarterly signups</caption>\n  <thead>\n    <tr>\n      <th scope=\"col\">Quarter</th>\n      <th scope=\"col\">Signups</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th scope=\"row\">Q1</th>\n      <td>1240</td>\n    </tr>\n  </tbody>\n</table>",
+          "caption": "Lists group related items. Tables expose data relationships with captions and headers."
+        },
+        {
+          "type": "mechanics",
+          "title": "How headers, captions, and scope shape a table",
+          "steps": [
+            "A caption gives the table a visible and accessible label for the dataset.",
+            "Column and row headers explain what each cell means in context.",
+            "The scope attribute helps assistive technologies connect header cells to the right data cells.",
+            "A table without meaningful headers is usually either incomplete or the wrong element choice."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: layout tables and fake list markup",
+          "tone": "warning",
+          "html": "<p>Turning a visual grid into a table or flattening a true list into generic divs makes the content harder to navigate, restyle, and audit. Structure should follow meaning, not the current screenshot.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: audit the table markup",
+          "prompt": "A pricing comparison uses a table with no caption, no header cells, and the first column is just styled td elements. What would you change first?",
+          "answerHtml": "<p>Add a caption that identifies the dataset, convert the real headers into <code>&lt;th&gt;</code> cells, and apply row or column scope where needed. If the content is not truly tabular, replace the table entirely.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Lists and tables recap",
+          "items": [
+            "Lists express collections; tables express relational data.",
+            "Captions and header cells are part of table meaning, not optional polish.",
+            "A div grid is not automatically a table, and a table should never be a layout shortcut.",
+            "Choose structure by relationship, not by appearance."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "When should you use a description list instead of an unordered list?",
+          "answerHtml": "<p>Use a description list when you are pairing terms with descriptions or names with values. Use an unordered list for a simple collection of peer items.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why are captions and header cells important in tables?",
+          "answerHtml": "<p>They tell users and assistive technologies what the dataset is and how each cell relates to a row or column heading.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is using tables for layout considered a semantic failure?",
+          "answerHtml": "<p>Because it communicates a false relationship to the browser and accessibility tree. Layout should come from CSS, while tables should be reserved for real tabular data.</p>"
         }
       ]
     },
     {
       "id": "media-embeds-responsive-asset-markup",
-      "intro": "Cover images, video, audio, embeds, and responsive asset markup that helps the browser choose the right resource.",
+      "intro": "Media markup is part semantics and part loading strategy. Images, video, audio, and embeds should be chosen with both meaning and performance in mind.",
       "blocks": [
         {
+          "type": "richText",
+          "title": "Media markup is a loading strategy",
+          "html": "<p>Every media element affects both meaning and page startup. Images need alt text and stable dimensions, videos may need captions and posters, and embeds often carry privacy, sizing, and performance tradeoffs.</p><p>Responsive media is not just about screen size. It is about giving the browser enough information to choose the right resource for the current context.</p>"
+        },
+        {
           "type": "compare",
-          "title": "Responsive media choices",
+          "title": "`img` vs `picture` vs `figure`",
           "items": [
             {
               "label": "img",
-              "html": "<p>Best when one image source is enough and srcset can handle resolution switching.</p>"
+              "html": "<p>Use for a straightforward image, often with <code>srcset</code> and <code>sizes</code> when resolution switching is enough.</p>"
             },
             {
               "label": "picture",
-              "html": "<p>Best when you need art direction or format fallbacks.</p>"
+              "html": "<p>Use when art direction or format fallback matters, such as switching crops or preferring AVIF/WebP before JPEG.</p>"
+            },
+            {
+              "label": "figure",
+              "html": "<p>Wrap media in <code>&lt;figure&gt;</code> when it has a self-contained meaning and should carry a caption.</p>"
             }
           ]
+        },
+        {
+          "type": "code",
+          "title": "Responsive image and media scaffold",
+          "language": "html",
+          "code": "<figure>\n  <picture>\n    <source srcset=\"hero.avif\" type=\"image/avif\" />\n    <source srcset=\"hero.webp\" type=\"image/webp\" />\n    <img\n      src=\"hero.jpg\"\n      srcset=\"hero-640.jpg 640w, hero-1280.jpg 1280w\"\n      sizes=\"(max-width: 768px) 100vw, 60vw\"\n      width=\"1280\"\n      height=\"720\"\n      alt=\"Team reviewing a semantic HTML checklist\"\n      loading=\"lazy\"\n    />\n  </picture>\n  <figcaption>Semantic media with stable layout.</figcaption>\n</figure>",
+          "caption": "Width and height reserve space, while srcset and sizes help the browser choose an efficient asset."
+        },
+        {
+          "type": "mechanics",
+          "title": "How the browser chooses an image candidate",
+          "steps": [
+            "The browser considers the rendered slot size, device pixel ratio, and the options listed in srcset.",
+            "The sizes attribute tells the browser how large the image is expected to render at different breakpoints.",
+            "Picture source elements let the browser choose a different file based on media conditions or supported formats.",
+            "Supplying width and height helps reserve layout space before the image finishes loading."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: media without dimensions or text alternatives",
+          "tone": "warning",
+          "html": "<p>If an informative image has no useful alt text, the meaning is lost. If media has no intrinsic dimensions in markup, layout stability suffers and CLS often follows.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: pick the responsive image strategy",
+          "prompt": "One hero image only needs resolution switching, while another needs a different crop on mobile and desktop. Which one should use srcset alone, and which one should use picture?",
+          "answerHtml": "<p>Use <code>srcset</code> alone when the same image can scale across densities and widths. Use <code>&lt;picture&gt;</code> when you need art direction, such as serving a different crop or format for different contexts.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Media recap",
+          "items": [
+            "Media elements carry both semantic meaning and loading consequences.",
+            "Use width and height to reserve space and reduce layout shift.",
+            "Use picture for art direction or format fallback, and srcset plus sizes for candidate selection.",
+            "Embeds and media should be evaluated for privacy, captions, and performance, not only appearance."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "When should you use `<picture>` instead of only `<img srcset>`?",
+          "answerHtml": "<p>Use <code>&lt;picture&gt;</code> when you need art direction or format fallback. Use <code>srcset</code> on a plain <code>&lt;img&gt;</code> when one image source is enough and only candidate selection changes.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why should an image often include explicit width and height attributes?",
+          "answerHtml": "<p>They help the browser reserve layout space before the image loads, which reduces cumulative layout shift.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the main semantic benefit of wrapping media in `<figure>` and `<figcaption>`?",
+          "answerHtml": "<p>It marks the media and its caption as one self-contained unit, which improves clarity for both readers and assistive technologies.</p>"
         }
       ]
     },
     {
       "id": "forms-controls-validation-submission",
-      "intro": "Master native controls, labels, validation, and submission mechanics before adding custom behavior.",
+      "intro": "Forms are one of the strongest native browser systems on the platform. Mastery here means understanding controls, naming, submission, and constraint validation before adding custom JavaScript.",
       "blocks": [
         {
+          "type": "richText",
+          "title": "Forms are a native browser system",
+          "html": "<p>HTML forms already know how to group controls, serialize named values, validate inputs, submit data, and expose accessible labels. A lot of broken form UX comes from replacing those native features instead of working with them.</p><p>The highest-leverage habit is to start with correct native controls and only add custom behavior when the native system no longer fits the requirement.</p>"
+        },
+        {
+          "type": "code",
+          "title": "A robust form scaffold",
+          "language": "html",
+          "code": "<form action=\"/signup\" method=\"post\">\n  <fieldset>\n    <legend>Create an account</legend>\n\n    <label for=\"email\">Email</label>\n    <input id=\"email\" name=\"email\" type=\"email\" required autocomplete=\"email\" />\n\n    <label for=\"password\">Password</label>\n    <input id=\"password\" name=\"password\" type=\"password\" minlength=\"12\" required />\n\n    <button type=\"submit\">Create account</button>\n  </fieldset>\n</form>",
+          "caption": "Labels, names, types, and constraints are the foundation of usable form behavior."
+        },
+        {
           "type": "mechanics",
-          "title": "Form submission flow",
+          "title": "How form submission and constraint validation work",
           "steps": [
-            "Associate labels with inputs",
-            "Use native constraints where possible",
-            "Let the browser handle submission and validation semantics"
+            "Only successful controls with a name participate in submitted form data.",
+            "Native constraints such as required, type, pattern, min, max, and minlength produce a validity state.",
+            "The browser can block submission, surface validation messages, and expose validity through APIs like checkValidity and reportValidity.",
+            "Custom validation should extend the native model, not replace it without a strong reason."
           ]
+        },
+        {
+          "type": "compare",
+          "title": "Native constraints vs custom JavaScript validation",
+          "items": [
+            {
+              "label": "Native constraints",
+              "html": "<p>Fast to implement, accessible by default, and integrated with form submission.</p>"
+            },
+            {
+              "label": "Custom logic",
+              "html": "<p>Useful for cross-field or business-specific rules, but it should build on top of the browser model rather than discarding it.</p>"
+            }
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: custom UI that breaks native semantics",
+          "tone": "warning",
+          "html": "<p>Styled divs that imitate selects, fake checkboxes without labels, and controls with no name or no label usually look fine in a screenshot but fail keyboard users, screen readers, or actual submission flows.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: fix the broken form",
+          "prompt": "A signup form uses placeholders instead of labels, the email field has no name, the submit button is a generic div, and validation only runs after an API error. What would you fix first?",
+          "answerHtml": "<p>Restore the native contract first: add real labels, give each successful control a name, use a real submit button, and move basic validation into native constraints so the browser can help before the request is sent.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Forms recap",
+          "items": [
+            "Forms already provide labeling, serialization, validation, and submission semantics.",
+            "A control without a name does not submit useful data.",
+            "Native constraints are part of the platform, not training wheels.",
+            "Custom UI should preserve the native behavior users already rely on."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why does an input need both a label and a name?",
+          "answerHtml": "<p>The label gives the control an accessible and visible identity, while the name determines the key used when the form data is submitted.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between checkValidity and reportValidity?",
+          "answerHtml": "<p><code>checkValidity()</code> tells you whether the control or form is valid, while <code>reportValidity()</code> also asks the browser to surface validation feedback to the user.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why are placeholders not a safe replacement for labels?",
+          "answerHtml": "<p>Placeholders disappear as users type, are often lower contrast, and do not provide the same durable accessible name behavior as a real label.</p>"
         }
       ]
     },
     {
       "id": "interactive-html-dialog-popover-templates",
-      "intro": "Use the browser's built-in interactive primitives before reaching for custom scripting.",
+      "intro": "Interactive HTML gives you native disclosure, overlay, and inert-template primitives that are often better than rebuilding the same behavior with generic elements.",
       "blocks": [
         {
           "type": "richText",
-          "title": "Native interaction primitives",
-          "html": "<p>Dialog, popover, details, summary, and templates provide useful interaction patterns with less custom code and better native behavior.</p>"
+          "title": "Native interactive HTML is worth using",
+          "html": "<p>Modern HTML includes built-in primitives for common interaction patterns. That matters because native elements arrive with browser behavior, accessibility hooks, and platform integration that custom div-based widgets often have to reimplement imperfectly.</p><p>Using the right primitive also makes your intent clearer: disclosure is not the same thing as a modal, and a lightweight popover is not the same thing as a blocking dialog.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "`details` vs `dialog` vs `popover`",
+          "items": [
+            {
+              "label": "details",
+              "html": "<p>Best for inline disclosure where the user expands and collapses nearby content.</p>"
+            },
+            {
+              "label": "dialog",
+              "html": "<p>Best for modal or modeless dialogs where focus management and top-layer behavior matter.</p>"
+            },
+            {
+              "label": "popover",
+              "html": "<p>Best for lightweight overlays such as menus, teaching UI, or anchored help that should not behave like a modal dialog.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Dialog and popover primitives",
+          "language": "html",
+          "code": "<button popovertarget=\"help-popover\">Show help</button>\n<div id=\"help-popover\" popover>Keyboard shortcuts and hints</div>\n\n<button onclick=\"settings.showModal()\">Open settings</button>\n<dialog id=\"settings\">\n  <form method=\"dialog\">\n    <p>Settings panel</p>\n    <button>Close</button>\n  </form>\n</dialog>\n\n<template id=\"card-template\">\n  <article class=\"card\">\n    <h2></h2>\n    <p></p>\n  </article>\n</template>",
+          "caption": "Popover, dialog, and template each solve a different class of interaction problem."
+        },
+        {
+          "type": "mechanics",
+          "title": "Top layer, focus, and dismissal behavior",
+          "steps": [
+            "Modal dialogs participate in top-layer behavior and usually need focused interaction until dismissed.",
+            "Popovers are lighter-weight overlays and do not automatically mean modal interaction.",
+            "Details and summary stay in normal document flow and are ideal for inline disclosure.",
+            "Templates are inert fragments that do not render or execute until your code clones and inserts them."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: rebuilding native behavior with divs",
+          "tone": "warning",
+          "html": "<p>When you replace a native dialog, disclosure, or popover with generic wrappers, you also inherit the burden of focus handling, dismissal behavior, keyboard support, and semantics. Many teams reproduce only part of that behavior.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: choose the right primitive",
+          "prompt": "You need an FAQ expander, a blocking confirmation flow, an anchored help bubble, and reusable inert markup for a card created in JavaScript. Which native primitives fit each case?",
+          "answerHtml": "<p>Use <code>&lt;details&gt;</code> for the FAQ expander, <code>&lt;dialog&gt;</code> for the blocking confirmation flow, <code>popover</code> for the anchored help bubble, and <code>&lt;template&gt;</code> for the inert reusable markup.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Interactive HTML recap",
+          "items": [
+            "Native interactive primitives communicate intent and reduce custom behavior debt.",
+            "Dialog, popover, and details are different tools with different UX and accessibility implications.",
+            "Top-layer behavior matters for overlays and modals.",
+            "Templates stay inert until your code intentionally instantiates them."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "When is `<details>` a better fit than a custom accordion widget?",
+          "answerHtml": "<p>When the interaction is simple inline disclosure. It gives you native toggle behavior with much less code and clearer semantics.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the practical difference between a dialog and a popover?",
+          "answerHtml": "<p>A dialog is for a more explicit interaction boundary, especially modal flows, while a popover is a lighter overlay for anchored or contextual UI that should not automatically behave like a full modal.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is `<template>` described as inert markup?",
+          "answerHtml": "<p>Because its contents are parsed but not rendered or activated as part of the live document until code clones and inserts them.</p>"
         }
       ]
     },
