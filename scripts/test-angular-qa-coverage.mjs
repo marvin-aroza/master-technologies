@@ -15,7 +15,7 @@ const totalQuestions = chapters.reduce(
   0
 );
 
-assert.ok(totalQuestions >= 80, "Angular topic should expose a large interview bank");
+assert.ok(totalQuestions >= 302, "Angular topic should preserve the restored legacy-plus-modern interview bank");
 
 for (const chapter of chapters.slice(0, -1)) {
   assert.ok(
@@ -25,8 +25,8 @@ for (const chapter of chapters.slice(0, -1)) {
 }
 
 assert.ok(
-  Array.isArray(capstone.qa) && capstone.qa.length >= 24,
-  "Angular capstone chapter should include a deep final interview bank"
+  Array.isArray(capstone.qa) && capstone.qa.length >= 250,
+  "Angular capstone chapter should include the restored legacy interview bank plus the new capstone prompts"
 );
 
 const capstoneLevels = new Set(capstone.qa.map((item) => item.level));
@@ -34,3 +34,7 @@ assert.ok(capstoneLevels.has("basic"));
 assert.ok(capstoneLevels.has("intermediate"));
 assert.ok(capstoneLevels.has("advanced"));
 assert.ok(capstoneLevels.has("expert"));
+
+const capstoneQuestions = new Set(capstone.qa.map((item) => item.question));
+assert.ok(capstoneQuestions.has("What is an Angular module (NgModule)?"));
+assert.ok(capstoneQuestions.has("Why did Angular shift to Standalone Components?"));

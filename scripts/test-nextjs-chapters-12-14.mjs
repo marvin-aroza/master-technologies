@@ -30,8 +30,8 @@ assert.ok(
   "chapter 13 should include chapter-level interview questions"
 );
 assert.ok(
-  Array.isArray(chapter14.qa) && chapter14.qa.length >= 40,
-  "chapter 14 should include a strong capstone interview bank"
+  Array.isArray(chapter14.qa) && chapter14.qa.length >= 116,
+  "chapter 14 should include the restored legacy-plus-modern capstone interview bank"
 );
 
 const chapter12Titles = chapter12.blocks.map((block) => block.title ?? "");
@@ -134,4 +134,12 @@ assert.ok(
 assert.ok(
   chapter14.qa.some((item) => item.question.includes("Pages Router")),
   "chapter 14 should keep explicit Pages Router migration interview coverage"
+);
+assert.ok(
+  chapter14.qa.some((item) => item.question === "What is Next.js?"),
+  "chapter 14 should retain the legacy foundational Next.js question bank"
+);
+assert.ok(
+  chapter14.qa.some((item) => item.question === "What is SSR (Server-Side Rendering)?"),
+  "chapter 14 should retain the legacy SSR question bank"
 );

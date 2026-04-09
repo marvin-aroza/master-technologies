@@ -35,7 +35,7 @@ assert.deepEqual(
   topic.heroStats,
   [
     { label: "Chapters", value: "14" },
-    { label: "Core Q&A", value: "104" },
+    { label: "Core Q&A", value: "230" },
     { label: "Coverage", value: "Core+Ecosystem" },
     { label: "Updated", value: "2026" }
   ],
@@ -70,7 +70,7 @@ for (const id of forbiddenLegacyIds) {
 const finalSection = topic.sections.at(-1);
 assert.equal(finalSection.id, "architecture-ecosystem-interview-mastery");
 assert.ok(Array.isArray(finalSection.qa), "final chapter should include interview Q&A");
-assert.equal(finalSection.qa.length, 52, "final chapter should ship with a very large mastery Q&A bank");
+assert.equal(finalSection.qa.length, 178, "final chapter should ship with the restored legacy-plus-modern mastery Q&A bank");
 
 for (const section of topic.sections) {
   assert.ok(

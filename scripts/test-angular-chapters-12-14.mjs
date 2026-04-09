@@ -25,7 +25,7 @@ for (const [index, chapter] of [chapter12, chapter13, chapter14].entries()) {
 
 assert.ok(Array.isArray(chapter12.qa) && chapter12.qa.length >= 4);
 assert.ok(Array.isArray(chapter13.qa) && chapter13.qa.length >= 4);
-assert.ok(Array.isArray(chapter14.qa) && chapter14.qa.length >= 24);
+assert.ok(Array.isArray(chapter14.qa) && chapter14.qa.length >= 250);
 
 const chapter12Titles = chapter12.blocks.map((block) => block.title ?? "");
 assert.ok(
@@ -100,3 +100,7 @@ assert.ok(
   ),
   "chapter 14 should explicitly teach interview framing"
 );
+
+const chapter14Questions = new Set(chapter14.qa.map((item) => item.question));
+assert.ok(chapter14Questions.has("What is an Angular module (NgModule)?"));
+assert.ok(chapter14Questions.has("What is the difference between JIT and AOT compilation?"));
