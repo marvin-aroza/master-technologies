@@ -31,8 +31,77 @@
       "blocks": [
         {
           "type": "richText",
-          "title": "What This Chapter Establishes",
-          "html": "<p>This foundation chapter defines the framework story before we touch file conventions or APIs.</p><ul><li>What Next.js adds on top of React</li><li>How build, request, server, client, and cache phases differ</li><li>Why runtime boundaries matter in production apps</li></ul>"
+          "title": "Next.js is a React framework, not a rendering mode",
+          "html": "<p>Next.js is not just SSR bolted onto React. It is a framework that coordinates routing, rendering, data boundaries, caching, asset optimization, and deployment around React's component model.</p><p>That matters because most real app decisions in Next.js are environment-boundary decisions: what should happen at build time, what should happen per request, what can stay on the server, and what must ship to the browser.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "React library vs Next.js framework",
+          "items": [
+            {
+              "label": "React alone",
+              "html": "<p>You bring your own routing, data-fetching conventions, asset pipeline, rendering model, and deployment architecture.</p>"
+            },
+            {
+              "label": "Next.js",
+              "html": "<p>The framework gives you a file-system router, server and client boundaries, rendering and caching primitives, server mutation flows, and production-oriented defaults.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Build time vs request time vs browser time",
+          "steps": [
+            "Build time prepares static assets, prerendered output, and anything the framework can compute ahead of traffic.",
+            "Request time handles work that depends on the incoming request, cookies, headers, dynamic data, or other per-request signals.",
+            "Server runtime work produces HTML and React Server Component payloads before the browser can interact with the route.",
+            "Browser time begins after the response arrives and the client hydrates any interactive islands that require client JavaScript.",
+            "Caching sits across those phases and decides which work can be reused instead of repeated."
+          ]
+        },
+        {
+          "type": "richText",
+          "title": "What changed in Next.js 16",
+          "html": "<p>The modern baseline is App Router-first. The framework now teaches explicit caching through Cache Components and <code>use cache</code>, leans harder into server-first architecture, and has renamed <code>middleware</code> to <code>proxy</code> in the official file conventions.</p><p>The key learning shift is architectural: modern Next.js is about choosing execution boundaries and cache boundaries deliberately, not just picking between SSR and SSG labels.</p>"
+        },
+        {
+          "type": "trap",
+          "title": "Trap: treating Next.js as only SSR",
+          "tone": "pitfall",
+          "html": "<p>If you think Next.js is just 'React plus SSR', you will miss the real tradeoffs. The framework is also about route structure, persistent layouts, server-only code, mutation flows, cache invalidation, runtime choice, and deployment behavior.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: choose the right execution boundary",
+          "prompt": "A product list should be fast for everyone, a cart should reflect the current user, and an admin chart should only be visible to authenticated staff. Which parts should stay static, which should stay request-bound, and which should stay client-only?",
+          "answerHtml": "<p>The product list is a good candidate for static or cached server work. The cart is user-specific request-time work. The admin chart still starts with server-side access checks, but the interactive charting UI may need a Client Component boundary if it relies on browser-only state or events.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 1 recap",
+          "items": [
+            "Next.js is a React framework with opinions about routing, rendering, data, caching, and deployment.",
+            "The core mastery question is always: what runs where, and when?",
+            "Build time, request time, server runtime, browser runtime, and caches are different layers, not one blur.",
+            "Modern Next.js should be learned App Router-first."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "How is Next.js different from using React by itself?",
+          "answerHtml": "<p>React gives you a UI library. Next.js gives you a framework around React that standardizes routing, rendering, data ownership, server and client boundaries, and deployment-friendly behavior.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why is 'what runs where' the core Next.js mental model?",
+          "answerHtml": "<p>Because most Next.js bugs and performance problems come from choosing the wrong environment for work. You need to know what belongs at build time, request time, on the server, and in the browser.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is it misleading to describe Next.js as only an SSR framework?",
+          "answerHtml": "<p>SSR is only one rendering mode. Next.js also coordinates static generation, streaming, partial prerendering, server mutations, route handlers, caching, and runtime selection, which makes it a much broader application framework.</p>"
         }
       ]
     },
@@ -42,8 +111,87 @@
       "blocks": [
         {
           "type": "richText",
-          "title": "Scaffold Focus",
-          "html": "<p>The rewrite will consolidate the duplicated App Router material from the old topic into one coherent architecture chapter with file conventions, routing patterns, and layout behavior taught in order.</p>"
+          "title": "The app directory is a route tree",
+          "html": "<p>In App Router, folders describe segments in a route tree, and special files describe what each segment does. You should read the <code>app/</code> directory as architecture, not as miscellaneous file organization.</p><p>Each special file answers a different question: what renders this route, what persists across children, what loads while data is pending, what catches errors, and what serves HTTP directly.</p>"
+        },
+        {
+          "type": "code",
+          "title": "Core App Router file conventions",
+          "language": "tsx",
+          "code": "app/\\n  layout.tsx\\n  page.tsx\\n  loading.tsx\\n  error.tsx\\n  not-found.tsx\\n  dashboard/\\n    layout.tsx\\n    page.tsx\\n    [id]/page.tsx\\n  (marketing)/about/page.tsx\\n  @modal/login/page.tsx\\n  api/users/route.ts",
+          "caption": "Pages, layouts, special files, route groups, parallel routes, and route handlers all live in the same route tree."
+        },
+        {
+          "type": "compare",
+          "title": "layout.tsx vs template.tsx vs page.tsx vs route.ts",
+          "items": [
+            {
+              "label": "layout.tsx",
+              "html": "<p>Persistent shared UI for a segment and its children. Layouts are the place for shells that should survive navigation.</p>"
+            },
+            {
+              "label": "template.tsx",
+              "html": "<p>Like a layout in placement, but it remounts on navigation. Use it when you want transition isolation or fresh local state per navigation.</p>"
+            },
+            {
+              "label": "page.tsx",
+              "html": "<p>The UI entrypoint for the route segment itself. This is where route content becomes visible to users.</p>"
+            },
+            {
+              "label": "route.ts",
+              "html": "<p>An HTTP endpoint in the route tree. Use it for request and response handling rather than page UI.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Dynamic segments, route groups, and special files",
+          "steps": [
+            "A folder name usually becomes part of the URL segment.",
+            "Dynamic segments such as [slug] let the route capture values from the URL.",
+            "Catch-all and optional catch-all segments widen that matching behavior.",
+            "Route groups in parentheses organize files without affecting the URL path.",
+            "Parallel and intercepting routes let one layout coordinate multiple route surfaces at once."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: assuming every folder changes the URL",
+          "tone": "pitfall",
+          "html": "<p>Route groups do not affect the URL. Parallel route folders such as <code>@modal</code> also have routing meaning without behaving like normal path segments. Reading the tree literally without knowing the conventions leads to wrong mental models.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: map the URL to files",
+          "prompt": "A URL like /blog/why-streaming-matters should render inside the root layout, the blog segment layout, and a dynamic page. Which files are most likely involved, and which file would you add if you wanted a route-specific loading state?",
+          "answerHtml": "<p>You would expect the root <code>app/layout.tsx</code>, a nested <code>app/blog/layout.tsx</code> if one exists, and a dynamic <code>app/blog/[slug]/page.tsx</code>. A route-specific pending UI would come from <code>app/blog/[slug]/loading.tsx</code> or a relevant parent loading file depending on where you want the boundary.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 2 recap",
+          "items": [
+            "The app directory is a route tree, not just a folder hierarchy.",
+            "Special files define roles such as shared UI, route UI, loading, errors, and HTTP handling.",
+            "Route groups, parallel routes, and intercepting routes change behavior without behaving like plain folders.",
+            "Understanding file conventions makes later rendering and data decisions much easier."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the difference between page.tsx and layout.tsx?",
+          "answerHtml": "<p><code>page.tsx</code> renders the route's own UI, while <code>layout.tsx</code> provides shared UI that wraps child routes and can persist across navigation.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What are route groups for in the App Router?",
+          "answerHtml": "<p>Route groups let you organize segments or share layouts without adding that folder name to the public URL path.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When would you reach for parallel or intercepting routes?",
+          "answerHtml": "<p>Use them when one layout needs to coordinate multiple route surfaces, such as dashboards with independent panes or modal flows that should overlay the current page while still mapping to a real URL.</p>"
         }
       ]
     },
@@ -53,8 +201,76 @@
       "blocks": [
         {
           "type": "richText",
-          "title": "Scaffold Focus",
-          "html": "<p>The full rewrite will cover default server-first rendering, the <code>\"use client\"</code> boundary, serialization limits, server-only code, and the tradeoffs behind moving logic to the client.</p>"
+          "title": "Server first by default",
+          "html": "<p>In App Router, routes render as Server Components by default. That means the default question is not 'how do I move this to the server?' but 'do I really need to move this to the client?'</p><p>This default is powerful because data access, secrets, and heavy server-side logic can stay on the server unless interactivity forces a client boundary.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Server Components vs Client Components",
+          "items": [
+            {
+              "label": "Server Components",
+              "html": "<p>Run on the server, can access server-only resources, and do not ship their implementation code to the browser as interactive client bundles.</p>"
+            },
+            {
+              "label": "Client Components",
+              "html": "<p>Marked with <code>&quot;use client&quot;</code>, can use browser APIs and interactive hooks, and must ship JavaScript to the browser.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How server and client cooperate",
+          "steps": [
+            "The server renders route work and produces HTML plus the React Server Component payload for the current navigation.",
+            "The browser receives that response and shows the server-rendered output quickly.",
+            "Only the client boundaries that need interactivity hydrate in the browser.",
+            "On later navigations, the framework can stream updated server payloads while preserving client state where boundaries remain stable."
+          ]
+        },
+        {
+          "type": "richText",
+          "title": "What can and cannot cross the boundary",
+          "html": "<p>Props moving from server to client must be serializable. You cannot pass arbitrary server-only resources, live database handles, or browser-only values across the boundary and expect them to behave like local objects.</p><p>The safest rule is simple: keep data plain when it crosses, keep secrets and privileged logic on the server, and keep browser-only behavior inside client boundaries.</p>"
+        },
+        {
+          "type": "trap",
+          "title": "Trap: adding use client too high in the tree",
+          "tone": "warning",
+          "html": "<p>If you put <code>&quot;use client&quot;</code> near the top of the tree, you force more of the route into the client bundle than necessary. That usually increases hydration cost, weakens server-only guarantees, and blurs data ownership.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: place the boundary",
+          "prompt": "You have a dashboard page that fetches secure billing data, but one chart widget lets the user toggle local filters and hover tooltips. Which parts should stay server-side and which part should become a Client Component?",
+          "answerHtml": "<p>The secure data loading should stay in a Server Component, and only the interactive chart shell or widget should become a Client Component. Push the client boundary down to the smallest interactive surface instead of promoting the entire dashboard.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 3 recap",
+          "items": [
+            "App Router is server-first by default.",
+            "Client Components are an opt-in boundary for interactivity, browser APIs, and client-side state.",
+            "Cross-boundary props must stay serializable.",
+            "Pushing the client boundary too high usually costs performance and clarity."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "When do you need to add use client?",
+          "answerHtml": "<p>Add <code>&quot;use client&quot;</code> when a component needs browser-only APIs, event-driven interactivity, or client-side hooks that require a Client Component boundary.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why should most data fetching stay on the server in App Router?",
+          "answerHtml": "<p>Server-side data fetching avoids shipping sensitive logic to the browser, reduces unnecessary client JavaScript, and keeps data ownership close to the environment that can access trusted resources directly.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common architectural mistake with Client Components in Next.js?",
+          "answerHtml": "<p>A common mistake is wrapping large route segments in <code>&quot;use client&quot;</code> because one small interactive widget needs it. That broad boundary increases bundle size and weakens the benefits of server-first rendering.</p>"
         }
       ]
     },
@@ -64,8 +280,90 @@
       "blocks": [
         {
           "type": "richText",
-          "title": "Scaffold Focus",
-          "html": "<p>This chapter will combine layout persistence, route transitions, metadata, and crawlability into one learning path so navigation and SEO are taught together instead of scattered across the topic.</p>"
+          "title": "How navigation works in App Router",
+          "html": "<p>Navigation in App Router combines server rendering, prefetching, streaming, and client-side transitions. That means a route change is not just 'go fetch another page' - it is a coordinated update between server work, cached route data, and hydrated client boundaries.</p>"
+        },
+        {
+          "type": "mechanics",
+          "title": "From click to updated screen",
+          "steps": [
+            "The user activates a Link or navigation action.",
+            "Next.js can prefetch route data ahead of time when it predicts the navigation is likely.",
+            "On client-side navigation, Next.js requests the next route's React Server Component payload and any missing client assets instead of doing a full document reload.",
+            "Streaming lets the browser show ready parts sooner instead of waiting for the whole route tree.",
+            "Layouts that stay in place preserve their state, while changed route segments update underneath them."
+          ]
+        },
+        {
+          "type": "compare",
+          "title": "Static metadata vs generateMetadata",
+          "items": [
+            {
+              "label": "Static metadata",
+              "html": "<p>Use exported <code>metadata</code> when route metadata is known ahead of time and can be declared directly in the layout or page.</p>"
+            },
+            {
+              "label": "generateMetadata",
+              "html": "<p>Use <code>generateMetadata</code> when metadata depends on route params or fetched data, such as a blog post title or product details.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How metadata resolves through the route tree",
+          "steps": [
+            "Layouts can export shared metadata that applies to all child segments beneath them.",
+            "Pages and deeper route segments can add their own local metadata for the specific route they represent.",
+            "Use generateMetadata when the metadata depends on params, search params, or fetched server data.",
+            "Next.js resolves metadata down the matched route tree, merging and overriding values by segment as it builds the final head output.",
+            "This is route-layer server work, so metadata should be modeled with the route tree instead of being treated like client state."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Metadata and navigation example",
+          "language": "tsx",
+          "code": "import type { Metadata } from 'next';\\nimport Link from 'next/link';\\n\\ntype PageProps = {\\n  params: Promise<{ slug: string }>\\n};\\n\\nexport async function generateMetadata(\\n  { params }: PageProps\\n): Promise<Metadata> {\\n  const { slug } = await params;\\n\\n  return {\\n    title: `Article: ${slug}`,\\n    description: `Deep dive for ${slug}`\\n  };\\n}\\n\\nexport default async function Page({ params }: PageProps) {\\n  const { slug } = await params;\\n\\n  return (\\n    <>\\n      <h1>{slug}</h1>\\n      <Link href='/docs'>Back to docs</Link>\\n    </>\\n  );\\n}",
+          "caption": "Use a static metadata export when values are known ahead of time. Use generateMetadata in a dynamic segment when metadata depends on params or fetched data."
+        },
+        {
+          "type": "trap",
+          "title": "Trap: treating metadata like client state",
+          "tone": "pitfall",
+          "html": "<p>The metadata APIs belong to Server Components and route files. If you think of metadata as something to patch from client state after render, you will fight the framework instead of using the route-level metadata system it already provides.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: diagnose the slow navigation",
+          "prompt": "A route change feels slow even though the destination page is not huge. Where would you look first: layout persistence, prefetch behavior, streaming boundaries, or an oversized client boundary, and why?",
+          "answerHtml": "<p>Check all four in order of architecture. A slow route can come from unnecessary remounts, missed prefetch opportunities, a missing streaming boundary, or too much work being forced into Client Components. App Router navigation is fast when those pieces cooperate; it feels slow when one layer becomes the bottleneck.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 4 recap",
+          "items": [
+            "App Router navigation blends server rendering, prefetching, streaming, and client-side transitions.",
+            "Layouts persist while changed route segments update underneath them.",
+            "Static metadata and generateMetadata are route-level server concerns.",
+            "Navigation and SEO belong in the same architectural conversation because both depend on the route tree."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why do layouts help navigation feel consistent?",
+          "answerHtml": "<p>Layouts let shared UI persist while child route content changes, which preserves state and reduces the sense of a full-page reset during navigation.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When should you use generateMetadata instead of a static metadata export?",
+          "answerHtml": "<p>Use <code>generateMetadata</code> when the metadata depends on params or fetched content, such as route-specific titles, descriptions, or Open Graph data.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What architectural factors can make App Router navigation feel slow?",
+          "answerHtml": "<p>Common causes include poor prefetch coverage, missing streaming boundaries, oversized client bundles, and route structures that remount more of the UI than necessary.</p>"
         }
       ]
     },
