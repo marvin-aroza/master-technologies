@@ -9,7 +9,7 @@
     },
     {
       "label": "Core Q&A",
-      "value": "173"
+      "value": "149"
     },
     {
       "label": "Coverage",
@@ -296,16 +296,6 @@
         },
         {
           "level": "basic",
-          "question": "What is the \"any\" type?",
-          "answerHtml": "<p>It allows any type of value, effectively opting out of type-checking completely for that variable. It ruins TypeScript's benefits and should be strictly avoided in production code.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is the \"unknown\" type?",
-          "answerHtml": "<p>A safer alternative to `any`. You can assign anything to `unknown`, but to operate on it, TS forces you to perform a type check (type narrowing/guard) first to prove you know its structural shape.</p>"
-        },
-        {
-          "level": "basic",
           "question": "What is the \"void\" vs \"never\" type?",
           "answerHtml": "<p>`void` is used for a function that returns nothing (implicitly returns undefined). `never` is used for a function that WILL NEVER return anything (e.g., it always throws an Error, or has an infinite `while(true)` loop).</p>"
         },
@@ -315,34 +305,9 @@
           "answerHtml": "<p>An operator that returns a Union type composed of the names of the keys of an Object type. E.g., `type Keys = keyof { name: string; age: number }` results in `\"name\" | \"age\"`.</p>"
         },
         {
-          "level": "expert",
-          "question": "What are Conditional Types?",
-          "answerHtml": "<p>They select one of two possible types based on a condition expressed as a type relationship test: `T extends U ? X : Y`. Extremely powerful in building dynamic utility types.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is the `infer` keyword?",
-          "answerHtml": "<p>Used strictly within Conditional Types to pause resolution and declare a new, dynamically inferred type variable. Essential for extracting the return type of a function: `T extends (...args: any[]) => infer R ? R : any`.</p>"
-        },
-        {
           "level": "advanced",
           "question": "What does `strict: true` do in tsconfig.json?",
           "answerHtml": "<p>It enables a broad suite of strict type-checking behavior (including `noImplicitAny`, `strictNullChecks`, `strictFunctionTypes`, and `strictBindCallApply`). Highly recommended for all enterprise projects.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is a Discriminated Union?",
-          "answerHtml": "<p>A pattern combining Union types, type guards, and a common shared property (the discriminator) to guarantee exhaustive structural safety (often used in Redux actions or state machines).</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is \"Index Signature\"?",
-          "answerHtml": "<p>Syntax allowing you to type objects with dynamic or unknown keys but a specific value type. `interface Dict { [key: string]: number; }`.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What does `as const` do (Const Assertions)?",
-          "answerHtml": "<p>Normally, TS widens string literals. `const obj = { a: \"hello\" }` implies `a` is a `string`. Suffixing it with `as const` implies `a` is specifically the strict read-only literal type `\"hello\"`. Deeply useful for config arrays and objects.</p>"
         },
         {
           "level": "expert",
@@ -421,56 +386,6 @@
         },
         {
           "level": "expert",
-          "question": "What is a \"Branded Type\" (Nominal Typing)?",
-          "answerHtml": "<p>TS is structural, but branding simulates nominal typing by adding a unique \"tag\" property: `type Email = string & { __brand: \"Email\" }`. This prevents passing a generic string into a function expecting an Email.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How do \"Template Literal Types\" work?",
-          "answerHtml": "<p>They allow building types based on string literals: `type Direction = \"top\" | \"bottom\"; type Padded = `padding-${Direction}`;`. They enable massive type safety for CSS classes, event names, and i18n keys.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Distributive Conditional Types\"?",
-          "answerHtml": "<p>When a conditional type (`T extends U ? X : Y`) is checking a Union type `T`, TS automatically distributes the check over each member of the union. Use `[T] extends [U]` to disable this \"distribution\".</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How do you extract the return type of a function dynamicallly?",
-          "answerHtml": "<p>Using the `ReturnType<T>` utility, which internally uses the `infer` keyword: `T extends (...args: any) => infer R ? R : any`.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Module Augmentation\"?",
-          "answerHtml": "<p>A way to add declarations to an existing module. Useful when using 3rd party libraries that have missing or outdated types: `declare module \"some-lib\" { ... }`.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What are \"Global Type Declarations\" (`.d.ts`)?",
-          "answerHtml": "<p>Files that provide type information for code that already exists in JavaScript but doesn't have types. They are purely for the compiler and emit no JS code.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How does \"Const Type Parameters\" (``) work?",
-          "answerHtml": "<p>Introduced in TS 5.0, it allows generics to be inferred as literal `const` values by default, avoiding the need for the user to append `as const` manually to arguments.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Exhaustiveness Checking\"?",
-          "answerHtml": "<p>A pattern using the `never` type in a `switch` default case to ensure all possible members of a Union type are handled. If a new member is added to the union, TS will alert you that the code is no longer exhaustive.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is the \"Omit\" vs \"Exclude\" utility type?",
-          "answerHtml": "<p>`Exclude<Union, Members>` removes members from a UNION type. `Omit<Object, Keys>` removes specific properties from an OBJECT type.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How do you handle \"Branded Strings\" with Template Literals?",
-          "answerHtml": "<p>By creating a type that combines a string with a unique intersection: `type UserID = `user_${string}` & { __brand: \"UserID\" }`. This ensures any ID used must match the prefix AND be explicitly cast/verified.</p>"
-        },
-        {
-          "level": "expert",
           "question": "What is the purpose of `requestIdleCallback`?",
           "answerHtml": "<p>It allows scheduling background and low-priority work during the browser's idle periods, without affecting latency-critical events like animation and input response. Ideal for non-essential telemetry or pre-fetching.</p>"
         },
@@ -498,41 +413,6 @@
           "level": "expert",
           "question": "Explain \"Top-level await\" and its impact on module loading.",
           "answerHtml": "<p>It allows using `await` at the top level of a module. While convenient, it makes the module (and its importers) wait for the promise to resolve before execution continues, which can delay application startup if used poorly.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Structural\" vs \"Nominal\" typing in depth?",
-          "answerHtml": "<p>Structural (TS): Types are compatible if their members match. Nominal (Java/C#): Types are only compatible if they have the same name/declaration. TS uses structural typing for flexibility, but can simulate nominal typing via branding.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Type Argument Inference\" for functions?",
-          "answerHtml": "<p>The process where TS automatically determines the types for generic parameters based on the values passed to the function. If inference fails, you must provide them explicitly: `f<string>(\"val\")`.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How do you handle \"Recursive Conditional Types\"?",
-          "answerHtml": "<p>By having a conditional type reference itself in its branches. TS 4.1+ allows this as long as there is a clear base case, enabling complex types like `DeepPartial<T>` or `DeepReadonly<T>`.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is the \"NoInfer\" intrinsic type?",
-          "answerHtml": "<p>Introduced in TS 5.4, it prevents a generic type parameter from being a candidate for type inference in a specific location, forcing TS to use the inference from other locations instead.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "Explain \"String Mapping Types\" (Uppercase, Lowercase, etc.).",
-          "answerHtml": "<p>Intrinsic type operators that transform string literal types. Invaluable when used with Template Literal Types to enforce casing conventions across API keys or file paths.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is a \"Global augmentation\" vs \"Module augmentation\"?",
-          "answerHtml": "<p>Module: Adds to a specific exported module. Global: Adds to the global namespace (e.g., adding a new property to the `Window` object or `ProcessEnv`).</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How does \"Discriminated Union\" Exhaustiveness with `default` work?",
-          "answerHtml": "<p>By assigning the `default` case to a variable of type `never`. If a new case is added to the union but not handled in the switch, the assignment `const _exhaustiveCheck: never = member` will cause a compile error.</p>"
         },
         {
           "level": "expert",

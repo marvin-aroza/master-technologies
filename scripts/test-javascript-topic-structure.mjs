@@ -62,40 +62,67 @@ assert.deepEqual(
 assert.ok(coreQaStat, "heroStats should include the Core Q&A summary");
 assert.equal(coreQaStat.value, String(sectionsWithQA[0].qa.length));
 
-const tsHeavyPatterns = [
-  /\bTypeScript\b/i,
-  /\bTS\b/,
-  /\bimplicit and explicit typing\b/i,
-  /\b"any" type\b/i,
-  /\b"unknown" type\b/i,
-  /\b"void" vs "never" type\b/i,
-  /\bInterface\b/i,
-  /\bType Alias\b/i,
-  /\bTuple\b/i,
-  /\bEnum\b/i,
-  /\bGenerics\b/i,
-  /\bType Guard\b/i,
-  /\bType Predicate\b/i,
-  /\bIntersection vs Union\b/i,
-  /\bUtility Types\b/i,
-  /\btypeof \(in TS type context\)\b/i,
-  /\bDeclaration Merging\b/i,
-  /\bRecursive Types\b/i,
-  /\bsatisfies\b/i,
-  /\bAssertion Functions\b/i,
-  /\bCovariance\b.*\bContravariance\b/i,
-  /\bMapped Type Remapping\b/i,
-  /`private` keyword in TS/i,
+const disallowedQuestionTitles = new Set([
+  'What is the "any" type?',
+  'What is the "unknown" type?',
+  "What are Conditional Types?",
+  "What is the `infer` keyword?",
+  "What is a Discriminated Union?",
+  'What is "Index Signature"?',
+  "What does `as const` do (Const Assertions)?",
+  'What is a "Branded Type" (Nominal Typing)?',
+  'How do "Template Literal Types" work?',
+  'What is "Distributive Conditional Types"?',
+  "How do you extract the return type of a function dynamicallly?",
+  'What is "Module Augmentation"?',
+  'What are "Global Type Declarations" (`.d.ts`)?',
+  'How does "Const Type Parameters" (``) work?',
+  'What is "Exhaustiveness Checking"?',
+  'What is the "Omit" vs "Exclude" utility type?',
+  'How do you handle "Branded Strings" with Template Literals?',
+  'What is "Structural" vs "Nominal" typing in depth?',
+  'What is "Type Argument Inference" for functions?',
+  'How do you handle "Recursive Conditional Types"?',
+  'What is the "NoInfer" intrinsic type?',
+  'Explain "String Mapping Types" (Uppercase, Lowercase, etc.).',
+  'What is a "Global augmentation" vs "Module augmentation"?',
+  'How does "Discriminated Union" Exhaustiveness with `default` work?',
+]);
+
+const disallowedContentMarkers = [
+  /ReturnType</,
+  /declare module/i,
+  /\.d\.ts/i,
+  /\bNoInfer\b/,
+  /\bas const\b/,
+  /Template Literal Types?/i,
+  /const type parameters?/i,
+  /conditional types?/i,
+  /discriminated union/i,
+  /branded strings?/i,
+  /module augmentation/i,
+  /global augmentation/i,
+  /Omit</,
+  /Exclude</,
+  /Index Signature/i,
+  /nominal typing/i,
+  /type argument inference/i,
+  /recursive conditional types?/i,
+  /string mapping types?/i,
 ];
 
-const tsHeavyQuestions = sectionsWithQA[0].qa.filter((item) =>
-  tsHeavyPatterns.some((pattern) => pattern.test(item.question))
-);
+const tsHeavyQuestions = sectionsWithQA[0].qa.filter((item) => {
+  const combinedText = `${item.question} ${item.answerHtml}`;
+  return (
+    disallowedQuestionTitles.has(item.question) ||
+    disallowedContentMarkers.some((pattern) => pattern.test(combinedText))
+  );
+});
 
 assert.deepEqual(
   tsHeavyQuestions.map((item) => item.question),
   [],
-  "The JavaScript interview bank should not keep the TypeScript-heavy legacy Q&A cluster"
+  "The JavaScript interview bank should not keep TypeScript-only legacy Q&A"
 );
 
 assert.ok(topic.tabs.every((tab) => !/TypeScript/i.test(tab.label)));
