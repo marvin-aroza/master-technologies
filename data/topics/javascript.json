@@ -1,144 +1,237 @@
 {
   "id": "javascript",
-  "title": "JavaScript Mastery Bible",
-  "subtitle": "ES2025, async patterns & core foundations",
+  "title": "JavaScript Mastery Encyclopedia",
+  "subtitle": "Language foundations, runtime internals, browser APIs, architecture, and interview readiness for 2026.",
+  "heroStats": [
+    {
+      "label": "Chapters",
+      "value": "14"
+    },
+    {
+      "label": "Core Q&A",
+      "value": "194"
+    },
+    {
+      "label": "Coverage",
+      "value": "Language+Platform"
+    },
+    {
+      "label": "Updated",
+      "value": "2026"
+    }
+  ],
   "tabs": [
     {
-      "id": "js-modern",
-      "label": "Modern JS & Web APIs"
+      "id": "origins-ecmascript-runtimes",
+      "label": "Origins & Runtimes"
     },
     {
-      "id": "js-ts",
-      "label": "TypeScript Fundamentals"
+      "id": "values-types-identity",
+      "label": "Values, Types & Identity"
     },
     {
-      "id": "ts-expert",
-      "label": "TypeScript Expert Patterns"
+      "id": "variables-scope-closures",
+      "label": "Scope & Closures"
     },
     {
-      "id": "js-memory",
-      "label": "Memory & Performance Mastery"
+      "id": "functions-invocation-mechanics",
+      "label": "Functions & Invocation"
     },
     {
-      "id": "jcs",
-      "label": "Interview Cheat Sheet (Fast Recall)"
+      "id": "objects-prototypes-classes",
+      "label": "Objects, Prototypes & Classes"
     },
     {
-      "id": "js-iq",
-      "label": "Interview Q&A (194)"
+      "id": "arrays-collections-iteration",
+      "label": "Collections & Iteration"
+    },
+    {
+      "id": "modules-tooling-project-structure",
+      "label": "Modules & Tooling"
+    },
+    {
+      "id": "asynchrony-event-loop",
+      "label": "Asynchrony & Event Loop"
+    },
+    {
+      "id": "browser-apis-dom-platform",
+      "label": "Browser APIs & DOM"
+    },
+    {
+      "id": "error-handling-defensive-coding",
+      "label": "Errors & Defensive Coding"
+    },
+    {
+      "id": "performance-memory",
+      "label": "Performance & Memory"
+    },
+    {
+      "id": "security-reliability",
+      "label": "Security & Reliability"
+    },
+    {
+      "id": "architecture-large-scale-javascript",
+      "label": "Architecture at Scale"
+    },
+    {
+      "id": "mastery-interview-readiness",
+      "label": "Mastery & Interviews"
     }
   ],
   "sections": [
     {
-      "id": "js-modern",
-      "intro": "Harnessing the latest ECMAScript features and modern browser APIs.",
-      "cards": [
+      "id": "origins-ecmascript-runtimes",
+      "intro": "Learn where JavaScript came from, how ECMAScript evolves, and how runtimes host the language.",
+      "blocks": [
         {
-          "title": "ECMAScript 2024+ (ES15)",
-          "contentHtml": "<ul>\n        <li><b>Object.groupBy / Map.groupBy:</b> Natively groups an array of objects into an object (or Map) based on a string returned by a callback. Replaces the need for Lodash `_.groupBy`.</li>\n        <li><b>Promise.withResolvers:</b> Returns an object containing a new Promise and its `resolve` and `reject` functions. Fixes the old awkward pattern of extracting resolvers from the Promise constructor.</li>\n        <li><b>Array.prototype.with:</b> Safe array mutation. `arr.with(index, value)` returns a *new* array with the element at `index` replaced by `value`, leaving the original array intact. Great for React/Redux!</li>\n        <li><b>Temporal API (Draft):</b> The modern replacement for the broken `Date` object, providing full timezone awareness, calendar math, and immutable date objects.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>// Example of Promise.withResolvers\nconst { promise, resolve, reject } = Promise.withResolvers();\n\nsetTimeout(() =&gt; resolve(\"Done!\"), 1000);\npromise.then(console.log); // \"Done!\" after 1s\n</code></pre>\n      </div>"
-        },
-        {
-          "title": "Modern Web APIs",
-          "contentHtml": "<ul>\n        <li><b>IntersectionObserver:</b> Asynchronously observe changes in the intersection of a target element with an ancestor or the viewport. Crucial for lazy-loading images and infinite scrolling without hurting performance via massive scroll event listeners.</li>\n        <li><b>ResizeObserver:</b> Reports changes to the dimensions of an element's content or border box. Provides a performant way to build truly responsive elements independently of the viewport (container queries in JS).</li>\n        <li><b>MutationObserver:</b> Watches the DOM tree for changes (nodes added/removed, attributes modified) and fires a callback. Used internally by frameworks, but vital for writing extensions or observing 3rd party injects.</li>\n        <li><b>Web Workers:</b> Runs scripts in background threads. The worker thread can perform computations without interfering with the user interface (main thread). Cannot access the DOM directly.</li>\n      </ul>"
-        },
-        {
-          "title": "JS Design Patterns",
-          "contentHtml": "<ul>\n        <li><b>Singleton:</b> Ensures a class has only one single instance and provides a global access point to it (e.g., establishing a single database connection or global store).</li>\n        <li><b>Observer / Pub-Sub:</b> A subject maintains a list of dependents (observers) and notifies them automatically of state changes (e.g., Redux, RxJS Subjects, DOM Event listeners).</li>\n        <li><b>Factory:</b> A function or method that creates objects without specifying the exact class of object that will be created. Simplifies complex object initialization.</li>\n        <li><b>Proxy:</b> The modern ES6 `Proxy` object lets you wrap an object and intercept fundamental operations (reading/writing properties). Used extensively by Vue 3 and Zustand to track reactive state dependencies.</li>\n      </ul>"
+          "type": "richText",
+          "title": "Chapter focus",
+          "html": "<p>This opening chapter sets the foundation for everything else by separating the language from the runtime that executes it.</p><ul><li>JavaScript vs ECMAScript vs the web platform</li><li>Browser runtimes, Node.js, and edge execution environments</li><li>How source files are loaded, parsed, and started</li></ul>"
         }
       ]
     },
     {
-      "id": "js-ts",
-      "intro": "Extending JavaScript with static typing to build robust, scalable applications.",
-      "cards": [
+      "id": "values-types-identity",
+      "intro": "Build a precise mental model for values, coercion, equality, and how identity works in JavaScript.",
+      "blocks": [
         {
-          "title": "Types vs Interfaces",
-          "contentHtml": "<p>Both are used to define custom structures in TypeScript, but they have subtle differences.</p>\n      <ul>\n        <li><b>Interface:</b> Strictly for object shapes. Can be merged via \"Declaration Merging\" (if you declare the same interface twice, TS combines their properties). Ideal for public API definitions.</li>\n        <li><b>Type Aliases (`type`):</b> More flexible. Can define primitives, unions, intersections, and mapped types. Cannot be declaration-merged. Ideal for internal component definitions and complex utility types.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>// Interface (Object Shape)\ninterface User { id: number; name: string; }\n\n// Type (Union)\ntype Status = \"idle\" | \"loading\" | \"success\" | \"error\";\n\n// Intersection (Combining shapes)\ntype AdminUser = User &amp; { role: \"admin\" | \"superadmin\" };\n</code></pre>\n      </div>"
-        },
-        {
-          "title": "Generics & Utility Types",
-          "contentHtml": "<p>Generics allow you to write reusable code that works across multiple types.</p>\n      <ul>\n        <li><b>`T` as an Argument:&lt;/b&gt; Think of a generic `<t>` like a type variable passed into a function.</t></b></li><b>\n        <li><b>Partial&lt;T&gt;:</b> Makes all properties in T optional. Useful for update/patch payloads.</li>\n        <li><b>Omit&lt;T, K&gt;:</b> Creates a type by removing specific keys `K` from `T`.</li>\n        <li><b>Record&lt;K, T&gt;:</b> Creates an object type where keys are of type `K` and values are of type `T`.</li>\n      </b></ul><b>\n      <div class=\"code-block\">\n<pre><code>// Generic Function: infers type T from the input array\nfunction getFirstItem&lt;T&gt;(items: T[]): T | undefined {\n  return items[0];\n}\n\nconst num = getFirstItem([1, 2, 3]); // Hover: num is number\nconst str = getFirstItem([\"a\", \"b\"]); // Hover: str is string\n</code></pre>\n      </div>\n    </b>"
+          "type": "richText",
+          "title": "Chapter focus",
+          "html": "<p>This chapter makes the language feel predictable by explaining how JavaScript represents values and compares them.</p><ul><li>Primitive values, objects, and reference semantics</li><li>Truthiness, falsiness, coercion, and equality rules</li><li>Mutability, copying, and identity pitfalls</li></ul>"
         }
       ]
     },
     {
-      "id": "ts-expert",
-      "intro": "Advanced type gymnastics, branded types, and sophisticated generic architectures for 100% type safety.",
-      "cards": [
+      "id": "variables-scope-closures",
+      "intro": "Understand lexical scope, declaration behavior, and why closures power real JavaScript architecture.",
+      "blocks": [
         {
-          "title": "Type Gymnastics: Recursion",
-          "contentHtml": "<p>Using recursive conditional types to create deep, complex object transformations:</p>\n      <pre><code>// Deep Readonly Pattern\ntype DeepReadonly&lt;T&gt; = {\n  readonly [P in keyof T]: T[P] extends object \n    ? DeepReadonly&lt;T[P]&gt; \n    : T[P];\n};\n\n// JSON Safety Pattern\ntype JSONValue =\n  | string | number | boolean | null\n  | { [key: string]: JSONValue }\n  | JSONValue[];</code></pre>"
-        },
-        {
-          "title": "Branded Types (Nominal Simulation)",
-          "contentHtml": "<p>TS is structural, but branding ensures data integrity for IDs, Emails, and sensitive primitives:</p>\n      <pre><code>type Brand&lt;K, T&gt; = K &amp; { __brand: T };\n\ntype UserID = Brand&lt;string, \"UserID\"&gt;;\ntype OrderID = Brand&lt;string, \"OrderID\"&gt;;\n\nconst u: UserID = \"123\" as UserID;\nconst o: OrderID = u; // Error: OrderID !== UserID</code></pre>"
-        },
-        {
-          "title": "Mapped Type Remapping",
-          "contentHtml": "<p>Using the <code>as</code> clause to dynamically rename keys based on templates:</p>\n      <pre><code>interface User {\n  id: number;\n  name: string;\n}\n\ntype Getters&lt;T&gt; = {\n  [K in keyof T as `get${Capitalize&lt;string &amp; K&gt;}`]: () =&gt; T[K]\n};\n\ntype UserGetters = Getters&lt;User&gt;;\n// { getName: () =&gt; string; getId: () =&gt; number; }</code></pre>"
-        },
-        {
-          "title": "Satisfies vs Explicit Annotations",
-          "contentHtml": "<p>The <code>satisfies</code> operator (TS 4.9+) allows validation WITHOUT widening inferred types:</p>\n      <pre><code>type Palette = Record&lt;string, string | number[]&gt;;\n\nconst colors = {\n  primary: \"#00f\",\n  secondary: [0, 0, 255]\n} satisfies Palette;\n\n// colors.primary remains \"#00f\" (literal)\n// NOT widened to string | number[]</code></pre>"
+          "type": "richText",
+          "title": "Chapter focus",
+          "html": "<p>Scope is the reason JavaScript modules, event handlers, and asynchronous callbacks behave the way they do.</p><ul><li>var, let, const, and the temporal dead zone</li><li>Lexical environments and scope chain lookup</li><li>Closures for private state, callbacks, and module design</li></ul>"
         }
       ]
     },
     {
-      "id": "js-memory",
-      "intro": "Architecture of the V8 engine, Garbage Collection internals, and high-performance threading.",
-      "cards": [
+      "id": "functions-invocation-mechanics",
+      "intro": "Go from basic functions to call-site rules, higher-order design, and invocation mechanics that interviewers probe deeply.",
+      "blocks": [
         {
-          "title": "V8 Engine Architecture",
-          "contentHtml": "<p>Modern JS engines like V8 (Chrome/Node) use a sophisticated pipeline to achieve near-native speeds:</p>\n      <ul>\n        <li><strong>Ignition:</strong> A baseline bytecode interpreter that executes code quickly with minimal overhead.</li>\n        <li><strong>TurboFan:</strong> The optimizing JIT compiler. It uses profiling data from Ignition to compile \"Hot\" functions into highly optimized machine code.</li>\n        <li><strong>Speculative Optimization:</strong> V8 assumes types based on previous execution. If a function always receives integers, it stays optimized; if a string is suddenly passed, it triggers a \"Deoptimization\" (bailout).</li>\n      </ul>"
-        },
-        {
-          "title": "Garbage Collection Internals",
-          "contentHtml": "<p>V8 uses a <strong>Generational GC</strong> strategy based on the \"Infant Mortality\" hypothesis (most objects die young):</p>\n      <ul>\n        <li><strong>Young Generation (New Space):</strong> Small (1-64MB), fast area for new objects. Uses \"Scavenge\" algorithm with parallel processing.</li>\n        <li><strong>Old Generation (Old Space):</strong> Where long-lived objects are moved. Uses \"Mark-Sweep-Compact\" which is more thorough but slower.</li>\n        <li><strong>Orinoco:</strong> The modern parallel/incremental/concurrent engine that performs GC work on background threads to minimize main-thread \"Stop-the-World\" pauses.</li>\n      </ul>"
-        },
-        {
-          "title": "Memory Management Tools",
-          "contentHtml": "<p>Strategies for handling large data sets without memory leaks:</p>\n      <pre><code>// WeakRef: Reference without preventing GC\nlet heavyObj = { data: new Array(1000000) };\nconst ref = new WeakRef(heavyObj);\n\n// FinalizationRegistry: Cleanup callback\nconst registry = new FinalizationRegistry((heldValue) =&gt; {\n  console.log(`${heldValue} was collected!`);\n});\nregistry.register(heavyObj, \"Big Data\");\n\nheavyObj = null; // Eligible for GC</code></pre>"
-        },
-        {
-          "title": "Advanced Threading: Workers",
-          "contentHtml": "<p>Moving heavy computation off the main thread to ensure 60fps responsiveness:</p>\n      <ul>\n        <li><strong>Web Workers:</strong> Truly parallel execution using separate OS threads. Communicates via structured cloning.</li>\n        <li><strong>SharedArrayBuffer:</strong> Allows memory sharing between threads. Must be used with <strong>Atomics</strong> to prevent race conditions.</li>\n        <li><strong>SharedWorkers:</strong> Accessible from multiple windows/tabs from the same origin, ideal for coordinating state across tabs.</li>\n      </ul>"
+          "type": "richText",
+          "title": "Chapter focus",
+          "html": "<p>Functions are the core abstraction in JavaScript, so this chapter focuses on how they are created, invoked, and composed.</p><ul><li>Declarations, expressions, arrows, and higher-order functions</li><li>call, apply, bind, partial application, and currying</li><li>How call-sites determine this and function behavior</li></ul>"
         }
       ]
     },
     {
-      "id": "jcs",
-      "intro": "The JavaScript 'Cheat Sheet' for clearing your interview. Master these high-density recall points and you are in the top 1% of candidates globally.",
-      "cards": [
+      "id": "objects-prototypes-classes",
+      "intro": "Trace how objects inherit behavior, how property lookup really works, and when classes help or hide complexity.",
+      "blocks": [
         {
-          "title": "V8 Engine Mastery",
-          "contentHtml": "<ul>\n    <li><b>Ignition (Interpreter):</b> Generates bytecode for instant execution.</li>\n    <li><b>TurboFan (JIT Compiler):</b> Compiles 'Hot' functions to machine code. It uses 'Speculative Optimization' based on types.</li>\n    <li><b>Deoptimization:</b> If a function's argument type changes suddenly, V8 'bails out' and reverts to the interpreter (huge perf hit).</li>\n    <li><b>Hidden Classes:</b> V8 optimizes object property access by sharing static 'hidden classes' between identical objects. Avoid changing property order to benefit.</li>\n  </ul>"
-        },
-        {
-          "title": "Garbage Collection Internals",
-          "contentHtml": "<ul>\n    <li><b>Generational Hypotheses:</b> Most objects die young. V8 uses <b>New Space</b> (Scavenge) and <b>Old Space</b> (Mark-Sweep).</li>\n    <li><b>Scavenge:</b> Moving GC for the Young Generation. Fast but requires double the memory.</li>\n    <li><b>Mark-Sweep-Compact:</b> For long-lived objects. Compacts memory to prevent fragmentation.</li>\n    <li><b>Orinoco:</b> The modern concurrent GC engine that runs on background threads to minimize 'Stop-the-World' pauses.</li>\n  </ul>"
-        },
-        {
-          "title": "Event Loop & Priority Tasks",
-          "contentHtml": "<ul>\n    <li><b>Microtasks (P1):</b> <code>Promise.then</code>, <code>queueMicrotask</code>, <code>MutationObserver</code>. Emptied fully before macrotasks.</li>\n    <li><b>Macrotasks (P2):</b> <code>setTimeout</code>, <code>setInterval</code>, <code>setImmediate</code> (Node), I/O.</li>\n    <li><b>Node.js Specific:</b> <code>process.nextTick</code> has higher priority than Promise microtasks. The 'Timers' phase is distinct from 'Poll'.</li>\n    <li><b>Expert Point:</b> JS is single-threaded, but the libuv (Node) or browser APIs handle concurrency via OS threads.</li>\n  </ul>"
-        },
-        {
-          "title": "Closures & Memory Leaks",
-          "contentHtml": "<ul>\n    <li><b>The Closure Trap:</b> Closures retain the <i>entire</i> lexical scope, not just the used variables. This can prevent garbage collection of large objects.</li>\n    <li><b>Detached DOM:</b> Referencing a DOM element in JS prevents it from being GC'd even if removed from the tree.</li>\n    <li><b>Fixes:</b> Use <code>WeakMap</code> for caches, <code>WeakRef</code> for non-essential references, and always <code>clearTimeout</code>.</li>\n  </ul>"
-        },
-        {
-          "title": "State of JS (ES2024 - 2026)",
-          "contentHtml": "<ul>\n    <li><b>Temporal API:</b> Immutable, timezone-aware dates. No more 0-indexed months or leap-year bugs.</li>\n    <li><b>Promise.withResolvers:</b> Eliminates the 'extraction' boilerplate for manual promise control.</li>\n    <li><b>Type Annotations (Proposal):</b> 'Type Stripping' where native engines ignore TS-like syntax (Stage 3).</li>\n    <li><b>SharedArrayBuffer + Atomics:</b> For high-performance synchronization between Web Workers.</li>\n  </ul>"
-        },
-        {
-          "title": "The Prototype Chain (Recall)",
-          "contentHtml": "<ul>\n    <li><b>Chain:</b> Lookup order: Instance -> Prototype -> Object.prototype -> null.</li>\n    <li><b>Object.create(null):</b> Creates an object with NO prototype (no <code>toString</code>, <code>hasOwnProperty</code>). Safe for dictionaries.</li>\n    <li><b>Shadowing:</b> Adding a property to an instance hides the prototype's property; removing it reveals the prototype one back.</li>\n  </ul>"
+          "type": "richText",
+          "title": "Chapter focus",
+          "html": "<p>This chapter turns object-oriented JavaScript into a concrete runtime model instead of a syntax mystery.</p><ul><li>Object literals, descriptors, and property ownership</li><li>Prototype chains, constructor functions, and new</li><li>Classes, private fields, and composition vs inheritance</li></ul>"
         }
       ]
     },
     {
-      "id": "js-iq",
-      "intro": "95 core questions — basic to very advanced. Click any question to reveal the answer.",
-      "cards": [],
+      "id": "arrays-collections-iteration",
+      "intro": "Choose the right collection type, reason about iteration, and understand the tradeoffs behind common data operations.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Chapter focus",
+          "html": "<p>Data structure choice changes readability, performance, and correctness, so this chapter teaches the tradeoffs explicitly.</p><ul><li>Arrays and collection-oriented array methods</li><li>Map, Set, WeakMap, WeakSet, and when they matter</li><li>Iterables, iterators, generators, and for...of semantics</li></ul>"
+        }
+      ]
+    },
+    {
+      "id": "modules-tooling-project-structure",
+      "intro": "See how JavaScript is organized in modern projects, from import/export syntax to bundlers and code-splitting.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Chapter focus",
+          "html": "<p>Modern JavaScript is shaped as much by module systems and tooling as by syntax, so this chapter maps that ecosystem clearly.</p><ul><li>ES modules, CommonJS, and interop boundaries</li><li>Resolution, bundling, tree-shaking, and lazy loading</li><li>How mature JavaScript projects structure packages and source code</li></ul>"
+        }
+      ]
+    },
+    {
+      "id": "asynchrony-event-loop",
+      "intro": "Master promises, async functions, microtasks, timers, and the event loop behavior that explains real-world timing bugs.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Chapter focus",
+          "html": "<p>This chapter bridges the gap between writing async code and understanding how the runtime actually schedules it.</p><ul><li>Promises, async/await, and sequencing async work</li><li>Microtasks vs tasks, timers, and rendering timing</li><li>Cancellation, retries, race conditions, and concurrency reasoning</li></ul>"
+        }
+      ]
+    },
+    {
+      "id": "browser-apis-dom-platform",
+      "intro": "Connect the language to the browser platform: DOM, events, storage, fetch, workers, streams, and rendering lifecycle.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Chapter focus",
+          "html": "<p>JavaScript only becomes a product tool when it interacts with the platform, so this chapter focuses on the browser-facing layer.</p><ul><li>DOM querying, updates, and event propagation</li><li>Fetch, storage, history, observers, and media APIs</li><li>Workers, streams, and browser rendering coordination</li></ul>"
+        }
+      ]
+    },
+    {
+      "id": "error-handling-defensive-coding",
+      "intro": "Design safer code paths with clear failure handling, validation strategy, and defensive boundaries.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Chapter focus",
+          "html": "<p>Reliable JavaScript depends on how carefully you model failure, not just how elegantly the happy path reads.</p><ul><li>Throwing, catching, and modeling operational vs programmer errors</li><li>Input validation, boundary checks, and resilient APIs</li><li>Debugging flow, stack traces, and failure-first thinking</li></ul>"
+        }
+      ]
+    },
+    {
+      "id": "performance-memory",
+      "intro": "Study the engine, the garbage collector, and the performance costs that show up in real JavaScript applications.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Chapter focus",
+          "html": "<p>This chapter turns performance advice into concrete reasoning about allocations, scheduling, and engine behavior.</p><ul><li>Execution costs, hidden classes, inline caches, and deopts</li><li>Garbage collection, memory leaks, and cleanup patterns</li><li>Profiling strategies for browser and Node.js workloads</li></ul>"
+        }
+      ]
+    },
+    {
+      "id": "security-reliability",
+      "intro": "Learn the security mindset JavaScript developers need when code handles user input, browser APIs, and shared state.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Chapter focus",
+          "html": "<p>Security is part of JavaScript mastery because runtime flexibility can quickly become risk when data crosses trust boundaries.</p><ul><li>XSS, unsafe DOM insertion, and sanitization boundaries</li><li>Prototype pollution, secrets handling, and supply-chain awareness</li><li>Reliability patterns for defensive, production-grade code</li></ul>"
+        }
+      ]
+    },
+    {
+      "id": "architecture-large-scale-javascript",
+      "intro": "Move from isolated language features to designing large JavaScript systems that stay understandable over time.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Chapter focus",
+          "html": "<p>This chapter connects low-level JavaScript knowledge to the architecture choices that make real products maintainable.</p><ul><li>State modeling, side-effect isolation, and module boundaries</li><li>Event-driven design, composition, and maintainable abstractions</li><li>Testing strategy and refactoring patterns for growth</li></ul>"
+        }
+      ]
+    },
+    {
+      "id": "mastery-interview-readiness",
+      "intro": "Use this capstone chapter for rapid recall, interview depth, debugging drills, and synthesis across the full roadmap.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Chapter focus",
+          "html": "<p>The final chapter is where the roadmap turns into interview fluency and fast revision without losing conceptual depth.</p><ul><li>Explain internals clearly instead of memorizing slogans</li><li>Practice debugging, edge cases, and architecture tradeoffs</li><li>Use the retained Q&A bank as a revision and interview drill layer</li></ul>"
+        }
+      ],
       "qa": [
         {
           "level": "basic",
