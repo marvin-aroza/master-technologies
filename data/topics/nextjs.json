@@ -1,654 +1,1439 @@
 {
   "id": "nextjs",
-  "title": "Next.js Mastery Bible",
-  "subtitle": "App Router, RSC, server actions & v16",
+  "title": "Next.js Mastery Encyclopedia",
+  "subtitle": "App Router, caching, streaming, runtime boundaries, and full-stack production architecture",
+  "heroStats": [
+    { "label": "Chapters", "value": "14" },
+    { "label": "Interview", "value": "Capstone Ready" },
+    { "label": "Coverage", "value": "App Router+Full Stack" },
+    { "label": "Updated", "value": "2026" }
+  ],
   "tabs": [
-    {
-      "id": "n-core",
-      "label": "Next.js Core & App Router"
-    },
-    {
-      "id": "n-render",
-      "label": "Rendering Strategies — Complete Guide"
-    },
-    {
-      "id": "n-app",
-      "label": "App Router Deep Dive"
-    },
-    {
-      "id": "next-app-router",
-      "label": "App Router Mastery"
-    },
-    {
-      "id": "n-data",
-      "label": "Data Fetching & Cache"
-    },
-    {
-      "id": "n-mid-auth",
-      "label": "Middleware & Authentication"
-    },
-    {
-      "id": "next-auth-db",
-      "label": "Auth & Database Integration"
-    },
-    {
-      "id": "n-deploy",
-      "label": "Server Actions & Deploy"
-    },
-    {
-      "id": "n-advanced",
-      "label": "Parallel Routes &amp; Intercepting Routes"
-    },
-    {
-      "id": "next-optimization",
-      "label": "Optimization & Scale"
-    },
-    {
-      "id": "n-16",
-      "label": "Next.js 16 — Major Features"
-    },
-    {
-      "id": "ncs",
-      "label": "Interview Cheat Sheet (Fast Recall)"
-    },
-    {
-      "id": "iq-next",
-      "label": "Next.js Q&A (53)"
-    }
+    { "id": "origins-philosophy-runtime-model", "label": "Origins & Runtime Model" },
+    { "id": "app-router-file-system-architecture", "label": "App Router Architecture" },
+    { "id": "server-client-component-boundaries", "label": "Server vs Client Boundaries" },
+    { "id": "navigation-layout-persistence-metadata", "label": "Navigation & Metadata" },
+    { "id": "data-fetching-server-data-ownership", "label": "Data Fetching & Ownership" },
+    { "id": "cache-components-use-cache-revalidation", "label": "Cache & Revalidation" },
+    { "id": "rendering-streaming-partial-prerendering", "label": "Rendering & PPR" },
+    { "id": "server-functions-forms-mutations", "label": "Server Functions & Mutations" },
+    { "id": "request-lifecycle-proxy-cookies-headers-auth", "label": "Request Lifecycle & Auth" },
+    { "id": "apis-databases-full-stack-integration", "label": "APIs & Full-Stack" },
+    { "id": "performance-assets-build-tooling", "label": "Performance & Tooling" },
+    { "id": "security-reliability-production-hardening", "label": "Security & Hardening" },
+    { "id": "deployment-runtimes-self-hosting-scale", "label": "Deployment & Scale" },
+    { "id": "migration-architecture-interview-mastery", "label": "Migration & Interviews" }
   ],
   "sections": [
     {
-      "id": "n-core",
-      "intro": "Next.js 16.2 is the latest (March 2026). It's the recommended way to build production React apps with Server Components, SSR, and full-stack features.",
-      "cards": [
+      "id": "origins-philosophy-runtime-model",
+      "intro": "Start here if you want the mental model that makes the rest of Next.js click: why the framework exists, how it extends React, and how work is split across build time, request time, server runtime, client runtime, and CDN caching.",
+      "blocks": [
         {
-          "title": "App Router — Complete File Conventions",
-          "contentHtml": "<pre><code>app/\n├── layout.tsx              <span class=\"cm\"># Root layout (required). Wraps ALL pages.</span>\n├── page.tsx                <span class=\"cm\"># Home page → /</span>\n├── loading.tsx             <span class=\"cm\"># Auto Suspense boundary for this route</span>\n├── error.tsx               <span class=\"cm\"># Error boundary for this route</span>\n├── not-found.tsx           <span class=\"cm\"># 404 page for notFound() calls</span>\n├── global-error.tsx        <span class=\"cm\"># Root-level error boundary</span>\n├── template.tsx            <span class=\"cm\"># Like layout but re-mounts on navigation</span>\n│\n├── about/page.tsx          <span class=\"cm\"># → /about</span>\n├── blog/\n│   ├── page.tsx            <span class=\"cm\"># → /blog</span>\n│   └── [slug]/page.tsx     <span class=\"cm\"># → /blog/:slug (dynamic)</span>\n├── shop/[...slug]/page.tsx <span class=\"cm\"># → /shop/a/b/c (catch-all)</span>\n├── (marketing)/            <span class=\"cm\"># Route group — no URL impact, shares layout</span>\n│   ├── layout.tsx\n│   ├── about/page.tsx\n│   └── contact/page.tsx\n├── @modal/                 <span class=\"cm\"># Parallel route (named slot)</span>\n│   └── login/page.tsx\n│\n└── api/\n    └── users/\n        └── route.ts        <span class=\"cm\"># API route: GET/POST/PUT/DELETE /api/users</span></code></pre>\n\n<h3>Special Files — Rendering Order</h3>\n<p>Next.js wraps your page in these layers (outermost to innermost):</p>\n<pre><code>&lt;Layout&gt;           <span class=\"cm\"># layout.tsx — persists across navigation</span>\n  &lt;Template&gt;       <span class=\"cm\"># template.tsx — re-mounts on navigation</span>\n    &lt;ErrorBoundary&gt; <span class=\"cm\"># error.tsx — catches errors</span>\n      &lt;Suspense&gt;    <span class=\"cm\"># loading.tsx — shows while loading</span>\n        &lt;Page /&gt;    <span class=\"cm\"># page.tsx — your content</span>\n      &lt;/Suspense&gt;\n    &lt;/ErrorBoundary&gt;\n  &lt;/Template&gt;\n&lt;/Layout&gt;</code></pre>"
+          "type": "richText",
+          "title": "Next.js is a React framework, not a rendering mode",
+          "html": "<p>Next.js is not just SSR bolted onto React. It is a framework that coordinates routing, rendering, data boundaries, caching, asset optimization, and deployment around React's component model.</p><p>That matters because most real app decisions in Next.js are environment-boundary decisions: what should happen at build time, what should happen per request, what can stay on the server, and what must ship to the browser.</p>"
         },
         {
-          "title": "Layouts — Persistent, Nested UI",
-          "contentHtml": "<pre><code><span class=\"cm\">// app/layout.tsx — Root layout (REQUIRED)</span>\n<span class=\"kw\">import</span> { Metadata } <span class=\"kw\">from</span> <span class=\"st\">'next'</span>;\n<span class=\"kw\">export const</span> metadata: Metadata = {\n  title: { default: <span class=\"st\">'My App'</span>, template: <span class=\"st\">'%s | My App'</span> },\n  description: <span class=\"st\">'The best app'</span>,\n};\n\n<span class=\"kw\">export default function</span> <span class=\"fn\">RootLayout</span>({ children }: { children: React.ReactNode }) {\n  <span class=\"kw\">return</span> (\n    &lt;html lang=\"en\"&gt;\n      &lt;body&gt;\n        &lt;Providers&gt;\n          &lt;Navbar /&gt;\n          &lt;main&gt;{children}&lt;/main&gt;\n          &lt;Footer /&gt;\n        &lt;/Providers&gt;\n      &lt;/body&gt;\n    &lt;/html&gt;\n  );\n}\n\n<span class=\"cm\">// app/dashboard/layout.tsx — Nested layout</span>\n<span class=\"kw\">export default function</span> <span class=\"fn\">DashboardLayout</span>({ children }) {\n  <span class=\"kw\">return</span> (\n    &lt;div className=\"flex\"&gt;\n      &lt;Sidebar /&gt;          <span class=\"cm\">{/* persists as user navigates dashboard pages */}</span>\n      &lt;section&gt;{children}&lt;/section&gt;\n    &lt;/div&gt;\n  );\n}</code></pre>\n<div class=\"deep\">Layouts <strong>don't re-render</strong> when navigating between pages that share the same layout. State inside layouts (like sidebar open/close) persists. This is fundamentally different from React Router, where everything re-renders on navigation.</div>"
+          "type": "compare",
+          "title": "React library vs Next.js framework",
+          "items": [
+            {
+              "label": "React alone",
+              "html": "<p>You bring your own routing, data-fetching conventions, asset pipeline, rendering model, and deployment architecture.</p>"
+            },
+            {
+              "label": "Next.js",
+              "html": "<p>The framework gives you a file-system router, server and client boundaries, rendering and caching primitives, server mutation flows, and production-oriented defaults.</p>"
+            }
+          ]
         },
         {
-          "title": "Dynamic Routes, Params & Search Params",
-          "contentHtml": "<pre><code><span class=\"cm\">// app/blog/[slug]/page.tsx — Dynamic segment</span>\n<span class=\"kw\">export default async function</span> <span class=\"fn\">BlogPost</span>({\n  params,\n}: {\n  params: Promise&lt;{ slug: <span class=\"kw\">string</span> }&gt;;\n}) {\n  <span class=\"kw\">const</span> { slug } = <span class=\"kw\">await</span> params; <span class=\"cm\">// params is async in Next.js 15+!</span>\n  <span class=\"kw\">const</span> post = <span class=\"kw\">await</span> getPost(slug);\n  <span class=\"kw\">if</span> (!post) notFound(); <span class=\"cm\">// renders not-found.tsx</span>\n  <span class=\"kw\">return</span> &lt;article&gt;&lt;h1&gt;{post.title}&lt;/h1&gt;&lt;/article&gt;;\n}\n\n<span class=\"cm\">// Static generation for dynamic routes</span>\n<span class=\"kw\">export async function</span> <span class=\"fn\">generateStaticParams</span>() {\n  <span class=\"kw\">const</span> posts = <span class=\"kw\">await</span> getAllPosts();\n  <span class=\"kw\">return</span> posts.map(p =&gt; ({ slug: p.slug }));\n}\n\n<span class=\"cm\">// Search params (query string)</span>\n<span class=\"kw\">export default async function</span> <span class=\"fn\">SearchPage</span>({\n  searchParams,\n}: {\n  searchParams: Promise&lt;{ q?: <span class=\"kw\">string</span>; page?: <span class=\"kw\">string</span> }&gt;;\n}) {\n  <span class=\"kw\">const</span> { q, page } = <span class=\"kw\">await</span> searchParams;\n  <span class=\"kw\">const</span> results = <span class=\"kw\">await</span> search(q, Number(page) || <span class=\"nu\">1</span>);\n  <span class=\"kw\">return</span> &lt;ResultsList results={results} /&gt;;\n}\n\n<span class=\"cm\">// API Route Handlers</span>\n<span class=\"cm\">// app/api/users/[id]/route.ts</span>\n<span class=\"kw\">export async function</span> <span class=\"fn\">GET</span>(request: Request, { params }: { params: Promise&lt;{ id: <span class=\"kw\">string</span> }&gt; }) {\n  <span class=\"kw\">const</span> { id } = <span class=\"kw\">await</span> params;\n  <span class=\"kw\">const</span> user = <span class=\"kw\">await</span> db.findUser(id);\n  <span class=\"kw\">if</span> (!user) <span class=\"kw\">return</span> Response.json({ error: <span class=\"st\">'Not found'</span> }, { status: <span class=\"nu\">404</span> });\n  <span class=\"kw\">return</span> Response.json(user);\n}\n\n<span class=\"kw\">export async function</span> <span class=\"fn\">DELETE</span>(request: Request, { params }) {\n  <span class=\"kw\">const</span> { id } = <span class=\"kw\">await</span> params;\n  <span class=\"kw\">await</span> db.deleteUser(id);\n  <span class=\"kw\">return new</span> Response(<span class=\"kw\">null</span>, { status: <span class=\"nu\">204</span> });\n}</code></pre>"
+          "type": "mechanics",
+          "title": "Build time vs request time vs browser time",
+          "steps": [
+            "Build time prepares static assets, prerendered output, and anything the framework can compute ahead of traffic.",
+            "Request time handles work that depends on the incoming request, cookies, headers, dynamic data, or other per-request signals.",
+            "Server runtime work produces HTML and React Server Component payloads before the browser can interact with the route.",
+            "Browser time begins after the response arrives and the client hydrates any interactive islands that require client JavaScript.",
+            "Caching sits across those phases and decides which work can be reused instead of repeated."
+          ]
+        },
+        {
+          "type": "richText",
+          "title": "What changed in Next.js 16",
+          "html": "<p>The modern baseline is App Router-first. The framework now teaches explicit caching through Cache Components and <code>use cache</code>, leans harder into server-first architecture, and has renamed <code>middleware</code> to <code>proxy</code> in the official file conventions.</p><p>The key learning shift is architectural: modern Next.js is about choosing execution boundaries and cache boundaries deliberately, not just picking between SSR and SSG labels.</p>"
+        },
+        {
+          "type": "trap",
+          "title": "Trap: treating Next.js as only SSR",
+          "tone": "pitfall",
+          "html": "<p>If you think Next.js is just 'React plus SSR', you will miss the real tradeoffs. The framework is also about route structure, persistent layouts, server-only code, mutation flows, cache invalidation, runtime choice, and deployment behavior.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: choose the right execution boundary",
+          "prompt": "A product list should be fast for everyone, a cart should reflect the current user, and an admin chart should only be visible to authenticated staff. Which parts should stay static, which should stay request-bound, and which should stay client-only?",
+          "answerHtml": "<p>The product list is a good candidate for static or cached server work. The cart is user-specific request-time work. The admin chart still starts with server-side access checks, but the interactive charting UI may need a Client Component boundary if it relies on browser-only state or events.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 1 recap",
+          "items": [
+            "Next.js is a React framework with opinions about routing, rendering, data, caching, and deployment.",
+            "The core mastery question is always: what runs where, and when?",
+            "Build time, request time, server runtime, browser runtime, and caches are different layers, not one blur.",
+            "Modern Next.js should be learned App Router-first."
+          ]
         }
-      ]
-    },
-    {
-      "id": "n-render",
-      "intro": "Next.js has the most flexible rendering model of any framework. Understanding when pages are static vs dynamic is critical.",
-      "cards": [
-        {
-          "title": "Rendering Strategies — Complete Guide",
-          "contentHtml": "<h3>1. Static Rendering (SSG) — Build Time</h3>\n<p>Pages are rendered at build time and cached. Served directly from CDN. <strong>Fastest possible delivery.</strong> Default for pages without dynamic data.</p>\n\n<h3>2. Dynamic Rendering (SSR) — Request Time</h3>\n<p>Pages are rendered on the server for each request. Used automatically when you access: <code>cookies()</code>, <code>headers()</code>, <code>searchParams</code>, or uncached fetch calls.</p>\n\n<h3>3. Incremental Static Regeneration (ISR)</h3>\n<p>Static pages that revalidate in the background after a time interval. Best for content that changes periodically.</p>\n<pre><code><span class=\"cm\">// Time-based revalidation</span>\n<span class=\"kw\">const</span> data = <span class=\"kw\">await</span> fetch(url, { next: { revalidate: <span class=\"nu\">3600</span> } }); <span class=\"cm\">// every hour</span>\n\n<span class=\"cm\">// On-demand revalidation (in a Server Action)</span>\nrevalidatePath(<span class=\"st\">'/blog'</span>);          <span class=\"cm\">// revalidate all posts</span>\nrevalidateTag(<span class=\"st\">'blog-posts'</span>);      <span class=\"cm\">// revalidate by cache tag</span></code></pre>\n\n<h3>4. Streaming SSR</h3>\n<p>Send HTML in chunks as it becomes ready. The user sees content progressively instead of waiting for everything. Enabled automatically with <code>loading.tsx</code> and Suspense boundaries.</p>\n\n<h3>5. Partial Prerendering (PPR) — Next.js 16</h3>\n<p>Combines static and dynamic in the same page. Static shell is prerendered and served from CDN. Dynamic parts are wrapped in Suspense and streamed when ready.</p>\n<pre><code><span class=\"cm\">// The layout, header, and product grid are STATIC (instant)</span>\n<span class=\"cm\">// The user's cart and recommendations are DYNAMIC (streamed)</span>\n<span class=\"kw\">export default async function</span> <span class=\"fn\">ProductPage</span>() {\n  <span class=\"kw\">return</span> (\n    &lt;div&gt;\n      &lt;Header /&gt;                         <span class=\"cm\">{/* static */}</span>\n      &lt;ProductGrid products={products} /&gt; <span class=\"cm\">{/* static */}</span>\n      &lt;Suspense fallback={&lt;CartSkeleton /&gt;}&gt;\n        &lt;UserCart /&gt;                      <span class=\"cm\">{/* dynamic, streamed */}</span>\n      &lt;/Suspense&gt;\n      &lt;Suspense fallback={&lt;RecSkeleton /&gt;}&gt;\n        &lt;Recommendations /&gt;               <span class=\"cm\">{/* dynamic, streamed */}</span>\n      &lt;/Suspense&gt;\n    &lt;/div&gt;\n  );\n}</code></pre>"
-        },
-        {
-          "title": "Caching in Next.js 16 — 'use cache'",
-          "contentHtml": "<pre><code><span class=\"cm\">// Next.js 16: ALL code is DYNAMIC by default</span>\n<span class=\"cm\">// Caching is explicitly OPT-IN with 'use cache'</span>\n\n<span class=\"cm\">// Cache an entire page</span>\n<span class=\"st\">'use cache'</span>;\n<span class=\"kw\">export default async function</span> <span class=\"fn\">BlogPage</span>() {\n  <span class=\"kw\">const</span> posts = <span class=\"kw\">await</span> getPosts(); <span class=\"cm\">// cached!</span>\n  <span class=\"kw\">return</span> &lt;PostList posts={posts} /&gt;;\n}\n\n<span class=\"cm\">// Cache a component</span>\n<span class=\"kw\">async function</span> <span class=\"fn\">PopularPosts</span>() {\n  <span class=\"st\">'use cache'</span>;\n  <span class=\"kw\">const</span> posts = <span class=\"kw\">await</span> getPopularPosts();\n  <span class=\"kw\">return</span> &lt;Sidebar posts={posts} /&gt;;\n}\n\n<span class=\"cm\">// Cache a function</span>\n<span class=\"kw\">async function</span> <span class=\"fn\">getSettings</span>() {\n  <span class=\"st\">'use cache'</span>;\n  <span class=\"kw\">return await</span> db.query(<span class=\"st\">'SELECT * FROM settings'</span>);\n}\n\n<span class=\"cm\">// Control cache lifetime</span>\n<span class=\"kw\">import</span> { cacheLife } <span class=\"kw\">from</span> <span class=\"st\">'next/cache'</span>;\n<span class=\"kw\">async function</span> <span class=\"fn\">Dashboard</span>() {\n  <span class=\"st\">'use cache'</span>;\n  cacheLife(<span class=\"st\">'minutes'</span>); <span class=\"cm\">// or 'hours', 'days', 'weeks', 'max'</span>\n  <span class=\"cm\">// ...</span>\n}</code></pre>\n<div class=\"analogy\">Old caching (Next.js 15) was like a fridge that <strong>automatically stores everything</strong> — confusing when you want fresh food. New caching (Next.js 16) is like <strong>you choose what goes in the fridge</strong> and for how long. Everything else stays fresh on the counter.</div>"
-        }
-      ]
-    },
-    {
-      "id": "n-app",
-      "intro": "The modern standard for Next.js routing, introducing Server Components, Streaming, and layout persistence.",
-      "cards": [
-        {
-          "title": "File Conventions",
-          "contentHtml": "<ul>\n        <li><b>page.tsx:</b> The unique UI of a route. Makes the route publicly accessible.</li>\n        <li><b>layout.tsx:</b> Shared UI for a segment and its children. Persists across route changes without re-rendering.</li>\n        <li><b>loading.tsx:</b> Optional suspense fallback UI. Next.js automatically wraps `page.tsx` with `&lt;Suspense fallback={<loading &gt;}=\"\">`.</loading></li>\n        <li><b>error.tsx:</b> Error boundary. Must be a Client Component (`\"use client\"`). Catches unexpected errors in children.</li>\n        <li><b>not-found.tsx:</b> Displayed when a `notFound()` function is thrown or a URL doesn't match any route.</li>\n        <li><b>route.ts:</b> A Server-side API endpoint (Route Handler).</li>\n        <li><b>default.tsx:</b> Used as a fallback for unmatched parallel route slots (like modals or complex dashboards).</li>\n      </ul>"
-        },
-        {
-          "title": "Advanced Routing Patterns",
-          "contentHtml": "<ul>\n        <li><b>Parallel Routes (`@folder`):&lt;/b&gt; Allows simultaneously or conditionally rendering one or more pages within the same layout (e.g., a dashboard with an `@analytics` slot and a `@team` slot).</b></li><b>\n        <li><b>Intercepting Routes (`(.)folder`):</b> Intercepts navigation to a different route and renders its content in the current layout context (e.g., clicking a photo in a feed opens a Modal instead of navigating to the photo's dedicated page URL. If refreshed, it loads the dedicated page).</li>\n        <li><b>Route Groups (`(folder)`):&lt;/b&gt; Folders in parentheses are ignored in the URL path. They are used purely to organize files logically or to opt specific routes into a shared `layout.tsx`.</b></li><b>\n      </b></b></ul><b><b>\n    </b></b>"
-        }
-      ]
-    },
-    {
-      "id": "next-app-router",
-      "intro": "Deep dive into Next.js's file-system based router built on React Server Components.",
-      "cards": [
-        {
-          "title": "Routing Architecture (Parallel & Intercepting)",
-          "contentHtml": "<p>The App Router supports advanced routing patterns that were previously impossible or extremely difficult in the `pages` directory.</p>\n      <ul>\n        <li><b>Parallel Routes (@folder):</b> Render multiple independent pages in the same layout. Perfect for complex dashboards with separate sections (e.g., Feed, Analytics, Team) that each need their own loading/error states.</li>\n        <li><b>Intercepting Routes ((.)folder):</b> Hijack navigation to show a route as a modal over the current page, while still allowing the URL to reflect the new route. Useful for photo galleries or detail views.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>// Folder Structure\napp/\n  layout.tsx\n  @analytics/  // Parallel Route\n    page.tsx\n  @team/       // Parallel Route\n    page.tsx\n  feed/\n    page.tsx\n</code></pre>\n      </div>"
-        },
-        {
-          "title": "Data Fetching & Caching Strategy",
-          "contentHtml": "<p>Next.js unified data fetching by extending the native `fetch` API with caching and revalidation logic.</p>\n      <ul>\n        <li><b>Segment Config:</b> Use `export const dynamic = \"force-dynamic\"`, `revalidate = 3600`, etc., to control a route's caching behavior globally.</li>\n        <li><b>unstable_cache:</b> For caching data that doesn't use `fetch` (like direct database queries or heavy calculations).</li>\n        <li><b>On-Demand Revalidation:</b> Use `revalidatePath()` or `revalidateTag()` inside a Server Action to purge the cache after a database update.</li>\n      </ul>\n      <div class=\"tip\">\n        <b>Tip:</b> Always fetch data in Server Components. It reduces the amount of JavaScript sent to the client and keeps your API keys secret.\n      </div>"
-        }
-      ]
-    },
-    {
-      "id": "n-data",
-      "intro": "Data fetching and mutations in the App Router.",
-      "cards": [
-        {
-          "title": "Data Fetching — Server Components",
-          "contentHtml": "<pre><code><span class=\"cm\">// Direct database access (NO API route needed)</span>\n<span class=\"kw\">export default async function</span> <span class=\"fn\">UsersPage</span>() {\n  <span class=\"kw\">const</span> users = <span class=\"kw\">await</span> prisma.user.findMany({\n    where: { active: <span class=\"kw\">true</span> },\n    orderBy: { name: <span class=\"st\">'asc'</span> },\n  });\n\n  <span class=\"kw\">return</span> (\n    &lt;ul&gt;\n      {users.map(u =&gt; &lt;li key={u.id}&gt;{u.name}&lt;/li&gt;)}\n    &lt;/ul&gt;\n  );\n}\n\n<span class=\"cm\">// Parallel data fetching</span>\n<span class=\"kw\">export default async function</span> <span class=\"fn\">Dashboard</span>() {\n  <span class=\"cm\">// Start both fetches simultaneously</span>\n  <span class=\"kw\">const</span> [users, metrics, notifications] = <span class=\"kw\">await</span> Promise.all([\n    getUsers(),\n    getMetrics(),\n    getNotifications(),\n  ]);\n\n  <span class=\"kw\">return</span> (\n    &lt;&gt;\n      &lt;UserList users={users} /&gt;\n      &lt;MetricsPanel data={metrics} /&gt;\n      &lt;NotificationBell items={notifications} /&gt;\n    &lt;/&gt;\n  );\n}\n\n<span class=\"cm\">// Sequential data fetching (when one depends on another)</span>\n<span class=\"kw\">export default async function</span> <span class=\"fn\">UserProfile</span>({ params }) {\n  <span class=\"kw\">const</span> { id } = <span class=\"kw\">await</span> params;\n  <span class=\"kw\">const</span> user = <span class=\"kw\">await</span> getUser(id);\n  <span class=\"kw\">const</span> posts = <span class=\"kw\">await</span> getPostsByUser(user.id); <span class=\"cm\">// depends on user</span>\n  <span class=\"kw\">return</span> &lt;Profile user={user} posts={posts} /&gt;;\n}</code></pre>"
-        },
-        {
-          "title": "Middleware — Complete Guide",
-          "contentHtml": "<pre><code><span class=\"cm\">// middleware.ts (project root, runs on EVERY matched request)</span>\n<span class=\"kw\">import</span> { NextResponse } <span class=\"kw\">from</span> <span class=\"st\">'next/server'</span>;\n<span class=\"kw\">import type</span> { NextRequest } <span class=\"kw\">from</span> <span class=\"st\">'next/server'</span>;\n\n<span class=\"kw\">export function</span> <span class=\"fn\">middleware</span>(request: NextRequest) {\n  <span class=\"cm\">// 1. Auth check</span>\n  <span class=\"kw\">const</span> token = request.cookies.get(<span class=\"st\">'session'</span>)?.value;\n  <span class=\"kw\">if</span> (!token &amp;&amp; request.nextUrl.pathname.startsWith(<span class=\"st\">'/dashboard'</span>)) {\n    <span class=\"kw\">return</span> NextResponse.redirect(<span class=\"kw\">new</span> URL(<span class=\"st\">'/login'</span>, request.url));\n  }\n\n  <span class=\"cm\">// 2. Geolocation-based redirect</span>\n  <span class=\"kw\">const</span> country = request.geo?.country || <span class=\"st\">'US'</span>;\n  <span class=\"kw\">if</span> (country === <span class=\"st\">'GB'</span> &amp;&amp; request.nextUrl.pathname === <span class=\"st\">'/'</span>) {\n    <span class=\"kw\">return</span> NextResponse.redirect(<span class=\"kw\">new</span> URL(<span class=\"st\">'/uk'</span>, request.url));\n  }\n\n  <span class=\"cm\">// 3. Add custom headers</span>\n  <span class=\"kw\">const</span> response = NextResponse.next();\n  response.headers.set(<span class=\"st\">'x-user-country'</span>, country);\n\n  <span class=\"cm\">// 4. Rewrite URL (proxy to different path)</span>\n  <span class=\"cm\">// return NextResponse.rewrite(new URL('/api/proxy', request.url));</span>\n\n  <span class=\"kw\">return</span> response;\n}\n\n<span class=\"kw\">export const</span> config = {\n  matcher: [\n    <span class=\"st\">'/((?!_next/static|_next/image|favicon.ico).*)'</span>, <span class=\"cm\">// all except static</span>\n  ],\n};</code></pre>"
-        },
-        {
-          "title": "Image & Font Optimization",
-          "contentHtml": "<pre><code><span class=\"cm\">// Image optimization — automatic WebP/AVIF, lazy loading, sizing</span>\n<span class=\"kw\">import</span> Image <span class=\"kw\">from</span> <span class=\"st\">'next/image'</span>;\n\n&lt;Image\n  src=\"/hero.jpg\"\n  alt=\"Hero image\"\n  width={<span class=\"nu\">1200</span>}\n  height={<span class=\"nu\">600</span>}\n  priority                <span class=\"cm\">{/* disable lazy loading for above-fold */}</span>\n  placeholder=\"blur\"       <span class=\"cm\">{/* blur placeholder while loading */}</span>\n  blurDataURL=\"data:...\"   <span class=\"cm\">{/* base64 blur image */}</span>\n  sizes=\"(max-width: 768px) 100vw, 50vw\" <span class=\"cm\">{/* responsive sizing */}</span>\n/&gt;\n\n<span class=\"cm\">// Font optimization — zero layout shift</span>\n<span class=\"kw\">import</span> { Outfit } <span class=\"kw\">from</span> <span class=\"st\">'next/font/google'</span>;\n\n<span class=\"kw\">const</span> outfit = <span class=\"fn\">Outfit</span>({\n  subsets: [<span class=\"st\">'latin'</span>],\n  weight: [<span class=\"st\">'400'</span>, <span class=\"st\">'700'</span>],\n  display: <span class=\"st\">'swap'</span>,\n  variable: <span class=\"st\">'--font-outfit'</span>,\n});\n\n<span class=\"cm\">// In layout: </span></code></pre>"
-        }
-      ]
-    },
-    {
-      "id": "n-mid-auth",
-      "intro": "Securing routes, redirecting traffic, and handling user sessions at the Edge.",
-      "cards": [
-        {
-          "title": "Next.js Middleware",
-          "contentHtml": "<p>Middleware allows you to run code <i>before</i> a request is completed. Based on the incoming request, you can modify the response by rewriting, redirecting, modifying the request or response headers, or responding directly.</p>\n      <ul>\n        <li><b>Edge Runtime:</b> Middleware runs on the Vercel Edge Network by default. It must be ultra-fast and cannot use standard Node.js APIs (like `fs` or `mongoose`).</li>\n        <li><b>Matcher:</b> Using `export const config = { matcher: ['/dashboard/:path*'] }` ensures middleware only runs on specific routes, saving costs and execution time.</li>\n        <li><b>Common Use Cases:</b> Authentication checks, Geolocation (showing specific country pricing), A/B Testing, Bot protection, and rate limiting.</li>\n      </ul>"
-        },
-        {
-          "title": "Authentication Patterns",
-          "contentHtml": "<p>Authentication in Next.js App Router usually relies on reading cookies on the server before rendering.</p>\n      <ul>\n        <li><b>NextAuth.js (Auth.js) v5:</b> The de facto standard library. Supports OAuth (Google, GitHub), Email/Passwordless, and Credentials. Integrates perfectly with Middleware to protect routes.</li>\n        <li><b>Server-Side Protection:</b> Wrap protected pages in a check like `const session = await auth(); if (!session) redirect('/login');`.</li>\n        <li><b>Client-Side Protection:</b> Less secure. Relies on `useSession()` hook. The user might see a flash of the protected page before being redirected. Always prefer Server-Side.</li>\n      </ul>"
-        }
-      ]
-    },
-    {
-      "id": "next-auth-db",
-      "intro": "Building full-stack applications with secure authentication and robust data layers.",
-      "cards": [
-        {
-          "title": "Next-Auth / Auth.js (v5)",
-          "contentHtml": "<p>Auth.js is the standard for adding authentication to Next.js apps. V5 is designed specifically for the App Router.</p>\n      <ul>\n        <li><b>Edge Compatible:</b> V5 works seamlessly on the Edge, allowing for fast authentication checks in Middleware.</li>\n        <li><b>Simplified Config:</b> Uses a single `auth.ts` file for all your configuration (providers, callbacks, adapters).</li>\n        <li><b>Server Actions:</b> `signIn()` and `signOut()` work directly inside Server Actions without needing API routes.</li>\n      </ul>\n      <div class=\"code-block\">\n<pre><code>// Protecting a Server Action\nexport async function deletePost(id) {\n  const session = await auth();\n  if (!session?.user) throw new Error(\"Unauthorized\");\n  await db.post.delete({ where: { id } });\n}\n</code></pre>\n      </div>"
-        },
-        {
-          "title": "Modern ORMs: Prisma & Drizzle",
-          "contentHtml": "<p>The choice of ORM impacts your application's deployment and runtime performance.</p>\n      <ul>\n        <li><b>Prisma:</b> Provides an intuitive, high-level API. Great for complex schemas and traditional `nodejs` runtimes.</li>\n        <li><b>Drizzle:</b> A TypeScript-first, zero-runtime overhead ORM. It's essentially \"SQL with types,\" making it perfect for the `edge` runtime and projects requiring maximum performance.</li>\n      </ul>\n      <div class=\"tip\">\n        <b>Tip:</b> If you are deploying to Vercel Edge, prefer <b>Drizzle</b> with a serverless driver like <b>Neon</b> or <b>Upstash</b>.\n      </div>"
-        }
-      ]
-    },
-    {
-      "id": "n-deploy",
-      "intro": "Taking Next.js to production efficiently.",
-      "cards": [
-        {
-          "title": "Vercel & Output Types",
-          "contentHtml": "<ul>\n        <li><b>Next.js on Vercel:</b> Zero-config deployment. Automatically splits Server Components into Edge Functions, caches static pages on the global CDN, and handles image optimization perfectly.</li>\n        <li><b>output: 'standalone':</b> Set in `next.config.js`. This traces `import` calls and outputs ONLY the necessary files needed to run the app in production. This is absolutely critical for deploying Next.js efficiently via Docker containers on AWS/GCP, reducing image sizes drastically.</li>\n        <li><b>output: 'export':</b> Generates a strictly static site (like plain HTML/CSS). Server Components run at build time. Dynamic server logic (like `cookies()` or `headers()`) will throw errors. Used when deploying to S3, GitHub Pages, or Netlify static hosting.</li>\n      </ul>"
-        }
-      ]
-    },
-    {
-      "id": "n-advanced",
-      "intro": "Advanced patterns that separate junior from senior Next.js developers.",
-      "cards": [
-        {
-          "title": "Parallel Routes & Intercepting Routes",
-          "contentHtml": "<pre><code><span class=\"cm\">// PARALLEL ROUTES — render multiple pages simultaneously</span>\n<span class=\"cm\">// Named slots with @folder convention</span>\napp/\n├── layout.tsx          <span class=\"cm\"># receives { children, modal, sidebar } props</span>\n├── @modal/\n│   └── login/page.tsx  <span class=\"cm\"># /login renders as a modal overlay</span>\n├── @sidebar/\n│   └── default.tsx     <span class=\"cm\"># fallback when no match</span>\n└── page.tsx\n\n<span class=\"cm\">// layout.tsx uses both slots</span>\n<span class=\"kw\">export default function</span> <span class=\"fn\">Layout</span>({ children, modal, sidebar }) {\n  <span class=\"kw\">return</span> (\n    &lt;&gt;\n      {sidebar}\n      {children}\n      {modal}\n    &lt;/&gt;\n  );\n}\n\n<span class=\"cm\">// INTERCEPTING ROUTES — show a route as a modal</span>\n<span class=\"cm\">// (..) means intercept one level up</span>\napp/\n├── feed/\n│   ├── page.tsx\n│   └── (..)photo/[id]/page.tsx  <span class=\"cm\"># intercepts /photo/:id as modal</span>\n└── photo/[id]/page.tsx          <span class=\"cm\"># full page version</span></code></pre>"
-        },
-        {
-          "title": "Metadata & SEO",
-          "contentHtml": "<pre><code><span class=\"cm\">// Static metadata</span>\n<span class=\"kw\">export const</span> metadata: Metadata = {\n  title: <span class=\"st\">'Blog — My App'</span>,\n  description: <span class=\"st\">'Read our latest articles'</span>,\n  keywords: [<span class=\"st\">'react'</span>, <span class=\"st\">'nextjs'</span>],\n  openGraph: {\n    title: <span class=\"st\">'Blog'</span>,\n    description: <span class=\"st\">'Latest articles'</span>,\n    images: [{ url: <span class=\"st\">'/og-blog.png'</span>, width: <span class=\"nu\">1200</span>, height: <span class=\"nu\">630</span> }],\n  },\n  twitter: { card: <span class=\"st\">'summary_large_image'</span> },\n  robots: { index: <span class=\"kw\">true</span>, follow: <span class=\"kw\">true</span> },\n};\n\n<span class=\"cm\">// Dynamic metadata (per-page, based on data)</span>\n<span class=\"kw\">export async function</span> <span class=\"fn\">generateMetadata</span>({ params }): Promise&lt;Metadata&gt; {\n  <span class=\"kw\">const</span> { slug } = <span class=\"kw\">await</span> params;\n  <span class=\"kw\">const</span> post = <span class=\"kw\">await</span> getPost(slug);\n  <span class=\"kw\">return</span> {\n    title: post.title,\n    description: post.excerpt,\n    openGraph: { images: [post.coverImage] },\n  };\n}\n\n<span class=\"cm\">// Sitemap generation</span>\n<span class=\"cm\">// app/sitemap.ts</span>\n<span class=\"kw\">export default async function</span> <span class=\"fn\">sitemap</span>(): Promise&lt;MetadataRoute.Sitemap&gt; {\n  <span class=\"kw\">const</span> posts = <span class=\"kw\">await</span> getAllPosts();\n  <span class=\"kw\">return</span> [\n    { url: <span class=\"st\">'https://myapp.com'</span>, lastModified: <span class=\"kw\">new</span> Date(), priority: <span class=\"nu\">1</span> },\n    ...posts.map(p =&gt; ({\n      url: <span class=\"st\">`https://myapp.com/blog/${p.slug}`</span>,\n      lastModified: p.updatedAt,\n    })),\n  ];\n}</code></pre>"
-        },
-        {
-          "title": "Authentication Pattern",
-          "contentHtml": "<pre><code><span class=\"cm\">// lib/auth.ts — check auth in server components</span>\n<span class=\"kw\">import</span> { cookies } <span class=\"kw\">from</span> <span class=\"st\">'next/headers'</span>;\n<span class=\"kw\">import</span> { redirect } <span class=\"kw\">from</span> <span class=\"st\">'next/navigation'</span>;\n\n<span class=\"kw\">export async function</span> <span class=\"fn\">getUser</span>() {\n  <span class=\"kw\">const</span> cookieStore = <span class=\"kw\">await</span> cookies();\n  <span class=\"kw\">const</span> session = cookieStore.get(<span class=\"st\">'session'</span>)?.value;\n  <span class=\"kw\">if</span> (!session) <span class=\"kw\">return null</span>;\n  <span class=\"kw\">return</span> verifySession(session);\n}\n\n<span class=\"kw\">export async function</span> <span class=\"fn\">requireAuth</span>() {\n  <span class=\"kw\">const</span> user = <span class=\"kw\">await</span> getUser();\n  <span class=\"kw\">if</span> (!user) redirect(<span class=\"st\">'/login'</span>);\n  <span class=\"kw\">return</span> user;\n}\n\n<span class=\"cm\">// Usage in any server component</span>\n<span class=\"kw\">export default async function</span> <span class=\"fn\">DashboardPage</span>() {\n  <span class=\"kw\">const</span> user = <span class=\"kw\">await</span> requireAuth(); <span class=\"cm\">// redirects if not logged in</span>\n  <span class=\"kw\">return</span> &lt;h1&gt;Welcome, {user.name}&lt;/h1&gt;;\n}</code></pre>"
-        }
-      ]
-    },
-    {
-      "id": "next-optimization",
-      "intro": "Pushing Next.js performance to the limit with advanced architecture and infrastructure patterns.",
-      "cards": [
-        {
-          "title": "Partial Prerendering (PPR)",
-          "contentHtml": "<p>PPR is the ultimate optimization for dynamic pages. It combines the speed of static generation with the flexibility of dynamic rendering.</p>\n      <ul>\n        <li><b>The Concept:</b> Next.js prerenders the static shell of your page at build time. When a request comes in, the shell is served immediately, and the dynamic \"holes\" (wrapped in Suspense) start streaming in.</li>\n        <li><b>User Experience:</b> Near-zero TTFB (Time to First Byte) and instant visual load, even for highly personalized pages.</li>\n      </ul>\n      <div class=\"analogy\">\n        Think of PPR like <b>pre-cooking a meal</b>. You have the base ready (Static Shell), and when a customer orders, you just add the custom toppings and serve (Dynamic Holes). This is much faster than cooking the entire meal from scratch for every customer.\n      </div>"
-        },
-        {
-          "title": "Turbopack & Build Optimization",
-          "contentHtml": "<p>Scaling a project means dealing with massive bundle sizes and long build times. Next.js solves this with Rust-based tooling.</p>\n      <ul>\n        <li><b>Turbopack:</b> The Rust-written successor to Webpack. It uses incremental compilation to ensure that your dev server stays fast, even in codebases with thousands of files.</li>\n        <li><b>Standalone Output:</b> Reduces the production bundle size significantly by only including the necessary code to run on a Node.js server, making Docker images much smaller.</li>\n        <li><b>Bundle Analysis:</b> Always use the `@next/bundle-analyzer` to track identify \"heavy\" libraries (like `moment` or `lodash`) and replace them with lighter alternatives or native JS.</li>\n      </ul>"
-        },
-        {
-          "title": "Edge Runtime vs Node.js",
-          "contentHtml": "<p>Next.js allows you to choose the runtime for every specific route.</p>\n      <ul>\n        <li><b>Edge:</b> Best for simple, global logic like A/B testing, redirects, or personalization. Has zero cold starts but restricted APIs.</li>\n        <li><b>Node.js:</b> Traditional runtime with access to the full Node ecosystem (file system, complex crypto, etc.). Best for heavy backend operations.</li>\n      </ul>"
-        }
-      ]
-    },
-    {
-      "id": "n-16",
-      "intro": "Next.js 16 and 16.2 (March 2026) — the latest features you must know.",
-      "cards": [
-        {
-          "title": "Next.js 16 — Major Features",
-          "contentHtml": "<ul>\n<li><strong>Turbopack stable &amp; default</strong> — Rust-based bundler. 5-10x faster Fast Refresh, 2-5x faster builds</li>\n<li><strong>Cache Components + 'use cache'</strong> — Explicit opt-in caching. All code dynamic by default</li>\n<li><strong>Partial Prerendering (PPR)</strong> — Static shell + dynamic streaming in same page</li>\n<li><strong>React Compiler support</strong> — Built-in automatic memoization</li>\n<li><strong>proxy.ts</strong> — Network proxy replacing some middleware patterns</li>\n<li><strong>Adapter API (stable)</strong> — Deploy to any hosting provider, not just Vercel</li>\n<li><strong>DevTools MCP</strong> — AI agents can interact with Next.js diagnostics</li>\n<li><strong>Incremental prefetching</strong> — Only prefetch parts not already in cache</li>\n</ul>"
-        },
-        {
-          "title": "Next.js 16.2 — Latest (March 2026)",
-          "contentHtml": "<ul>\n<li><strong>~400% faster dev startup</strong> — localhost:3000 ready in milliseconds</li>\n<li><strong>~50% faster rendering</strong> — RSC payload deserialization 350% faster</li>\n<li><strong>Server Fast Refresh</strong> — Fine-grained server-side hot reloading</li>\n<li><strong>AI Improvements</strong> — AGENTS.md scaffolding, browser log forwarding for AI agents, experimental Agent DevTools</li>\n<li><strong>SRI support</strong> — Subresource Integrity for JS files</li>\n<li><strong>200+ Turbopack bug fixes</strong></li>\n<li><strong>Turbopack file system caching (stable)</strong> — Compile artifacts stored on disk for faster restarts</li>\n</ul>\n<div class=\"deep\">The RSC performance gain comes from replacing <code>JSON.parse</code> with a reviver callback (which crosses V8's C++/JS boundary per key) with a two-step approach: plain <code>JSON.parse()</code> followed by a pure-JS recursive walk. This eliminates the boundary-crossing overhead entirely. Real-world impact: 25-60% faster HTML rendering.</div>"
-        },
-        {
-          "title": "CVE-2025-55182 — React2Shell (CRITICAL)",
-          "contentHtml": "<p>In November 2025, a vulnerability was reported allowing <strong>unauthenticated remote code execution</strong> through a flaw in React Server Component deserialization. CVSS score: <strong>10.0</strong> (maximum). Next.js 15.x and 16.x were affected. A fix was published December 3rd. Exploitation attempts were observed within hours of disclosure.</p>\n<div class=\"warn\">Always keep React and Next.js updated. Pin exact versions in production. Monitor security advisories. This CVE demonstrates that server-side rendering introduces server-side attack surfaces.</div>"
-        }
-      ]
-    },
-    {
-      "id": "ncs",
-      "intro": "The Next.js 'Cheat Sheet' for clearing your interview. Master these high-density recall points and you are in the top 1% of candidates globally.",
-      "cards": [
-        {
-          "title": "Caching in v16: The Explicit Model",
-          "contentHtml": "<ul>\n    <li><b>Old (v15):</b> fetch() was cached by default. Confusing for fresh data.</li>\n    <li><b>New (v16):</b> Everything is dynamic by default.</li>\n    <li><b>Mechanism:</b> Use the <code>'use cache'</code> directive. You explicitly choose what goes in the 'fridge'.</li>\n    <li><b>Control:</b> Use <code>cacheLife('hours')</code> to control TTL perfectly. It works with PPR to create static shells.</li>\n  </ul>"
-        },
-        {
-          "title": "Partial Prerendering (PPR) Mastery",
-          "contentHtml": "<ul>\n    <li><b>What:</b> Combines Static Shell (CDN fast) with Dynamic Holes (Streaming) in one page.</li>\n    <li><b>Mechanism:</b> Wrap dynamic components in <code>Suspense</code>. The rest becomes static automatically at build time.</li>\n    <li><b>Benefit:</b> Zero TTFB for the shell + real-time data for the content. It is the final answer to SSR vs SSG.</li>\n  </ul>"
-        },
-        {
-          "title": "Streaming & Rendering Performance",
-          "contentHtml": "<ul>\n    <li><b>RSC Payload:</b> Next.js 16.2 rendering is 50% faster due to <code>JSON.parse</code> reviver callback optimization.</li>\n    <li><b>Streaming SSR:</b> Send HTML in chunks. User sees content progressively. Enabled via <code>loading.tsx</code>.</li>\n    <li><b>Hydration:</b> Selective hydration only hydrates the components the user interacts with first (via Suspense).</li>\n  </ul>"
-        },
-        {
-          "title": "Deployment: Adapter API & Runtimes",
-          "contentHtml": "<ul>\n    <li><b>Adapter API:</b> Stable interface in v16 allowing any host (AWS, Cloudflare) to support ISR/Middleware.</li>\n    <li><b>Edge Runtime:</b> Lightweight, zero cold starts, restricted APIs (No fs/child_process).</li>\n    <li><b>Node.js Runtime:</b> Full access but slower startup. Use <code>export const runtime = 'edge'</code> to switch.</li>\n    <li><b>Standalone Mode:</b> <code>output: 'standalone'</code> reduces Docker image sizes by ~90% by tracing dependencies.</li>\n  </ul>"
-        },
-        {
-          "title": "Security: RSC & Server Actions",
-          "contentHtml": "<ul>\n    <li><b>Server-only:</b> Use <code>import 'server-only'</code> to prevent leaking secret keys to client components.</li>\n    <li><b>CSRF:</b> Next.js compares <code>Origin</code> vs <code>Host</code> headers automatically for all Server Actions.</li>\n    <li><b>Validation:</b> Always use Zod inside Server Actions; never trust client-side inputs.</li>\n  </ul>"
-        },
-        {
-          "title": "Middleware Logic (Edge)",
-          "contentHtml": "<ul>\n    <li><b>Pipeline:</b> Runs before <i>any</i> rendering. Can redirect, rewrite, or set cookies.</li>\n    <li><b>Matcher:</b> Always use <code>config.matcher</code> to prevent middleware running on static assets (performance drain).</li>\n    <li><b>Context:</b> Next.js 16 <code>proxy.ts</code> handles network proxies that previously bloated middleware.</li>\n  </ul>"
-        }
-      ]
-    },
-    {
-      "id": "iq-next",
-      "intro": "Next.js interview questions from beginner to advanced.",
-      "cards": [],
+      ],
       "qa": [
         {
           "level": "basic",
-          "question": "What is Next.js?",
-          "answerHtml": "<p>A React framework created by Vercel that provides building blocks to create fast, full-stack web applications, offering features like SSR, SSG, routing, and API endpoints out of the box.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is the main difference between React and Next.js?",
-          "answerHtml": "<p>React is a library for building UIs, usually resulting in Client-Side Rendered (CSR) Single Page Applications. Next.js is a framework built ON TOP of React that handles routing, server-side rendering, and tooling.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is SSR (Server-Side Rendering)?",
-          "answerHtml": "<p>Rendering HTML on the server for each distinct request. The client receives a fully populated HTML document, improving SEO and initial page load speed.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is SSG (Static Site Generation)?",
-          "answerHtml": "<p>Rendering HTML on the server ONCE at build time. The static HTML is then cached on a CDN and served instantly to all users.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is the App Router in Next.js 13+?",
-          "answerHtml": "<p>A new file-system based router built on top of React Server Components, replacing the old `pages` directory. It uses folders to define routes and `page.tsx` for UI.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is a Server Component vs a Client Component?",
-          "answerHtml": "<p>Server Components run purely on the server and never ship their JS to the browser. Client Components (marked with `\"use client\"`) run on both server and client (hydration), allowing event listeners (onClick) and state (useState).</p>"
-        },
-        {
-          "level": "basic",
-          "question": "How do you create a Client Component?",
-          "answerHtml": "<p>Add the `\"use client\"` directive at the very top of the file, before any imports. Note: This marks the component AND all its imported children as client-side.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is the  component?",
-          "answerHtml": "<p>An optimized replacement for `<img>`. It automatically prevents Cumulative Layout Shift (CLS), lazy loads images, and optimizes sizes and formats (like WebP/AVIF) dynamically.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is the  component?",
-          "answerHtml": "<p>An extension of the HTML `<a>` tag that enables client-side navigation between Next.js routes. It pre-fetches linked pages in the background for instant transitions.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is `next/font`?",
-          "answerHtml": "<p>A module that automatically optimizes fonts. It downloads them at build time and hosts them alongside your static assets, eliminating external network requests (like to Google Fonts) and preventing layout shift.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What does a `layout.tsx` file do?",
-          "answerHtml": "<p>It provides shared UI for all routes within its directory and subdirectories. Crucially, it does not re-render or lose state when navigating between its children.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is an API Route (Route Handler)?",
-          "answerHtml": "<p>A way to build a backend API directly within Next.js. In the App Router, this is done by creating a `route.ts` file that exports HTTP methods like `GET`, `POST`, `PUT`, etc.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "How do you handle 404 pages in the App Router?",
-          "answerHtml": "<p>By creating a `not-found.tsx` file in a directory. It will automatically be rendered if the URL doesn't match a route, or if you explicitly call the `notFound()` function.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is the `public` directory used for?",
-          "answerHtml": "<p>Serving static assets like images, fonts, or `robots.txt` that can be mapped directly to the base URL (`/image.png`).</p>"
-        },
-        {
-          "level": "basic",
-          "question": "How do you define dynamic routes?",
-          "answerHtml": "<p>By wrapping a folder name in square brackets, e.g., `[id]`. Inside that folder's `page.tsx`, you can access the dynamic value via `props.params.id`.</p>"
+          "question": "How is Next.js different from using React by itself?",
+          "answerHtml": "<p>React gives you a UI library. Next.js gives you a framework around React that standardizes routing, rendering, data ownership, server and client boundaries, and deployment-friendly behavior.</p>"
         },
         {
           "level": "intermediate",
-          "question": "What is ISR (Incremental Static Regeneration)?",
-          "answerHtml": "<p>A feature that allows you to update static pages AFTER you have built your site. You can generate static pages in the background without needing to rebuild the entire application.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "How do you use ISR in the App Router?",
-          "answerHtml": "<p>By exporting a route segment config: `export const revalidate = 60;` (revalidate every 60 seconds), or using the `next: { revalidate: 60 }` option in a `fetch()` call.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What is On-Demand Revalidation?",
-          "answerHtml": "<p>Manually purging the cache for a specific page or tag. Instead of waiting for a timer (ISR), you call `revalidatePath(\"/blog\")` or `revalidateTag(\"posts\")` when your database updates.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What is the difference between Parallel Routes and Intercepting Routes?",
-          "answerHtml": "<p>Parallel Routes (`@folder`) let you render multiple pages in the same layout simultaneously. Intercepting Routes (`(.)folder`) let you hijack navigation to render a route within the current layout (like a modal) instead of doing a hard redirect.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "Where should you place data fetching in the App Router?",
-          "answerHtml": "<p>Ideally in Server Components at the highest level possible. Use `await fetch()` directly in the async component body, and pass data down to Client Components via props.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "How does Next.js handle data deduplication?",
-          "answerHtml": "<p>If you call `fetch(\"url\")` multiple times across different components during the same server render pass, Next.js intercepts it and only makes ONE actual network request.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "Can you pass functions from a Server Component to a Client Component?",
-          "answerHtml": "<p>No, functions are not serializable. Server Components can only pass JSON-serializable data (strings, numbers, simple objects/arrays) to Client Components. The exception is Server Actions.</p>"
+          "question": "Why is 'what runs where' the core Next.js mental model?",
+          "answerHtml": "<p>Because most Next.js bugs and performance problems come from choosing the wrong environment for work. You need to know what belongs at build time, request time, on the server, and in the browser.</p>"
         },
         {
           "level": "advanced",
-          "question": "What is a Server Action?",
-          "answerHtml": "<p>An asynchronous function marked with `\"use server\"` that can be passed directly to Client Components (like a form action or button click). Next.js automatically creates a hidden API endpoint for it.</p>"
+          "question": "Why is it misleading to describe Next.js as only an SSR framework?",
+          "answerHtml": "<p>SSR is only one rendering mode. Next.js also coordinates static generation, streaming, partial prerendering, server mutations, route handlers, caching, and runtime selection, which makes it a much broader application framework.</p>"
+        }
+      ]
+    },
+    {
+      "id": "app-router-file-system-architecture",
+      "intro": "This chapter turns the App Router into a system rather than a folder naming exercise: pages, layouts, templates, loading states, errors, route groups, parallel routes, intercepting routes, and route handlers all belong to one routing model.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "The app directory is a route tree",
+          "html": "<p>In App Router, folders describe segments in a route tree, and special files describe what each segment does. You should read the <code>app/</code> directory as architecture, not as miscellaneous file organization.</p><p>Each special file answers a different question: what renders this route, what persists across children, what loads while data is pending, what catches errors, and what serves HTTP directly.</p>"
         },
         {
-          "level": "advanced",
-          "question": "How do you handle loading states for fetching data?",
-          "answerHtml": "<p>Create a `loading.tsx` file next to your page. Next.js instantly renders this fallback UI while the page's async Server Component is awaiting data resolution.</p>"
+          "type": "code",
+          "title": "Core App Router file conventions",
+          "language": "tsx",
+          "code": "app/\\n  layout.tsx\\n  page.tsx\\n  loading.tsx\\n  error.tsx\\n  not-found.tsx\\n  dashboard/\\n    layout.tsx\\n    page.tsx\\n    [id]/page.tsx\\n  (marketing)/about/page.tsx\\n  @modal/login/page.tsx\\n  api/users/route.ts",
+          "caption": "Pages, layouts, special files, route groups, parallel routes, and route handlers all live in the same route tree."
         },
         {
-          "level": "advanced",
-          "question": "What is Next.js Middleware?",
-          "answerHtml": "<p>Code that executes on the Edge before a request completes. It allows you to rewrite, redirect, add headers, or set cookies before the router even initializes.</p>"
+          "type": "compare",
+          "title": "layout.tsx vs template.tsx vs page.tsx vs route.ts",
+          "items": [
+            {
+              "label": "layout.tsx",
+              "html": "<p>Persistent shared UI for a segment and its children. Layouts are the place for shells that should survive navigation.</p>"
+            },
+            {
+              "label": "template.tsx",
+              "html": "<p>Like a layout in placement, but it remounts on navigation. Use it when you want transition isolation or fresh local state per navigation.</p>"
+            },
+            {
+              "label": "page.tsx",
+              "html": "<p>The UI entrypoint for the route segment itself. This is where route content becomes visible to users.</p>"
+            },
+            {
+              "label": "route.ts",
+              "html": "<p>An HTTP endpoint in the route tree. Use it for request and response handling rather than page UI.</p>"
+            }
+          ]
         },
         {
-          "level": "advanced",
-          "question": "What are the limitations of the Edge Runtime?",
-          "answerHtml": "<p>It does not support native Node.js APIs (like `fs`, `child_process`, or `crypto` via node) and requires APIs like databases to be accessible over HTTP/Edge-compatible drivers.</p>"
+          "type": "mechanics",
+          "title": "Dynamic segments, route groups, and special files",
+          "steps": [
+            "A folder name usually becomes part of the URL segment.",
+            "Dynamic segments such as [slug] let the route capture values from the URL.",
+            "Catch-all and optional catch-all segments widen that matching behavior.",
+            "Route groups in parentheses organize files without affecting the URL path.",
+            "Parallel and intercepting routes let one layout coordinate multiple route surfaces at once."
+          ]
         },
         {
-          "level": "advanced",
-          "question": "Explain the difference between Node.js runtime and Edge runtime in Next.js.",
-          "answerHtml": "<p>Node.js runtime gives you access to the full Node ecosystem but suffers from cold starts. Edge runtime runs on Vercel's CDN globally, offering zero cold starts and instant execution, but restricted API access.</p>"
+          "type": "trap",
+          "title": "Trap: assuming every folder changes the URL",
+          "tone": "pitfall",
+          "html": "<p>Route groups do not affect the URL. Parallel route folders such as <code>@modal</code> also have routing meaning without behaving like normal path segments. Reading the tree literally without knowing the conventions leads to wrong mental models.</p>"
         },
         {
-          "level": "advanced",
-          "question": "How do you generate dynamic metadata for SEO?",
-          "answerHtml": "<p>Export an async `generateMetadata({ params })` function from your `page.tsx` or `layout.tsx`. You can fetch data there to return specific titles and Open Graph tags.</p>"
+          "type": "drill",
+          "title": "Drill: map the URL to files",
+          "prompt": "A URL like /blog/why-streaming-matters should render inside the root layout, the blog segment layout, and a dynamic page. Which files are most likely involved, and which file would you add if you wanted a route-specific loading state?",
+          "answerHtml": "<p>You would expect the root <code>app/layout.tsx</code>, a nested <code>app/blog/layout.tsx</code> if one exists, and a dynamic <code>app/blog/[slug]/page.tsx</code>. A route-specific pending UI would come from <code>app/blog/[slug]/loading.tsx</code> or a relevant parent loading file depending on where you want the boundary.</p>"
         },
         {
-          "level": "advanced",
-          "question": "What happens if `generateMetadata` and default `page.tsx` both fetch the same data API?",
-          "answerHtml": "<p>Because Next.js automatically dedupes `fetch` requests, the database or API is only hit once, making it completely safe and performant to request the same data in both places.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "How do you handle environment variables in Next.js?",
-          "answerHtml": "<p>Variables in `.env` are private by default. To expose a variable to the browser (Client Components), you must prefix it with `NEXT_PUBLIC_`.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is Turbopack?",
-          "answerHtml": "<p>An incremental bundler optimized for Next.js, written in Rust. It serves as an ultra-fast replacement for Webpack during development (`next dev --turbo`).</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is the significance of the \"standalone\" output mode?",
-          "answerHtml": "<p>Configured in `next.config.js`. It creates a folder containing strictly the files and `node_modules` required to run production. Highly recommended for optimizing Docker deployments (cutting gigabytes down to megabytes).</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "How does Partial Prerendering (PPR) work in Next.js?",
-          "answerHtml": "<p>An experimental feature (v14/15) where the compiler wraps dynamic parts of your page (like a shopping cart) in Suspense. At build time, it static-generates the static shell, and at runtime, it streams in the dynamic hole.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What are the 4 layers of caching in the Next.js App Router?",
-          "answerHtml": "<p>1. Request Memoization (dedupes fetches during render). 2. Data Cache (persists fetch data across requests). 3. Full Route Cache (persists static HTML/RSC payloads on the server). 4. Router Cache (persists RSC payloads in the browser memory for instant backward/forward navigation).</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How do you force a route to be completely dynamic (skip all caching)?",
-          "answerHtml": "<p>Export `export const dynamic = \"force-dynamic\";` from the segment, or use dynamic functions like `cookies()`, `headers()`, or URL `searchParams`.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How does Streaming work in Next.js App Router?",
-          "answerHtml": "<p>Instead of waiting for all data to load on the server before sending HTML, Next.js immediately sends the static HTML parts. As async Server Components finish fetching, Next.js streams the HTML chunks over the same HTTP connection.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "How do you implement i18n (Internationalization) in the App Router?",
-          "answerHtml": "<p>Typically by using incredibly dynamic routes like `app/[lang]/page.tsx` and using Middleware to detect the user's accept-language header, automatically redirecting them to the correct `/[lang]` path.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "Why shouldn't you use React Context if you can avoid it in App Router?",
-          "answerHtml": "<p>Because Context boundaries force all components \"under\" them to become Client Components (if they consume it). This defeats the purpose of Server Components. Pass props, use Server Components, or push Context as deep into the tree as possible.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is the \"poisoning\" rule in Server Components?",
-          "answerHtml": "<p>If you import a Client Component into a Server Component, that's fine. But if you import a Server Component INTO a Client Component directly, it becomes a Client Component. You must pass Server Components as `children` props to bypass this.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is the `server-only` package?",
-          "answerHtml": "<p>A utility package you can import. If a developer accidentally imports that file into a File containing database passwords or secret keys, it throws an immediate build error.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What is Auth.js (NextAuth.js v5)?",
-          "answerHtml": "<p>The modern authentication solution for Next.js. It supports OAuth providers, email/password, and integrates directly with the App Router via Server Actions and Middleware.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "Explain JWT vs. Session strategy in NextAuth.",
-          "answerHtml": "<p>JWT (JSON Web Token) is stateless and stored in a cookie. Sessions are stored in a database. JWT is usually faster and can be used on the Edge, while Sessions allow for immediate invalidation.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How do you protect specific API routes using Middleware?",
-          "answerHtml": "<p>By checking for a valid session token in the request cookies inside `middleware.ts` and redirecting the user to `/login` if it is missing before the request even reaches the Route Handler.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is the danger of using `process.env` in Client Components?",
-          "answerHtml": "<p>It will be undefined in the browser unless you prefix the variable with `NEXT_PUBLIC_`. However, sensitive keys (like DB passwords) should NEVER be prefixed, as they would be exposed to the user.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How do you prevent CSRF in Next.js Server Actions?",
-          "answerHtml": "<p>Next.js has built-in CSRF protection for Server Actions. It compares the `Origin` header with the `Host` header to ensure the request is coming from your own domain.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What is Prisma and why use it with Next.js?",
-          "answerHtml": "<p>An ORM (Object-Relational Mapper) that provides a typesafe database client. It makes querying databases like PostgreSQL or MySQL easier and prevents runtime type errors.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is Drizzle ORM and how does it compare to Prisma?",
-          "answerHtml": "<p>A \"lean\" ORM that is zero-runtime and fully typesafe. Unlike Prisma, it doesn't require a separate engine binary, making it much more compatible with the Edge Runtime.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How do you handle database connection pooling in Serverless environments?",
-          "answerHtml": "<p>By using a connection pooler like PgBouncer or using an HTTP-based database driver (like Upstash for Redis or Neon for Postgres) to avoid exhausting connection limits during high traffic.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is the purpose of `useFormState` in Next.js 14/15?",
-          "answerHtml": "<p>It's used to manage the state returned from a Server Action (e.g., validation errors or success messages), allowing the UI to react to the server's response without manual state management.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What are Parallel Routes and when to use them?",
-          "answerHtml": "<p>Represented by `@folder`. They allow you to render multiple independent pages at the same URL (e.g., a Dashboard with a Sidebar and a Main view that can each have their own loading states).</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "Explain Intercepting Routes (modal pattern).",
-          "answerHtml": "<p>Represented by `(.)folder`. This allows you to \"intercept\" a navigation to a specific route and render it as a modal over the current context, while still allowing a refresh/share to show the target route as a standalone page.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Route Segment Config\" and list 3 options.",
-          "answerHtml": "<p>Configuration exported from a page/layout to control its behavior. Options: `dynamic` (\"auto\", \"force-dynamic\"), `revalidate` (seconds), `runtime` (\"nodejs\", \"edge\").</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is the `unstable_cache` API?",
-          "answerHtml": "<p>A function that allows you to cache data-fetching results that AREN'T using the standard `fetch()` API (e.g., direct DB queries via an ORM).</p>"
-        },
-        {
-          "level": "expert",
-          "question": "Explain \"Static Metadata\" vs \"dynamic metadata\" hoisting.",
-          "answerHtml": "<p>Static is defined as a constant `export const metadata`. Dynamic uses `export async function generateMetadata()`. Both are hoisted to the head, but dynamic allows fetching data for page-specific titles.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What is the \"priority\" prop in Next.js Image?",
-          "answerHtml": "<p>It tells Next.js to preload the image and treat it as a high-priority asset, which is crucial for the LCP (Largest Contentful Paint) image.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "How does Next.js handle Third-Party Scripts?",
-          "answerHtml": "<p>Via the `<Script>` component. It allows strategies like `afterInteractive` (default), `beforeInteractive` (early load), and `worker` (offload to web worker).</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is Partial Prerendering (PPR)?",
-          "answerHtml": "<p>A build-time optimization that static-generates a page's \"shell\" and leaves \"holes\" for dynamic content that are streamed in at runtime using Suspense boundaries.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "Explain the difference between `revalidatePath` and `revalidateTag`.",
-          "answerHtml": "<p>`revalidatePath` purges the entire cache for a specific URL. `revalidateTag` purges all cached requests that were tagged with a specific string, which is more surgical and efficient.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How do you optimize an app for the Edge Runtime?",
-          "answerHtml": "<p>Avoid Node-specific APIs, use Edge-compatible database drivers, and keep bundle sizes small since the Edge runtime has strict memory and CPU limits.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What is the Vercel Data Cache?",
-          "answerHtml": "<p>An global cache that persists the result of `fetch` requests across multiple server executions and even redeploys, unless manually invalidated.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "How do you deploy Next.js to a VPS (non-Vercel)?",
-          "answerHtml": "<p>By building the app with `output: \"standalone\"` and running the resulting `server.js` file using Node.js, usually managed by PM2 or inside a Docker container.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Request Memoization\" vs \"Data Cache\"?",
-          "answerHtml": "<p>Memoization only lasts for ONE server request (preventing duplicate fetches). Data Cache persists ACROSS requests on the server storage indefinitely until revalidated.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What is the purpose of the `.next` folder?",
-          "answerHtml": "<p>It is the build output directory containing compiled JS, cached static pages, RSC payloads, and configuration files used by the Next.js server.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "How do you handle redirects in the App Router?",
-          "answerHtml": "<p>Using the `redirect()` function for server-side redirects, or the `redirects` config in `next.config.js` for permanent path mapping.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is Next.js and why use it over plain React?",
-          "answerHtml": "<p>Next.js is a React framework that adds: file-based routing, SSR, SSG, ISR, API routes, Server Actions, middleware, image optimization, font optimization, and built-in CSS/Tailwind support. Plain React handles only the view layer. Next.js gives you a full-stack production-ready framework with sensible defaults and excellent performance out of the box.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is the App Router? How does routing work?",
-          "answerHtml": "<p>The App Router uses the <code>app/</code> directory with file conventions: <code>page.tsx</code> defines a route's UI, <code>layout.tsx</code> wraps children (persists across navigation), <code>loading.tsx</code> creates Suspense boundaries, <code>error.tsx</code> creates error boundaries. Routes are created by folder structure: <code>app/about/page.tsx</code> → <code>/about</code>. Dynamic routes use <code>[slug]</code> syntax.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is the difference between Server and Client Components?",
-          "answerHtml": "<p><strong>Server Components</strong> (default): Run on server, zero JS sent to client, can access databases. Cannot use useState, useEffect, or event handlers. <strong>Client Components</strong>: Marked with <code>'use client'</code>, include interactivity, sent as JS to browser. Rule: default to Server Components; opt into Client Components only when you need interactivity.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "Explain SSG, SSR, ISR, and PPR. When do you use each?",
-          "answerHtml": "<p><strong>SSG:</strong> Build-time HTML. Fastest. For blogs, docs. <strong>SSR:</strong> Per-request HTML. For dashboards, personalized content. <strong>ISR:</strong> Static with timed revalidation. For e-commerce, CMS. <strong>PPR (Next.js 16):</strong> Static shell + dynamic parts in same page. Best of both — CDN speed with full dynamism. Use PPR when your page has both static (header, layout) and dynamic (user-specific, real-time) sections.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What is the difference between layout.tsx and template.tsx?",
-          "answerHtml": "<p><strong>layout.tsx:</strong> Wraps children, state PERSISTS across navigation (sidebar stays open), component instance is reused. <strong>template.tsx:</strong> Wraps children, RE-MOUNTS on every navigation (fresh state), creates new instance each time. Use layout for most cases. Use template when you need: animations on route change, useEffect on every navigation, or fresh state per page.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What are Server Actions and how do they replace API routes?",
-          "answerHtml": "<p>Server Actions are async functions with <code>'use server'</code> that run on the server. They handle data mutations (forms, database writes) without needing separate API routes. Benefits: type-safe end-to-end, progressive enhancement (work without JS), integrated loading/error states via useActionState, automatic cache revalidation via revalidatePath/revalidateTag. You still need API routes for: external API consumption, webhooks, third-party integrations.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What is middleware in Next.js?",
-          "answerHtml": "<p>Code that runs BEFORE a request completes, at the Edge (close to the user). Defined in <code>middleware.ts</code> at the project root. Can: redirect, rewrite URLs, set headers, check auth, handle geolocation. Runs on Edge Runtime — lightweight and fast. Use <code>config.matcher</code> to specify which routes it applies to. Note: in Next.js 16, <code>proxy.ts</code> handles some network proxy use cases that previously required middleware.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "Explain 'use cache' in Next.js 16. How does it differ from the old caching?",
-          "answerHtml": "<p>Old model (Next.js 15): fetch() was cached by default, confusing developers. New model (Next.js 16): everything is dynamic by default. You explicitly opt into caching with the <code>'use cache'</code> directive on pages, components, or functions. The compiler auto-generates cache keys. You control cache lifetime with <code>cacheLife('hours')</code>. This is predictable, explicit, and aligned with developer expectations. The 'use cache' directive works with PPR to create static shells with dynamic holes.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is Partial Prerendering (PPR) and why is it important?",
-          "answerHtml": "<p>PPR renders the static parts of a page at build time (served from CDN instantly) while dynamic parts are streamed via Suspense boundaries. This eliminates the old trade-off between \"fast static\" and \"dynamic personalized.\" Example: an e-commerce page where the header, product grid, and footer are static (instant) while the cart, recommendations, and stock levels are dynamic (streamed in). It's the final piece of the caching puzzle that makes 'use cache' + Suspense a complete story.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is the Adapter API in Next.js 16?",
-          "answerHtml": "<p>A stable interface allowing any hosting provider (Cloudflare, AWS, Netlify, etc.) to support Next.js's full feature set. Previously, advanced features like ISR and middleware worked best on Vercel. The Adapter API standardizes the deployment contract so providers can implement caching, middleware, and edge functions correctly. This makes Next.js truly platform-agnostic and addresses the \"vendor lock-in\" criticism.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is Turbopack and why is it significant?",
-          "answerHtml": "<p>Turbopack is a Rust-based bundler replacing webpack in Next.js. Since Next.js 16, it's the default for all projects. Benefits: 5-10x faster Fast Refresh during development, 2-5x faster production builds, file system caching (compile artifacts stored on disk for even faster restarts). In Next.js 16.2, Turbopack gained Server Fast Refresh (fine-grained server-side HMR), SRI support, and 200+ bug fixes. The performance difference is immediately noticeable, especially in large projects.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "How do you handle authentication in Next.js App Router?",
-          "answerHtml": "<p>Three layers: <strong>1) Middleware</strong>: Check session cookie, redirect unauthenticated users before the page renders. Fast, runs at the edge. <strong>2) Server Components</strong>: Call a <code>getUser()</code> function that reads cookies and verifies the session. Redirect with <code>redirect('/login')</code>. <strong>3) Client Components</strong>: Use a context provider or Zustand store for client-side auth state. Popular libraries: NextAuth.js (Auth.js), Clerk, Lucia. The server-first approach means sensitive auth logic never reaches the client.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "How does Next.js handle SEO?",
-          "answerHtml": "<p><strong>Metadata API</strong>: Export <code>metadata</code> object or <code>generateMetadata()</code> function for per-page titles, descriptions, OG images. <strong>Sitemap</strong>: <code>app/sitemap.ts</code> generates XML sitemaps. <strong>Robots</strong>: <code>app/robots.ts</code>. <strong>Image optimization</strong>: <code>next/image</code> auto-generates WebP/AVIF, lazy loads, prevents layout shift. <strong>Rendering</strong>: SSR/SSG ensures crawlers see full HTML. <strong>Core Web Vitals</strong>: Turbopack optimizes bundle size; PPR optimizes loading speed.</p>"
+          "type": "recap",
+          "title": "Chapter 2 recap",
+          "items": [
+            "The app directory is a route tree, not just a folder hierarchy.",
+            "Special files define roles such as shared UI, route UI, loading, errors, and HTTP handling.",
+            "Route groups, parallel routes, and intercepting routes change behavior without behaving like plain folders.",
+            "Understanding file conventions makes later rendering and data decisions much easier."
+          ]
         }
       ],
-      "hasFilterBar": true
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the difference between page.tsx and layout.tsx?",
+          "answerHtml": "<p><code>page.tsx</code> renders the route's own UI, while <code>layout.tsx</code> provides shared UI that wraps child routes and can persist across navigation.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What are route groups for in the App Router?",
+          "answerHtml": "<p>Route groups let you organize segments or share layouts without adding that folder name to the public URL path.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When would you reach for parallel or intercepting routes?",
+          "answerHtml": "<p>Use them when one layout needs to coordinate multiple route surfaces, such as dashboards with independent panes or modal flows that should overlay the current page while still mapping to a real URL.</p>"
+        }
+      ]
+    },
+    {
+      "id": "server-client-component-boundaries",
+      "intro": "Next.js is easiest to misuse when the server and client boundary stays fuzzy. This chapter will explain what runs where, what crosses the boundary, and how to avoid shipping unnecessary client JavaScript.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Server first by default",
+          "html": "<p>In App Router, routes render as Server Components by default. That means the default question is not 'how do I move this to the server?' but 'do I really need to move this to the client?'</p><p>This default is powerful because data access, secrets, and heavy server-side logic can stay on the server unless interactivity forces a client boundary.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Server Components vs Client Components",
+          "items": [
+            {
+              "label": "Server Components",
+              "html": "<p>Run on the server, can access server-only resources, and do not ship their implementation code to the browser as interactive client bundles.</p>"
+            },
+            {
+              "label": "Client Components",
+              "html": "<p>Marked with <code>&quot;use client&quot;</code>, can use browser APIs and interactive hooks, and must ship JavaScript to the browser.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How server and client cooperate",
+          "steps": [
+            "The server renders route work and produces HTML plus the React Server Component payload for the current navigation.",
+            "The browser receives that response and shows the server-rendered output quickly.",
+            "Only the client boundaries that need interactivity hydrate in the browser.",
+            "On later navigations, the framework can stream updated server payloads while preserving client state where boundaries remain stable."
+          ]
+        },
+        {
+          "type": "richText",
+          "title": "What can and cannot cross the boundary",
+          "html": "<p>Props moving from server to client must be serializable. You cannot pass arbitrary server-only resources, live database handles, or browser-only values across the boundary and expect them to behave like local objects.</p><p>The safest rule is simple: keep data plain when it crosses, keep secrets and privileged logic on the server, and keep browser-only behavior inside client boundaries.</p>"
+        },
+        {
+          "type": "trap",
+          "title": "Trap: adding use client too high in the tree",
+          "tone": "warning",
+          "html": "<p>If you put <code>&quot;use client&quot;</code> near the top of the tree, you force more of the route into the client bundle than necessary. That usually increases hydration cost, weakens server-only guarantees, and blurs data ownership.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: place the boundary",
+          "prompt": "You have a dashboard page that fetches secure billing data, but one chart widget lets the user toggle local filters and hover tooltips. Which parts should stay server-side and which part should become a Client Component?",
+          "answerHtml": "<p>The secure data loading should stay in a Server Component, and only the interactive chart shell or widget should become a Client Component. Push the client boundary down to the smallest interactive surface instead of promoting the entire dashboard.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 3 recap",
+          "items": [
+            "App Router is server-first by default.",
+            "Client Components are an opt-in boundary for interactivity, browser APIs, and client-side state.",
+            "Cross-boundary props must stay serializable.",
+            "Pushing the client boundary too high usually costs performance and clarity."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "When do you need to add use client?",
+          "answerHtml": "<p>Add <code>&quot;use client&quot;</code> when a component needs browser-only APIs, event-driven interactivity, or client-side hooks that require a Client Component boundary.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why should most data fetching stay on the server in App Router?",
+          "answerHtml": "<p>Server-side data fetching avoids shipping sensitive logic to the browser, reduces unnecessary client JavaScript, and keeps data ownership close to the environment that can access trusted resources directly.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common architectural mistake with Client Components in Next.js?",
+          "answerHtml": "<p>A common mistake is wrapping large route segments in <code>&quot;use client&quot;</code> because one small interactive widget needs it. That broad boundary increases bundle size and weakens the benefits of server-first rendering.</p>"
+        }
+      ]
+    },
+    {
+      "id": "navigation-layout-persistence-metadata",
+      "intro": "Navigation in Next.js is more than links. Layout persistence, nested route shells, metadata generation, sitemaps, and route-level SEO all interact with the router and rendering model.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "How navigation works in App Router",
+          "html": "<p>Navigation in App Router combines server rendering, prefetching, streaming, and client-side transitions. That means a route change is not just 'go fetch another page' - it is a coordinated update between server work, cached route data, and hydrated client boundaries.</p>"
+        },
+        {
+          "type": "mechanics",
+          "title": "From click to updated screen",
+          "steps": [
+            "The user activates a Link or navigation action.",
+            "Next.js can prefetch route data ahead of time when it predicts the navigation is likely.",
+            "On client-side navigation, Next.js requests the next route's React Server Component payload and any missing client assets instead of doing a full document reload.",
+            "Streaming lets the browser show ready parts sooner instead of waiting for the whole route tree.",
+            "Layouts that stay in place preserve their state, while changed route segments update underneath them."
+          ]
+        },
+        {
+          "type": "compare",
+          "title": "Static metadata vs generateMetadata",
+          "items": [
+            {
+              "label": "Static metadata",
+              "html": "<p>Use exported <code>metadata</code> when route metadata is known ahead of time and can be declared directly in the layout or page.</p>"
+            },
+            {
+              "label": "generateMetadata",
+              "html": "<p>Use <code>generateMetadata</code> when metadata depends on route params or fetched data, such as a blog post title or product details.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How metadata resolves through the route tree",
+          "steps": [
+            "Layouts can export shared metadata that applies to all child segments beneath them.",
+            "Pages and deeper route segments can add their own local metadata for the specific route they represent.",
+            "Use generateMetadata when the metadata depends on params, search params, or fetched server data.",
+            "Next.js resolves metadata down the matched route tree, merging and overriding values by segment as it builds the final head output.",
+            "This is route-layer server work, so metadata should be modeled with the route tree instead of being treated like client state."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Metadata and navigation example",
+          "language": "tsx",
+          "code": "import type { Metadata } from 'next';\\nimport Link from 'next/link';\\n\\ntype PageProps = {\\n  params: Promise<{ slug: string }>\\n};\\n\\nexport async function generateMetadata(\\n  { params }: PageProps\\n): Promise<Metadata> {\\n  const { slug } = await params;\\n\\n  return {\\n    title: `Article: ${slug}`,\\n    description: `Deep dive for ${slug}`\\n  };\\n}\\n\\nexport default async function Page({ params }: PageProps) {\\n  const { slug } = await params;\\n\\n  return (\\n    <>\\n      <h1>{slug}</h1>\\n      <Link href='/docs'>Back to docs</Link>\\n    </>\\n  );\\n}",
+          "caption": "Use a static metadata export when values are known ahead of time. Use generateMetadata in a dynamic segment when metadata depends on params or fetched data."
+        },
+        {
+          "type": "trap",
+          "title": "Trap: treating metadata like client state",
+          "tone": "pitfall",
+          "html": "<p>The metadata APIs belong to Server Components and route files. If you think of metadata as something to patch from client state after render, you will fight the framework instead of using the route-level metadata system it already provides.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: diagnose the slow navigation",
+          "prompt": "A route change feels slow even though the destination page is not huge. Where would you look first: layout persistence, prefetch behavior, streaming boundaries, or an oversized client boundary, and why?",
+          "answerHtml": "<p>Check all four in order of architecture. A slow route can come from unnecessary remounts, missed prefetch opportunities, a missing streaming boundary, or too much work being forced into Client Components. App Router navigation is fast when those pieces cooperate; it feels slow when one layer becomes the bottleneck.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 4 recap",
+          "items": [
+            "App Router navigation blends server rendering, prefetching, streaming, and client-side transitions.",
+            "Layouts persist while changed route segments update underneath them.",
+            "Static metadata and generateMetadata are route-level server concerns.",
+            "Navigation and SEO belong in the same architectural conversation because both depend on the route tree."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why do layouts help navigation feel consistent?",
+          "answerHtml": "<p>Layouts let shared UI persist while child route content changes, which preserves state and reduces the sense of a full-page reset during navigation.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When should you use generateMetadata instead of a static metadata export?",
+          "answerHtml": "<p>Use <code>generateMetadata</code> when the metadata depends on params or fetched content, such as route-specific titles, descriptions, or Open Graph data.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What architectural factors can make App Router navigation feel slow?",
+          "answerHtml": "<p>Common causes include poor prefetch coverage, missing streaming boundaries, oversized client bundles, and route structures that remount more of the UI than necessary.</p>"
+        }
+      ]
+    },
+    {
+      "id": "data-fetching-server-data-ownership",
+      "intro": "Modern Next.js wants data ownership to stay on the server whenever possible. This chapter will teach direct server fetching, parallel data work, request waterfalls, and the heuristics for deciding where data should live.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Keep trusted data ownership on the server",
+          "html": "<p>In App Router, the most reliable default is to fetch trusted data where the truth already lives: on the server. That means Server Components can call <code>fetch</code>, an ORM, or a database client directly without shipping credentials or query logic to the browser.</p><p>This reduces client bundle weight, keeps secrets off the client, and prevents a common architecture smell: bouncing internal reads through your own HTTP layer just because the UI happens to be React.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Sequential waterfalls vs parallel fetching",
+          "items": [
+            {
+              "label": "Sequential waterfalls",
+              "html": "<p>One request waits for the previous request to finish. This is correct when the second request truly depends on the first result, but it slows routes down when the dependency is artificial.</p>"
+            },
+            {
+              "label": "Parallel fetching",
+              "html": "<p>Independent work starts eagerly and resolves together. This is the better default when route data sources do not depend on each other.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How server-side data ownership reduces confusion",
+          "steps": [
+            "A route segment starts rendering on the server, where it can access trusted resources directly.",
+            "Layouts and pages begin in parallel by default, so each segment can start its own data work as soon as it renders.",
+            "Inside a component, separate awaits can still create a waterfall if one call is started only after another resolves.",
+            "When requests are independent, start them early and resolve them together with Promise.all or by passing promises downward.",
+            "Only pass plain, serializable data into Client Components, and keep the privileged query logic on the server."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Start independent work early",
+          "language": "tsx",
+          "code": "type PageProps = {\\n  params: Promise<{ accountId: string }>\\n};\\n\\nasync function getAccount(accountId: string) {\\n  return db.account.findUnique({ where: { id: accountId } });\\n}\\n\\nasync function getInvoices(accountId: string) {\\n  return db.invoice.findMany({ where: { accountId } });\\n}\\n\\nexport default async function Page({ params }: PageProps) {\\n  const { accountId } = await params;\\n\\n  const accountPromise = getAccount(accountId);\\n  const invoicesPromise = getInvoices(accountId);\\n\\n  const [account, invoices] = await Promise.all([\\n    accountPromise,\\n    invoicesPromise\\n  ]);\\n\\n  return <Dashboard account={account} invoices={invoices} />;\\n}",
+          "caption": "If the work is independent, start it together. App Router renders segments in parallel, but a single component can still create its own waterfall if you await requests one by one."
+        },
+        {
+          "type": "trap",
+          "title": "Trap: bouncing trusted reads through your own Route Handler",
+          "tone": "pitfall",
+          "html": "<p>If only your own route tree needs the data, calling your own Route Handler from a Server Component usually adds an unnecessary HTTP hop, extra serialization, and more places for auth and caching bugs to hide. Reach for a Route Handler when you truly need an HTTP boundary, not by default.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: fix the waterfall",
+          "prompt": "A dashboard route awaits <code>getTeam()</code>, then <code>getProjects()</code>, then <code>getNotifications()</code>. Only <code>getProjects()</code> depends on the team id. What should you change first?",
+          "answerHtml": "<p>Keep the dependent chain where it is needed, but pull unrelated work forward. For example, start <code>getNotifications()</code> before awaiting <code>getTeam()</code>, then resolve both branches together. The goal is to keep only the true dependency, not the accidental ones.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 5 recap",
+          "items": [
+            "Server Components are the natural place for trusted reads with fetch, ORMs, or direct database access.",
+            "Layouts and pages start in parallel, but individual components can still create waterfalls if they await sequentially.",
+            "Use Promise.all or promise-passing when requests are independent.",
+            "Only introduce an HTTP boundary when you actually need one."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why is server-side data ownership the default recommendation in App Router?",
+          "answerHtml": "<p>Because the server can access trusted resources directly, keep credentials out of the browser, and send only the data the UI needs instead of shipping query logic to the client.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How can a component still create a waterfall even though App Router renders segments in parallel?",
+          "answerHtml": "<p>Parallel segment rendering does not prevent a single component from awaiting requests one after another. If you start the second request only after the first resolves, you have created a local waterfall.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When is a Route Handler a better choice than direct server-side fetching in a route?",
+          "answerHtml": "<p>Choose a Route Handler when you need a real HTTP boundary, such as a webhook, external client, upload endpoint, or a non-UI caller. For internal route rendering, direct server access is usually simpler and faster.</p>"
+        }
+      ]
+    },
+    {
+      "id": "cache-components-use-cache-revalidation",
+      "intro": "Caching is one of the hardest parts of modern Next.js. This chapter will make the model explicit: Cache Components, <code>use cache</code>, freshness, invalidation, and how stale content appears in real apps.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Cache Components make caching explicit",
+          "html": "<p>Next.js 16 changes the caching mental model: request-time execution is the default, and caching becomes an explicit choice through Cache Components and <code>use cache</code>. That is a big shift from the earlier App Router story where caching often felt implicit and surprising.</p><p>The upside is clarity. You mark the work that should be reusable, attach cache semantics to it, and then invalidate it deliberately when mutations happen.</p>"
+        },
+        {
+          "type": "mechanics",
+          "title": "How a use cache scope becomes reusable work",
+          "steps": [
+            "Enable Cache Components with <code>cacheComponents: true</code> in Next config.",
+            "Add <code>&quot;use cache&quot;</code> at the file, component, or async function level to mark work as cacheable.",
+            "Arguments and closed-over values become part of the cache key, so different inputs produce different cache entries.",
+            "Use <code>cacheLife</code> and <code>cacheTag</code> to define freshness and invalidation semantics close to the cached work.",
+            "After a mutation, use path-based or tag-based invalidation APIs to decide whether users should see stale content briefly or fresh data immediately."
+          ]
+        },
+        {
+          "type": "compare",
+          "title": "revalidatePath vs revalidateTag vs updateTag",
+          "items": [
+            {
+              "label": "revalidatePath",
+              "html": "<p>Refresh a specific page or layout path. This is useful when the route itself needs fresh data or when you want to target a concrete UI surface.</p>"
+            },
+            {
+              "label": "revalidateTag",
+              "html": "<p>Mark tagged data as stale across every page that uses the tag. With <code>profile=&quot;max&quot;</code>, this follows stale-while-revalidate behavior.</p>"
+            },
+            {
+              "label": "updateTag",
+              "html": "<p>Expire tagged cached data immediately for read-your-own-writes flows. This is designed for Server Actions when the user should see fresh data right away after a mutation.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Tag cached data close to the source",
+          "language": "ts",
+          "code": "import { cacheLife, cacheTag } from 'next/cache';\\n\\nexport async function getProducts(category: string) {\\n  'use cache';\\n\\n  cacheLife('hours');\\n  cacheTag(`products:${category}`);\\n\\n  return db.product.findMany({\\n    where: { category },\\n    orderBy: { updatedAt: 'desc' }\\n  });\\n}",
+          "caption": "Cache the computation where it happens, then tag it so mutations can invalidate the same data consistently across the app."
+        },
+        {
+          "type": "richText",
+          "title": "Pass runtime data into cached scopes instead of reading it inside",
+          "html": "<p>Runtime APIs like <code>cookies()</code> and <code>headers()</code> do not belong inside a cached scope. Read the runtime value outside the cached function or component, then pass the value in as an argument so it becomes part of the cache key.</p><p>This keeps the cached work predictable and prevents accidental coupling between reusable cache entries and request-specific data.</p>"
+        },
+        {
+          "type": "trap",
+          "title": "Trap: mixing request-time APIs into cached work",
+          "tone": "warning",
+          "html": "<p>If you read <code>cookies()</code>, <code>headers()</code>, or other request-specific values inside a <code>use cache</code> scope, you break the clean line between reusable work and runtime data. Read request data first, then pass it into the cached function if it truly belongs in the cache key.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: pick the invalidation strategy",
+          "prompt": "An editor publishes a new article. The author should see the new article immediately on the dashboard, but the public catalog can tolerate a brief stale view while the background refresh happens. Which invalidation tools fit each side?",
+          "answerHtml": "<p>Use <code>updateTag</code> for the author-facing read-your-own-writes surface when immediate freshness matters, and use <code>revalidateTag</code> with a stale-while-revalidate profile for the broader catalog if brief staleness is acceptable. If a specific page shell also needs refreshing, pair either approach with <code>revalidatePath</code>.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 6 recap",
+          "items": [
+            "Next.js 16 makes request-time work the default and caching an explicit opt-in.",
+            "use cache can be applied at the route, component, or function level.",
+            "cacheLife and cacheTag define freshness and invalidation close to the cached work.",
+            "revalidatePath, revalidateTag, and updateTag solve different freshness problems."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What changed in the caching mental model in Next.js 16?",
+          "answerHtml": "<p>Next.js 16 makes request-time execution the default and moves caching into an explicit opt-in model with Cache Components and <code>use cache</code>.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When would you choose updateTag instead of revalidateTag?",
+          "answerHtml": "<p>Choose <code>updateTag</code> in a Server Action when the user needs fresh data immediately after a write. Choose <code>revalidateTag</code> when stale-while-revalidate behavior is acceptable.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is passing runtime data into a cached function better than reading cookies inside it?",
+          "answerHtml": "<p>Passing runtime data as an argument makes the cache key explicit and keeps the cached scope deterministic. Reading request APIs inside the cached scope couples reusable work to request-specific state and makes the cache boundary harder to reason about.</p>"
+        }
+      ]
+    },
+    {
+      "id": "rendering-streaming-partial-prerendering",
+      "intro": "Static rendering, dynamic rendering, streaming, and Partial Prerendering should be understood as one rendering strategy toolbox. This chapter will connect them instead of treating them as isolated buzzwords.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Rendering is now a shell-plus-holes decision",
+          "html": "<p>With Cache Components, modern Next.js rendering is not a binary static-versus-dynamic decision for the whole route. You can prerender a stable shell, then stream the parts that depend on runtime or uncached data behind Suspense boundaries.</p><p>The right question becomes: what belongs in the first HTML shell, and what should arrive later as a streamed hole?</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Fully cached shell vs request-time hole",
+          "items": [
+            {
+              "label": "Fully cached shell",
+              "html": "<p>Content that is stable enough to prerender or cache should be included in the initial HTML so the route becomes visible quickly.</p>"
+            },
+            {
+              "label": "Request-time hole",
+              "html": "<p>Personalized, uncached, or runtime-dependent work should sit behind Suspense so it can stream in without blocking the whole route.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How streaming and PPR cooperate",
+          "steps": [
+            "During prerendering, Next.js builds the cached shell and the fallbacks for dynamic regions.",
+            "When a request arrives, the browser can receive that shell immediately instead of waiting for every slow dependency.",
+            "Uncached or runtime-dependent work behind Suspense keeps rendering on the server and streams into the open hole when ready.",
+            "Client hydration attaches interactivity to the relevant client boundaries without requiring the entire route to wait first.",
+            "In Next.js 16, Partial Prerendering is no longer a separate experimental flag; it is the rendering story completed by Cache Components."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Cached shell with a streamed personalized panel",
+          "language": "tsx",
+          "code": "import { Suspense } from 'react';\\nimport { cacheLife } from 'next/cache';\\nimport { cookies } from 'next/headers';\\n\\nasync function ProductCatalog() {\\n  'use cache';\\n  cacheLife('hours');\\n\\n  const products = await db.product.findMany();\\n  return <CatalogList products={products} />;\\n}\\n\\nasync function PersonalizedCart() {\\n  const cookieStore = await cookies();\\n  const cartId = cookieStore.get('cart')?.value;\\n  const cart = cartId ? await getCart(cartId) : null;\\n  return <CartPanel cart={cart} />;\\n}\\n\\nexport default function Page() {\\n  return (\\n    <>\\n      <ProductCatalog />\\n      <Suspense fallback={<CartSkeleton />}>\\n        <PersonalizedCart />\\n      </Suspense>\\n    </>\\n  );\\n}",
+          "caption": "The product catalog can live in the cached shell, while the personalized cart remains request-time work that streams through a Suspense boundary."
+        },
+        {
+          "type": "richText",
+          "title": "PPR moved into Cache Components in Next.js 16",
+          "html": "<p>Earlier Next.js releases introduced Partial Prerendering as a separate experimental idea. In Next.js 16, the framework reframes that behavior through Cache Components: you opt into cacheable shell work and stream the uncached pieces. That makes the rendering model easier to teach and easier to reason about in production.</p>"
+        },
+        {
+          "type": "trap",
+          "title": "Trap: thinking Suspense alone decides caching",
+          "tone": "pitfall",
+          "html": "<p>Suspense controls loading boundaries and streaming behavior, but it does not magically make data cached or dynamic. Your data access pattern and cache directives determine freshness; Suspense determines where the waiting becomes visible.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: choose the rendering strategy",
+          "prompt": "A marketing page has stable product copy, a personalized price box, and a live stock widget that may take a moment to load. What belongs in the shell, and what should stream later?",
+          "answerHtml": "<p>The stable marketing copy belongs in the cached shell. The personalized price box and live stock widget should sit behind Suspense boundaries as request-time work if they depend on user or fast-changing runtime data. The goal is to keep the first paint fast without pretending everything is static.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 7 recap",
+          "items": [
+            "Modern Next.js rendering is about shell design plus streamed holes, not only route-wide labels like SSR or SSG.",
+            "Suspense defines where waiting is visible and where streaming can happen.",
+            "Cache Components let one route mix cached shell content with request-time dynamic content.",
+            "Next.js 16 folds PPR into the Cache Components story."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What problem does streaming solve in App Router?",
+          "answerHtml": "<p>Streaming lets the browser see ready parts of a route sooner instead of waiting for every slow dependency to finish before anything appears.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How can one route be partly cached and partly dynamic?",
+          "answerHtml": "<p>Cache Components allow cached work to become part of the prerendered shell, while request-time work behind Suspense can stream later in the same route.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What changed about Partial Prerendering in Next.js 16?",
+          "answerHtml": "<p>Next.js 16 stops treating PPR as a separate experimental concept and completes that rendering model through Cache Components, where cached shell work and streamed dynamic holes live in the same route architecture.</p>"
+        }
+      ]
+    },
+    {
+      "id": "server-functions-forms-mutations",
+      "intro": "Read paths and write paths have different failure modes. This chapter will teach Server Functions, form actions, redirects, validation, optimistic coordination, and safe mutation flows in modern Next.js.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Server Functions are the write path",
+          "html": "<p>Next.js uses React Server Functions for mutations. In an action or mutation context, the same idea is often called a Server Action. The important architectural point is that writes should move through a trusted server boundary where you can validate input, authorize the caller, mutate data, invalidate caches, and return updated UI in one flow.</p><p>Forms are the most ergonomic path because they integrate directly with the framework, support progressive enhancement, and line up naturally with mutation lifecycles.</p>"
+        },
+        {
+          "type": "mechanics",
+          "title": "Mutation flow from submit to fresh UI",
+          "steps": [
+            "A form or client event invokes a Server Function through a framework-managed network request.",
+            "The server receives FormData or explicit arguments and performs authentication, authorization, and validation.",
+            "If validation passes, the mutation writes to the database or another trusted backend.",
+            "The action invalidates paths or tags, or refreshes the current tree, depending on the freshness requirement.",
+            "If the UX should move elsewhere, call redirect after invalidation. Any code after redirect will not run."
+          ]
+        },
+        {
+          "type": "compare",
+          "title": "Server Function vs Route Handler for mutations",
+          "items": [
+            {
+              "label": "Server Function",
+              "html": "<p>Best when the caller is already inside your Next.js UI. It integrates with forms, pending state, cache invalidation, and route updates.</p>"
+            },
+            {
+              "label": "Route Handler",
+              "html": "<p>Best when you need a general HTTP endpoint for webhooks, third-party callers, uploads, or non-UI clients that should not depend on the React tree.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Validated create action with redirect",
+          "language": "ts",
+          "code": "'use server';\\n\\nimport { z } from 'zod';\\nimport { updateTag } from 'next/cache';\\nimport { redirect } from 'next/navigation';\\n\\nconst postSchema = z.object({\\n  title: z.string().min(3),\\n  body: z.string().min(20)\\n});\\n\\nexport async function createPost(formData: FormData) {\\n  const parsed = postSchema.safeParse({\\n    title: formData.get('title'),\\n    body: formData.get('body')\\n  });\\n\\n  if (!parsed.success) {\\n    return { errors: parsed.error.flatten().fieldErrors };\\n  }\\n\\n  const post = await db.post.create({ data: parsed.data });\\n\\n  updateTag('posts');\\n  updateTag(`post:${post.id}`);\\n\\n  redirect(`/posts/${post.id}`);\\n}",
+          "caption": "Validate first, write second, invalidate third, and redirect last. That order keeps mutation flows predictable."
+        },
+        {
+          "type": "richText",
+          "title": "Validation, pending state, and optimistic UI",
+          "html": "<p>Use server-side validation for the trusted result, and pair it with React's form helpers for the client experience. <code>useActionState</code> is useful when the action needs to return validation errors or status, <code>useFormStatus</code> helps nested submit buttons show pending state, and <code>useOptimistic</code> helps when users should see the optimistic result before the mutation finishes.</p><p>Server Components support progressive enhancement by default, so forms can still submit before the whole client bundle finishes hydrating.</p>"
+        },
+        {
+          "type": "trap",
+          "title": "Trap: calling redirect too early or expecting code after it to run",
+          "tone": "warning",
+          "html": "<p><code>redirect()</code> throws a framework-handled control-flow exception. If you call it before invalidation, or expect logging and cleanup after it, you will get surprising results. Perform required validation, writes, and freshness work first, then redirect last.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: design the mutation boundary",
+          "prompt": "A settings form updates the user's profile, should show inline validation errors, and should keep the user on the same page with fresh data after success. What should the mutation flow look like?",
+          "answerHtml": "<p>Use a Server Function invoked by the form. Validate on the server, return structured errors through <code>useActionState</code> when needed, write to the database on success, and then invalidate the relevant path or tags or call <code>refresh()</code> if the current tree should re-render in place. Redirect is unnecessary if the user stays on the same screen.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 8 recap",
+          "items": [
+            "Server Functions are the trusted write path for UI-driven mutations.",
+            "Forms align naturally with validation, pending state, progressive enhancement, and cache invalidation.",
+            "Perform validation, write, invalidation, and only then redirect if navigation is part of the UX.",
+            "UseActionState, useFormStatus, and useOptimistic improve mutation UX without moving business logic to the client."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the difference between a Server Function and a Server Action?",
+          "answerHtml": "<p>Server Function is the broader term for an async function that runs on the server and can be invoked from the client. In mutation or form contexts, that same pattern is commonly called a Server Action.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why are forms the most natural mutation path in modern Next.js?",
+          "answerHtml": "<p>Forms integrate directly with Server Functions, support progressive enhancement, fit naturally with validation and pending states, and let Next.js return updated UI and data in the same roundtrip.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the safe order of operations in a mutating Server Function?",
+          "answerHtml": "<p>Authenticate and authorize, validate input, perform the write, invalidate the relevant cache or refresh the current tree, and then redirect if navigation is required. Do not put essential work after <code>redirect()</code>.</p>"
+        }
+      ]
+    },
+    {
+      "id": "request-lifecycle-proxy-cookies-headers-auth",
+      "intro": "Request-time logic deserves its own mental model. This chapter will teach the request path from the browser into <code>proxy.ts</code>, then into route matching, cookies, headers, redirects, and auth gating decisions.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Proxy is request-time policy, not a second app layer",
+          "html": "<p>Starting in Next.js 16, <code>middleware</code> is renamed to <code>proxy</code> to better reflect its purpose. Proxy runs before a request is completed and is best for fast request-time policy decisions like redirects, rewrites, header changes, and optimistic route gating.</p><p>That does not make it a full authorization system. Proxy should stay lightweight and should not become the place where slow data fetching or your deepest security guarantees live.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Proxy vs in-render auth checks",
+          "items": [
+            {
+              "label": "Proxy",
+              "html": "<p>Use it for early redirects, rewrites, and lightweight request-time checks before render work starts. This is useful for optimistic gating and URL policy.</p>"
+            },
+            {
+              "label": "In-render auth checks",
+              "html": "<p>Use them close to the data when access depends on resource-level authorization or server-side business rules. These checks remain the real line of defense.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "From incoming request to route work",
+          "steps": [
+            "The browser sends a request for a route or asset.",
+            "Proxy can run first when the matcher applies, and it can rewrite, redirect, set headers, or return a response directly.",
+            "If the request continues, Next.js matches the route and begins layout, page, or Route Handler execution.",
+            "Cookies and headers are then available as request-time signals inside server code, where they can influence rendering or authorization.",
+            "The deeper authorization and data access checks should still happen close to the data source, not only in Proxy."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Early auth gate in proxy.ts",
+          "language": "ts",
+          "code": "import { NextResponse } from 'next/server';\\nimport type { NextRequest } from 'next/server';\\n\\nexport function proxy(request: NextRequest) {\\n  const isDashboard = request.nextUrl.pathname.startsWith('/dashboard');\\n  const hasSession = request.cookies.has('session');\\n\\n  if (isDashboard && !hasSession) {\\n    return NextResponse.redirect(new URL('/login', request.url));\\n  }\\n\\n  return NextResponse.next();\\n}\\n\\nexport const config = {\\n  matcher: ['/dashboard/:path*']\\n};",
+          "caption": "Use Proxy for quick request-time decisions. Keep it fast, targeted, and focused on routing policy instead of full business logic."
+        },
+        {
+          "type": "richText",
+          "title": "Cookies and headers are request signals",
+          "html": "<p>Cookies and headers are not universal state; they are request-scoped inputs. Reading them in Server Components, Route Handlers, or Proxy means the route is now responding to request-time data, which usually shifts the work away from pure static reuse.</p><p>That makes them powerful but expensive. Reach for them when the route truly depends on user, session, locale, or request metadata, not as a reflex.</p>"
+        },
+        {
+          "type": "trap",
+          "title": "Trap: doing slow data fetching or full authorization in Proxy",
+          "tone": "warning",
+          "html": "<p>Next.js docs explicitly position Proxy as a fast request-time policy layer, not a place for slow data fetching. Cache options on <code>fetch</code> have no effect there, and your deepest authorization checks still belong near the data source. Use Proxy for optimistic checks, then verify again where the data is actually read or written.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: where should the auth gate live?",
+          "prompt": "A user visiting <code>/dashboard</code> should be redirected to <code>/login</code> when no session cookie exists, but team-level permissions still need to be checked against the database before showing a billing page. Which checks belong in Proxy and which belong in render or data access code?",
+          "answerHtml": "<p>The missing-session redirect is a good Proxy check because it is fast and request-shaped. The team permission check belongs in render or data access code because it depends on trusted resource-level authorization that must stay close to the database truth.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 9 recap",
+          "items": [
+            "Proxy is for fast request-time routing policy, not deep business logic.",
+            "Use Proxy for early redirects, rewrites, and optimistic auth gates.",
+            "Cookies and headers are request-scoped signals that usually make work request-specific.",
+            "Real authorization still belongs close to the data source."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is Proxy for in modern Next.js?",
+          "answerHtml": "<p>Proxy runs before a request is completed and is used for fast request-time policy decisions like redirects, rewrites, header changes, and lightweight route gating.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why should Proxy not be your only authorization layer?",
+          "answerHtml": "<p>Because Proxy is best for optimistic checks, not resource-level authorization. The final security decision should still happen close to the data source where the protected read or write actually occurs.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do cookies and headers change route behavior in App Router?",
+          "answerHtml": "<p>They introduce request-time variability. Once your render logic depends on cookies or headers, the route is now shaped by request-scoped data rather than purely static reuse.</p>"
+        }
+      ]
+    },
+    {
+      "id": "apis-databases-full-stack-integration",
+      "intro": "Next.js becomes truly valuable when you understand how Route Handlers, databases, auth providers, uploads, webhooks, and background boundaries fit together in one full-stack system.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Route Handlers are HTTP boundaries",
+          "html": "<p>Route Handlers are the App Router way to expose HTTP endpoints with the Web Request and Response APIs. They are the right fit when the caller is external to your React tree, such as a webhook provider, an upload client, a third-party service, or any consumer that needs a stable HTTP contract.</p><p>That is different from Server Functions, which are best when the caller already lives inside your Next.js UI and wants framework-managed mutation behavior.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Route Handler vs Server Function",
+          "items": [
+            {
+              "label": "Route Handler",
+              "html": "<p>Choose this for real HTTP APIs, webhooks, uploads, and third-party callers. It is protocol-first and stands on its own outside the component tree.</p>"
+            },
+            {
+              "label": "Server Function",
+              "html": "<p>Choose this for UI-driven writes from forms or client events inside your app. It is integrated with the route tree, cache invalidation, and framework rendering updates.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Choose the boundary by caller and protocol",
+          "steps": [
+            "Start by identifying who is calling the code: your own route tree, a browser form outside React, or a third-party service.",
+            "If the caller needs a stable HTTP endpoint, use a Route Handler.",
+            "If the caller is already inside your app UI and wants a mutation tied to rendering updates, use a Server Function.",
+            "Then choose the runtime and database driver that match the work: Node for the broadest library compatibility, Edge only for lightweight web-standard logic that fits its constraints.",
+            "Keep backend-specific concerns such as webhook verification, uploads, and background handoff behind the HTTP boundary instead of leaking them into page rendering."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Webhook route with an explicit runtime",
+          "language": "ts",
+          "code": "import { NextRequest, NextResponse } from 'next/server';\\n\\nexport const runtime = 'nodejs';\\n\\nexport async function POST(request: NextRequest) {\\n  const signature = request.headers.get('x-billing-signature');\\n\\n  if (!signature) {\\n    return NextResponse.json({ error: 'Missing signature' }, { status: 400 });\\n  }\\n\\n  const body = await request.text();\\n  const event = verifyBillingSignature(body, signature);\\n\\n  await syncBillingEvent(event);\\n\\n  return NextResponse.json({ ok: true });\\n}",
+          "caption": "A webhook is a textbook Route Handler case: HTTP-first caller, explicit runtime choice, and backend work that should stay outside the UI rendering path."
+        },
+        {
+          "type": "richText",
+          "title": "Database drivers and runtimes must agree",
+          "html": "<p>Runtime selection is not only about latency. It also determines what libraries and drivers you can safely use. Node runtime gives you the widest compatibility with native Node packages and heavier SDKs, while Edge works best when your dependencies are lightweight and web-standard.</p><p>If your database client or auth stack assumes Node APIs, forcing it into Edge will create production-only failures. Choose the runtime that matches the actual backend contract, not just the lowest-latency headline.</p>"
+        },
+        {
+          "type": "trap",
+          "title": "Trap: turning Route Handlers into your internal RPC layer for everything",
+          "tone": "pitfall",
+          "html": "<p>If your own Server Components or Server Functions start calling your own Route Handlers for ordinary internal reads and writes, you add network hops, duplicate auth logic, and more cache surface than you need. Use Route Handlers for true HTTP boundaries, not as an automatic middle layer.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: pick the boundary for each caller",
+          "prompt": "You need one endpoint for a payment provider webhook, one upload flow for a third-party mobile client, and one settings form inside your own dashboard UI. Which ones should be Route Handlers and which one should be a Server Function?",
+          "answerHtml": "<p>The payment webhook and the mobile upload flow should be Route Handlers because they are external HTTP-facing callers. The dashboard settings form should be a Server Function because the caller is already inside your app UI and benefits from integrated invalidation and rendering updates.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 10 recap",
+          "items": [
+            "Route Handlers are for real HTTP boundaries.",
+            "Server Functions are for UI-driven mutations inside your app.",
+            "Runtime choice must match your database drivers and backend libraries.",
+            "Avoid using Route Handlers as an internal indirection layer without a real protocol need."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "When should you choose a Route Handler over a Server Function?",
+          "answerHtml": "<p>Choose a Route Handler when the caller is external or when you need a standalone HTTP endpoint such as a webhook, upload route, or third-party integration.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why is runtime choice part of full-stack design in Next.js?",
+          "answerHtml": "<p>Because your runtime determines which libraries, SDKs, and database drivers are available. A low-latency goal does not help if the runtime cannot support the backend stack you actually need.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is calling your own Route Handler from a Server Component often a smell?",
+          "answerHtml": "<p>Because it adds an unnecessary HTTP hop, duplicates auth and caching concerns, and makes internal server-side work more complex than direct access would be.</p>"
+        }
+      ]
+    },
+    {
+      "id": "performance-assets-build-tooling",
+      "intro": "Performance in Next.js is more than Lighthouse scores. This chapter will connect assets, prefetching, hydration cost, bundle weight, Turbopack, and the practical debugging moves that keep large apps responsive.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Performance starts with less client work",
+          "html": "<p>The fastest Next.js route is usually the one that ships less client JavaScript, hydrates fewer boundaries, and keeps as much work as possible on the server. Asset optimization matters, but it cannot rescue a route that has already chosen the wrong client and data boundaries.</p><p>So performance work in Next.js starts with architecture: slim client surfaces, fast navigation, and only the assets the route actually needs.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Raw assets vs framework-aware assets",
+          "items": [
+            {
+              "label": "Raw browser primitives",
+              "html": "<p>Plain <code>&lt;img&gt;</code> tags and externally hosted fonts can work, but you miss framework-level optimization, self-hosting, and loading coordination.</p>"
+            },
+            {
+              "label": "Framework-aware assets",
+              "html": "<p><code>next/image</code> and <code>next/font</code> tie asset loading into the framework so images and fonts are optimized with better performance defaults.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Where a Next.js route usually gets expensive",
+          "steps": [
+            "Initial navigation needs HTML plus the React Server Component payload for server-rendered work.",
+            "Client Components then add hydration cost, so broad client boundaries increase both JavaScript and interactivity delay.",
+            "Asset-heavy routes pay for images, fonts, and scripts unless those resources are optimized and scoped carefully.",
+            "Prefetching helps hide navigation latency: static routes can prefetch the full route, while dynamic routes prefetch less and rely on loading states or streaming.",
+            "Next.js 16 improves navigation with layout deduplication and incremental prefetching, but oversized bundles and poorly scoped client work still dominate real-world slowdowns."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Optimize images and fonts at the framework layer",
+          "language": "tsx",
+          "code": "import Image from 'next/image';\\nimport { Inter } from 'next/font/google';\\n\\nconst inter = Inter({\\n  subsets: ['latin'],\\n  display: 'swap'\\n});\\n\\nexport default function Hero() {\\n  return (\\n    <section className={inter.className}>\\n      <Image\\n        src='/dashboard-hero.png'\\n        alt='Analytics dashboard preview'\\n        width={1440}\\n        height={900}\\n        preload\\n        sizes='(max-width: 768px) 100vw, 80vw'\\n      />\\n    </section>\\n  );\\n}",
+          "caption": "Use the framework primitives when possible. In Next.js 16, the Image component supports <code>preload</code>, while <code>next/font</code> keeps fonts self-hosted and optimized."
+        },
+        {
+          "type": "richText",
+          "title": "Turbopack is a developer-time performance tool",
+          "html": "<p>Turbopack improves local build and dev feedback loops. In Next.js 16, its filesystem cache reduces repeated work across sessions, with development caching stable and build caching still more cautious. That is great for team velocity, but it does not automatically fix a heavy production bundle.</p><p>Use Turbopack to speed iteration, and use bundle analysis plus server-first architecture to reduce what ships to the browser.</p>"
+        },
+        {
+          "type": "trap",
+          "title": "Trap: blaming the bundler for runtime bundle problems",
+          "tone": "pitfall",
+          "html": "<p>A faster dev bundler does not make an oversized client bundle disappear in production. If navigation feels laggy or hydration starts too late, inspect client boundaries, third-party dependencies, and prefetch strategy before assuming the tooling layer is the bottleneck.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: diagnose the laggy route",
+          "prompt": "A dashboard feels sluggish on first load and prefetching seems inconsistent. The page uses several Client Components, large charting libraries, many links in a scrolling table, and custom font loading through CSS. Where would you investigate first?",
+          "answerHtml": "<p>Start with the biggest structural costs: broad Client Component boundaries, heavy third-party bundles, and asset loading choices. Then inspect prefetch behavior for large link lists and whether a <code>loading.tsx</code> boundary would improve dynamic-route transitions. Framework-aware fonts and images are also an easy win if the route still uses manual asset loading.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 11 recap",
+          "items": [
+            "Performance starts with server-first architecture and smaller client surfaces.",
+            "next/image and next/font are framework-level asset optimizations, not just convenience wrappers.",
+            "Prefetching and loading boundaries shape how fast navigation feels, especially on dynamic routes.",
+            "Turbopack speeds development, while bundle analysis and client-boundary discipline protect runtime performance."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why should you prefer next/image and next/font over manual asset loading?",
+          "answerHtml": "<p>Because they plug asset loading into the framework's optimization pipeline, which improves image handling, font self-hosting, privacy, and loading behavior.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How does prefetching differ between static and dynamic routes?",
+          "answerHtml": "<p>Static routes can prefetch the full route, while dynamic routes prefetch less and often rely on <code>loading.tsx</code> or streaming to keep navigation responsive.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What does Turbopack help with, and what does it not solve by itself?",
+          "answerHtml": "<p>Turbopack improves development and build feedback loops, especially with filesystem caching. It does not automatically solve production runtime issues like oversized client bundles, poor boundary placement, or unnecessary hydration work.</p>"
+        }
+      ]
+    },
+    {
+      "id": "security-reliability-production-hardening",
+      "intro": "Server rendering and full-stack mutations create real attack surface. This chapter will teach secret boundaries, validation, auth and authz, SSR-specific risks, cache poisoning, and reliability patterns that fail safely.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Server-only boundaries are your first hardening layer",
+          "html": "<p>Security in Next.js starts with code placement. Keep privileged logic in server-only modules, keep data access behind a small trusted surface, and pass only the fields the client truly needs. That is why the Next.js security guidance emphasizes a data access layer, DTO-style outputs, and <code>server-only</code> guards for modules that must never leak into the client bundle.</p><p>If you blur those boundaries, every later control becomes harder: validation, authorization, cache invalidation, and incident response all lose clarity.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Authentication vs authorization vs validation",
+          "items": [
+            {
+              "label": "Authentication",
+              "html": "<p>Verifies who the caller is. In practice this usually means session, token, or credential checks.</p>"
+            },
+            {
+              "label": "Authorization",
+              "html": "<p>Decides what that authenticated caller is allowed to read or change. This must stay close to the data source.</p>"
+            },
+            {
+              "label": "Validation",
+              "html": "<p>Checks whether the input shape and content are acceptable before the write reaches your business logic or database.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Trust boundaries for reads, writes, and caches",
+          "steps": [
+            "Authenticate the caller and establish a trusted identity for the request.",
+            "Authorize the exact read or write against the resource being accessed, not just the route name.",
+            "Validate all client input before it reaches your persistence layer or side effects.",
+            "Return only the data fields the caller should actually receive, especially when passing data into Client Components.",
+            "Invalidate caches only after the trusted write succeeds, and never let cached UI become your authorization source of truth."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Hardened server-only mutation boundary",
+          "language": "ts",
+          "code": "import 'server-only';\\nimport { z } from 'zod';\\nimport { updateTag } from 'next/cache';\\n\\nconst profileSchema = z.object({\\n  displayName: z.string().min(2).max(50)\\n});\\n\\nexport async function updateProfile(session: Session | null, formData: FormData) {\\n  if (!session?.userId) {\\n    throw new Error('Unauthorized');\\n  }\\n\\n  const parsed = profileSchema.safeParse({\\n    displayName: formData.get('displayName')\\n  });\\n\\n  if (!parsed.success) {\\n    return { errors: parsed.error.flatten().fieldErrors };\\n  }\\n\\n  await db.user.update({\\n    where: { id: session.userId },\\n    data: parsed.data\\n  });\\n\\n  updateTag(`user:${session.userId}`);\\n}",
+          "caption": "A hardened mutation boundary keeps the code server-only, validates input, and invalidates caches only after the trusted write succeeds."
+        },
+        {
+          "type": "richText",
+          "title": "CSP and nonce strategies can change rendering behavior",
+          "html": "<p>Content Security Policy is not only a security header exercise. In Next.js, a nonce-based CSP usually requires dynamic rendering because the nonce must be generated per request, then read from headers and applied to framework scripts. That improves script control, but it also changes rendering and caching behavior.</p><p>For static routes, Subresource Integrity can sometimes be a better fit because it protects script integrity without forcing the same request-time nonce model.</p>"
+        },
+        {
+          "type": "trap",
+          "title": "Trap: trusting client-provided role data or cached UI state",
+          "tone": "warning",
+          "html": "<p>A hidden button is not authorization. A cached client state value is not authorization either. If role or access checks only live in the browser, or only in previously rendered UI, an attacker can still call the protected server path directly.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: harden the mutation path",
+          "prompt": "An admin-only form updates a user's billing tier. The current implementation trusts a hidden <code>role</code> field from the client, skips schema validation, and revalidates before the database write. What must change first?",
+          "answerHtml": "<p>Move role checks to trusted server-side authorization, validate the input on the server, perform the write, and only then invalidate caches. The client can suggest intent, but it must never supply trusted identity or authorization truth.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 12 recap",
+          "items": [
+            "Server-only modules and narrow data access layers are foundational hardening tools.",
+            "Authentication, authorization, and validation solve different problems and all three matter.",
+            "Nonce-based CSP changes rendering behavior because it depends on request-time headers.",
+            "Cached UI and client props are never a substitute for server-side authorization."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why is server-only code placement a security feature in Next.js?",
+          "answerHtml": "<p>Because it prevents privileged logic and secrets from drifting into Client Components or client bundles, which keeps the trust boundary clear.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between authentication, authorization, and validation?",
+          "answerHtml": "<p>Authentication identifies the caller, authorization decides what they may access, and validation checks whether the input itself is acceptable.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can a nonce-based CSP make a route more dynamic?",
+          "answerHtml": "<p>Because the nonce is generated per request, passed through headers, and attached during rendering, which moves that route toward request-time behavior.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is revalidating before a write a reliability bug as well as a security smell?",
+          "answerHtml": "<p>Because you can refresh cached views before the new source of truth exists, which creates inconsistent UI and makes failures harder to reason about.</p>"
+        }
+      ]
+    },
+    {
+      "id": "deployment-runtimes-self-hosting-scale",
+      "intro": "Shipping Next.js well means understanding runtimes, hosting assumptions, self-hosting tradeoffs, output modes, adapters, observability, and how the framework behaves outside local development.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Deployment is part of architecture",
+          "html": "<p>Local development hides the hard parts of production: multi-instance coordination, build identity, reverse proxies, cache storage, image optimization strategy, and runtime limitations. A Next.js app that looks correct on one machine can behave very differently when multiple instances, regions, and deployments start interacting.</p><p>That is why deployment choices belong in the architecture conversation, not only in an ops checklist at the end.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Node runtime vs Edge runtime in production",
+          "items": [
+            {
+              "label": "Node runtime",
+              "html": "<p>The default and most compatible choice. Use it when you need the broader Node ecosystem, heavier SDKs, or database drivers that assume Node APIs.</p>"
+            },
+            {
+              "label": "Edge runtime",
+              "html": "<p>Best for lightweight request-time logic that benefits from low-latency execution close to the user. It is not a universal upgrade if your dependencies do not fit the runtime.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "What changes when you leave localhost",
+          "steps": [
+            "Requests usually pass through a reverse proxy or CDN before they ever reach your Next.js server.",
+            "Multiple app instances may now serve traffic, which means caches and server-side state can no longer be treated as a single-machine truth.",
+            "Server Functions need a consistent encryption key across instances, or action payloads can fail between deployments.",
+            "Build identity and deployment skew matter because mixed assets or mismatched client/server versions create hard-to-debug production bugs.",
+            "Self-hosting also means choosing how images, caches, logging, and platform-level routing work outside the default managed platform."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Deployment identity in next.config.ts",
+          "language": "ts",
+          "code": "import type { NextConfig } from 'next';\\n\\nconst nextConfig: NextConfig = {\\n  generateBuildId: async () => process.env.GIT_HASH ?? 'local-build',\\n  deploymentId: process.env.DEPLOYMENT_ID\\n};\\n\\nexport default nextConfig;",
+          "caption": "Stable build identity helps prevent deployment skew problems when multiple app instances and client bundles overlap during rollout."
+        },
+        {
+          "type": "richText",
+          "title": "Self-hosting changes cache, images, and Server Functions",
+          "html": "<p>When you self-host, you own the production topology. That includes shared caches for reusable server work, image optimization strategy, reverse proxy behavior, logging, and the <code>NEXT_SERVER_ACTIONS_ENCRYPTION_KEY</code> coordination required when multiple instances must decrypt the same Server Function payloads.</p><p>If you skip that coordination, scale itself becomes a bug source: stale caches diverge, action payloads fail across instances, and mixed deployments can serve mismatched client and server code.</p>"
+        },
+        {
+          "type": "trap",
+          "title": "Trap: scaling to multiple instances without coordinating cache or encryption",
+          "tone": "warning",
+          "html": "<p>If each instance keeps its own isolated assumptions about cache state or Server Function encryption, the app may look fine under light traffic and then fail unpredictably after horizontal scaling. Production correctness depends on shared operational rules, not only on working code.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: choose the deployment shape",
+          "prompt": "A team wants a global marketing site, a latency-sensitive auth redirect, and a billing integration that depends on a Node-only SDK. Which parts are good Edge candidates, and which should stay on Node?",
+          "answerHtml": "<p>The global marketing shell and lightweight auth redirect logic may benefit from Edge if their dependencies fit. The billing integration should stay on Node because the SDK contract matters more than theoretical latency gains. Choose runtimes per workload, not by slogan.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 13 recap",
+          "items": [
+            "Deployment choices affect correctness, not just infrastructure taste.",
+            "Node is the safest default runtime; Edge is best for narrow lightweight work that fits its constraints.",
+            "Self-hosting means owning shared cache, image, logging, and encryption coordination.",
+            "Build identity and deployment skew are real production concerns in multi-instance rollouts."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why is deployment part of architecture in Next.js?",
+          "answerHtml": "<p>Because runtime choice, cache shape, build identity, and multi-instance coordination all affect how the app actually behaves in production.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When is the Node runtime a better choice than Edge?",
+          "answerHtml": "<p>When you need broader package compatibility, heavier SDKs, or database drivers that depend on Node APIs.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why does NEXT_SERVER_ACTIONS_ENCRYPTION_KEY matter in self-hosted multi-instance deployments?",
+          "answerHtml": "<p>Because different instances must be able to decrypt the same Server Function payloads. Without a shared key, action requests can fail unpredictably across instances.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What problem do generateBuildId and deploymentId help reduce?",
+          "answerHtml": "<p>They reduce deployment skew problems where mixed client assets and server code from overlapping rollouts create hard-to-debug behavior.</p>"
+        }
+      ]
+    },
+    {
+      "id": "migration-architecture-interview-mastery",
+      "intro": "The capstone chapter will tie modern Next.js architecture to migration strategy and interview pressure. It will cover Pages Router history, migration choices, debugging tradeoffs, and senior-level system reasoning.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Migrate by carving seams, not by rewriting blind",
+          "html": "<p>Next.js migration works best when you move route groups deliberately, not when you attempt one giant rewrite. The framework supports incremental adoption, which means <code>pages/</code> and <code>app/</code> can coexist while you move stable surfaces first and leave risky legacy areas isolated until you understand them.</p><p>The goal is not only to move files. It is to migrate mental models from page-level data methods toward route trees, server boundaries, cache decisions, and persistent layouts.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Pages Router mindset vs App Router mindset",
+          "items": [
+            {
+              "label": "Pages Router mindset",
+              "html": "<p>Think in page-level data hooks like <code>getServerSideProps</code> or <code>getStaticProps</code>, plus page-centric routing and wrapper patterns.</p>"
+            },
+            {
+              "label": "App Router mindset",
+              "html": "<p>Think in route trees, persistent layouts, Server and Client Component boundaries, explicit caching, streaming, and route-scoped metadata.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How to migrate incrementally without losing control",
+          "steps": [
+            "Keep the Pages Router and App Router separated while you choose a low-risk route group to migrate first.",
+            "Move shared UI into App Router layouts only when the ownership and persistence rules are clear.",
+            "Replace page-level data methods with server-first data access, then introduce Client Components only where interactivity demands them.",
+            "Compare route behavior carefully after each migration step: navigation, cache freshness, metadata, auth, and hydration all need validation.",
+            "Use the migration to simplify old abstractions instead of copy-pasting legacy patterns into the new router."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Coexisting pages and app during migration",
+          "language": "txt",
+          "code": "pages/\\n  dashboard.tsx\\n  api/legacy-report.ts\\napp/\\n  layout.tsx\\n  settings/page.tsx\\n  billing/page.tsx\\n  api/webhooks/route.ts",
+          "caption": "Incremental migration means the old and new routing systems can coexist while you move route groups one seam at a time."
+        },
+        {
+          "type": "richText",
+          "title": "Architecture questions are boundary questions",
+          "html": "<p>Most senior Next.js interview questions are really asking whether you understand boundaries: server versus client, cached versus fresh, HTTP versus in-tree mutation, Proxy versus render, Node versus Edge, and local assumptions versus production deployment reality.</p><p>If you can explain those boundaries clearly, most API questions become much easier to answer under pressure.</p>"
+        },
+        {
+          "type": "trap",
+          "title": "Trap: copying Pages Router data habits into App Router",
+          "tone": "pitfall",
+          "html": "<p>The most common migration mistake is recreating old page-level data habits through extra wrappers, internal API hops, and broad client boundaries. That preserves complexity without gaining the benefits of the new architecture.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: answer the system design follow-up",
+          "prompt": "An interviewer asks how you would build a multi-tenant dashboard with fast global navigation, secure billing mutations, and an incremental migration path from an older Pages Router app. What boundary decisions would you explain first?",
+          "answerHtml": "<p>Start with execution boundaries and trust boundaries: which data stays server-side, which UI islands become Client Components, where Proxy helps with early tenant redirects, when billing writes use Server Functions or Route Handlers, how cache invalidation works after mutations, and how route groups can migrate incrementally without rewriting the whole app at once.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 14 recap",
+          "items": [
+            "Good Next.js migration is incremental and seam-driven.",
+            "App Router rewards route-tree thinking, not page-level nostalgia.",
+            "Senior architecture answers usually reduce to boundary choices.",
+            "Interview mastery comes from explaining tradeoffs, not only naming APIs."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What problem does Next.js solve beyond plain React?",
+          "answerHtml": "<p>Next.js gives React a framework for routing, server rendering, data boundaries, caching, asset optimization, and deployment-friendly defaults.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the App Router?",
+          "answerHtml": "<p>The App Router is the file-system router in <code>app/</code> built around layouts, nested segments, Server Components, streaming, and route-level data and metadata behavior.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "When do you need to add use client?",
+          "answerHtml": "<p>Add <code>&quot;use client&quot;</code> only when a component needs browser-only APIs, client-side stateful hooks, or direct event-driven interactivity.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What does Proxy do in modern Next.js?",
+          "answerHtml": "<p>Proxy runs before a request completes and is used for fast request-time policy decisions like redirects, rewrites, and lightweight gating.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is a Route Handler?",
+          "answerHtml": "<p>A Route Handler is an App Router HTTP endpoint defined in <code>route.ts</code> that uses the Web Request and Response APIs.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What does use cache do?",
+          "answerHtml": "<p><code>use cache</code> marks a route, component, or async function as cacheable so its result can be reused with explicit freshness and invalidation semantics.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "Why should you prefer next/image and next/font when possible?",
+          "answerHtml": "<p>Because they connect asset loading to Next.js optimization so images and fonts are handled with better performance defaults.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "Why are Server Functions useful for forms?",
+          "answerHtml": "<p>They let forms validate, mutate, invalidate, and refresh UI through a trusted server boundary without building a separate client-side HTTP flow first.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How do Server Components differ from Client Components in Next.js?",
+          "answerHtml": "<p>Server Components run on the server by default and keep data access and heavy logic off the client, while Client Components ship JavaScript for interactivity and browser APIs.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When does a route become request-time or dynamic in App Router?",
+          "answerHtml": "<p>A route becomes request-shaped when it depends on request-specific signals or uncached runtime work such as cookies, headers, or other per-request data.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What causes a request waterfall in a Next.js route?",
+          "answerHtml": "<p>A waterfall happens when independent async work is started only after previous work resolves instead of being kicked off in parallel.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between revalidatePath and revalidateTag?",
+          "answerHtml": "<p><code>revalidatePath</code> targets a concrete page or layout path, while <code>revalidateTag</code> targets all cached data marked with the same tag across routes.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why can calling your own Route Handler from a Server Component be wasteful?",
+          "answerHtml": "<p>Because it adds an unnecessary HTTP hop and duplicates boundary logic that direct server-side access could handle more simply.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why do cookies or headers change rendering behavior?",
+          "answerHtml": "<p>Because they are request-scoped inputs, so once render logic depends on them the route can no longer be treated as purely static reused output.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What role does loading.tsx play on dynamic routes?",
+          "answerHtml": "<p><code>loading.tsx</code> provides an immediate loading boundary so navigation can feel responsive while dynamic route work continues.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When should you choose the Edge runtime?",
+          "answerHtml": "<p>Choose Edge for lightweight web-standard request-time logic that benefits from low-latency execution and fits the runtime's dependency constraints.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How is Partial Prerendering different from classic SSR or SSG?",
+          "answerHtml": "<p>It lets one route combine a cached shell with streamed request-time holes instead of forcing the whole route into a single fully static or fully dynamic bucket.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can hydration mismatches still happen in a Next.js app?",
+          "answerHtml": "<p>Because the client can render different output than the server when browser-only values, time-based output, randomness, or early client state changes affect the tree.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you diagnose stale data after a mutation in a cached route?",
+          "answerHtml": "<p>Check whether the write succeeded, whether the right path or tag was invalidated, whether the route is reading the same tag you updated, and whether stale-while-revalidate behavior is expected.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why should redirect usually happen last in a Server Function?",
+          "answerHtml": "<p>Because <code>redirect()</code> stops normal control flow, so validation, writes, and invalidation should happen before it.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What makes Proxy a bad place for deep authorization logic?",
+          "answerHtml": "<p>Proxy is designed for fast request-time policy, while deep authorization depends on resource truth that should stay close to the data source.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you decide between a Route Handler and a Server Function for a new endpoint?",
+          "answerHtml": "<p>Choose a Route Handler when the caller needs a real HTTP API and choose a Server Function when the caller already lives inside your Next.js UI.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can a nonce-based CSP force dynamic rendering?",
+          "answerHtml": "<p>Because the nonce is generated per request and applied through headers during rendering, which makes that output request-specific.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the security value of server-only modules and DTO-style outputs?",
+          "answerHtml": "<p>They keep secrets and privileged logic on the server and reduce the chance of leaking unnecessary fields into Client Components.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do build identity and deploymentId reduce rollout bugs?",
+          "answerHtml": "<p>They help prevent client and server artifacts from different deployments being mixed together during rollouts.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can more prefetch requests in Next.js 16 still be an improvement?",
+          "answerHtml": "<p>Because incremental prefetching and layout deduplication can reduce total transferred data even if the browser makes more smaller requests.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is a broad use client boundary near the top of the tree expensive?",
+          "answerHtml": "<p>It pushes more code into the client bundle, increases hydration work, and weakens the server-first advantages of App Router.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you choose Node vs Edge when latency and library compatibility conflict?",
+          "answerHtml": "<p>Default to the runtime that safely supports the real workload, then optimize latency where the dependency contract actually allows it.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How would you explain the render, cache, and request pipeline for a personalized dashboard route?",
+          "answerHtml": "<p>Describe the cached shell, the request-time personalized regions, the Server and Client Component boundaries, the invalidation path after mutations, and where hydration attaches interactivity.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How would you migrate a mature Pages Router app to the App Router safely?",
+          "answerHtml": "<p>Migrate incrementally by route seam, keep the routers separated, validate boundaries and cache behavior per route, and simplify legacy abstractions instead of copying them forward unchanged.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How would you design auth for a dashboard with optimistic redirect and resource-level billing permissions?",
+          "answerHtml": "<p>Use Proxy for the cheap unauthenticated redirect, but keep the real billing permission checks in trusted server-side data access close to the billing resources.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How would you debug a page that is fast locally but flaky after self-hosting across multiple instances?",
+          "answerHtml": "<p>Investigate shared cache assumptions, action encryption key consistency, reverse proxy behavior, build identity skew, and any local state that was accidentally treated like a cluster-wide truth.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How would you answer 'Why is my Next.js page slow?' at a senior level?",
+          "answerHtml": "<p>Break the problem into server work, network transfer, asset loading, client bundle weight, hydration cost, and cache behavior instead of blaming a single layer by default.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What are the main failure modes when mixing cached shell content with request-time holes?",
+          "answerHtml": "<p>The common failures are stale shell assumptions, missing Suspense boundaries, incorrect invalidation, and confusing users with mismatched freshness expectations.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "When is it reasonable to keep Pages Router code instead of migrating immediately?",
+          "answerHtml": "<p>When the route is stable, low-risk, and not blocking the architecture goals of the rest of the app, especially if a rushed migration would add more risk than value.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How would you structure a webhook plus dashboard write system in Next.js?",
+          "answerHtml": "<p>Use Route Handlers for the webhook HTTP boundary, Server Functions for in-app writes, and shared server-side domain logic beneath both so business rules stay consistent.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How would you explain the difference between cache freshness and authorization correctness?",
+          "answerHtml": "<p>Freshness is about whether the user sees the latest allowed data, while authorization correctness is about whether the user should be allowed to see that data at all.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How would you decide whether a problem belongs in Proxy, a Server Component, a Route Handler, or a Server Function?",
+          "answerHtml": "<p>Choose by boundary: Proxy for fast request policy, Server Components for trusted reads and rendering, Route Handlers for HTTP APIs, and Server Functions for UI-driven writes.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is a common App Router migration mistake from getServerSideProps thinking?",
+          "answerHtml": "<p>A common mistake is recreating page-level data wrappers and internal API hops instead of using server-first route segments and direct server data access.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How would you defend a Node-only deployment even when a team asks to move everything to Edge?",
+          "answerHtml": "<p>I would argue from workload reality: if the critical libraries, database drivers, and auth paths need Node, then correctness and operability matter more than an all-Edge slogan.</p>"
+        }
+      ]
     }
   ]
 }
