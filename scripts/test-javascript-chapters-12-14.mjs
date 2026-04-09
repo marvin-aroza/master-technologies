@@ -36,6 +36,7 @@ expectBlock(chapter12, "textContent vs innerHTML vs insertAdjacentHTML", "compar
 expectBlock(chapter12, "Prototype pollution awareness", "richText");
 expectBlock(chapter12, "eval() and Function() hazards", "richText");
 expectBlock(chapter12, "Safer data handling", "richText");
+expectBlock(chapter12, "Origin boundaries, cookies, and CSRF", "richText");
 expectBlock(chapter12, "Drill: spot the injection sink", "drill");
 
 expectBlock(chapter13, "State modeling before UI wiring", "richText");
@@ -57,6 +58,11 @@ assert.ok(retainedQuestions.has("What is the difference between macrotasks and m
 assert.ok(retainedQuestions.has("What is prototypal inheritance?"));
 assert.ok(retainedQuestions.has("What causes memory leaks in JS?"));
 assert.ok(retainedQuestions.has("What is `Promise.withResolvers()`?"));
+assert.ok(retainedQuestions.has("Why does CORS not stop CSRF?"));
+assert.ok(retainedQuestions.has("What is the difference between escaping, sanitizing, and validating input?"));
+assert.ok(retainedQuestions.has("How can prototype pollution happen in JavaScript apps?"));
+assert.ok(retainedQuestions.has("How would you separate pure logic from side effects in a JavaScript feature?"));
+assert.ok(retainedQuestions.has("When should you prefer events over direct function calls in architecture?"));
 
 const disallowedMasteryQuestions = new Set([
   'What is the "void" vs "never" type?',
@@ -72,4 +78,10 @@ assert.deepEqual(
     .map((item) => item.question),
   [],
   "chapter 14 should keep the mastery bank JavaScript-focused and free of stale TS/proposal-only prompts"
+);
+
+const finalBatchText = JSON.stringify([chapter12, chapter13, chapter14]);
+assert.ok(
+  !/â€œ|â€|â€”|â†’/.test(finalBatchText),
+  "chapters 12-14 should not ship mojibake or broken encoding artifacts"
 );

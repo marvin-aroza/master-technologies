@@ -9,7 +9,7 @@
     },
     {
       "label": "Core Q&A",
-      "value": "143"
+      "value": "148"
     },
     {
       "label": "Coverage",
@@ -827,7 +827,7 @@
         {
           "type": "richText",
           "title": "Prototype pollution awareness",
-          "html": "<p>Prototype pollution happens when untrusted keys such as <code>__proto__</code>, <code>constructor</code>, or <code>prototype</code> are merged into objects in a way that changes inherited behavior. The bug often starts in generic deep-merge helpers or unsafe object assignment paths, then spreads into surprising authorization, validation, or rendering failures.</p><ul><li>Do not deep-merge untrusted objects into application config without allowlisting keys.</li><li>Prefer explicit schemas and key validation over “accept any object” APIs.</li><li>Use null-prototype objects or maps for untrusted dictionary-like data when appropriate.</li></ul>"
+          "html": "<p>Prototype pollution happens when untrusted keys such as <code>__proto__</code>, <code>constructor</code>, or <code>prototype</code> are merged into objects in a way that changes inherited behavior. The bug often starts in generic deep-merge helpers or unsafe object assignment paths, then spreads into surprising authorization, validation, or rendering failures.</p><ul><li>Do not deep-merge untrusted objects into application config without allowlisting keys.</li><li>Prefer explicit schemas and key validation over \"accept any object\" APIs.</li><li>Use null-prototype objects or maps for untrusted dictionary-like data when appropriate.</li></ul>"
         },
         {
           "type": "richText",
@@ -837,7 +837,12 @@
         {
           "type": "richText",
           "title": "Safer data handling",
-          "html": "<p>Secure JavaScript is mostly about reducing ambiguity at boundaries. Validate shape and allowed values early, keep secrets out of places that are easy to exfiltrate, and choose platform features that narrow the space of unsafe operations. In supporting browsers, Trusted Types and <code>TrustedHTML</code> can reduce DOM XSS risk by forcing HTML-producing code through explicit policies.</p><ul><li>Prefer allowlists to deny-lists when validating keys, command names, or feature flags.</li><li>Use context-appropriate encoding or sanitization rather than one generic “escape everything” function.</li><li>Avoid storing sensitive tokens in broadly readable storage when a more constrained mechanism exists.</li></ul>"
+          "html": "<p>Secure JavaScript is mostly about reducing ambiguity at boundaries. Validate shape and allowed values early, keep secrets out of places that are easy to exfiltrate, and choose platform features that narrow the space of unsafe operations. In supporting browsers, Trusted Types and <code>TrustedHTML</code> can reduce DOM XSS risk by forcing HTML-producing code through explicit policies.</p><ul><li>Prefer allowlists to deny-lists when validating keys, command names, or feature flags.</li><li>Use context-appropriate encoding or sanitization rather than one generic \"escape everything\" function.</li><li>Avoid storing sensitive tokens in broadly readable storage when a more constrained mechanism exists.</li></ul>"
+        },
+        {
+          "type": "richText",
+          "title": "Origin boundaries, cookies, and CSRF",
+          "html": "<p>The browser's origin model is a major security boundary. The Same-Origin Policy limits which responses a page can read, while CORS is the server-controlled exception mechanism for sharing across origins. CSRF is different: a hostile site may still cause the browser to send a state-changing request with the user's cookies attached, even if it cannot read the response. That is why cookie-backed applications still need CSRF defenses such as SameSite cookies, anti-CSRF tokens, and origin-aware server checks.</p><ul><li>CORS protects response sharing, not automatic request sending.</li><li>Cookies are convenient but security-sensitive because the browser can attach them automatically.</li><li>Think in layers: origin restrictions, cookie settings, server-side validation, and idempotent or replay-safe APIs all contribute to reliability.</li></ul>"
         },
         {
           "type": "trap",
@@ -893,7 +898,7 @@
         {
           "type": "richText",
           "title": "Event-driven design without chaos",
-          "html": "<p>Event-driven patterns can decouple features, but they also make control flow harder to trace if every feature shouts into a global bus. Use events for genuine cross-boundary notifications, not as an excuse to avoid modeling ownership.</p><ul><li>Name events after domain facts, not UI trivia, when the event is meant to travel.</li><li>Keep payload shapes explicit and versionable.</li><li>If nobody can answer “who owns this state and who is allowed to change it?”, the architecture is already drifting.</li></ul>"
+          "html": "<p>Event-driven patterns can decouple features, but they also make control flow harder to trace if every feature shouts into a global bus. Use events for genuine cross-boundary notifications, not as an excuse to avoid modeling ownership.</p><ul><li>Name events after domain facts, not UI trivia, when the event is meant to travel.</li><li>Keep payload shapes explicit and versionable.</li><li>If nobody can answer \"who owns this state and who is allowed to change it?\", the architecture is already drifting.</li></ul>"
         },
         {
           "type": "mechanics",
@@ -1700,6 +1705,31 @@
           "level": "advanced",
           "question": "What are SharedArrayBuffer and Atomics?",
           "answerHtml": "<p><strong>SharedArrayBuffer</strong>: memory shared between main thread and workers (unlike regular ArrayBuffer which is transferred/copied). <strong>Atomics</strong>: provides thread-safe operations on shared memory — <code>Atomics.add()</code>, <code>Atomics.load()</code>, <code>Atomics.store()</code>, <code>Atomics.wait()/notify()</code> for synchronization. Required for high-performance parallel computing in JS. Requires cross-origin isolation headers (COOP/COEP) due to Spectre mitigations.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why does CORS not stop CSRF?",
+          "answerHtml": "<p>CORS controls whether a page may read a cross-origin response, but it does not stop the browser from sending a request in the first place. If a site relies on cookies for authentication, a cross-site form post or fetch may still carry those cookies unless defenses like SameSite, anti-CSRF tokens, and server-side origin validation are in place.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the difference between escaping, sanitizing, and validating input?",
+          "answerHtml": "<p>Validation checks whether input is allowed at all. Escaping encodes data for a specific output context so it is treated as data instead of control characters. Sanitization transforms risky content into a safer subset, often for controlled rich-text use cases. They solve different problems and are often needed together.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How can prototype pollution happen in JavaScript apps?",
+          "answerHtml": "<p>It usually starts when untrusted keys like <code>__proto__</code> or <code>constructor.prototype</code> are merged into ordinary objects. That can poison inherited behavior for later code paths, which is why deep-merge utilities, config builders, and request-to-object mapping layers need explicit key allowlists and schema validation.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you separate pure logic from side effects in a JavaScript feature?",
+          "answerHtml": "<p>Keep parsing, validation, derivation, and state transitions in small pure functions, then isolate DOM writes, storage, timers, logging, and network calls in boundary functions. The orchestration layer should stay thin so tests can cover the core logic without needing the whole runtime environment.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When should you prefer events over direct function calls in architecture?",
+          "answerHtml": "<p>Prefer direct calls when ownership is clear and the dependency should remain explicit. Prefer events when one part of the system is announcing a domain fact that multiple independent consumers may react to. If events are being used just to avoid choosing an owner, the architecture is becoming harder to trace instead of more decoupled.</p>"
         }
       ],
       "hasFilterBar": true
