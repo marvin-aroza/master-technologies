@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test:angular-topic": "node scripts/test-angular-topic.mjs",
     "test:nextjs-topic": "node scripts/test-nextjs-topic.mjs",
     "test:react-topic": "node scripts/test-react-topic.mjs",
     "test:javascript-topic": "node scripts/test-javascript-topic.mjs",
