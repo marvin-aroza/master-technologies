@@ -720,8 +720,84 @@
       "blocks": [
         {
           "type": "richText",
-          "title": "Scaffold Focus",
-          "html": "<p>The rewrite will replace the old middleware-first framing with a request lifecycle chapter centered on <code>proxy.ts</code>, cookies, headers, and where auth checks belong.</p>"
+          "title": "Proxy is request-time policy, not a second app layer",
+          "html": "<p>Starting in Next.js 16, <code>middleware</code> is renamed to <code>proxy</code> to better reflect its purpose. Proxy runs before a request is completed and is best for fast request-time policy decisions like redirects, rewrites, header changes, and optimistic route gating.</p><p>That does not make it a full authorization system. Proxy should stay lightweight and should not become the place where slow data fetching or your deepest security guarantees live.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Proxy vs in-render auth checks",
+          "items": [
+            {
+              "label": "Proxy",
+              "html": "<p>Use it for early redirects, rewrites, and lightweight request-time checks before render work starts. This is useful for optimistic gating and URL policy.</p>"
+            },
+            {
+              "label": "In-render auth checks",
+              "html": "<p>Use them close to the data when access depends on resource-level authorization or server-side business rules. These checks remain the real line of defense.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "From incoming request to route work",
+          "steps": [
+            "The browser sends a request for a route or asset.",
+            "Proxy can run first when the matcher applies, and it can rewrite, redirect, set headers, or return a response directly.",
+            "If the request continues, Next.js matches the route and begins layout, page, or Route Handler execution.",
+            "Cookies and headers are then available as request-time signals inside server code, where they can influence rendering or authorization.",
+            "The deeper authorization and data access checks should still happen close to the data source, not only in Proxy."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Early auth gate in proxy.ts",
+          "language": "ts",
+          "code": "import { NextResponse } from 'next/server';\\nimport type { NextRequest } from 'next/server';\\n\\nexport function proxy(request: NextRequest) {\\n  const isDashboard = request.nextUrl.pathname.startsWith('/dashboard');\\n  const hasSession = request.cookies.has('session');\\n\\n  if (isDashboard && !hasSession) {\\n    return NextResponse.redirect(new URL('/login', request.url));\\n  }\\n\\n  return NextResponse.next();\\n}\\n\\nexport const config = {\\n  matcher: ['/dashboard/:path*']\\n};",
+          "caption": "Use Proxy for quick request-time decisions. Keep it fast, targeted, and focused on routing policy instead of full business logic."
+        },
+        {
+          "type": "richText",
+          "title": "Cookies and headers are request signals",
+          "html": "<p>Cookies and headers are not universal state; they are request-scoped inputs. Reading them in Server Components, Route Handlers, or Proxy means the route is now responding to request-time data, which usually shifts the work away from pure static reuse.</p><p>That makes them powerful but expensive. Reach for them when the route truly depends on user, session, locale, or request metadata, not as a reflex.</p>"
+        },
+        {
+          "type": "trap",
+          "title": "Trap: doing slow data fetching or full authorization in Proxy",
+          "tone": "warning",
+          "html": "<p>Next.js docs explicitly position Proxy as a fast request-time policy layer, not a place for slow data fetching. Cache options on <code>fetch</code> have no effect there, and your deepest authorization checks still belong near the data source. Use Proxy for optimistic checks, then verify again where the data is actually read or written.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: where should the auth gate live?",
+          "prompt": "A user visiting <code>/dashboard</code> should be redirected to <code>/login</code> when no session cookie exists, but team-level permissions still need to be checked against the database before showing a billing page. Which checks belong in Proxy and which belong in render or data access code?",
+          "answerHtml": "<p>The missing-session redirect is a good Proxy check because it is fast and request-shaped. The team permission check belongs in render or data access code because it depends on trusted resource-level authorization that must stay close to the database truth.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 9 recap",
+          "items": [
+            "Proxy is for fast request-time routing policy, not deep business logic.",
+            "Use Proxy for early redirects, rewrites, and optimistic auth gates.",
+            "Cookies and headers are request-scoped signals that usually make work request-specific.",
+            "Real authorization still belongs close to the data source."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is Proxy for in modern Next.js?",
+          "answerHtml": "<p>Proxy runs before a request is completed and is used for fast request-time policy decisions like redirects, rewrites, header changes, and lightweight route gating.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why should Proxy not be your only authorization layer?",
+          "answerHtml": "<p>Because Proxy is best for optimistic checks, not resource-level authorization. The final security decision should still happen close to the data source where the protected read or write actually occurs.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do cookies and headers change route behavior in App Router?",
+          "answerHtml": "<p>They introduce request-time variability. Once your render logic depends on cookies or headers, the route is now shaped by request-scoped data rather than purely static reuse.</p>"
         }
       ]
     },
@@ -731,8 +807,84 @@
       "blocks": [
         {
           "type": "richText",
-          "title": "Scaffold Focus",
-          "html": "<p>This chapter will cover Route Handlers versus Server Functions, ORM and driver tradeoffs, Auth.js integration, and where to draw boundaries around uploads, webhooks, and backend work.</p>"
+          "title": "Route Handlers are HTTP boundaries",
+          "html": "<p>Route Handlers are the App Router way to expose HTTP endpoints with the Web Request and Response APIs. They are the right fit when the caller is external to your React tree, such as a webhook provider, an upload client, a third-party service, or any consumer that needs a stable HTTP contract.</p><p>That is different from Server Functions, which are best when the caller already lives inside your Next.js UI and wants framework-managed mutation behavior.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Route Handler vs Server Function",
+          "items": [
+            {
+              "label": "Route Handler",
+              "html": "<p>Choose this for real HTTP APIs, webhooks, uploads, and third-party callers. It is protocol-first and stands on its own outside the component tree.</p>"
+            },
+            {
+              "label": "Server Function",
+              "html": "<p>Choose this for UI-driven writes from forms or client events inside your app. It is integrated with the route tree, cache invalidation, and framework rendering updates.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Choose the boundary by caller and protocol",
+          "steps": [
+            "Start by identifying who is calling the code: your own route tree, a browser form outside React, or a third-party service.",
+            "If the caller needs a stable HTTP endpoint, use a Route Handler.",
+            "If the caller is already inside your app UI and wants a mutation tied to rendering updates, use a Server Function.",
+            "Then choose the runtime and database driver that match the work: Node for the broadest library compatibility, Edge only for lightweight web-standard logic that fits its constraints.",
+            "Keep backend-specific concerns such as webhook verification, uploads, and background handoff behind the HTTP boundary instead of leaking them into page rendering."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Webhook route with an explicit runtime",
+          "language": "ts",
+          "code": "import { NextRequest, NextResponse } from 'next/server';\\n\\nexport const runtime = 'nodejs';\\n\\nexport async function POST(request: NextRequest) {\\n  const signature = request.headers.get('x-billing-signature');\\n\\n  if (!signature) {\\n    return NextResponse.json({ error: 'Missing signature' }, { status: 400 });\\n  }\\n\\n  const body = await request.text();\\n  const event = verifyBillingSignature(body, signature);\\n\\n  await syncBillingEvent(event);\\n\\n  return NextResponse.json({ ok: true });\\n}",
+          "caption": "A webhook is a textbook Route Handler case: HTTP-first caller, explicit runtime choice, and backend work that should stay outside the UI rendering path."
+        },
+        {
+          "type": "richText",
+          "title": "Database drivers and runtimes must agree",
+          "html": "<p>Runtime selection is not only about latency. It also determines what libraries and drivers you can safely use. Node runtime gives you the widest compatibility with native Node packages and heavier SDKs, while Edge works best when your dependencies are lightweight and web-standard.</p><p>If your database client or auth stack assumes Node APIs, forcing it into Edge will create production-only failures. Choose the runtime that matches the actual backend contract, not just the lowest-latency headline.</p>"
+        },
+        {
+          "type": "trap",
+          "title": "Trap: turning Route Handlers into your internal RPC layer for everything",
+          "tone": "pitfall",
+          "html": "<p>If your own Server Components or Server Functions start calling your own Route Handlers for ordinary internal reads and writes, you add network hops, duplicate auth logic, and more cache surface than you need. Use Route Handlers for true HTTP boundaries, not as an automatic middle layer.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: pick the boundary for each caller",
+          "prompt": "You need one endpoint for a payment provider webhook, one upload flow for a third-party mobile client, and one settings form inside your own dashboard UI. Which ones should be Route Handlers and which one should be a Server Function?",
+          "answerHtml": "<p>The payment webhook and the mobile upload flow should be Route Handlers because they are external HTTP-facing callers. The dashboard settings form should be a Server Function because the caller is already inside your app UI and benefits from integrated invalidation and rendering updates.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 10 recap",
+          "items": [
+            "Route Handlers are for real HTTP boundaries.",
+            "Server Functions are for UI-driven mutations inside your app.",
+            "Runtime choice must match your database drivers and backend libraries.",
+            "Avoid using Route Handlers as an internal indirection layer without a real protocol need."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "When should you choose a Route Handler over a Server Function?",
+          "answerHtml": "<p>Choose a Route Handler when the caller is external or when you need a standalone HTTP endpoint such as a webhook, upload route, or third-party integration.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why is runtime choice part of full-stack design in Next.js?",
+          "answerHtml": "<p>Because your runtime determines which libraries, SDKs, and database drivers are available. A low-latency goal does not help if the runtime cannot support the backend stack you actually need.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is calling your own Route Handler from a Server Component often a smell?",
+          "answerHtml": "<p>Because it adds an unnecessary HTTP hop, duplicates auth and caching concerns, and makes internal server-side work more complex than direct access would be.</p>"
         }
       ]
     },
@@ -742,8 +894,84 @@
       "blocks": [
         {
           "type": "richText",
-          "title": "Scaffold Focus",
-          "html": "<p>The rewrite will combine image and font optimization, build tooling, hydration cost, prefetch behavior, and bundle diagnostics into one performance chapter.</p>"
+          "title": "Performance starts with less client work",
+          "html": "<p>The fastest Next.js route is usually the one that ships less client JavaScript, hydrates fewer boundaries, and keeps as much work as possible on the server. Asset optimization matters, but it cannot rescue a route that has already chosen the wrong client and data boundaries.</p><p>So performance work in Next.js starts with architecture: slim client surfaces, fast navigation, and only the assets the route actually needs.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Raw assets vs framework-aware assets",
+          "items": [
+            {
+              "label": "Raw browser primitives",
+              "html": "<p>Plain <code>&lt;img&gt;</code> tags and externally hosted fonts can work, but you miss framework-level optimization, self-hosting, and loading coordination.</p>"
+            },
+            {
+              "label": "Framework-aware assets",
+              "html": "<p><code>next/image</code> and <code>next/font</code> tie asset loading into the framework so images and fonts are optimized with better performance defaults.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Where a Next.js route usually gets expensive",
+          "steps": [
+            "Initial navigation needs HTML plus the React Server Component payload for server-rendered work.",
+            "Client Components then add hydration cost, so broad client boundaries increase both JavaScript and interactivity delay.",
+            "Asset-heavy routes pay for images, fonts, and scripts unless those resources are optimized and scoped carefully.",
+            "Prefetching helps hide navigation latency: static routes can prefetch the full route, while dynamic routes prefetch less and rely on loading states or streaming.",
+            "Next.js 16 improves navigation with layout deduplication and incremental prefetching, but oversized bundles and poorly scoped client work still dominate real-world slowdowns."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Optimize images and fonts at the framework layer",
+          "language": "tsx",
+          "code": "import Image from 'next/image';\\nimport { Inter } from 'next/font/google';\\n\\nconst inter = Inter({\\n  subsets: ['latin'],\\n  display: 'swap'\\n});\\n\\nexport default function Hero() {\\n  return (\\n    <section className={inter.className}>\\n      <Image\\n        src='/dashboard-hero.png'\\n        alt='Analytics dashboard preview'\\n        width={1440}\\n        height={900}\\n        preload\\n        sizes='(max-width: 768px) 100vw, 80vw'\\n      />\\n    </section>\\n  );\\n}",
+          "caption": "Use the framework primitives when possible. In Next.js 16, the Image component supports <code>preload</code>, while <code>next/font</code> keeps fonts self-hosted and optimized."
+        },
+        {
+          "type": "richText",
+          "title": "Turbopack is a developer-time performance tool",
+          "html": "<p>Turbopack improves local build and dev feedback loops. In Next.js 16, its filesystem cache reduces repeated work across sessions, with development caching stable and build caching still more cautious. That is great for team velocity, but it does not automatically fix a heavy production bundle.</p><p>Use Turbopack to speed iteration, and use bundle analysis plus server-first architecture to reduce what ships to the browser.</p>"
+        },
+        {
+          "type": "trap",
+          "title": "Trap: blaming the bundler for runtime bundle problems",
+          "tone": "pitfall",
+          "html": "<p>A faster dev bundler does not make an oversized client bundle disappear in production. If navigation feels laggy or hydration starts too late, inspect client boundaries, third-party dependencies, and prefetch strategy before assuming the tooling layer is the bottleneck.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: diagnose the laggy route",
+          "prompt": "A dashboard feels sluggish on first load and prefetching seems inconsistent. The page uses several Client Components, large charting libraries, many links in a scrolling table, and custom font loading through CSS. Where would you investigate first?",
+          "answerHtml": "<p>Start with the biggest structural costs: broad Client Component boundaries, heavy third-party bundles, and asset loading choices. Then inspect prefetch behavior for large link lists and whether a <code>loading.tsx</code> boundary would improve dynamic-route transitions. Framework-aware fonts and images are also an easy win if the route still uses manual asset loading.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 11 recap",
+          "items": [
+            "Performance starts with server-first architecture and smaller client surfaces.",
+            "next/image and next/font are framework-level asset optimizations, not just convenience wrappers.",
+            "Prefetching and loading boundaries shape how fast navigation feels, especially on dynamic routes.",
+            "Turbopack speeds development, while bundle analysis and client-boundary discipline protect runtime performance."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why should you prefer next/image and next/font over manual asset loading?",
+          "answerHtml": "<p>Because they plug asset loading into the framework's optimization pipeline, which improves image handling, font self-hosting, privacy, and loading behavior.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How does prefetching differ between static and dynamic routes?",
+          "answerHtml": "<p>Static routes can prefetch the full route, while dynamic routes prefetch less and often rely on <code>loading.tsx</code> or streaming to keep navigation responsive.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What does Turbopack help with, and what does it not solve by itself?",
+          "answerHtml": "<p>Turbopack improves development and build feedback loops, especially with filesystem caching. It does not automatically solve production runtime issues like oversized client bundles, poor boundary placement, or unnecessary hydration work.</p>"
         }
       ]
     },
