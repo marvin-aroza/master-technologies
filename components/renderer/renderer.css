@@ -307,7 +307,7 @@
   line-height: 1.35;
 }
 
-.topic-block-prose {
+.topic-block-prose.prose {
   color: #7f83aa;
 }
 
