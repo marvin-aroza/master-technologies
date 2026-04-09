@@ -82,156 +82,72 @@
     {
       "id": "origins-ecmascript-runtimes",
       "intro": "Learn where JavaScript came from, how ECMAScript evolves, and how runtimes host the language.",
-      "blocks": [
-        {
-          "type": "richText",
-          "title": "Chapter focus",
-          "html": "<p>This opening chapter sets the foundation for everything else by separating the language from the runtime that executes it.</p><ul><li>JavaScript vs ECMAScript vs the web platform</li><li>Browser runtimes, Node.js, and edge execution environments</li><li>How source files are loaded, parsed, and started</li></ul>"
-        }
-      ]
+      "blocks": []
     },
     {
       "id": "values-types-identity",
       "intro": "Build a precise mental model for values, coercion, equality, and how identity works in JavaScript.",
-      "blocks": [
-        {
-          "type": "richText",
-          "title": "Chapter focus",
-          "html": "<p>This chapter makes the language feel predictable by explaining how JavaScript represents values and compares them.</p><ul><li>Primitive values, objects, and reference semantics</li><li>Truthiness, falsiness, coercion, and equality rules</li><li>Mutability, copying, and identity pitfalls</li></ul>"
-        }
-      ]
+      "blocks": []
     },
     {
       "id": "variables-scope-closures",
       "intro": "Understand lexical scope, declaration behavior, and why closures power real JavaScript architecture.",
-      "blocks": [
-        {
-          "type": "richText",
-          "title": "Chapter focus",
-          "html": "<p>Scope is the reason JavaScript modules, event handlers, and asynchronous callbacks behave the way they do.</p><ul><li>var, let, const, and the temporal dead zone</li><li>Lexical environments and scope chain lookup</li><li>Closures for private state, callbacks, and module design</li></ul>"
-        }
-      ]
+      "blocks": []
     },
     {
       "id": "functions-invocation-mechanics",
       "intro": "Go from basic functions to call-site rules, higher-order design, and invocation mechanics that interviewers probe deeply.",
-      "blocks": [
-        {
-          "type": "richText",
-          "title": "Chapter focus",
-          "html": "<p>Functions are the core abstraction in JavaScript, so this chapter focuses on how they are created, invoked, and composed.</p><ul><li>Declarations, expressions, arrows, and higher-order functions</li><li>call, apply, bind, partial application, and currying</li><li>How call-sites determine this and function behavior</li></ul>"
-        }
-      ]
+      "blocks": []
     },
     {
       "id": "objects-prototypes-classes",
       "intro": "Trace how objects inherit behavior, how property lookup really works, and when classes help or hide complexity.",
-      "blocks": [
-        {
-          "type": "richText",
-          "title": "Chapter focus",
-          "html": "<p>This chapter turns object-oriented JavaScript into a concrete runtime model instead of a syntax mystery.</p><ul><li>Object literals, descriptors, and property ownership</li><li>Prototype chains, constructor functions, and new</li><li>Classes, private fields, and composition vs inheritance</li></ul>"
-        }
-      ]
+      "blocks": []
     },
     {
       "id": "arrays-collections-iteration",
       "intro": "Choose the right collection type, reason about iteration, and understand the tradeoffs behind common data operations.",
-      "blocks": [
-        {
-          "type": "richText",
-          "title": "Chapter focus",
-          "html": "<p>Data structure choice changes readability, performance, and correctness, so this chapter teaches the tradeoffs explicitly.</p><ul><li>Arrays and collection-oriented array methods</li><li>Map, Set, WeakMap, WeakSet, and when they matter</li><li>Iterables, iterators, generators, and for...of semantics</li></ul>"
-        }
-      ]
+      "blocks": []
     },
     {
       "id": "modules-tooling-project-structure",
       "intro": "See how JavaScript is organized in modern projects, from import/export syntax to bundlers and code-splitting.",
-      "blocks": [
-        {
-          "type": "richText",
-          "title": "Chapter focus",
-          "html": "<p>Modern JavaScript is shaped as much by module systems and tooling as by syntax, so this chapter maps that ecosystem clearly.</p><ul><li>ES modules, CommonJS, and interop boundaries</li><li>Resolution, bundling, tree-shaking, and lazy loading</li><li>How mature JavaScript projects structure packages and source code</li></ul>"
-        }
-      ]
+      "blocks": []
     },
     {
       "id": "asynchrony-event-loop",
       "intro": "Master promises, async functions, microtasks, timers, and the event loop behavior that explains real-world timing bugs.",
-      "blocks": [
-        {
-          "type": "richText",
-          "title": "Chapter focus",
-          "html": "<p>This chapter bridges the gap between writing async code and understanding how the runtime actually schedules it.</p><ul><li>Promises, async/await, and sequencing async work</li><li>Microtasks vs tasks, timers, and rendering timing</li><li>Cancellation, retries, race conditions, and concurrency reasoning</li></ul>"
-        }
-      ]
+      "blocks": []
     },
     {
       "id": "browser-apis-dom-platform",
       "intro": "Connect the language to the browser platform: DOM, events, storage, fetch, workers, streams, and rendering lifecycle.",
-      "blocks": [
-        {
-          "type": "richText",
-          "title": "Chapter focus",
-          "html": "<p>JavaScript only becomes a product tool when it interacts with the platform, so this chapter focuses on the browser-facing layer.</p><ul><li>DOM querying, updates, and event propagation</li><li>Fetch, storage, history, observers, and media APIs</li><li>Workers, streams, and browser rendering coordination</li></ul>"
-        }
-      ]
+      "blocks": []
     },
     {
       "id": "error-handling-defensive-coding",
       "intro": "Design safer code paths with clear failure handling, validation strategy, and defensive boundaries.",
-      "blocks": [
-        {
-          "type": "richText",
-          "title": "Chapter focus",
-          "html": "<p>Reliable JavaScript depends on how carefully you model failure, not just how elegantly the happy path reads.</p><ul><li>Throwing, catching, and modeling operational vs programmer errors</li><li>Input validation, boundary checks, and resilient APIs</li><li>Debugging flow, stack traces, and failure-first thinking</li></ul>"
-        }
-      ]
+      "blocks": []
     },
     {
       "id": "performance-memory",
       "intro": "Study the engine, the garbage collector, and the performance costs that show up in real JavaScript applications.",
-      "blocks": [
-        {
-          "type": "richText",
-          "title": "Chapter focus",
-          "html": "<p>This chapter turns performance advice into concrete reasoning about allocations, scheduling, and engine behavior.</p><ul><li>Execution costs, hidden classes, inline caches, and deopts</li><li>Garbage collection, memory leaks, and cleanup patterns</li><li>Profiling strategies for browser and Node.js workloads</li></ul>"
-        }
-      ]
+      "blocks": []
     },
     {
       "id": "security-reliability",
       "intro": "Learn the security mindset JavaScript developers need when code handles user input, browser APIs, and shared state.",
-      "blocks": [
-        {
-          "type": "richText",
-          "title": "Chapter focus",
-          "html": "<p>Security is part of JavaScript mastery because runtime flexibility can quickly become risk when data crosses trust boundaries.</p><ul><li>XSS, unsafe DOM insertion, and sanitization boundaries</li><li>Prototype pollution, secrets handling, and supply-chain awareness</li><li>Reliability patterns for defensive, production-grade code</li></ul>"
-        }
-      ]
+      "blocks": []
     },
     {
       "id": "architecture-large-scale-javascript",
       "intro": "Move from isolated language features to designing large JavaScript systems that stay understandable over time.",
-      "blocks": [
-        {
-          "type": "richText",
-          "title": "Chapter focus",
-          "html": "<p>This chapter connects low-level JavaScript knowledge to the architecture choices that make real products maintainable.</p><ul><li>State modeling, side-effect isolation, and module boundaries</li><li>Event-driven design, composition, and maintainable abstractions</li><li>Testing strategy and refactoring patterns for growth</li></ul>"
-        }
-      ]
+      "blocks": []
     },
     {
       "id": "mastery-interview-readiness",
       "intro": "Use this capstone chapter for rapid recall, interview depth, debugging drills, and synthesis across the full roadmap.",
-      "blocks": [
-        {
-          "type": "richText",
-          "title": "Chapter focus",
-          "html": "<p>The final chapter is where the roadmap turns into interview fluency and fast revision without losing conceptual depth.</p><ul><li>Explain internals clearly instead of memorizing slogans</li><li>Practice debugging, edge cases, and architecture tradeoffs</li><li>Use the retained Q&A bank as a revision and interview drill layer</li></ul>"
-        }
-      ],
+      "blocks": [],
       "qa": [
         {
           "level": "basic",

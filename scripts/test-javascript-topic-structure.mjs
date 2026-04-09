@@ -48,8 +48,12 @@ assert.deepEqual(
 );
 
 assert.ok(
-  topic.sections.every((section) => Array.isArray(section.blocks)),
-  "every section should define a blocks array"
+  topic.sections.every((section) => Array.isArray(section.blocks) && section.blocks.length === 0),
+  "Task 5 should leave each section with an explicitly empty blocks array"
+);
+assert.ok(
+  topic.sections.every((section) => !section.cards || section.cards.length === 0),
+  "Task 5 should not carry forward legacy cards into the new skeleton"
 );
 
 const sectionsWithQA = topic.sections.filter((section) => (section.qa?.length ?? 0) > 0);
