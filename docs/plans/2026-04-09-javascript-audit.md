@@ -68,3 +68,46 @@ Source files reviewed:
 
 - `js-ts` and `ts-expert` are not part of the JavaScript mastery blueprint.
 - They should be relocated to a future TypeScript topic so the JavaScript topic stays focused and easier to master.
+
+## Reusable Rewrite Patterns
+
+- Use one chapter-batch regression file per writing pass.
+  - `scripts/test-javascript-chapters-1-4.mjs`
+  - `scripts/test-javascript-chapters-5-8.mjs`
+  - `scripts/test-javascript-chapters-9-11.mjs`
+  - `scripts/test-javascript-chapters-12-14.mjs`
+- Keep a single package-level topic runner.
+  - `scripts/test-javascript-topic.mjs` became the stable entrypoint that chains structure checks and chapter-batch checks together.
+- Treat `compare`, `mechanics`, `drill`, and `recap` as the core teaching rhythm.
+  - `compare` blocks are best for tradeoffs, terminology collisions, and interview shorthand corrections.
+  - `mechanics` blocks are best when the learner needs a sequence or runtime model.
+  - `drill` blocks are what keep a chapter from becoming reference-only prose.
+  - `recap` blocks make revision and interview prep noticeably faster in the UI.
+- Use `richText` for precise mental models and platform/security nuance.
+  - It worked especially well for browser APIs, defensive coding, security boundaries, and architecture guidance where code alone would under-teach the concept.
+- Prefer a chapter intro plus 6-9 high-signal blocks over many shallow cards.
+  - The page felt more coherent in Playwright once the content read like a guided chapter instead of a mixed pile of old cards and Q&A.
+- Keep the mastery chapter as a capstone layer, not just a question dump.
+  - Blocks for recall, vague-interview translation, debugging, and recap made the existing Q&A bank much more usable.
+
+## Blocks Not Worth Repeating Blindly
+
+- Giant inherited interview banks with duplicate beginner prompts.
+  - They inflate the `Core Q&A` number without improving revision quality.
+- Proposal-status-sensitive questions copied forward without revalidation.
+  - They create maintenance work and can make the topic feel dated faster than foundational content.
+- Text copied from legacy content without hygiene cleanup.
+  - Mojibake and malformed HTML are easy to miss in JSON files and should be treated as rewrite-time bugs, not cosmetic afterthoughts.
+- Long implementation-answer blobs in Q&A.
+  - They are harder to scan than focused drills or code blocks and work better when converted into dedicated challenge sections.
+
+## Follow-up Ideas For Other Topics
+
+- React
+  - Reuse the block rhythm, but bias harder toward rendering mental models, state ownership, server/client boundaries, and performance tradeoffs.
+- Next.js
+  - Apply the same chapter-batch test strategy, but make routing, data fetching, caching, server actions, rendering modes, and deployment/runtime boundaries first-class.
+- Angular
+  - Keep the mastery structure, but tailor drills around DI, signals, forms, routing, SSR, and testing instead of porting JavaScript-style internals drills directly.
+- Shared renderer
+  - The current block palette is still sufficient. Add new block types only when a future topic reveals a genuine teaching need that cannot be expressed by `richText`, `code`, `compare`, `mechanics`, `trap`, `drill`, or `recap`.
