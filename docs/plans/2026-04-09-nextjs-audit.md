@@ -254,3 +254,16 @@ Preserve the concepts and example intent from these sections, not their existing
 - Add the Next.js structure harness.
 - Restructure `nextjs.json` into the approved 14-chapter skeleton.
 - Rewrite chapters 1-4 first so the topic quickly gains a clean modern foundation.
+
+## Execution Closeout
+
+- The topic was fully rewritten into the approved 14-chapter App Router-first mastery track.
+- Chapters 1-13 now each include chapter-level interview Q&A, and the capstone chapter was expanded into a larger architecture and debugging bank.
+- Verification passed with:
+  - `npm run test:nextjs-topic`
+  - `npm run test:renderer`
+  - `npx tsc --noEmit --pretty false`
+  - `npm run lint`
+  - `npm run build`
+- The final `build` verification needed to run outside the sandbox because Windows worktrees intermittently hit `.next` rename `EPERM` errors inside the sandbox.
+- One non-blocking warning remains in builds: Next.js infers the workspace root from the main app `package-lock.json` because the worktree also has a `package-lock.json`. This did not block compilation or static generation.
