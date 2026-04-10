@@ -400,30 +400,342 @@
     },
     {
       "id": "flexbox-one-dimensional-layout",
-      "intro": "Use Flexbox for one-dimensional distribution and alignment.",
+      "intro": "Use Flexbox when one axis should distribute space and the other axis should align items without fixed widths everywhere.",
       "blocks": [
-        { "type": "scaffold", "title": "Flexible rows and columns", "body": "Describe how the main axis and cross axis shape everyday UI composition." }
+        {
+          "type": "richText",
+          "title": "Flexbox solves one axis at a time",
+          "html": "<p>Flexbox is a layout system for one-dimensional arrangement. You choose a main axis, let items share or surrender space along that axis, and then align them on the cross axis. That makes it ideal for toolbars, button groups, media rows, pills, and other components that need to stay balanced even when content lengths change.</p><ul><li>The main axis comes from <code>flex-direction</code>.</li><li>The cross axis is perpendicular to the main axis.</li><li>Flex items can grow, shrink, or stay fixed based on the free space in the container.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "The knobs that control flex sizing",
+          "items": [
+            {
+              "label": "Flex base size",
+              "html": "<p><code>flex-basis</code> sets the starting size before space is distributed. If you do not set it, the browser may use the content size or a related width hint.</p>"
+            },
+            {
+              "label": "Growth and shrinkage",
+              "html": "<p><code>flex-grow</code> decides how items share extra space, while <code>flex-shrink</code> decides how they give space back when the row is too small.</p>"
+            },
+            {
+              "label": "Alignment",
+              "html": "<p><code>justify-content</code> positions items on the main axis, and <code>align-items</code> positions them on the cross axis. The sizing algorithm runs before alignment.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How flex sizing resolves",
+          "steps": [
+            "The browser establishes the main axis from flex-direction and measures each item's flex base size.",
+            "It checks min and max constraints so items cannot shrink or grow past their allowed limits.",
+            "If there is positive free space, the browser distributes it according to flex-grow values.",
+            "If there is negative free space, the browser removes it according to flex-shrink and the items' base sizes.",
+            "After sizing, alignment rules place the items along the main and cross axes."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "A toolbar that grows without breaking alignment",
+          "language": "css",
+          "code": ".toolbar {\n  display: flex;\n  align-items: center;\n  gap: 1rem;\n}\n\n.toolbar__search {\n  flex: 1 1 20rem;\n  min-width: 0;\n}\n\n.toolbar__actions {\n  margin-inline-start: auto;\n  display: flex;\n  gap: 0.5rem;\n}",
+          "caption": "The search field gets the flexible share of free space, while the action group stays aligned to the end."
+        },
+        {
+          "type": "drill",
+          "title": "Drill: why does a row of cards feel unstable?",
+          "prompt": "A card row uses display: flex, but the cards keep stretching unevenly and the text truncates unpredictably when the viewport narrows. What flex settings would you inspect first?",
+          "answerHtml": "<p>Start with the flex shorthand, especially <code>flex-basis</code>, <code>flex-grow</code>, and <code>flex-shrink</code>. Then check whether the cards need <code>min-width: 0</code> so long content can actually shrink instead of forcing overflow. If the row is meant to stay evenly sized, a fixed basis with controlled growth is usually clearer than letting content width drive everything.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 5 recap",
+          "items": [
+            "Flexbox distributes space along one main axis and aligns items on the cross axis.",
+            "Flex sizing resolves base size, free space, growth, and shrinkage before alignment.",
+            "The shorthand is powerful, but the important levers are basis, grow, shrink, and min-size behavior.",
+            "Use Flexbox when the relationship between items is linear and the container owns the distribution."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What does Flexbox do best?",
+          "answerHtml": "<p>Flexbox is best for one-dimensional distribution and alignment, such as rows or columns where items should share space predictably.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How does flex sizing start?",
+          "answerHtml": "<p>The browser starts with each item's flex base size, which comes from <code>flex-basis</code> or a related content or width hint.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why do items sometimes refuse to shrink?",
+          "answerHtml": "<p>Auto minimum sizing and content constraints can prevent flex items from shrinking as far as you expect. Setting <code>min-width: 0</code> on the item can unlock the shrink behavior.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When should you use align-items instead of justify-content?",
+          "answerHtml": "<p>Use <code>justify-content</code> for main-axis distribution and <code>align-items</code> for cross-axis alignment. They solve different parts of the layout problem.</p>"
+        }
       ]
     },
     {
       "id": "grid-subgrid-two-dimensional-layout",
-      "intro": "Use Grid for explicit two-dimensional page and component layout.",
+      "intro": "Use Grid when you need explicit control over rows, columns, and placement across two dimensions.",
       "blocks": [
-        { "type": "scaffold", "title": "Track-based layout", "body": "Introduce rows, columns, placement, and subgrid without adding legacy cards." }
+        {
+          "type": "richText",
+          "title": "Grid declares rows and columns up front",
+          "html": "<p>Grid is designed for two-dimensional layout. Instead of asking items to flow along one axis, you define tracks in both directions and let the browser place content into that matrix. That makes Grid a strong fit for page shells, galleries, dashboards, card decks, and nested component systems that need consistent alignment.</p><ul><li>Explicit tracks are the rows and columns you declare.</li><li>Implicit tracks are created when auto-placement needs extra space.</li><li><code>subgrid</code> lets a child participate in its parent track sizing.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Track sizing and placement choices",
+          "items": [
+            {
+              "label": "Fixed and flexible tracks",
+              "html": "<p>Use fixed lengths for guaranteed rails and <code>fr</code> units to share leftover space after the browser finishes intrinsic sizing.</p>"
+            },
+            {
+              "label": "Auto-fit and auto-fill",
+              "html": "<p><code>repeat(auto-fit, minmax(...))</code> creates fluid tracks that collapse empty slots, while <code>auto-fill</code> keeps the slots visible even if they are empty.</p>"
+            },
+            {
+              "label": "Subgrid",
+              "html": "<p><code>subgrid</code> helps nested cards or panels line up with the parent grid without re-declaring the same track math in the child.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How grid track sizing and auto-placement work",
+          "steps": [
+            "The browser creates the explicit grid from grid-template-columns and grid-template-rows.",
+            "It measures intrinsic content contributions so tracks can honor min-content and max-content limits.",
+            "Flexible tracks such as fr units share remaining space after fixed and intrinsic sizes are resolved.",
+            "Auto-placement fills empty cells in the chosen flow direction and creates implicit tracks when needed.",
+            "Alignment and gap settings run after placement, which keeps the grid consistent even when items span multiple tracks."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "A card grid that adapts cleanly",
+          "language": "css",
+          "code": ".card-grid {\n  display: grid;\n  gap: 1.5rem;\n  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));\n}\n\n.card {\n  display: grid;\n  gap: 0.75rem;\n  grid-template-rows: auto auto 1fr;\n}\n\n.card__meta {\n  grid-column: 1 / -1;\n}\n\n.card__detail {\n  display: grid;\n  grid-template-columns: subgrid;\n  grid-column: 1 / -1;\n}",
+          "caption": "The grid creates fluid columns, while subgrid lets nested content stay aligned to the same rails."
+        },
+        {
+          "type": "drill",
+          "title": "Drill: which track strategy fits the layout?",
+          "prompt": "A dashboard needs three fixed navigation rails, a flexible content area, and cards inside the content area that should keep their headers aligned. Which Grid features would you reach for first?",
+          "answerHtml": "<p>Use explicit tracks for the page shell, likely with fixed columns plus a flexible center track, and then use <code>subgrid</code> inside the card area so nested headers and metadata line up with the same column rhythm. If the cards themselves need to wrap fluidly, <code>repeat(auto-fit, minmax(...))</code> can manage that inner layer.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 6 recap",
+          "items": [
+            "Grid is the right tool when layout needs two-dimensional control.",
+            "Track sizing resolves explicit tracks, intrinsic contributions, and flexible space before items are finally placed.",
+            "Auto-placement fills holes and creates implicit tracks when content exceeds the explicit grid.",
+            "Subgrid is valuable when nested pieces should align to the same parent rails."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the main strength of Grid?",
+          "answerHtml": "<p>Grid is strongest when you need explicit two-dimensional layout control across rows and columns.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between explicit and implicit tracks?",
+          "answerHtml": "<p>Explicit tracks are the rows and columns you define yourself. Implicit tracks are created automatically when the grid needs more space for auto-placed content.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When should you use auto-fit?",
+          "answerHtml": "<p><code>auto-fit</code> is useful when you want fluid columns that collapse empty slots and stretch the remaining tracks to fill the row.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is subgrid useful?",
+          "answerHtml": "<p><code>subgrid</code> lets descendants inherit track sizing from the parent grid, which keeps nested content aligned without duplicating track definitions.</p>"
+        }
       ]
     },
     {
       "id": "responsive-css-media-queries-logical-properties-container-queries",
-      "intro": "Make layouts adapt across viewport sizes, writing modes, and component containers.",
+      "intro": "Make layouts adapt to viewport size, component size, user preferences, and writing mode without baking in physical sides.",
       "blocks": [
-        { "type": "scaffold", "title": "Responsive strategy", "body": "Reserve media queries, logical properties, and container queries for the skeleton stage." }
+        {
+          "type": "richText",
+          "title": "Responsive CSS starts with the right trigger",
+          "html": "<p>Responsive CSS is not only about breakpoints. Media queries respond to the viewport or user preferences, container queries respond to the size of a specific component, and logical properties make your spacing and alignment work in different writing modes. The best responsive code usually combines all three rather than overusing just one.</p><ul><li>Use media queries for viewport-wide changes and preference queries.</li><li>Use container queries when a component should react to its own available space.</li><li>Use logical properties so spacing follows inline and block flow instead of left and right assumptions.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Viewport, container, and logical rules",
+          "items": [
+            {
+              "label": "Media queries",
+              "html": "<p>Use media queries when the whole layout changes with the viewport, or when you need to honor preferences such as reduced motion, color scheme, or contrast settings.</p>"
+            },
+            {
+              "label": "Container queries",
+              "html": "<p>Use container queries when the component can live in different places and still needs to adapt based on the space it actually receives.</p>"
+            },
+            {
+              "label": "Logical properties",
+              "html": "<p><code>margin-inline</code>, <code>padding-block</code>, and similar properties adapt to writing mode, which keeps CSS resilient for RTL and vertical layouts.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How to choose a responsive tool",
+          "steps": [
+            "Start with fluid widths, flexible spacing, and intrinsic sizing so the design works before any breakpoint is added.",
+            "Add media queries when the page layout must reconfigure at viewport-scale thresholds or when user preferences change rendering behavior.",
+            "Add container queries when a reusable component should adapt to its own container, not the entire page.",
+            "Use logical properties everywhere a physical left/right/top/bottom assumption would make the interface harder to internationalize.",
+            "Keep responsive rules near the component they affect so the cascade stays understandable."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "A responsive card that listens to its container",
+          "language": "css",
+          "code": ".layout {\n  padding-block: clamp(1rem, 3vw, 2rem);\n  padding-inline: clamp(1rem, 4vw, 2rem);\n}\n\n.panel {\n  container-type: inline-size;\n}\n\n.panel__body {\n  display: grid;\n  gap: 1rem;\n}\n\n@media (width >= 60rem) {\n  .layout {\n    grid-template-columns: 18rem minmax(0, 1fr);\n  }\n}\n\n@container (width > 32rem) {\n  .panel__body {\n    grid-template-columns: 12rem minmax(0, 1fr);\n  }\n}",
+          "caption": "Viewport queries change the page shell, while container queries adjust the panel itself."
+        },
+        {
+          "type": "drill",
+          "title": "Drill: media query or container query?",
+          "prompt": "A reusable stats card can appear in a sidebar, a modal, or a wide dashboard. The card should switch from stacked content to a two-column internal layout when there is enough room. Which query should drive that change?",
+          "answerHtml": "<p>Use a container query because the card's behavior depends on the space available to the card itself, not on the viewport. A media query would only be appropriate if the entire page shell changed at the same time.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 7 recap",
+          "items": [
+            "Media queries are the right tool for viewport-wide thresholds and user preferences.",
+            "Container queries are the right tool when a component should adapt to the space it actually has.",
+            "Logical properties keep spacing and alignment aware of writing mode and direction.",
+            "The most resilient responsive CSS starts fluid and adds queries only where the design truly needs them."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "When should you use media queries?",
+          "answerHtml": "<p>Use media queries when the viewport or a user preference changes the behavior of the whole layout.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When should you use container queries?",
+          "answerHtml": "<p>Use container queries when a component should adapt based on the space available to that component, regardless of the viewport.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why are logical properties useful?",
+          "answerHtml": "<p>Logical properties map spacing and alignment to inline and block flow, which makes the CSS work across writing modes and directions.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What should be queried first: the viewport or the component?",
+          "answerHtml": "<p>Query the component first when the component can be reused in multiple places. Reserve viewport queries for layout changes that really belong to the page shell.</p>"
+        }
       ]
     },
     {
       "id": "typography-color-backgrounds-effects-visual-styling",
-      "intro": "Shape the visual language with typography, color systems, backgrounds, and effects.",
+      "intro": "Shape the visual language with typography, color spaces, backgrounds, and effects that still feel coherent at different sizes.",
       "blocks": [
-        { "type": "scaffold", "title": "Visual styling basics", "body": "Leave room for deeper color and type systems while keeping the chapter navigable." }
+        {
+          "type": "richText",
+          "title": "Typography is a system, not a font choice",
+          "html": "<p>Typography works best when it is treated as a system. Font family, weight, size, line height, letter spacing, and measure all interact. A strong type system makes content easier to scan, gives hierarchy to interfaces, and supports responsive scaling without changing the whole layout.</p><ul><li>Choose a readable base size and a predictable line-height.</li><li>Control measure so lines are not too long to scan.</li><li>Use type scale and weight changes to create hierarchy instead of random size jumps.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Color, backgrounds, and effects do different jobs",
+          "items": [
+            {
+              "label": "Color spaces",
+              "html": "<p>Modern color spaces like <code>oklch</code> make it easier to reason about lightness and chroma, which helps when building accessible ramps and tints.</p>"
+            },
+            {
+              "label": "Backgrounds",
+              "html": "<p>Gradients, images, and layered backgrounds create atmosphere without changing document structure.</p>"
+            },
+            {
+              "label": "Effects",
+              "html": "<p>Shadows, blur, filters, and blend modes add depth, but they are visual polish rather than layout tools and should be used sparingly.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How modern visual styling behaves",
+          "steps": [
+            "The browser resolves font metrics, fallback fonts, and line boxes before text is painted.",
+            "Color values are converted into the working color space, so perceptual color choices can stay consistent across ramps.",
+            "Background layers paint behind content and can combine solid colors, gradients, and images.",
+            "Shadows, filters, and blur usually increase paint cost, so they should support the design rather than drive it.",
+            "Responsive typography and spacing should stay readable at both compact and expansive widths."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "A polished card with scalable type and color",
+          "language": "css",
+          "code": ".feature-card {\n  color: oklch(0.22 0.03 250);\n  background: linear-gradient(135deg, oklch(0.98 0.02 250), oklch(0.92 0.03 270));\n  border: 1px solid oklch(0.84 0.04 250);\n  border-radius: 1.25rem;\n  box-shadow: 0 18px 40px oklch(0.2 0.02 250 / 0.12);\n  padding: clamp(1.25rem, 3vw, 2rem);\n}\n\n.feature-card h3 {\n  font-size: clamp(1.25rem, 2vw, 1.75rem);\n  line-height: 1.15;\n  text-wrap: balance;\n}\n\n.feature-card p {\n  line-height: 1.6;\n  max-width: 60ch;\n}",
+          "caption": "The color ramp, spacing, and type scale stay readable while still giving the card a distinct visual system."
+        },
+        {
+          "type": "drill",
+          "title": "Drill: how would you improve the hierarchy?",
+          "prompt": "A product card feels visually flat even though the content is correct. The title, body text, and supporting metadata all read at the same strength. What would you change first?",
+          "answerHtml": "<p>Start with typography: adjust the scale, weight, line-height, and measure so the hierarchy becomes obvious before adding more decoration. Then refine color with a clearer ramp, maybe using <code>oklch</code> or a stronger contrast pairing. Only after that should you consider gradients, shadows, or other effects.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 8 recap",
+          "items": [
+            "Typography becomes more powerful when size, weight, line-height, and measure are managed together.",
+            "Modern color spaces make ramps and contrast easier to control.",
+            "Backgrounds create mood, while effects add depth and should not carry the whole design.",
+            "Use visual styling to strengthen hierarchy, not to hide weak structure."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What makes typography a system?",
+          "answerHtml": "<p>Typography becomes a system when family, size, weight, line-height, spacing, and measure are coordinated together instead of chosen independently.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why use a modern color space like oklch?",
+          "answerHtml": "<p><code>oklch</code> is useful because its lightness and chroma controls are more perceptual, which makes it easier to build consistent color ramps.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the role of gradients and shadows?",
+          "answerHtml": "<p>Gradients and shadows help create atmosphere, depth, and separation, but they should support the hierarchy instead of replacing it.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why should visual polish not hide layout problems?",
+          "answerHtml": "<p>If the type scale, spacing, or content structure is weak, extra effects often just disguise the issue. Fixing hierarchy first usually creates a better result and a cheaper paint path.</p>"
+        }
       ]
     },
     {
