@@ -395,6 +395,21 @@
           "level": "advanced",
           "question": "Why is sticky positioning tricky?",
           "answerHtml": "<p>Sticky depends on both normal flow and scroll container behavior, so it only works as expected when the ancestor overflow and containment rules support it.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is z-index?",
+          "answerHtml": "<p><code>z-index</code> controls stacking order for positioned elements within the same stacking context.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What are stacking contexts?",
+          "answerHtml": "<p>Stacking contexts are isolated painting layers that determine how descendants are ordered before the browser compares them with outside content.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the position property?",
+          "answerHtml": "<p><code>position</code> changes how an element participates in normal flow and which offsets or stacking behaviors apply to it.</p>"
         }
       ]
     },
@@ -480,6 +495,11 @@
           "level": "advanced",
           "question": "When should you use align-items instead of justify-content?",
           "answerHtml": "<p>Use <code>justify-content</code> for main-axis distribution and <code>align-items</code> for cross-axis alignment. They solve different parts of the layout problem.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "How do you align items in Flexbox?",
+          "answerHtml": "<p>Use <code>justify-content</code> for the main axis and <code>align-items</code> for the cross axis, then adjust <code>align-self</code> for one-off cases.</p>"
         }
       ]
     },
@@ -565,6 +585,11 @@
           "level": "advanced",
           "question": "Why is subgrid useful?",
           "answerHtml": "<p><code>subgrid</code> lets descendants inherit track sizing from the parent grid, which keeps nested content aligned without duplicating track definitions.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How does CSS Grid auto-placement work?",
+          "answerHtml": "<p>Auto-placement fills available grid cells in the chosen direction and creates implicit tracks when the explicit grid runs out of room.</p>"
         }
       ]
     },
@@ -650,6 +675,16 @@
           "level": "advanced",
           "question": "What should be queried first: the viewport or the component?",
           "answerHtml": "<p>Query the component first when the component can be reused in multiple places. Reserve viewport queries for layout changes that really belong to the page shell.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What are container units?",
+          "answerHtml": "<p>Container units such as <code>cqw</code>, <code>cqh</code>, <code>cqi</code>, and <code>cqb</code> size values relative to the query container instead of the viewport, which makes component-driven responsiveness easier.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do CSS Grid auto-placement algorithms work?",
+          "answerHtml": "<p>The auto-placement algorithm scans the grid in the chosen flow direction, fills empty cells for unplaced items, and creates implicit tracks when the explicit grid does not have enough room. Spanning items can force later items to skip forward, so the final result depends on placement order and any explicit line or area instructions.</p>"
         }
       ]
     },
@@ -735,6 +770,11 @@
           "level": "advanced",
           "question": "Why should visual polish not hide layout problems?",
           "answerHtml": "<p>If the type scale, spacing, or content structure is weak, extra effects often just disguise the issue. Fixing hierarchy first usually creates a better result and a cheaper paint path.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the difference between em, rem, px, %, vh/vw?",
+          "answerHtml": "<p><code>em</code> scales from the current element, <code>rem</code> scales from the root, <code>px</code> is fixed device pixels, <code>%</code> is relative to a context, and <code>vh/vw</code> track the viewport.</p>"
         }
       ]
     },
@@ -927,6 +967,11 @@
           "level": "advanced",
           "question": "Why are cascade layers helpful in a design system?",
           "answerHtml": "<p>Layers let the team define broad precedence rules up front, which reduces the need for selector escalation and makes the stylesheet easier to reason about.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is BEM methodology?",
+          "answerHtml": "<p>BEM is a naming convention that organizes classes into blocks, elements, and modifiers so the component structure stays obvious.</p>"
         }
       ]
     },
@@ -1030,21 +1075,258 @@
       "id": "accessibility-user-preferences-resilient-styling",
       "intro": "Make CSS resilient for keyboard users, assistive tech, and user preference settings.",
       "blocks": [
-        { "type": "scaffold", "title": "Resilient defaults", "body": "Keep accessibility and preference-aware styling visible from the start." }
+        {
+          "type": "richText",
+          "title": "Accessibility starts with user preferences",
+          "html": "<p>Accessibility-aware CSS does not fight the browser or the user. It respects focus visibility, contrast, motion preferences, and forced-color environments so the interface keeps working even when the presentation changes.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Preference queries and focus states",
+          "items": [
+            {
+              "label": "Focus visibility",
+              "html": "<p><code>:focus-visible</code> lets you style keyboard focus without forcing the same treatment on every pointer interaction.</p>"
+            },
+            {
+              "label": "Motion preferences",
+              "html": "<p><code>prefers-reduced-motion</code> helps you reduce or remove motion when the user asks for less animation.</p>"
+            },
+            {
+              "label": "Color and contrast preferences",
+              "html": "<p><code>prefers-color-scheme</code>, <code>prefers-contrast</code>, and <code>forced-colors</code> let the UI adapt to the user environment instead of assuming a single visual mode.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How resilient styling responds",
+          "steps": [
+            "The browser applies the base styles first, including usable colors, spacing, and focus affordances.",
+            "Preference media queries then override motion, contrast, and color choices when the environment requires it.",
+            "Forced-color environments may replace authored colors, so borders, outlines, and system colors must still communicate structure.",
+            "The result should keep the same content hierarchy even if some visual effects are removed."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Preference-aware component example",
+          "language": "css",
+          "code": ".button {\n  color: #fff;\n  background: #1d4ed8;\n  accent-color: #1d4ed8;\n  color-scheme: light dark;\n}\n\n.button:focus-visible {\n  outline: 3px solid currentColor;\n  outline-offset: 2px;\n}\n\n@media (prefers-reduced-motion: reduce) {\n  .button { transition: none; }\n}\n\n@media (forced-colors: active) {\n  .button { forced-color-adjust: auto; border-color: ButtonText; }\n}",
+          "caption": "A resilient component keeps focus, contrast, motion, and color-scheme behavior legible in more than one environment."
+        },
+        {
+          "type": "trap",
+          "title": "Trap: removing affordances to look quieter",
+          "tone": "warning",
+          "html": "<p>It is tempting to hide outlines, flatten contrast, or remove motion completely because the design looks cleaner. That usually makes the interface harder to use.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: make the interface resilient",
+          "prompt": "A card has a custom focus style, a subtle entrance animation, and colored form controls. What CSS changes would you make so the design still works in reduced-motion, forced-colors, and high-contrast environments?",
+          "answerHtml": "<p>Keep the focus ring visible with <code>:focus-visible</code>, disable or simplify motion under <code>prefers-reduced-motion</code>, and use borders, outlines, and system-aware colors so forced-color environments still expose structure.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 12 recap",
+          "items": [
+            "Accessibility-aware CSS respects focus visibility, contrast, and motion preferences.",
+            "Preference media queries let you adapt to user settings without changing the markup.",
+            "Resilient styling survives forced-color and high-contrast environments.",
+            "The best accessibility styles still feel intentional after the browser does its part."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What does :focus-visible solve?",
+          "answerHtml": "<p>It lets you show focus styles when keyboard users need them without forcing the same visual treatment for every pointer interaction.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When should you use prefers-reduced-motion?",
+          "answerHtml": "<p>Use it when motion is decorative or optional, and reduce or remove animation when the user has asked for less motion.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What does forced-colors do?",
+          "answerHtml": "<p>It tells the browser and CSS that the user has a forced high-contrast environment, so authored colors may be replaced with system colors.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is color-scheme useful?",
+          "answerHtml": "<p><code>color-scheme</code> tells the browser which built-in color modes a component supports, which helps native controls and form UI blend in more naturally.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What makes styling resilient?",
+          "answerHtml": "<p>Resilient styling keeps the layout understandable and usable even when the browser changes focus, contrast, motion, or color behavior to match the user environment.</p>"
+        }
       ]
     },
     {
       "id": "advanced-platform-css-native-ui-integration",
       "intro": "Explore newer platform CSS capabilities that reduce JavaScript and integrate with native UI primitives.",
       "blocks": [
-        { "type": "scaffold", "title": "Platform features", "body": "Hold space for anchor positioning, popover-adjacent CSS, and other platform features." }
+        {
+          "type": "richText",
+          "title": "Platform CSS reduces glue code",
+          "html": "<p>Modern platform CSS can solve more of the interaction and placement work that used to require JavaScript. Anchor positioning, native dialogs, popovers, and better form control styling let the browser handle common UI problems with less custom code and fewer brittle measurements.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Anchor positioning and native UI",
+          "items": [
+            {
+              "label": "Anchor positioning",
+              "html": "<p>Anchor positioning lets one element position itself relative to another element without manual JavaScript measurement.</p>"
+            },
+            {
+              "label": "Popovers and dialogs",
+              "html": "<p>Popovers and dialogs give the platform a chance to manage visibility, focus, and layering for common overlay patterns.</p>"
+            },
+            {
+              "label": "Native form controls",
+              "html": "<p>Native controls already know how to respond to keyboard, touch, accessibility APIs, and system theme settings, so styling them is often better than rebuilding them from scratch.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How native UI integration works",
+          "steps": [
+            "The browser owns the default behavior, accessibility wiring, and focus management for native primitives.",
+            "CSS can then position, color, and adapt those primitives without replacing the behavior entirely.",
+            "Anchor positioning and popovers reduce the need for manual geometry calculations in JavaScript.",
+            "When the browser already has a semantic control, styling should reinforce it rather than recreate it."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Anchored tooltip and native control example",
+          "language": "css",
+          "code": ".trigger { anchor-name: --trigger; }\n.tooltip { position: absolute; position-anchor: --trigger; top: anchor(bottom); }\n.menu { popover: auto; }\n.field { color-scheme: light dark; accent-color: #0f766e; }",
+          "caption": "Anchor positioning and native UI properties let the browser handle placement and built-in control behavior more directly."
+        },
+        {
+          "type": "trap",
+          "title": "Trap: rebuilding native controls from scratch",
+          "tone": "warning",
+          "html": "<p>If a control already works natively, replacing it with a fully custom version often creates more accessibility work than it removes.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: choose the right platform primitive",
+          "prompt": "You need a small tooltip, a settings popover, and a form field that should match the operating system theme. Which platform CSS features or native primitives would you try before introducing extra JavaScript?",
+          "answerHtml": "<p>Use anchor positioning for the tooltip, the popover or dialog primitive for the overlay, and <code>color-scheme</code> plus <code>accent-color</code> for the form field.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 13 recap",
+          "items": [
+            "Anchor positioning reduces manual geometry code.",
+            "Native UI primitives often provide the accessibility you need already.",
+            "CSS can integrate with popovers, dialogs, and form controls instead of replacing them.",
+            "Platform-first styling keeps interaction code smaller and easier to reason about."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is CSS Anchor Positioning?",
+          "answerHtml": "<p>It is a platform feature that lets one element position itself relative to another without manual JavaScript measurement.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the popover attribute for?",
+          "answerHtml": "<p>It tells the browser that an element should behave like a lightweight overlay with built-in visibility and focus behavior.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why prefer native form controls when possible?",
+          "answerHtml": "<p>Native controls already handle keyboard input, accessibility APIs, and platform conventions, so they usually require less work to make robust.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What does accent-color change?",
+          "answerHtml": "<p><code>accent-color</code> sets the accent used by supported native controls such as checkboxes, radio buttons, and range inputs.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When is dialog better than a custom modal?",
+          "answerHtml": "<p><code>dialog</code> is better when the browser can provide the right focus management, layering, and semantics without a custom overlay stack.</p>"
+        }
       ]
     },
     {
       "id": "ecosystem-tradeoffs-debugging-architecture-interview-mastery",
       "intro": "Close with trade-offs, debugging instincts, and interview-ready recall for the CSS ecosystem.",
       "blocks": [
-        { "type": "scaffold", "title": "Capstone interview bank", "body": "Keep a representative slice of the legacy Q&A here while the skeleton is still being rebuilt." }
+        {
+          "type": "richText",
+          "title": "Ecosystem choices are tradeoffs",
+          "html": "<p>CSS at scale is rarely about one perfect tool. Teams mix utility classes, modules, design tokens, layered global styles, and sometimes CSS-in-JS because each solves a different slice of the problem.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Tailwind, CSS Modules, and CSS-in-JS",
+          "items": [
+            {
+              "label": "Tailwind",
+              "html": "<p>Tailwind can accelerate consistent UI assembly, but it asks the team to accept utility-heavy markup and a shared design language.</p>"
+            },
+            {
+              "label": "CSS Modules",
+              "html": "<p>CSS Modules give local scoping and predictable class names, which helps component ownership without abandoning plain CSS.</p>"
+            },
+            {
+              "label": "CSS-in-JS",
+              "html": "<p>CSS-in-JS can make dynamic styling and co-location convenient, but it may add runtime cost or extra abstraction.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How to debug architecture failures",
+          "steps": [
+            "Check whether the bug is caused by the cascade, layout, paint, or semantics before changing the code.",
+            "Follow the styles from the component outward until the override source is obvious.",
+            "Look for layer order, specificity, and scoped boundaries before assuming the browser is wrong.",
+            "If the architecture feels brittle, remove a layer of abstraction and see whether the problem becomes simpler."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "A layered app styling strategy",
+          "language": "css",
+          "code": "@layer tokens, components, utilities;\n:root { --surface: #0f172a; --text: #f8fafc; }\n.card { background: var(--surface); color: var(--text); }\n.stack-gap-4 { gap: 1rem; }",
+          "caption": "Layers, tokens, and utilities can coexist if the team gives each layer one clear job."
+        },
+        {
+          "type": "trap",
+          "title": "Trap: confusing tooling for architecture",
+          "tone": "warning",
+          "html": "<p>A tool can speed up a decision, but it cannot replace one. Tailwind, modules, and CSS-in-JS still need a naming strategy, a token strategy, and a plan for debugging when the design changes.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: choose a styling strategy",
+          "prompt": "A team wants rapid delivery, strong component ownership, and easy theming. What mix of CSS approaches would you propose, and what tradeoffs would you call out?",
+          "answerHtml": "<p>I would suggest a token-first foundation with CSS Modules or scoped component styles for local ownership, plus a small utility layer for shared patterns. If the team wants Tailwind or CSS-in-JS, I would keep the token and debugging strategy explicit so the architecture does not become tool-shaped instead of product-shaped.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 14 recap",
+          "items": [
+            "CSS tooling choices are tradeoffs, not moral positions.",
+            "Debugging gets easier when layers, tokens, and ownership are clear.",
+            "The capstone should preserve the legacy interview bank while still covering modern platform and ecosystem topics.",
+            "A strong CSS engineer can reason across structure, rendering, accessibility, and team process."
+          ]
+        }
       ],
       "qa": [
         { "level": "basic", "question": "What is the cascade in CSS?", "answerHtml": "<p>The cascade decides which declaration wins by considering importance, origin, layers, specificity, and source order.</p>" },
@@ -1058,7 +1340,55 @@
         { "level": "intermediate", "question": "What is the gap property?", "answerHtml": "<p><code>gap</code> controls spacing between grid or flex items without adding margins to the children.</p>" },
         { "level": "advanced", "question": "How do CSS animations perform vs JavaScript animations?", "answerHtml": "<p>CSS transforms and opacity can stay on the compositor, while JavaScript often competes for the main thread.</p>" },
         { "level": "advanced", "question": "What is subgrid?", "answerHtml": "<p><code>subgrid</code> lets a child grid inherit track sizing from its parent grid.</p>" },
-        { "level": "advanced", "question": "What is CSS containment?", "answerHtml": "<p>Containment limits how much of the page the browser must consider when an element changes.</p>" }
+        { "level": "advanced", "question": "What is CSS containment?", "answerHtml": "<p>Containment limits how much of the page the browser must consider when an element changes.</p>" },
+        { "level": "advanced", "question": "What is CSS-in-JS?", "answerHtml": "<p>CSS-in-JS is an approach that generates or manages styles from JavaScript, often to co-locate component styles with logic and support dynamic theming or runtime variation.</p>" },
+        { "level": "intermediate", "question": "What is a CSS reset?", "answerHtml": "<p>A reset removes or normalizes browser defaults so the team starts from a predictable baseline.</p>" },
+        { "level": "intermediate", "question": "What is a design token?", "answerHtml": "<p>A design token is a named value for a reusable design decision, such as color, spacing, radius, or shadow.</p>" },
+        { "level": "advanced", "question": "What is the difference between a reset and a normalize approach?", "answerHtml": "<p>A reset aggressively clears defaults to create a blank slate, while normalize-style approaches preserve useful browser behavior and only smooth out inconsistencies.</p>" },
+        { "level": "advanced", "question": "How do you decide between CSS Modules and global CSS?", "answerHtml": "<p>Use CSS Modules when you want local ownership and name isolation, and use global CSS for truly shared primitives, tokens, and document-wide rules.</p>" },
+        { "level": "advanced", "question": "When is utility-first CSS a good fit?", "answerHtml": "<p>Utility-first CSS is a good fit when the team wants a consistent design language, fast composition, and low ceremony for common layout and spacing patterns.</p>" },
+        { "level": "advanced", "question": "What is the difference between Tailwind and CSS-in-JS?", "answerHtml": "<p>Tailwind expresses design decisions as utility classes in markup, while CSS-in-JS expresses styles through JavaScript-driven style generation and component co-location.</p>" },
+        { "level": "advanced", "question": "How do you prevent specificity creep in a large codebase?", "answerHtml": "<p>Use layers, tokens, flat selectors, and predictable component boundaries so overrides happen by architecture instead of ever-growing selector weight.</p>" },
+        { "level": "advanced", "question": "What is the role of cascade layers in design systems?", "answerHtml": "<p>Layers let design tokens, base styles, components, and utilities each have a controlled precedence band, which reduces accidental override wars.</p>" },
+        { "level": "intermediate", "question": "What is the difference between a class name convention and a styling architecture?", "answerHtml": "<p>A class name convention helps naming stay understandable, but a styling architecture also defines ownership, override order, and how tokens and layers work together.</p>" },
+        { "level": "advanced", "question": "Why is BEM still useful in some teams?", "answerHtml": "<p>BEM can still help teams keep selectors flat, communicate component boundaries clearly, and avoid accidental coupling when they are not using a stronger architectural system.</p>" },
+        { "level": "advanced", "question": "What are the tradeoffs of scoped styles?", "answerHtml": "<p>Scoped styles improve isolation, but they can also hide shared patterns, create duplication, and make cross-component theming or overrides harder if overused.</p>" },
+        { "level": "advanced", "question": "What is the difference between runtime and build-time styling?", "answerHtml": "<p>Runtime styling decides styles in the browser while the app runs, while build-time styling generates or extracts CSS ahead of time for lower runtime overhead.</p>" },
+        { "level": "advanced", "question": "How do you debug a style that only breaks in production?", "answerHtml": "<p>Compare the production bundle, loading order, minified class names, and any extracted CSS or layers, then verify whether the failure comes from ordering rather than the declaration itself.</p>" },
+        { "level": "advanced", "question": "What is the browser's paint cost for heavy visual effects?", "answerHtml": "<p>Blur, large shadows, filters, and blending can increase paint and compositing work, so they should be treated as expensive visual polish rather than free styling.</p>" },
+        { "level": "advanced", "question": "Why can custom properties improve theming?", "answerHtml": "<p>Custom properties let you swap design values at a semantic level, so a theme can change many components by updating a small token set instead of rewriting rules.</p>" },
+        { "level": "intermediate", "question": "What is the difference between theme tokens and component tokens?", "answerHtml": "<p>Theme tokens describe global brand or mode values, while component tokens describe the component's internal defaults and can be derived from the theme layer.</p>" },
+        { "level": "advanced", "question": "What is the best reason to use @scope?", "answerHtml": "<p><code>@scope</code> helps keep styling local to a component boundary without increasing selector specificity, which makes overrides more predictable.</p>" },
+        { "level": "advanced", "question": "How do you keep CSS maintainable as a team grows?", "answerHtml": "<p>Keep selectors flat, define layers and tokens early, document component ownership, and make the default path easy so engineers do not need to fight the cascade.</p>" },
+        { "level": "advanced", "question": "What is the difference between structural CSS and decorative CSS?", "answerHtml": "<p>Structural CSS controls layout, spacing, and flow, while decorative CSS handles color, shadows, gradients, and visual polish that should not affect semantics.</p>" },
+        { "level": "advanced", "question": "When should CSS be extracted into shared primitives?", "answerHtml": "<p>Extract CSS into shared primitives when multiple components need the same layout or token pattern and the abstraction helps consistency more than it hides intent.</p>" },
+        { "level": "intermediate", "question": "What is the difference between a utility class and a component class?", "answerHtml": "<p>A utility class does one small job and is meant to be composed, while a component class usually represents a named design pattern with more specific intent.</p>" },
+        { "level": "advanced", "question": "What is the relationship between CSS and the accessibility tree?", "answerHtml": "<p>CSS changes visual presentation, but accessibility still depends on semantic HTML, focus behavior, and whether hidden content remains perceivable to assistive technology.</p>" },
+        { "level": "advanced", "question": "Why is it important to understand the render pipeline?", "answerHtml": "<p>Understanding parsing, cascade, layout, paint, and compositing helps you pick the right fix for a bug instead of reaching for unrelated style changes.</p>" },
+        { "level": "advanced", "question": "What is the difference between authoring convenience and runtime performance in CSS?", "answerHtml": "<p>Some approaches make styling faster to write but heavier to execute, so a good system balances developer velocity against paint, layout, and bundle costs.</p>" },
+        { "level": "advanced", "question": "How do you explain CSS tradeoffs in a senior interview?", "answerHtml": "<p>Explain the problem shape, the preferred tool, the tradeoffs, and the failure modes. Good answers show that you can choose between simplicity, scalability, performance, and maintainability deliberately.</p>" },
+        { "level": "advanced", "question": "What is the difference between a system choice and a local workaround?", "answerHtml": "<p>A system choice shapes how many components are built, while a local workaround only solves one symptom and can create inconsistency later.</p>" },
+        { "level": "advanced", "question": "Why do CSS teams still need plain CSS knowledge?", "answerHtml": "<p>Whatever tooling the team uses, the browser still applies the cascade, layout, painting, and accessibility rules underneath, so plain CSS knowledge remains the foundation for debugging and architecture.</p>" },
+        { "level": "advanced", "question": "What is the difference between layout shifts and paint-only changes?", "answerHtml": "<p>Layout shifts change geometry and often trigger reflow, while paint-only changes update the visual result without moving surrounding boxes.</p>" },
+        { "level": "advanced", "question": "When is it worth using advanced selectors like :has()?", "answerHtml": "<p>Use advanced selectors when they simplify the expression of real UI state or structure without making the stylesheet harder to reason about or support.</p>" },
+        { "level": "advanced", "question": "What is the difference between a CSS framework and a CSS architecture?", "answerHtml": "<p>A framework gives you tools and presets, while an architecture defines how styles are organized, overridden, and maintained across the product.</p>" },
+        { "level": "advanced", "question": "How do you keep CSS resilient to markup refactors?", "answerHtml": "<p>Use semantic hooks, component boundaries, low-specificity selectors, and layout rules that depend on intent rather than deep DOM shape.</p>" },
+        { "level": "advanced", "question": "What is the difference between static and dynamic theming?", "answerHtml": "<p>Static theming ships one visual theme at a time, while dynamic theming lets tokens or rules switch at runtime based on state, mode, or user preference.</p>" },
+        { "level": "advanced", "question": "Why do CSS architecture choices affect onboarding?", "answerHtml": "<p>Clear architecture reduces the mental load for new engineers because they can predict where styles live, how overrides work, and how to debug safely.</p>" },
+        { "level": "advanced", "question": "What is the difference between token reuse and token misuse?", "answerHtml": "<p>Good token reuse captures stable design decisions, while token misuse happens when every one-off choice is promoted into a token and the system loses meaning.</p>" },
+        { "level": "advanced", "question": "How do you choose between Grid and Flexbox in practice?", "answerHtml": "<p>Choose Flexbox for one-dimensional distribution and alignment, and choose Grid when the layout needs explicit control across both rows and columns.</p>" },
+        { "level": "advanced", "question": "What is the difference between container queries and media queries in component systems?", "answerHtml": "<p>Container queries respond to the component's own size, while media queries respond to viewport or device-wide conditions, so they solve different levels of adaptation.</p>" },
+        { "level": "advanced", "question": "What is the safest way to introduce a new styling approach in a legacy app?", "answerHtml": "<p>Introduce it behind a clear boundary, prove it on one component or surface, keep existing patterns stable, and document how the new approach interacts with the old one.</p>" },
+        { "level": "advanced", "question": "What is the difference between visual consistency and visual sameness?", "answerHtml": "<p>Consistency means patterns feel related and intentional, while sameness means everything looks identical even when the content or hierarchy calls for variation.</p>" },
+        { "level": "advanced", "question": "What is the difference between CSS logical properties and physical properties?", "answerHtml": "<p>Logical properties follow inline and block flow, while physical properties hard-code top, right, bottom, and left, which can make them less resilient across writing modes.</p>" },
+        { "level": "advanced", "question": "What is the role of the browser's layout engine?", "answerHtml": "<p>The layout engine calculates sizes and positions for boxes after styles have been computed, turning abstract CSS rules into a concrete page geometry.</p>" },
+        { "level": "advanced", "question": "What is the difference between explicit and implicit sizing in CSS?", "answerHtml": "<p>Explicit sizing is declared directly, while implicit sizing comes from defaults, intrinsic content, or browser-created tracks and boxes.</p>" },
+        { "level": "advanced", "question": "Why do seasoned CSS engineers care about source order?", "answerHtml": "<p>Source order is the final tie-breaker in many cascade cases, so knowing where rules are loaded still matters even in layered systems.</p>" },
+        { "level": "advanced", "question": "What is the difference between a component API and a styling API?", "answerHtml": "<p>A component API exposes behavior and structure, while a styling API exposes the knobs that change visual appearance, spacing, or theming.</p>" },
+        { "level": "advanced", "question": "How do you know when a CSS abstraction is too clever?", "answerHtml": "<p>If the abstraction hides the underlying cascade, makes debugging slower, or invents a naming scheme nobody can predict, it is probably too clever.</p>" },
+        { "level": "advanced", "question": "What is the difference between semantic spacing and arbitrary spacing?", "answerHtml": "<p>Semantic spacing uses named scale values tied to design intent, while arbitrary spacing introduces one-off numbers that weaken consistency.</p>" },
+        { "level": "advanced", "question": "What should a strong CSS interview answer include?", "answerHtml": "<p>A strong answer should define the concept clearly, explain the browser behavior, mention tradeoffs, and connect the idea to a real production decision.</p>" },
+        { "level": "advanced", "question": "What is the difference between a migration strategy and a rewrite?", "answerHtml": "<p>A migration strategy preserves delivery while gradually shifting architecture, while a rewrite replaces the system all at once and accepts much higher risk.</p>" }
       ]
     }
   ]
