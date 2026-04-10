@@ -1,524 +1,1713 @@
 {
   "id": "uxui",
-  "title": "UX & UI Design Bible",
-  "subtitle": "Gestalt principles, accessibility & design tokens",
+  "title": "UI/UX Mastery Bible",
+  "subtitle": "Research, accessibility, design systems, critique, and interview mastery",
+  "heroStats": [
+    {
+      "label": "Chapters",
+      "value": "14"
+    },
+    {
+      "label": "Interview",
+      "value": "Critique + Capstone"
+    },
+    {
+      "label": "Coverage",
+      "value": "Research to Systems"
+    },
+    {
+      "label": "Updated",
+      "value": "2026"
+    }
+  ],
   "tabs": [
     {
-      "id": "ux-gestalt",
-      "label": "UX Fundamentals & Gestalt Principles"
+      "id": "origins-product-thinking-role-design",
+      "label": "Origins & Product Thinking"
     },
     {
-      "id": "ux-principles",
-      "label": "UX Principles & a11y"
+      "id": "human-perception-attention-cognitive-load",
+      "label": "Perception & Cognitive Load"
     },
     {
-      "id": "ux-designsys",
-      "label": "Design Tokens & Systems"
+      "id": "user-research-discovery-problem-framing",
+      "label": "Research & Problem Framing"
     },
     {
-      "id": "ux-patterns",
-      "label": "Patterns & Best Practices"
+      "id": "information-architecture-navigation-user-flows",
+      "label": "IA & User Flows"
     },
     {
-      "id": "ux-comp",
-      "label": "Micro-Interactions & Component Design"
+      "id": "interaction-design-feedback-state-design",
+      "label": "Interaction & State Design"
     },
     {
-      "id": "ux-ui-mastery",
-      "label": "UX/UI Architecture & Design Systems"
+      "id": "visual-hierarchy-layout-composition",
+      "label": "Hierarchy & Composition"
     },
     {
-      "id": "ux-cs",
-      "label": "Interview Cheat Sheet (Fast Recall)"
+      "id": "typography-color-iconography-visual-language",
+      "label": "Typography, Color & Icons"
     },
     {
-      "id": "ux-iq",
-      "label": "Interview Q&A (61)"
+      "id": "responsive-design-accessibility-inclusive-ux",
+      "label": "Responsive & Inclusive UX"
+    },
+    {
+      "id": "forms-input-ux-conversion-critical-interfaces",
+      "label": "Forms & Conversion UX"
+    },
+    {
+      "id": "design-systems-tokens-components-governance",
+      "label": "Design Systems & Tokens"
+    },
+    {
+      "id": "motion-micro-interactions-perceived-performance",
+      "label": "Motion & Perceived Performance"
+    },
+    {
+      "id": "critique-heuristics-measuring-design-quality",
+      "label": "Critique & Quality"
+    },
+    {
+      "id": "collaboration-handoff-tooling-production-workflows",
+      "label": "Collaboration & Handoff"
+    },
+    {
+      "id": "ui-ux-architecture-system-thinking-interview-mastery",
+      "label": "Architecture & Interviews"
     }
   ],
   "sections": [
     {
-      "id": "ux-cs",
-      "intro": "The UX/UI 'Cheat Sheet' for clearing your interview. Master these principles to speak the language of designers.",
-      "cards": [
+      "id": "origins-product-thinking-role-design",
+      "intro": "Start by understanding why design exists inside product work and how UI decisions connect to business outcomes, user trust, and implementation constraints.",
+      "blocks": [
         {
-          "title": "Core UX Laws (Mastery Recall)",
-          "contentHtml": "<ul><li><b>Fitts's Law:</b> Larger/closer targets = faster interaction. (Impact: Floating Action Buttons).</li><li><b>Hick's Law:</b> More choices = exponential decision time. (Solution: Progressive Disclosure).</li><li><b>Jakob's Law:</b> Users expect your site to work like others. (Standardize your patterns).</li><li><b>Miller's Law:</b> Humans can hold 7±2 items in working memory.</li></ul>"
+          "type": "richText",
+          "title": "UI/UX is product work",
+          "html": "<p>UI and UX are not decoration passes added after the real work is done. UX defines how a person understands a product, moves through tasks, recovers from mistakes, and builds trust. UI gives those decisions visible form through layout, hierarchy, labels, and states. In healthy teams, design connects business goals, user needs, and delivery realities instead of optimizing screenshots in isolation.</p>"
         },
         {
-          "title": "Gestalt Principles of Perception",
-          "contentHtml": "<ul><li><b>Proximity:</b> Related things belong together (use white space).</li><li><b>Similarity:</b> Like-designed elements have like-functions (buttons vs secondary links).</li><li><b>Continuity:</b> Eyes follow lines—use for carousels and list flows.</li><li><b>Closure:</b> The brain completes unfinished shapes (icons/skeletons).</li></ul>"
+          "type": "compare",
+          "title": "Related design roles",
+          "items": [
+            {
+              "label": "UX",
+              "html": "<p>UX focuses on user goals, flows, friction, research evidence, and task success. It asks whether the experience helps the right person do the right thing with confidence.</p>"
+            },
+            {
+              "label": "UI",
+              "html": "<p>UI focuses on the visible interface language: hierarchy, typography, color, spacing, state expression, and how interactive elements feel and behave.</p>"
+            },
+            {
+              "label": "Product design",
+              "html": "<p>Product design usually spans both UX and UI while also connecting decisions to business goals, delivery scope, technical constraints, and product metrics.</p>"
+            }
+          ]
         },
         {
-          "title": "Accessibility (WCAG 2.2) Mastery",
-          "contentHtml": "<ul><li><b>Contrast:</b> 4.5:1 for body, 3:1 for large/graphical.</li><li><b>Focus Management:</b> Never suppress <code>:focus-visible</code>. Manage focus in modals and route changes.</li><li><b>Non-Text:</b> Use <code>aria-label</code> for icon-only buttons.</li><li><b>Color:</b> Never use color alone to convey meaning (add secondary indicators).</li></ul>"
+          "type": "mechanics",
+          "title": "From problem to interface",
+          "steps": [
+            "Start with the business problem or user problem, not a screen request.",
+            "Translate the problem into target users, jobs, and success criteria.",
+            "Model the task flow, states, and decision points before styling details.",
+            "Shape the interface so the right action is obvious, safe, and measurable.",
+            "Validate the solution with feedback, behavior, and delivery constraints."
+          ]
         },
         {
-          "title": "Design System Architecture",
-          "contentHtml": "<ul><li><b>Atomic Tokens:</b> Raw values (Blue-500).</li><li><b>Alias (Semantic) Tokens:</b> Intent values (Action-Primary).</li><li><b>Component Tokens:</b> Specific overrides (Button-Bg-Hover).</li><li><b>Multi-mode:</b> Logic for Dark/Light mode and High-Contrast swaps.</li></ul>"
+          "type": "trap",
+          "title": "Trap: starting with the mockup",
+          "html": "<p>A team that jumps straight to screens often creates polished confusion. If the problem statement, target user, and success metric are fuzzy, the interface usually optimizes the wrong thing very efficiently.</p>",
+          "tone": "warning"
         },
         {
-          "title": "Visual Hierarchy & Layout",
-          "contentHtml": "<ul><li><b>Typographic Scale:</b> Using size and weight to guide the eye (Header vs Body).</li><li><b>Scanning Patterns:</b> F-Pattern for text-heavy; Z-Pattern for landing pages.</li><li><b>Reading Rhythm:</b> Consistent vertical rhythm (4px/8px grid).</li></ul>"
+          "type": "drill",
+          "title": "Drill: frame the actual problem",
+          "prompt": "A team says, \"We need a cleaner dashboard.\" What should a strong designer ask before moving pixels around?",
+          "answerHtml": "<p>A strong designer asks what users are trying to accomplish, where they currently get stuck, which behaviors matter to the business, what evidence exists already, and which decisions are fixed by technical or organizational constraints. The right next step is problem framing, not visual cleanup by instinct.</p>"
         },
         {
-          "title": "Micro-Interactions & Motion",
-          "contentHtml": "<ul><li><b>Feedback:</b> Every action must have a reaction (Haptic, Visual, Auditory).</li><li><b>Duration:</b> UI transitions should be 200ms-400ms. &lt;100ms is too fast; &gt;500ms feels sluggish.</li><li><b>Easing:</b> <code>cubic-bezier</code> (Ease-In-Out) feels natural; Linear feels robotic.</li></ul>"
+          "type": "recap",
+          "title": "Chapter 1 recap",
+          "items": [
+            "Design is part of product strategy, not a cosmetic afterthought.",
+            "UX, UI, and product design overlap but solve different layers of the same problem.",
+            "Good interfaces connect user goals, business outcomes, and delivery realities.",
+            "If the problem is not clear, a better screen rarely fixes it."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the difference between UX and UI inside product work?",
+          "answerHtml": "<p>UX focuses on how the experience works and whether it solves the user problem well, while UI focuses on how that experience is expressed visually and interactively on screen.</p>"
         },
         {
-          "title": "Interaction Design (IxD) Principles",
-          "contentHtml": "<ul><li><b>Mental Model:</b> How the user <i>expects</i> the system to work.</li><li><b>Affordance:</b> Visual clues that show how to use something (A button shadow implies clickability).</li><li><b>Signifier:</b> Explicit indicators (labels, arrows).</li></ul>"
+          "level": "basic",
+          "question": "Why should designers care about business goals?",
+          "answerHtml": "<p>Because design decisions are judged by outcomes, not aesthetics alone. A design that looks polished but fails the product goal is still weak design.</p>"
         },
         {
-          "title": "Modern UI Architectures",
-          "contentHtml": "<ul><li><b>Bento Grid:</b> Card-based layouts with varying sizes (Dashboard/SaaS style).</li><li><b>Glassmorphism:</b> Using background-blur and semi-transparency for depth.</li><li><b>Dark Mode 2.0:</b> Using subtle surface elevations (tinted greys) rather than pure black.</li></ul>"
+          "level": "intermediate",
+          "question": "What makes a UI problem different from a product problem?",
+          "answerHtml": "<p>A UI problem is usually about clarity, hierarchy, or interaction expression, while a product problem is about whether the workflow, value proposition, or task itself is solving the right need.</p>"
         },
         {
-          "title": "User Research & Evaluation",
-          "contentHtml": "<ul><li><b>A/B Testing:</b> Comparing two versions based on a single metric (Conversion).</li><li><b>Heuristic Evaluation:</b> Auditing a UI against Nielsen's 10 principles.</li><li><b>Cognitive Walkthrough:</b> Stepping through a task to find friction.</li></ul>"
+          "level": "intermediate",
+          "question": "Why is problem framing important before wireframing?",
+          "answerHtml": "<p>Problem framing defines who the user is, what job they are trying to do, what success looks like, and what constraints matter, so the design work starts in the right direction.</p>"
         },
         {
-          "title": "Error Recovery & Prevention",
-          "contentHtml": "<ul><li><b>Forgiveness:</b> Provide Undo/Redo for all destructive actions.</li><li><b>Instructional Errors:</b> Don't just show 'Error'; tell the user exactly how to fix it.</li><li><b>Native Patterns:</b> Use <code>inputmode=\"numeric\"</code> for easier keyboard entry.</li></ul>"
+          "level": "advanced",
+          "question": "How would you explain the role of design to an interviewer on a cross-functional team?",
+          "answerHtml": "<p>I would say design reduces ambiguity between user needs, business goals, and implementation by making flows, states, tradeoffs, and evidence visible enough for the team to build the right thing.</p>"
         }
       ]
     },
     {
-      "id": "ux-gestalt",
-      "intro": "Understanding human psychology to create intuitive, frictionless interfaces.",
-      "cards": [
+      "id": "human-perception-attention-cognitive-load",
+      "intro": "Learn how people scan, group, remember, and misread interfaces so visual decisions are grounded in human behavior instead of taste alone.",
+      "blocks": [
         {
-          "title": "The Gestalt Principles of Perception",
-          "contentHtml": "<p>Gestalt psychology explains how the human brain automatically organizes visual elements into groups or unified wholes.</p>\n      <ul>\n        <li><b>Proximity:</b> Elements placed close to each other are perceived as related. This is the most powerful grouping principle. Use negative space (whitespace) to group logical sections.</li>\n        <li><b>Similarity:</b> Elements that look alike (color, shape, size) are perceived as having the same function. If all your primary buttons are blue, users will click a blue banner expecting an action.</li>\n        <li><b>Continuity:</b> The eye is compelled to move through one object and continue to another. Used heavily in carousels and horizontal scrolling lists to guide the user's vision off-screen to indicate more content.</li>\n        <li><b>Closure:</b> The brain prefers complete shapes. If you show an incomplete icon or a clipped image, the brain fills in the missing visual gaps automatically.</li>\n      </ul>"
+          "type": "richText",
+          "title": "Design for limited attention",
+          "html": "<p>People do not read interfaces like books. They scan for cues, compare options quickly, and stop when uncertainty rises too high. Strong design reduces cognitive load by making groupings obvious, decisions progressive, labels familiar, and feedback immediate. Weak design asks users to remember too much, compare too much, or decode too much at once.</p>"
         },
         {
-          "title": "Fitts's Law & Hick's Law",
-          "contentHtml": "<ul>\n        <li><b>Fitts's Law:</b> The time required to rapidly move to a target area is a function of the distance to the target and the size of the target. <i>Translation:</i> Make primary action buttons large and place them close to where the user's cursor/thumb already is. Edges and corners of screens are \"infinitely\" deep targets for a mouse.</li>\n        <li><b>Hick's Law:</b> The time it takes to make a decision increases with the number and complexity of choices. <i>Translation:</i> Don't put 15 links in a dropdown. Group choices into a hierarchy, or hide advanced options behind a \"More\" button to reduce cognitive load.</li>\n      </ul>"
+          "type": "compare",
+          "title": "Perception principles in interface work",
+          "items": [
+            {
+              "label": "Gestalt grouping",
+              "html": "<p>Proximity, similarity, continuity, and closure help users see related items as a unit. Spacing and repetition often communicate structure faster than labels do.</p>"
+            },
+            {
+              "label": "Recognition over recall",
+              "html": "<p>Interfaces should show the next likely action, recent context, and meaningful labels so users do not have to remember hidden rules or previous states.</p>"
+            },
+            {
+              "label": "Consistency",
+              "html": "<p>Consistent behavior lowers mental overhead because the user can predict what a pattern means before reading every detail again.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How people scan a screen",
+          "steps": [
+            "Users first notice visual contrast, size, placement, and movement.",
+            "They then search for a cue that matches their current goal.",
+            "If the cue feels trustworthy, they follow it and ignore the rest of the screen.",
+            "If the screen forces too many comparisons, confidence drops and hesitation rises.",
+            "Design either supports that fast scan or turns it into avoidable mental work."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: equal emphasis everywhere",
+          "html": "<p>If everything is bold, bright, elevated, or animated, then nothing is truly prioritized. Equal emphasis creates noise, and noise increases decision fatigue.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: reduce cognitive load",
+          "prompt": "A settings page shows 24 unrelated toggles in a single long list with no grouping, explanation, or defaults. What is the main design failure?",
+          "answerHtml": "<p>The page forces users to process and compare too much at once. A stronger design would group related settings, surface defaults, explain consequences, and progressively reveal advanced options instead of flattening everything into one decision wall.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 2 recap",
+          "items": [
+            "People scan interfaces under limited attention and memory.",
+            "Grouping, consistency, and recognition reduce cognitive load.",
+            "Hierarchy should make the next useful action easy to spot.",
+            "Noise is not neutrality. It is friction in disguise."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is cognitive load in UI/UX?",
+          "answerHtml": "<p>Cognitive load is the mental effort required to understand, compare, remember, and act inside an interface.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What does Jakob's Law mean for interface design?",
+          "answerHtml": "<p>It means users expect your product to work similarly to other familiar products, so unusual patterns need a strong reason and extra clarity.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why are Gestalt principles useful to developers and designers?",
+          "answerHtml": "<p>They explain how spacing, repetition, and visual similarity create perceived structure, which helps teams design clearer layouts without adding more labels or chrome.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between recognition and recall in interface design?",
+          "answerHtml": "<p>Recognition means the UI surfaces enough cues that the user can identify the right action, while recall means the user must remember information from elsewhere or from an earlier step.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you redesign a crowded page using cognitive-load thinking?",
+          "answerHtml": "<p>I would identify the primary goal, reduce simultaneous choices, group related content, push advanced options later, improve labeling, and strengthen hierarchy so the first scan already suggests the right path.</p>"
         }
       ]
     },
     {
-      "id": "ux-principles",
-      "intro": "UX/UI principles every frontend developer must know. Design decisions directly affect code architecture.",
-      "cards": [
+      "id": "user-research-discovery-problem-framing",
+      "intro": "Good design starts with evidence. This chapter covers how to learn from users, frame the real problem, and choose the right research method for the question.",
+      "blocks": [
         {
-          "title": "Core UX Principles",
-          "contentHtml": "<h3>1. Heuristic Evaluation (Nielsen's 10 Heuristics)</h3>\n<p><strong>Visibility of system status:</strong> Always show loading states, progress bars, success/error feedback. Never leave the user guessing.</p>\n<p><strong>Match between system and real world:</strong> Use familiar language, icons, and metaphors. A trash can icon for delete, not an X.</p>\n<p><strong>User control and freedom:</strong> Provide undo, redo, cancel, back. Let users recover from mistakes easily.</p>\n<p><strong>Consistency and standards:</strong> Same action = same result everywhere. Follow platform conventions (links are blue, buttons look clickable).</p>\n<p><strong>Error prevention:</strong> Disable submit until form is valid, confirm destructive actions, auto-save drafts.</p>\n<p><strong>Recognition over recall:</strong> Show options rather than making users remember. Autocomplete, recent items, breadcrumbs.</p>\n<p><strong>Flexibility and efficiency:</strong> Keyboard shortcuts for power users, simplified flows for beginners.</p>\n<p><strong>Aesthetic and minimalist design:</strong> Every extra element competes for attention. Remove what doesn't serve a purpose.</p>\n<p><strong>Help users recognize and recover from errors:</strong> Clear error messages with actionable solutions, not cryptic codes.</p>\n<p><strong>Help and documentation:</strong> Contextual tooltips, onboarding flows, searchable help.</p>\n<div class=\"an\">These 10 heuristics are used in <strong>UX audits</strong> at companies like Google, Meta, and Amazon. Walk through each heuristic against your product to find issues. Interviewers often ask 'how would you improve the UX of X?' — use these as your framework.</div>"
+          "type": "richText",
+          "title": "Research prevents confident guessing",
+          "html": "<p>Research is how design teams replace assumptions with evidence. Discovery interviews, usability tests, analytics, support logs, and surveys all answer different questions. The skill is not just gathering data. It is picking the method that fits the uncertainty you are actually facing and then turning findings into design decisions.</p>"
         },
         {
-          "title": "Interaction Design Patterns",
-          "contentHtml": "<h3>Loading States</h3>\n<p><strong>Skeleton screens:</strong> Grey placeholder shapes mimicking content layout. Better than spinners because they show WHERE content will appear, reducing perceived load time by up to 50%.</p>\n<p><strong>Optimistic updates:</strong> Show the result immediately, sync in background. Like button turns red instantly — don't wait for server.</p>\n<p><strong>Progressive loading:</strong> Show content as it arrives (streaming SSR). User sees header + nav immediately, then content streams in.</p>\n<p><strong>Stale-while-revalidate:</strong> Show cached data immediately, refresh in background. TanStack Query does this automatically.</p>\n\n<h3>Feedback Patterns</h3>\n<p><strong>Micro-interactions:</strong> Button press animation, toggle slide, checkbox bounce. Tiny details that make the UI feel alive.</p>\n<p><strong>Toast notifications:</strong> Temporary, non-blocking feedback. Auto-dismiss after 3-5s. Stack from bottom. Include undo for destructive actions.</p>\n<p><strong>Inline validation:</strong> Validate on blur (not keystroke). Show error below field. Green checkmark for valid. Don't validate empty fields until submit attempt.</p>\n<p><strong>Progress indicators:</strong> Determinate (progress bar with %) for known durations. Indeterminate (spinner) for unknown. Step indicators for multi-step flows.</p>\n<div class=\"tp\">The best loading state is <strong>no loading state</strong>. Use optimistic updates + skeleton screens + prefetching to make the app feel instant. Only show spinners for operations that truly take time (file uploads, complex calculations).</div>"
+          "type": "compare",
+          "title": "Research methods and what they answer",
+          "items": [
+            {
+              "label": "User interviews",
+              "html": "<p>Best for motivations, pain points, language, and mental models. Interviews are useful when you need to understand why people behave a certain way.</p>"
+            },
+            {
+              "label": "Usability testing",
+              "html": "<p>Best for observing whether people can complete realistic tasks inside a proposed or existing interface. It reveals friction that users often cannot explain abstractly.</p>"
+            },
+            {
+              "label": "Analytics and support data",
+              "html": "<p>Best for seeing behavioral patterns at scale, such as abandonment, repeat errors, or the most-used paths. It tells you what happens, but not always why it happens.</p>"
+            }
+          ]
         },
         {
-          "title": "Responsive & Adaptive Design",
-          "contentHtml": "<h3>Responsive Design Principles</h3>\n<p><strong>Mobile-first:</strong> Design for smallest screen first, then enhance for larger screens. This forces you to prioritize content and simplify.</p>\n<p><strong>Breakpoints:</strong> Don't design for devices — design for content. Add a breakpoint when the layout breaks, not at iPhone/iPad sizes. Common: 640px (sm), 768px (md), 1024px (lg), 1280px (xl).</p>\n<p><strong>Touch targets:</strong> Minimum 44×44px (Apple) or 48×48px (Google). Fingers are imprecise — small buttons cause frustration.</p>\n<p><strong>Content priority:</strong> On mobile, stack vertically and hide secondary content behind toggles/accordions. Navigation → hamburger menu or bottom nav.</p>\n\n<h3>Adaptive Patterns</h3>\n<p><strong>Container queries:</strong> Components adapt to their container, not viewport. A card in a sidebar looks different from the same card in main content.</p>\n<p><strong>Fluid typography:</strong> <code>clamp(1rem, 2.5vw, 2rem)</code> — scales smoothly without breakpoints.</p>\n<p><strong>Responsive images:</strong> <code>srcset</code> + <code>sizes</code> for resolution, <code>&lt;picture&gt;</code> for art direction (different crops per viewport).</p>"
+          "type": "mechanics",
+          "title": "Problem-framing loop",
+          "steps": [
+            "Start with the decision the team needs to make.",
+            "List the assumptions currently driving that decision.",
+            "Choose the lightest research method that can meaningfully test those assumptions.",
+            "Synthesize patterns into needs, risks, and design implications.",
+            "Turn the findings into a sharper problem statement and clearer scope."
+          ]
         },
         {
-          "title": "Accessibility (a11y) for Developers",
-          "contentHtml": "<h3>WCAG Levels</h3>\n<p><strong>Level A:</strong> Minimum. Text alternatives for images, keyboard navigable, no seizure-causing content.</p>\n<p><strong>Level AA:</strong> Standard target. Color contrast 4.5:1 (text), 3:1 (large text), resize to 200% without loss, focus visible, error identification.</p>\n<p><strong>Level AAA:</strong> Enhanced. Contrast 7:1, no time limits, sign language for video. Rarely required but ideal.</p>\n\n<h3>Developer Checklist</h3>\n<p><strong>Semantic HTML:</strong> Use <code>&lt;button&gt;</code> not <code>&lt;div onClick&gt;</code>. Use <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;header&gt;</code>.</p>\n<p><strong>Keyboard navigation:</strong> Everything usable with Tab, Enter, Space, Escape, Arrow keys. Focus visible (never <code>outline: none</code> without replacement).</p>\n<p><strong>Color:</strong> Never use color alone to convey information. Add icons, text, or patterns alongside color.</p>\n<p><strong>Images:</strong> <code>alt</code> text for meaningful images, <code>alt=\"\"</code> for decorative ones.</p>\n<p><strong>Forms:</strong> Labels linked to inputs, error messages associated with <code>aria-describedby</code>, fieldset/legend for groups.</p>\n<p><strong>Dynamic content:</strong> <code>aria-live</code> regions for updates, manage focus when content changes (modals, route transitions).</p>\n<div class=\"wr\">The #1 accessibility mistake: using <code>&lt;div&gt;</code> with onClick instead of <code>&lt;button&gt;</code>. A div has NO keyboard support, NO role, NO focus management. A button gets all of that for free. Use the right element and you get accessibility for free.</div>"
+          "type": "trap",
+          "title": "Trap: asking leading questions",
+          "html": "<p>Questions like \"Would this feature help you?\" often produce polite approval instead of useful truth. Strong research asks about real behavior, recent examples, and actual workarounds rather than inviting theoretical praise.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: pick the method",
+          "prompt": "The team wants to know why users abandon step two of onboarding. Should you start with a survey, analytics review, or usability test?",
+          "answerHtml": "<p>Start with analytics to confirm the drop-off pattern and segment it, then run usability tests or interviews focused on that step to understand the causes. A survey alone is weaker because users often misreport friction after the fact.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 3 recap",
+          "items": [
+            "Research should answer a real decision, not decorate the process.",
+            "Different methods answer different kinds of questions.",
+            "Problem framing connects evidence to scope and design direction.",
+            "Leading questions create false confidence, not insight."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why is user research useful before designing a solution?",
+          "answerHtml": "<p>It reduces the risk of solving the wrong problem by grounding the work in actual user behavior, needs, and context.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "When is usability testing more useful than a survey?",
+          "answerHtml": "<p>Usability testing is better when you need to observe task completion and friction directly inside an interface, while surveys are better for attitudes or broad self-reported patterns.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is problem framing in UX?",
+          "answerHtml": "<p>Problem framing is the process of defining the user, the goal, the pain point, the context, the success criteria, and the constraints before exploring solutions.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why are support tickets and analytics valuable research inputs?",
+          "answerHtml": "<p>They reveal recurring failure points and high-friction moments at scale, which helps teams prioritize where deeper qualitative research should go.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you decide which research method to use first?",
+          "answerHtml": "<p>I start with the product decision we need to make, then ask whether we need to understand behavior, motivation, scale, or task friction, and choose the lightest method that answers that question well.</p>"
         }
       ]
     },
     {
-      "id": "ux-designsys",
-      "intro": "Design systems and design tokens — the bridge between design and engineering.",
-      "cards": [
+      "id": "information-architecture-navigation-user-flows",
+      "intro": "Structure matters. This chapter teaches how information architecture, navigation systems, and task flows shape whether people can find and complete what they came for.",
+      "blocks": [
         {
-          "title": "Design Tokens — Complete Guide",
-          "contentHtml": "<p>Design tokens are the <strong>atomic values</strong> of a design system — the single source of truth for colors, spacing, typography, shadows, borders, and animation.</p>\n<h3>Token Hierarchy</h3>\n<pre><code><span class=\"c\">/* TIER 1: Global/Primitive tokens (raw values) */</span>\n--color-blue-500: <span class=\"s\">#3b82f6</span>;\n--color-blue-600: <span class=\"s\">#2563eb</span>;\n--color-gray-100: <span class=\"s\">#f3f4f6</span>;\n--spacing-4: <span class=\"n\">1rem</span>;\n--spacing-8: <span class=\"n\">2rem</span>;\n--font-size-sm: <span class=\"n\">0.875rem</span>;\n--radius-md: <span class=\"n\">8px</span>;\n\n<span class=\"c\">/* TIER 2: Semantic/Alias tokens (purpose-driven) */</span>\n--color-primary: var(--color-blue-600);\n--color-text: var(--color-gray-900);\n--color-text-muted: var(--color-gray-500);\n--color-surface: var(--color-white);\n--color-border: var(--color-gray-200);\n--color-error: var(--color-red-600);\n--color-success: var(--color-green-600);\n\n<span class=\"c\">/* TIER 3: Component tokens (specific usage) */</span>\n--button-bg: var(--color-primary);\n--button-text: var(--color-white);\n--button-radius: var(--radius-md);\n--button-padding: var(--spacing-2) var(--spacing-4);\n--card-bg: var(--color-surface);\n--card-border: var(--color-border);\n--card-shadow: <span class=\"n\">0 1px 3px</span> rgb(<span class=\"n\">0 0 0</span> / <span class=\"n\">0.1</span>);</code></pre>\n<div class=\"an\">Think of tokens like a <strong>language translation chain</strong>: Global tokens are the dictionary (blue-500 = #3b82f6). Semantic tokens give meaning (primary = blue-600). Component tokens are sentences (button-bg = primary). Changing 'primary' in one place updates every component that uses it.</div>\n\n<h3>Theming with Tokens</h3>\n<pre><code><span class=\"c\">/* Light theme (default) */</span>\n:root {{\n  --color-bg: <span class=\"s\">#ffffff</span>;\n  --color-text: <span class=\"s\">#1f2937</span>;\n  --color-surface: <span class=\"s\">#f9fafb</span>;\n  --color-primary: <span class=\"s\">#3b82f6</span>;\n}}\n\n<span class=\"c\">/* Dark theme */</span>\n[data-theme=<span class=\"s\">\"dark\"</span>] {{\n  --color-bg: <span class=\"s\">#0f172a</span>;\n  --color-text: <span class=\"s\">#e2e8f0</span>;\n  --color-surface: <span class=\"s\">#1e293b</span>;\n  --color-primary: <span class=\"s\">#60a5fa</span>;\n}}\n\n<span class=\"c\">/* Auto from system preference */</span>\n@media (prefers-color-scheme: dark) {{\n  :root:not([data-theme]) {{\n    --color-bg: <span class=\"s\">#0f172a</span>;\n    <span class=\"c\">/* ... dark values */</span>\n  }}\n}}\n\n<span class=\"c\">/* Components just use semantic tokens — theme-agnostic! */</span>\n.card {{\n  background: var(--color-surface);\n  color: var(--color-text);\n  border: <span class=\"n\">1px</span> solid var(--color-border);\n}}</code></pre>"
+          "type": "richText",
+          "title": "Information architecture gives products a map",
+          "html": "<p>Information architecture decides how content, actions, and destinations are organized so users can predict where things live. Navigation exposes that architecture in a usable form. User flows then describe the sequence of steps a person takes to reach a goal. A product can have strong visuals and still fail if its structure fights the way users think.</p>"
         },
         {
-          "title": "Design System Architecture",
-          "contentHtml": "<h3>Component API Design</h3>\n<pre><code><span class=\"c\">// Good component API — composable, predictable</span>\n&lt;Button\n  variant=<span class=\"s\">\"primary\"</span> | <span class=\"s\">\"secondary\"</span> | <span class=\"s\">\"ghost\"</span> | <span class=\"s\">\"destructive\"</span>\n  size=<span class=\"s\">\"sm\"</span> | <span class=\"s\">\"md\"</span> | <span class=\"s\">\"lg\"</span>\n  disabled={{<span class=\"k\">boolean</span>}}\n  loading={{<span class=\"k\">boolean</span>}}\n  leftIcon={{<span class=\"k\">ReactNode</span>}}\n  asChild  <span class=\"c\">// render as child element (Radix pattern)</span>\n&gt;\n  Label\n&lt;/Button&gt;\n\n<span class=\"c\">// Composable pattern (Radix/shadcn style)</span>\n&lt;Dialog&gt;\n  &lt;Dialog.Trigger asChild&gt;\n    &lt;Button&gt;Open&lt;/Button&gt;\n  &lt;/Dialog.Trigger&gt;\n  &lt;Dialog.Content&gt;\n    &lt;Dialog.Title&gt;Confirm&lt;/Dialog.Title&gt;\n    &lt;Dialog.Description&gt;Are you sure?&lt;/Dialog.Description&gt;\n    &lt;Dialog.Close /&gt;\n  &lt;/Dialog.Content&gt;\n&lt;/Dialog&gt;</code></pre>\n\n<h3>Design System Tooling</h3>\n<p><strong>Storybook:</strong> Component playground — each component has stories showing all variants, states, and edge cases. Enables visual testing, documentation, and design review.</p>\n<p><strong>Chromatic:</strong> Visual regression testing — screenshots every component on every PR, highlights visual diffs.</p>\n<p><strong>Figma tokens plugin:</strong> Sync design tokens between Figma and code. Designers change a color → code updates automatically.</p>\n<p><strong>Style Dictionary:</strong> Transform tokens from JSON into CSS variables, SCSS variables, iOS/Android constants, etc. One source file → every platform.</p>"
+          "type": "compare",
+          "title": "Structural artifacts",
+          "items": [
+            {
+              "label": "Sitemap",
+              "html": "<p>A sitemap shows the broad content and navigation hierarchy of the product. It helps teams reason about structure at the macro level.</p>"
+            },
+            {
+              "label": "User flow",
+              "html": "<p>A user flow shows the sequence of screens, decisions, and states needed to complete a task. It is task-specific rather than site-wide.</p>"
+            },
+            {
+              "label": "Taxonomy",
+              "html": "<p>A taxonomy defines the naming and grouping system used for categories, filters, labels, and findability. Good taxonomy reduces ambiguity and improves information scent.</p>"
+            }
+          ]
         },
         {
-          "title": "Typography System",
-          "contentHtml": "<pre><code><span class=\"c\">/* Type scale — consistent rhythm */</span>\n:root {{\n  --font-family-sans: <span class=\"s\">'Inter'</span>, system-ui, sans-serif;\n  --font-family-mono: <span class=\"s\">'JetBrains Mono'</span>, monospace;\n  --font-family-display: <span class=\"s\">'Cal Sans'</span>, sans-serif;\n  \n  <span class=\"c\">/* Modular scale (1.25 ratio) */</span>\n  --text-xs: <span class=\"n\">0.75rem</span>;    <span class=\"c\">/* 12px */</span>\n  --text-sm: <span class=\"n\">0.875rem</span>;   <span class=\"c\">/* 14px */</span>\n  --text-base: <span class=\"n\">1rem</span>;     <span class=\"c\">/* 16px */</span>\n  --text-lg: <span class=\"n\">1.125rem</span>;   <span class=\"c\">/* 18px */</span>\n  --text-xl: <span class=\"n\">1.25rem</span>;    <span class=\"c\">/* 20px */</span>\n  --text-2xl: <span class=\"n\">1.5rem</span>;    <span class=\"c\">/* 24px */</span>\n  --text-3xl: <span class=\"n\">1.875rem</span>;  <span class=\"c\">/* 30px */</span>\n  --text-4xl: <span class=\"n\">2.25rem</span>;   <span class=\"c\">/* 36px */</span>\n  \n  <span class=\"c\">/* Line heights */</span>\n  --leading-tight: <span class=\"n\">1.2</span>;   <span class=\"c\">/* headings */</span>\n  --leading-normal: <span class=\"n\">1.6</span>;  <span class=\"c\">/* body text */</span>\n  --leading-relaxed: <span class=\"n\">1.8</span>; <span class=\"c\">/* long-form reading */</span>\n  \n  <span class=\"c\">/* Font weights */</span>\n  --font-normal: <span class=\"n\">400</span>;\n  --font-medium: <span class=\"n\">500</span>;\n  --font-semibold: <span class=\"n\">600</span>;\n  --font-bold: <span class=\"n\">700</span>;\n}}\n\n<span class=\"c\">/* Fluid typography — no breakpoints needed */</span>\nh1 {{ font-size: clamp(var(--text-2xl), <span class=\"n\">5vw</span>, var(--text-4xl)); }}</code></pre>\n<div class=\"tp\">Use a <strong>modular scale</strong> (ratio like 1.2 or 1.25) for font sizes. Each size is the previous × ratio. This creates natural visual harmony. Tools: type-scale.com or utopia.fyi for fluid scales.</div>"
+          "type": "mechanics",
+          "title": "How to build a useful task flow",
+          "steps": [
+            "Define the user goal in plain language.",
+            "Map the shortest happy path from entry to completion.",
+            "Add branch points, errors, and recovery moments.",
+            "Check whether each step is necessary, understandable, and reversible.",
+            "Label the flow so users always know where they are and what happens next."
+          ]
         },
         {
-          "title": "Spacing & Layout System",
-          "contentHtml": "<pre><code><span class=\"c\">/* 4px base spacing scale (Tailwind convention) */</span>\n:root {{\n  --space-0: <span class=\"n\">0</span>;\n  --space-1: <span class=\"n\">0.25rem</span>;  <span class=\"c\">/* 4px */</span>\n  --space-2: <span class=\"n\">0.5rem</span>;   <span class=\"c\">/* 8px */</span>\n  --space-3: <span class=\"n\">0.75rem</span>;  <span class=\"c\">/* 12px */</span>\n  --space-4: <span class=\"n\">1rem</span>;     <span class=\"c\">/* 16px */</span>\n  --space-6: <span class=\"n\">1.5rem</span>;   <span class=\"c\">/* 24px */</span>\n  --space-8: <span class=\"n\">2rem</span>;     <span class=\"c\">/* 32px */</span>\n  --space-12: <span class=\"n\">3rem</span>;    <span class=\"c\">/* 48px */</span>\n  --space-16: <span class=\"n\">4rem</span>;    <span class=\"c\">/* 64px */</span>\n  --space-24: <span class=\"n\">6rem</span>;    <span class=\"c\">/* 96px */</span>\n}}\n\n<span class=\"c\">/* Usage — consistent spacing everywhere */</span>\n.card {{ padding: var(--space-6); gap: var(--space-4); }}\n.section {{ margin-block: var(--space-16); }}\n.stack &gt; * + * {{ margin-block-start: var(--space-4); }}</code></pre>\n<div class=\"an\">A 4px grid means all spacing is a multiple of 4px. This creates visual rhythm and consistency — elements feel aligned and harmonious. When a designer says '16px padding,' you know that's <code>var(--space-4)</code>. No magic numbers in your CSS.</div>"
+          "type": "trap",
+          "title": "Trap: mirroring the org chart",
+          "html": "<p>Products often inherit internal team structures instead of user mental models. When navigation follows company ownership rather than user goals, labels become clear to insiders and confusing to everyone else.</p>",
+          "tone": "warning"
         },
         {
-          "title": "Color System Design",
-          "contentHtml": "<h3>Building a Color Palette</h3>\n<p><strong>1. Brand colors:</strong> Primary (actions, links), secondary (accents), tertiary (highlights). Each needs 10 shades (50-950).</p>\n<p><strong>2. Neutral grays:</strong> 10 shades for text, backgrounds, borders. Slightly tinted with brand color for cohesion.</p>\n<p><strong>3. Semantic colors:</strong> Success (green), warning (yellow/amber), error/danger (red), info (blue). Each needs background + text + border variants.</p>\n<p><strong>4. Surface colors:</strong> Background, surface (card bg), elevated surface (modal bg), overlay.</p>\n\n<h3>Contrast &amp; Accessibility</h3>\n<pre><code><span class=\"c\">/* WCAG AA contrast ratios */</span>\n<span class=\"c\">/* Normal text: 4.5:1 minimum */</span>\n<span class=\"c\">/* Large text (18px+ or 14px+ bold): 3:1 minimum */</span>\n<span class=\"c\">/* Non-text (icons, borders): 3:1 minimum */</span>\n\n<span class=\"c\">/* Test with: Chrome DevTools contrast checker */</span>\n<span class=\"c\">/* Or: contrast-ratio.com, polypane.app */</span>\n\n<span class=\"c\">/* Common trap: gray text on white background */</span>\ncolor: <span class=\"s\">#9ca3af</span>; <span class=\"c\">/* ❌ 2.9:1 on white — FAILS AA */</span>\ncolor: <span class=\"s\">#6b7280</span>; <span class=\"c\">/* ✅ 4.6:1 on white — PASSES AA */</span></code></pre>\n<div class=\"wr\">Don't just check contrast of your light theme. Dark themes need separate contrast checks — light text on dark backgrounds behaves differently. A color that passes in light mode might fail in dark mode and vice versa.</div>"
+          "type": "drill",
+          "title": "Drill: fix the information scent",
+          "prompt": "A commerce site hides returns inside a footer link called \"Post-purchase services.\" What is the IA problem?",
+          "answerHtml": "<p>The label does not match the user's language or goal. Someone looking for returns scans for words like returns, refunds, or order help, so the navigation scent is weak and trust drops.</p>"
         },
         {
-          "title": "Motion & Animation Principles",
-          "contentHtml": "<h3>When to Animate</h3>\n<p><strong>DO animate:</strong> State changes (hover, focus, open/close), feedback (success/error), transitions between views, drawing attention to important changes.</p>\n<p><strong>DON'T animate:</strong> Just for decoration (distracting), critical content (users might miss it), anything that delays user tasks.</p>\n\n<h3>Animation Principles</h3>\n<p><strong>Duration:</strong> 100-200ms for micro-interactions (hover, toggle). 200-500ms for medium transitions (modal open, page transition). Nothing over 1s.</p>\n<p><strong>Easing:</strong> <code>ease-out</code> for entering elements (decelerate into place). <code>ease-in</code> for exiting (accelerate out). <code>ease-in-out</code> for movement. Never <code>linear</code> for UI (feels robotic).</p>\n<p><strong>Direction:</strong> Content enters from where it came from and exits where it's going. A sidebar slides in from the left and out to the left.</p>\n<p><strong>Respect preferences:</strong> Always include <code>@media (prefers-reduced-motion: reduce)</code> to disable animations for users who need it.</p>\n<pre><code><span class=\"c\">/* Standardized animation tokens */</span>\n:root {{\n  --duration-fast: <span class=\"n\">100ms</span>;\n  --duration-normal: <span class=\"n\">200ms</span>;\n  --duration-slow: <span class=\"n\">400ms</span>;\n  --ease-default: cubic-bezier(<span class=\"n\">0.4, 0, 0.2, 1</span>);\n  --ease-in: cubic-bezier(<span class=\"n\">0.4, 0, 1, 1</span>);\n  --ease-out: cubic-bezier(<span class=\"n\">0, 0, 0.2, 1</span>);\n  --ease-bounce: cubic-bezier(<span class=\"n\">0.34, 1.56, 0.64, 1</span>);\n}}\n\n@media (prefers-reduced-motion: reduce) {{\n  *, *::before, *::after {{\n    animation-duration: <span class=\"n\">0.01ms</span> !important;\n    transition-duration: <span class=\"n\">0.01ms</span> !important;\n  }}\n}}</code></pre>"
+          "type": "recap",
+          "title": "Chapter 4 recap",
+          "items": [
+            "IA decides where things live and how users expect to find them.",
+            "Navigation is the visible expression of that structure.",
+            "Task flows should include branch points and recovery paths, not only the happy path.",
+            "If labels do not match the user's language, findability collapses fast."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is information architecture?",
+          "answerHtml": "<p>Information architecture is the organization and labeling of content, actions, and destinations so users can find things and understand structure.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is a user flow?",
+          "answerHtml": "<p>A user flow is the sequence of steps, decisions, and states a person moves through to complete a task.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why does information scent matter?",
+          "answerHtml": "<p>Information scent is the set of cues that helps users predict where a link or action will lead, so strong scent reduces hesitation and wrong turns.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is a common cause of bad navigation?",
+          "answerHtml": "<p>A common cause is organizing navigation around internal departments or product ownership instead of user tasks and mental models.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you improve a confusing multi-step flow?",
+          "answerHtml": "<p>I would clarify the goal, remove unnecessary steps, strengthen labels, show progress, make recovery paths explicit, and ensure each step only asks for information needed at that moment.</p>"
         }
       ]
     },
     {
-      "id": "ux-patterns",
-      "intro": "Common UI patterns, form design, navigation, and real-world design decisions.",
-      "cards": [
+      "id": "interaction-design-feedback-state-design",
+      "intro": "Interfaces need behavior, not just layout. Learn how feedback, affordances, and state systems shape confidence and task completion.",
+      "blocks": [
         {
-          "title": "Form Design Best Practices",
-          "contentHtml": "<h3>Layout</h3>\n<p><strong>Single column:</strong> Faster to scan and complete than multi-column. Only use multi-column for short, related fields (first name / last name, city / state / zip).</p>\n<p><strong>Label placement:</strong> Above the field (fastest to scan), not to the left (wastes space, harder to scan). Placeholder text is NOT a label replacement — it disappears on focus.</p>\n<p><strong>Field grouping:</strong> Use <code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code> for related fields. Visual separation with spacing or subtle borders.</p>\n\n<h3>Validation</h3>\n<p><strong>Validate on blur</strong> (when user leaves field), not on every keystroke (annoying). <strong>Show errors inline</strong> below the field, not in a summary at top. <strong>Use positive validation</strong> — green checkmark when valid, not just red when invalid.</p>\n<p><strong>Error messages:</strong> Specific and actionable. Not \"Invalid input\" but \"Email must include @\". Associate with <code>aria-describedby</code> for screen readers.</p>\n\n<h3>UX Details</h3>\n<p><strong>Autocomplete:</strong> Set <code>autocomplete</code> attribute (email, name, address, tel, cc-number). Browsers auto-fill — massive UX win.</p>\n<p><strong>Input types:</strong> <code>type=\"email\"</code> shows @ keyboard on mobile. <code>type=\"tel\"</code> shows number pad. <code>inputmode=\"numeric\"</code> for number-only fields.</p>\n<p><strong>Submit button:</strong> Disable when form is submitting (prevent double-submit). Show loading spinner. Primary action = most prominent button.</p>"
+          "type": "richText",
+          "title": "Every component is a state machine",
+          "html": "<p>Buttons, forms, filters, and menus are not static shapes. They transition through default, hover, focus, active, loading, success, error, disabled, and empty states. Good interaction design makes those transitions legible and intentional. Strong feedback lowers uncertainty. Missing feedback makes the interface feel broken even when the system is working.</p>"
         },
         {
-          "title": "Navigation Patterns",
-          "contentHtml": "<h3>Common Patterns</h3>\n<p><strong>Top navigation bar:</strong> Logo left, primary nav center/right, auth/profile far right. Sticky on scroll. Responsive: hamburger menu on mobile.</p>\n<p><strong>Side navigation:</strong> For dashboards/admin panels. Collapsible (icon-only mode). Persistent across pages. Active state for current page.</p>\n<p><strong>Bottom navigation (mobile):</strong> 3-5 items max. Icons + labels. Active state. Used by: Instagram, YouTube, Twitter/X. Thumb-friendly zone.</p>\n<p><strong>Breadcrumbs:</strong> For deep hierarchies (e-commerce categories). Uses <code>aria-label=\"Breadcrumb\"</code> + <code>ol</code> for semantics. Last item is current page (not a link).</p>\n<p><strong>Tabs:</strong> For switching content within same page. Use <code>role=\"tablist\"</code>, <code>role=\"tab\"</code>, <code>role=\"tabpanel\"</code>. Arrow key navigation between tabs. Only active tab is in tab order.</p>\n<div class=\"tp\">The <strong>3-click rule</strong> is a myth — research shows users don't mind more clicks if each click is clear and confident. Focus on <strong>clear information scent</strong> (knowing where each click leads) rather than minimizing click count.</div>"
+          "type": "compare",
+          "title": "Feedback patterns",
+          "items": [
+            {
+              "label": "Immediate feedback",
+              "html": "<p>Use immediate feedback for direct manipulation and lightweight actions so the user knows the system heard them right away.</p>"
+            },
+            {
+              "label": "Deferred feedback",
+              "html": "<p>Use deferred feedback when a process takes time, but explain progress, status, or the next expected state so the wait stays understandable.</p>"
+            },
+            {
+              "label": "Recoverable feedback",
+              "html": "<p>Use undo, confirmation, or reversible states when the action is risky. The goal is not just warning. It is safe recovery.</p>"
+            }
+          ]
         },
         {
-          "title": "Dark Mode Implementation",
-          "contentHtml": "<pre><code><span class=\"c\">/* Three-way toggle: light / dark / system */</span>\n<span class=\"c\">/* 1. System preference (default) */</span>\n@media (prefers-color-scheme: dark) {{\n  :root:not([data-theme]) {{ <span class=\"c\">/* dark tokens */</span> }}\n}}\n\n<span class=\"c\">/* 2. Manual override via data attribute */</span>\n[data-theme=<span class=\"s\">\"light\"</span>] {{ <span class=\"c\">/* light tokens */</span> }}\n[data-theme=<span class=\"s\">\"dark\"</span>] {{ <span class=\"c\">/* dark tokens */</span> }}\n\n<span class=\"c\">/* 3. JavaScript for toggle + persistence */</span>\n<span class=\"c\">// Read preference: localStorage.getItem('theme') || 'system'</span>\n<span class=\"c\">// Apply: document.documentElement.dataset.theme = theme</span>\n<span class=\"c\">// Persist: localStorage.setItem('theme', theme)</span></code></pre>\n\n<h3>Dark Mode Design Tips</h3>\n<p><strong>Don't just invert:</strong> Pure white (#fff) on pure black (#000) is too harsh. Use off-white (#e2e8f0) on dark gray (#0f172a).</p>\n<p><strong>Reduce saturation:</strong> Vibrant colors look harsh on dark backgrounds. Desaturate or use lighter variants.</p>\n<p><strong>Elevation with lightness:</strong> In light mode, shadows create depth. In dark mode, lighter surface colors create depth (no visible shadows on dark).</p>\n<p><strong>Check contrast separately:</strong> Colors that pass WCAG in light mode might fail in dark mode.</p>"
+          "type": "mechanics",
+          "title": "State design for an async action",
+          "steps": [
+            "Show the control in a clear default state before the user acts.",
+            "Provide a visible active or pending state immediately after the action.",
+            "Handle success with confirmation that does not interrupt the next task.",
+            "Handle failure with cause, recovery guidance, and preserved user context.",
+            "Return the control to a stable state that still matches system reality."
+          ]
         },
         {
-          "title": "Micro-Interactions & Empty States",
-          "contentHtml": "<h3>Micro-Interactions</h3>\n<p>Small animations that acknowledge user actions: button press (scale down 98%), toggle slide, checkbox bounce, ripple effect, hover lift (translateY -2px + shadow). They add personality and feel 'real.'</p>\n\n<h3>Empty States</h3>\n<p>Never show a blank page. When content is empty, show: <strong>1)</strong> What this section is for. <strong>2)</strong> Why it's empty. <strong>3)</strong> A clear CTA to fix it.</p>\n<p>Example: \"No projects yet\" + illustration + \"Create your first project\" button. Empty states are onboarding opportunities — guide the user to their first action.</p>\n\n<h3>Error States</h3>\n<p><strong>404 page:</strong> Helpful message + search + link to home. Not just \"Page not found.\" <strong>500 page:</strong> Apologize + suggest retry + status page link. <strong>Offline state:</strong> Show cached content with \"You're offline\" banner + retry button.</p>"
+          "type": "trap",
+          "title": "Trap: designing only the happy path",
+          "html": "<p>Products often look complete because the default and success states are polished. The real quality signal is whether error, empty, loading, and edge states are equally intentional.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: define the missing states",
+          "prompt": "A save button only has default and loading states. What is missing from a complete interaction model?",
+          "answerHtml": "<p>It still needs focus, active, disabled, success, and error states, plus guidance on whether the action is reversible, when confirmation appears, and how the user recovers if saving fails.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 5 recap",
+          "items": [
+            "Interaction quality depends on state design, not just static layout.",
+            "Feedback should be timely, understandable, and recoverable.",
+            "Happy-path-only design hides real friction until production.",
+            "Trust grows when the system always tells the truth about what is happening."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why is feedback important in interaction design?",
+          "answerHtml": "<p>Feedback tells users that the system heard their action, shows what changed, and reduces uncertainty about what happens next.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is a component state in UI design?",
+          "answerHtml": "<p>A component state is a distinct condition such as default, hover, focus, loading, error, or success that changes how the component looks or behaves.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why are empty and error states part of the design system?",
+          "answerHtml": "<p>Because they are common product moments that shape trust, recovery, and usability just as much as polished happy-path screens do.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When should you use undo instead of a heavy confirmation modal?",
+          "answerHtml": "<p>Undo is often better when the action can be safely reversed after the fact, because it keeps flow moving while still protecting the user from mistakes.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you design interactions for risky actions?",
+          "answerHtml": "<p>I consider action severity, reversibility, user intent, and context, then choose the lightest pattern that still makes the consequence clear and recovery possible.</p>"
         }
       ]
     },
     {
-      "id": "ux-comp",
-      "intro": "The tiny details that separate merely functional apps from premium, delightful experiences.",
-      "cards": [
+      "id": "visual-hierarchy-layout-composition",
+      "intro": "Strong interfaces guide the eye. This chapter covers how layout, spacing, contrast, and composition shape attention and confidence.",
+      "blocks": [
         {
-          "title": "Designing State",
-          "contentHtml": "<p>A button isn't just a rectangle; it is a state machine. Every interactive component must account for at least 5 states:</p>\n      <ul>\n        <li><b>Default:</b> The baseline appearance.</li>\n        <li><b>Hover:</b> Visual feedback that the element is interactive (cursor changes, slight shadow, color shift). <i>Note: Hover does not exist on mobile.</i></li>\n        <li><b>Focus:</b> Critical for keyboard accessibility. Must have a high-contrast outline indicating this is the keyboard target.</li>\n        <li><b>Active / Pressed:</b> Physical feedback that the click is registering (a physical push-down effect or ripple).</li>\n        <li><b>Disabled:</b> Indicates the action is currently unachievable, usually via low opacity and a `not-allowed` cursor. <i>Pro UX tip: Avoid disabled buttons if possible; instead, leave them enabled and show a helpful error explaining *why* it failed when clicked.</i></li>\n      </ul>"
+          "type": "richText",
+          "title": "Hierarchy answers what matters first",
+          "html": "<p>Visual hierarchy is the ordering system that tells users where to look first, what belongs together, and what can wait. Layout and composition make that hierarchy stable across different screen sizes and content densities. When hierarchy is weak, users must build their own reading order, which increases effort and error.</p>"
         },
         {
-          "title": "Color Theory & Contrast",
-          "contentHtml": "<ul>\n        <li><b>The 60-30-10 Rule:</b> A classic design rule. 60% of the UI should be the dominant color (usually white/dark gray background), 30% a secondary color (cards, sidebars), and 10% an accent color (primary buttons, links).</li>\n        <li><b>WCAG Contrast Ratio:</b> Text must have a contrast ratio of at least <b>4.5:1</b> against its background for normal text (WCAG AA). Never use medium-gray text on a light-gray background, it is physically inaccessible to millions.</li>\n        <li><b>Meaningful Color:</b> Never use color <i>alone</i> to convey meaning. Colorblind users cannot differentiate a red error state from a green success state easily—always include a supporting icon (✅ or ❌).</li>\n      </ul>"
+          "type": "compare",
+          "title": "Scanning patterns",
+          "items": [
+            {
+              "label": "F-pattern",
+              "html": "<p>Useful for text-heavy or list-heavy views where users skim headings, labels, and left-aligned anchors quickly.</p>"
+            },
+            {
+              "label": "Z-pattern",
+              "html": "<p>Useful for simpler promotional or landing surfaces where attention moves across a small set of high-priority elements.</p>"
+            },
+            {
+              "label": "Dashboard scanning",
+              "html": "<p>Dense work surfaces often need a stronger anchor, grouped regions, and obvious priorities rather than a single classic scanning pattern.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How hierarchy guides attention",
+          "steps": [
+            "The eye is pulled first by size, contrast, position, and whitespace.",
+            "Grouping tells the user what belongs together before they read details.",
+            "Headings and labels establish a mental outline of the screen.",
+            "Secondary information should remain visible without competing with the primary task.",
+            "A good composition preserves this priority even when content changes."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: using spacing as leftover air",
+          "html": "<p>Whitespace is not empty decoration. It is one of the strongest grouping tools in interface design. When spacing is inconsistent or accidental, the layout loses rhythm and users lose structural cues.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: rebalance a cluttered hero",
+          "prompt": "A landing page has two headlines, three CTA buttons, a testimonial, an animation, a promo badge, and a signup form all above the fold. What is the main hierarchy issue?",
+          "answerHtml": "<p>The page is asking the user to prioritize too many things at once. A stronger composition would choose one primary goal, one dominant message, and a supporting sequence instead of presenting everything as equally urgent.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 6 recap",
+          "items": [
+            "Hierarchy reduces decision effort by making priority visible.",
+            "Composition depends on spacing, grouping, contrast, and placement working together.",
+            "Different screen types support different scanning behaviors.",
+            "If too many elements compete for first attention, the layout stops guiding the user."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is visual hierarchy?",
+          "answerHtml": "<p>Visual hierarchy is the arrangement of elements so users can quickly see what matters first, what belongs together, and what is secondary.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "Why is whitespace important?",
+          "answerHtml": "<p>Whitespace helps group related elements, separate competing ideas, and improve readability, so it acts as structure rather than wasted space.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When is a Z-pattern useful?",
+          "answerHtml": "<p>A Z-pattern is useful on simpler pages with a small number of high-priority elements, such as a landing page hero with one clear action.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why do dense dashboards often need stronger grouping than landing pages?",
+          "answerHtml": "<p>Dashboards contain multiple simultaneous tasks and data regions, so grouping and anchors are more important than a single promotional reading path.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you know a hierarchy is failing?",
+          "answerHtml": "<p>You see hesitation, wrong clicks, poor scan efficiency, and users missing the primary action because multiple elements look equally important.</p>"
         }
       ]
     },
     {
-      "id": "ux-ui-mastery",
-      "intro": "Building resilient, developer-friendly, and accessible design systems for enterprise scale.",
-      "cards": [
+      "id": "typography-color-iconography-visual-language",
+      "intro": "Visual language carries meaning. Learn how typography, color, icons, and tone create clarity, trust, and a consistent product voice.",
+      "blocks": [
         {
-          "title": "Enterprise Design Systems (Atomic Design)",
-          "contentHtml": "<p>Managing components as a hierarchy of complexity.</p>\n    <div class=\"grid2\">\n      <div class=\"an\">\n        <h3>Atoms &amp; Molecules</h3>\n        <p>Buttons, inputs, icons (Atoms) combined into Search bars, Cards, or Modals (Molecules). These are the primitives of your system.</p>\n      </div>\n      <div class=\"an\">\n        <h3>Organisms &amp; Templates</h3>\n        <p>Complex reusable sections (Headers, Navigation menus, Data tables) that form the layouts (Templates) where real content is injected.</p>\n      </div>\n    </div>\n    <pre><code><span class=\"c\">// Example of Headless UI pattern for components</span>\n<span class=\"k\">const</span> <span class=\"f\\\">Tabs</span> = ({ children }) =&gt; {{\n  <span class=\"k\">const</span> [active, setActive] = <span class=\"f\\\">useState</span>(0);\n  <span class=\"c\">// Provide state via context, but NO styles.</span>\n  <span class=\"c\">// Consumer brings their own styling (Tailwind, Modules, etc).</span>\n  <span class=\"k\">return</span> <span class=\"s\">&lt;TabsContext.Provider value={{...}}&gt;</span>{{children}}<span class=\"s\">&lt;/TabsContext.Provider&gt;</span>;\n}}</code></pre>"
+          "type": "richText",
+          "title": "Visual language is a system of meaning",
+          "html": "<p>Typography, color, iconography, and tone are not just styling choices. They tell users what is interactive, what is dangerous, what is optional, what is branded, and what is trustworthy. A good visual language is consistent enough to feel learnable and flexible enough to work across product states, screen sizes, and accessibility needs.</p>"
         },
         {
-          "title": "Design for Performance (UX-P)",
-          "contentHtml": "<p>How UI design choices directly impact modern performance metrics like INP (Interaction to Next Paint).</p>\n    <ul>\n      <li><b>Skeleton Screens:</b> Perceived performance vs real performance. Using CSS transforms rather than width/height for layout-stable loading states.</li>\n      <li><b>Optimistic UI:</b> Instantly updating the UI before server confirmation (e.g., \\\"liking\\\" a post). Requires complex error-rollback logic.</li>\n      <li><b>Variable Fonts:</b> Reducing font-weight bloat. Loading one font file for 100-900 weights instead of 5 separate files. Massive LCP win.</li>\n    </ul>"
+          "type": "compare",
+          "title": "Visual-language building blocks",
+          "items": [
+            {
+              "label": "Typography",
+              "html": "<p>Typography creates reading order, voice, density, and rhythm. Good type systems reduce guesswork by making labels, headings, and body content feel predictable.</p>"
+            },
+            {
+              "label": "Color",
+              "html": "<p>Color should support hierarchy and status, but it should not carry meaning alone. Semantic color needs contrast, backup cues, and state consistency.</p>"
+            },
+            {
+              "label": "Iconography",
+              "html": "<p>Icons work best when they reinforce familiar actions or concepts. They should clarify, not replace every piece of text by default.</p>"
+            }
+          ]
         },
         {
-          "title": "Design Token Architecture",
-          "contentHtml": "<p>Decouple styling from components for multi-platform consistency.</p>\n      <ul>\n        <li><b>Tier 1: Global/Core Tokens</b> (e.g., <code>--blue-500: #3b82f6</code>).</li>\n        <li><b>Tier 2: Alias/Semantic Tokens</b> (e.g., <code>--action-primary: var(--blue-500)</code>).</li>\n        <li><b>Tier 3: Component-Specific Tokens</b> (e.g., <code>--btn-bg: var(--action-primary)</code>).</li>\n      </ul>"
+          "type": "mechanics",
+          "title": "How to build a visual language",
+          "steps": [
+            "Choose a typographic scale that distinguishes levels of emphasis clearly.",
+            "Define semantic color roles before styling individual screens.",
+            "Keep icon style, metaphor, and stroke treatment consistent across the product.",
+            "Use color and type to reinforce hierarchy instead of competing with it.",
+            "Check whether the language still works when color, motion, or context changes."
+          ]
         },
         {
-          "title": "Advanced Accessibility (a11y)",
-          "contentHtml": "<p>Going beyond the basics for a truly inclusive experience.</p>\n      <ul>\n        <li><b>Cognitive Accessibility:</b> Reducing cognitive load with consistent patterns, minimal distractions, and clear multi-modal feedback.</li>\n        <li><b>Focus Management:</b> Capturing focus in modals, correctly using <code>aria-live</code> for dynamic updates, and ensuring logical tab order for keyboard users.</li>\n        <li><b>User Preference Queries:</b> Respecting <code>prefers-reduced-motion</code>, <code>prefers-contrast</code>, and <code>prefers-color-scheme</code>.</li>\n      </ul>"
+          "type": "trap",
+          "title": "Trap: color as the only signal",
+          "html": "<p>If error, success, selection, or urgency are communicated by color alone, the system becomes weaker for color-blind users, low-contrast environments, and anyone scanning quickly under pressure.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: critique the icon strategy",
+          "prompt": "A product uses one icon set for navigation, another for status, and several custom illustrations as buttons. What is the design risk?",
+          "answerHtml": "<p>The visual language becomes inconsistent, which increases interpretation effort and makes the system feel less trustworthy. Users should not have to relearn what icons mean from one area to the next.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 7 recap",
+          "items": [
+            "Typography, color, and icons communicate meaning as a system.",
+            "Semantic color needs backup cues and sufficient contrast.",
+            "A consistent icon language lowers interpretation effort.",
+            "Visual style should support comprehension before brand expression."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why is typography important in UI design?",
+          "answerHtml": "<p>Typography shapes readability, hierarchy, rhythm, and tone, so it strongly affects how quickly users understand and trust an interface.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "Why should color not be the only status signal?",
+          "answerHtml": "<p>Because users may not perceive or interpret color reliably, so status needs secondary cues such as text, iconography, pattern, or position.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What makes an icon system usable?",
+          "answerHtml": "<p>An icon system is usable when its metaphors are familiar, its style is consistent, and it supports the interface instead of forcing users to guess meaning from decoration.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is a semantic color role?",
+          "answerHtml": "<p>A semantic color role maps color to purpose, such as primary action, success, warning, surface, or text, instead of tying it only to a raw brand shade.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you evaluate whether a visual language is too brand-heavy?",
+          "answerHtml": "<p>I would check whether hierarchy, readability, accessibility, and status clarity still hold under real product conditions. If brand expression keeps overriding comprehension, the system is unbalanced.</p>"
         }
       ]
     },
     {
-      "id": "ux-iq",
-      "intro": "28 interview questions from very basic to very advanced. Click to reveal answers.",
-      "cards": [],
+      "id": "responsive-design-accessibility-inclusive-ux",
+      "intro": "Responsive and accessible design are not separate tracks. They are core to making the experience work across devices, contexts, and abilities.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Inclusive design starts early",
+          "html": "<p>Responsive design is about adapting to context, not only shrinking layouts. Inclusive design is about making interaction understandable and operable for more people in more circumstances. When teams treat accessibility as a late audit, they usually find expensive structural problems. When teams treat it as a first-class constraint, layout, content, focus, target size, and motion decisions all improve together.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Responsive and inclusive approaches",
+          "items": [
+            {
+              "label": "Responsive",
+              "html": "<p>Responsive design adapts layout, density, and priority to screen and context so the same experience remains usable across sizes.</p>"
+            },
+            {
+              "label": "Adaptive",
+              "html": "<p>Adaptive design can offer distinct layouts or behaviors for specific contexts when one fluid pattern is not enough.</p>"
+            },
+            {
+              "label": "Inclusive",
+              "html": "<p>Inclusive design asks who gets excluded by the current choices and redesigns the experience so more people can understand, operate, and recover inside it.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "An inclusive design pass",
+          "steps": [
+            "Check whether the primary task still works with keyboard-only interaction.",
+            "Verify focus order, visible focus, and clear active states.",
+            "Review target size, spacing, and interaction density for touch and motor variance.",
+            "Check contrast, zoom behavior, labels, and error communication.",
+            "Test the experience under reduced motion, screen reader, and narrow viewport conditions."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: accessibility as polish",
+          "html": "<p>When accessibility is treated as a final checklist, the team usually patches symptoms instead of fixing structure. Late fixes rarely improve the experience as much as earlier decisions about hierarchy, focus, labels, and flow.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: assess a modal",
+          "prompt": "A modal opens without moving focus, background scroll stays active, and the close icon has no text label. Which inclusive-design issues matter most?",
+          "answerHtml": "<p>The modal breaks focus management, can disorient keyboard and assistive-technology users, allows accidental interaction with background content, and lacks a clear accessible name for the close action. These are structural issues, not polish bugs.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 8 recap",
+          "items": [
+            "Responsive and inclusive design both adapt the experience to real contexts.",
+            "Accessibility works best when it shapes structure early.",
+            "Focus, target size, contrast, and recovery are product quality issues, not edge cases.",
+            "A design is not inclusive if it only works for ideal users in ideal conditions."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is responsive design?",
+          "answerHtml": "<p>Responsive design adapts layout and content priority so the experience remains usable across different screen sizes and contexts.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "Why is visible focus important?",
+          "answerHtml": "<p>Visible focus helps keyboard users know where they are on the page so they can move and act with confidence.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is inclusive design?",
+          "answerHtml": "<p>Inclusive design is the practice of designing so more people can understand, use, and recover inside the experience across different abilities and situations.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why is target size important in modern accessibility guidance?",
+          "answerHtml": "<p>Because small or tightly packed targets increase mis-taps and effort for many users, especially people with motor impairments or anyone using touch in motion.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do responsive and accessible decisions influence each other?",
+          "answerHtml": "<p>They overlap heavily because layout density, control size, focus treatment, reading order, and motion all change how usable the interface is across devices and abilities.</p>"
+        }
+      ]
+    },
+    {
+      "id": "forms-input-ux-conversion-critical-interfaces",
+      "intro": "Forms are where unclear design becomes expensive. Learn how to reduce friction, prevent errors, and improve high-stakes completion flows.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Form UX is trust design",
+          "html": "<p>Forms are one of the clearest places where design quality affects completion, trust, and revenue. A form asks for user effort, personal information, or commitment. Good form design minimizes unnecessary input, explains why information is needed, validates clearly, and makes recovery easy. Bad form design makes people feel judged, trapped, or uncertain.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Validation timing strategies",
+          "items": [
+            {
+              "label": "On submit",
+              "html": "<p>Useful when the form is simple and interruption would be noisy, but delayed errors can cause frustration if many issues appear at once.</p>"
+            },
+            {
+              "label": "On blur",
+              "html": "<p>Often the best balance for many fields because it gives timely feedback without punishing every keystroke.</p>"
+            },
+            {
+              "label": "Live validation",
+              "html": "<p>Useful for constraints that help while typing, such as password strength or username availability, but it must stay calm and avoid flashing failure states too early.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "A good form flow",
+          "steps": [
+            "Ask only for information needed for the current decision or step.",
+            "Use labels, grouping, and input type choices that lower interpretation effort.",
+            "Validate at the right moment with clear, actionable error copy.",
+            "Preserve user input whenever possible during errors or retries.",
+            "End with confirmation that tells the user what happened and what comes next."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: placeholder as label",
+          "html": "<p>Placeholder text disappears when the user starts typing, so it cannot carry the full labeling job. People should not have to remember what a field was for once they begin entering information.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: improve a checkout form",
+          "prompt": "A checkout asks for phone, company, second address line, and marketing consent before showing shipping cost or payment summary. What is the main UX issue?",
+          "answerHtml": "<p>The flow asks for too much effort before giving enough decision value. A better design would prioritize essential fields, delay optional inputs, and surface pricing certainty earlier so commitment feels justified.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 9 recap",
+          "items": [
+            "Forms should reduce effort, not prove endurance.",
+            "Validation timing needs to match user intent and field risk.",
+            "Labels, grouping, and error recovery matter more than decorative polish.",
+            "High-conversion forms are clear, respectful, and honest about what happens next."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why are forms important in UX?",
+          "answerHtml": "<p>Forms often gate key outcomes such as signup, checkout, onboarding, and support, so small friction points there can have large business and user impact.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "Why is placeholder text not a label replacement?",
+          "answerHtml": "<p>Because placeholders disappear during entry and usually do not provide enough persistent context for memory, accessibility, or recovery.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When is on-blur validation useful?",
+          "answerHtml": "<p>On-blur validation is useful when you want timely feedback after the user finishes with a field without interrupting every keystroke.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What makes error copy effective in forms?",
+          "answerHtml": "<p>Good error copy states what is wrong, how to fix it, and where the user should look next without sounding vague or blaming.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you improve conversion on a long application form?",
+          "answerHtml": "<p>I would remove nonessential fields, group the rest into digestible steps, clarify value and progress, preserve state, improve validation timing, and test where abandonment actually happens.</p>"
+        }
+      ]
+    },
+    {
+      "id": "design-systems-tokens-components-governance",
+      "intro": "Design systems help products scale without drifting into inconsistency. Learn how tokens, components, and governance create reusable quality.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "A design system is not a component graveyard",
+          "html": "<p>A design system is a shared decision framework for visual language, interaction patterns, accessibility rules, component behavior, and change management. Components matter, but they are only the visible layer. Tokens, naming, documentation, and governance are what make the system scalable rather than ornamental.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Token layers",
+          "items": [
+            {
+              "label": "Primitive tokens",
+              "html": "<p>Primitive tokens store raw values like blue-600, spacing-4, or radius-md. They are useful building blocks but not the final language teams use day to day.</p>"
+            },
+            {
+              "label": "Semantic tokens",
+              "html": "<p>Semantic tokens map meaning to use, such as action-primary, text-default, or surface-muted. They let products evolve visually without rewriting every component.</p>"
+            },
+            {
+              "label": "Component tokens",
+              "html": "<p>Component tokens refine behavior at the component level, such as button-bg-hover or input-border-error, when the system needs controlled specialization.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "From token to shipped component",
+          "steps": [
+            "Define the primitive and semantic language used across the product.",
+            "Map those tokens into component states and variants.",
+            "Document expected behavior, accessibility rules, and edge states.",
+            "Set contribution rules so teams know when to extend, when to reuse, and when to push back.",
+            "Review adoption and drift over time so the system stays alive instead of fossilized."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Token hierarchy example",
+          "language": "json",
+          "code": "{\n  \"color\": {\n    \"blue\": { \"600\": { \"$type\": \"color\", \"$value\": \"#2563eb\" } }\n  },\n  \"semantic\": {\n    \"action-primary\": { \"$type\": \"color\", \"$value\": \"{color.blue.600}\" },\n    \"text-default\": { \"$type\": \"color\", \"$value\": \"#111827\" }\n  },\n  \"component\": {\n    \"button\": {\n      \"bg-default\": { \"$type\": \"color\", \"$value\": \"{semantic.action-primary}\" },\n      \"text-default\": { \"$type\": \"color\", \"$value\": \"#ffffff\" }\n    }\n  }\n}",
+          "caption": "The point of the hierarchy is not complexity. It is controlled reuse and easier change over time."
+        },
+        {
+          "type": "trap",
+          "title": "Trap: adding a new component for every exception",
+          "html": "<p>Design systems become noisy when every one-off request creates a new component instead of reusing tokens, variants, or composition patterns. Governance matters because reuse without rules quickly collapses.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: token or variant?",
+          "prompt": "A team wants a new button with the same behavior as the primary button but a different campaign color for one quarter. Should this become a brand-new component?",
+          "answerHtml": "<p>Usually no. If behavior stays the same, it is often better handled through semantic or campaign-scoped tokens or an approved variant rather than fragmenting the component model.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 10 recap",
+          "items": [
+            "A design system includes rules, governance, and shared language, not only components.",
+            "Primitive, semantic, and component tokens solve different layers of reuse.",
+            "Governance prevents component sprawl and one-off drift.",
+            "Systems scale best when teams know when to extend and when to standardize."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is a design system?",
+          "answerHtml": "<p>A design system is a shared framework of tokens, components, patterns, documentation, and governance that helps teams build consistent products at scale.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is a design token?",
+          "answerHtml": "<p>A design token is a named value that stores reusable design information such as color, spacing, typography, motion, or radius.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why are semantic tokens useful?",
+          "answerHtml": "<p>Semantic tokens separate meaning from raw values, so teams can change implementation details without rewriting every consumer of that design decision.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is governance in a design system?",
+          "answerHtml": "<p>Governance is the set of rules and review practices that decides how the system evolves, who can change it, and how teams contribute without creating drift.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you know a design system is failing?",
+          "answerHtml": "<p>You see duplicate components, inconsistent states, low adoption, undocumented overrides, and teams treating the system as a blocker instead of a trustworthy accelerator.</p>"
+        }
+      ]
+    },
+    {
+      "id": "motion-micro-interactions-perceived-performance",
+      "intro": "Motion should clarify change, support feedback, and help performance feel honest without turning work into theater.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Motion should explain, not distract",
+          "html": "<p>Good motion helps users understand where something came from, what just changed, and whether the system is still working. It can also improve perceived performance by replacing dead waiting time with meaningful progress or graceful transition. Bad motion delays the task, adds sensory noise, or creates accessibility problems for people sensitive to movement.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Waiting patterns",
+          "items": [
+            {
+              "label": "Spinner",
+              "html": "<p>Useful when there is truly nothing meaningful to show yet, but overused spinners feel vague and do not explain structure.</p>"
+            },
+            {
+              "label": "Skeleton",
+              "html": "<p>Useful when the layout is known and content is loading, because it preserves structure and reduces perceived uncertainty.</p>"
+            },
+            {
+              "label": "Optimistic UI",
+              "html": "<p>Useful when the action is likely to succeed and the system can safely reconcile later, because it makes the product feel immediate.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Motion decision checklist",
+          "steps": [
+            "Ask what change the motion is supposed to explain.",
+            "Choose duration and easing that fit the action weight and urgency.",
+            "Make sure the motion does not block the next user action unnecessarily.",
+            "Respect reduced-motion preferences and alternative feedback paths.",
+            "Measure whether the motion improves comprehension or only adds gloss."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: motion that steals time",
+          "html": "<p>Motion feels premium only when it respects the task. If every menu, card, and modal insists on a dramatic entrance, the interface starts charging a performance tax on attention.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: pick the right loading treatment",
+          "prompt": "A dashboard loads a known card layout from a slow API on every refresh. Which is usually better: a centered spinner or skeleton cards?",
+          "answerHtml": "<p>Skeleton cards are usually better because they preserve layout expectation and reduce uncertainty about what is coming. A spinner is less informative when the structure is already known.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 11 recap",
+          "items": [
+            "Motion should clarify state change or reduce uncertainty.",
+            "Perceived performance matters, but it should still tell the truth.",
+            "Skeletons, spinners, and optimistic UI solve different waiting problems.",
+            "If motion slows the task more than it helps understanding, it is weak design."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is a micro-interaction?",
+          "answerHtml": "<p>A micro-interaction is a small moment of feedback or state change, such as a toggle animation, hover response, or save confirmation, that makes the interface feel understandable and responsive.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "Why are skeleton screens often better than spinners?",
+          "answerHtml": "<p>Because skeletons preserve structure and show where content will appear, which reduces uncertainty during waiting.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is perceived performance?",
+          "answerHtml": "<p>Perceived performance is how fast and responsive the interface feels to the user, which is shaped by clarity, continuity, and feedback in addition to technical speed.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When is optimistic UI appropriate?",
+          "answerHtml": "<p>Optimistic UI is appropriate when the action is likely to succeed and the team has a safe way to reconcile or roll back if the backend result differs.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you keep motion accessible?",
+          "answerHtml": "<p>I keep motion purposeful, avoid unnecessary large movement, provide non-motion feedback, and respect user preferences such as reduced motion so the design remains understandable without animation.</p>"
+        }
+      ]
+    },
+    {
+      "id": "critique-heuristics-measuring-design-quality",
+      "intro": "Design maturity shows up in how teams judge work. Learn how to critique interfaces with evidence, heuristics, and measurable outcomes instead of taste-only feedback.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Good critique is structured, not performative",
+          "html": "<p>Critique is the practice of evaluating design against goals, user needs, heuristics, and evidence. It is not a vibe check. A useful critique names the goal, identifies where the interface helps or hurts that goal, and explains the tradeoff clearly enough that the team can act on it. The point is improvement, not performance.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Ways to evaluate design quality",
+          "items": [
+            {
+              "label": "Heuristic evaluation",
+              "html": "<p>Useful for quickly identifying likely usability issues against known principles such as visibility of status, consistency, or error prevention.</p>"
+            },
+            {
+              "label": "Usability testing",
+              "html": "<p>Useful for observing where users actually struggle in task execution. It turns design assumptions into visible behavior.</p>"
+            },
+            {
+              "label": "Product metrics",
+              "html": "<p>Useful for measuring whether the design changes outcomes such as completion, retention, support load, or error rate after release.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "A critique framework",
+          "steps": [
+            "State the user goal and business goal first.",
+            "Describe what the current design is asking the user to do or infer.",
+            "Identify the strongest evidence of friction, ambiguity, or overload.",
+            "Suggest an improvement and explain the expected tradeoff.",
+            "Define how success would be validated after the change."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: critique by personal preference",
+          "html": "<p>Comments like \"I just do not like this\" are not useless because they are emotional. They are weak because they are not tied to the goal, the user, or the likely consequence. Strong critique translates reaction into reason.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: structure the critique",
+          "prompt": "A dashboard uses tiny low-contrast labels, six competing card styles, and no obvious primary action. How would you critique it?",
+          "answerHtml": "<p>I would say the hierarchy is fragmented, labels are hard to parse, and the system offers too many competing visual patterns, which slows scanning and weakens task clarity. I would then recommend consolidating card language, improving typographic contrast, and elevating the primary action with a clearer hierarchy.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 12 recap",
+          "items": [
+            "Critique should be tied to goals, evidence, and likely outcomes.",
+            "Heuristics, tests, and metrics each reveal different quality signals.",
+            "Preference-only feedback is weak unless it is translated into impact.",
+            "A good critique points to a better next move, not just a flaw."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is a design critique?",
+          "answerHtml": "<p>A design critique is a structured review of how well a design serves its goals, users, and constraints, along with recommendations for improvement.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is heuristic evaluation?",
+          "answerHtml": "<p>Heuristic evaluation is a review method that checks an interface against established usability principles to identify likely problems.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why are product metrics not enough to judge design quality alone?",
+          "answerHtml": "<p>Metrics can show that something happened, but they usually need supporting research or critique to explain why it happened and what should change next.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What makes critique actionable?",
+          "answerHtml": "<p>Actionable critique names the problem, ties it to impact, and suggests a direction or hypothesis the team can test or implement.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you separate personal taste from product critique?",
+          "answerHtml": "<p>I anchor feedback to the user goal, evidence, heuristic principles, and the likely behavioral effect rather than stopping at whether I personally like the visual treatment.</p>"
+        }
+      ]
+    },
+    {
+      "id": "collaboration-handoff-tooling-production-workflows",
+      "intro": "Real design work happens with engineers, PMs, researchers, and content partners. This chapter covers how work moves from idea to implementation without losing quality.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Handoff is communication, not file transfer",
+          "html": "<p>Design handoff is not complete when a Figma file looks polished. It is complete when the team shares enough clarity about behavior, states, priorities, accessibility, and edge cases to implement the right experience. Production design work depends on communication loops, not one-way asset drops.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Common delivery artifacts",
+          "items": [
+            {
+              "label": "Wireframe",
+              "html": "<p>Useful for early structure and flow conversations when the team needs to align on layout and scope before refining polish.</p>"
+            },
+            {
+              "label": "Mockup or high-fidelity frame",
+              "html": "<p>Useful for visual language and hierarchy alignment, but insufficient on its own for complex behavior or state logic.</p>"
+            },
+            {
+              "label": "Prototype and annotations",
+              "html": "<p>Useful when interaction, state changes, sequencing, or motion must be explained clearly enough for product and engineering implementation.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Design-to-dev handoff flow",
+          "steps": [
+            "Align on the user goal, acceptance criteria, and critical states before implementation starts.",
+            "Provide the visual frames, token references, and interaction notes needed for build decisions.",
+            "Annotate edge cases such as loading, empty, error, validation, and responsive behavior.",
+            "Review implementation during development instead of waiting for the end.",
+            "Capture mismatches as system improvements, not only one-off bug fixes."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Example handoff note",
+          "language": "md",
+          "code": "### Filter Drawer\n- Opens from the right on mobile and tablet\n- Initial focus moves to drawer title\n- Background content is inert while open\n- Apply button stays disabled until at least one filter changes\n- On Apply: close drawer, return focus to trigger, announce result count\n- Empty result state keeps the selected chips visible so users can recover",
+          "caption": "A short, precise behavior note often prevents more implementation drift than a prettier frame alone."
+        },
+        {
+          "type": "trap",
+          "title": "Trap: throwing frames over the wall",
+          "html": "<p>If design only hands off visuals and disappears, implementation will fill in the missing behavior logic itself. That usually creates avoidable inconsistency, because the hidden decisions were never shared.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: improve the handoff",
+          "prompt": "An engineer says, \"I have the frame, but I do not know what happens on error, mobile, or keyboard.\" What does that tell you?",
+          "answerHtml": "<p>It means the handoff described appearance but not behavior. The next step is to document state logic, accessibility expectations, responsive changes, and acceptance criteria rather than debating pixels again.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 13 recap",
+          "items": [
+            "Handoff is successful when the behavior is as clear as the visuals.",
+            "Annotations matter most where states, accessibility, and edge cases shape implementation.",
+            "Reviewing during build is cheaper than correcting everything after code is finished.",
+            "A healthy workflow treats design and engineering as one delivery conversation."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is design handoff?",
+          "answerHtml": "<p>Design handoff is the process of translating design intent, behavior, and constraints into a form engineers and other partners can implement accurately.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "Why is a polished mockup alone not enough for implementation?",
+          "answerHtml": "<p>Because frames rarely explain state logic, accessibility behavior, edge cases, or responsive changes clearly enough for production work.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What should a good handoff include besides visuals?",
+          "answerHtml": "<p>It should include behavior notes, edge states, responsive rules, accessibility expectations, token references, and acceptance criteria for critical interactions.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why should designers review implementation before the end of a sprint?",
+          "answerHtml": "<p>Because early review catches interpretation gaps while the work is still easy to adjust and helps improve the shared system instead of treating every mismatch as a late surprise.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you reduce handoff friction between design and engineering?",
+          "answerHtml": "<p>I align on goals and states early, document the parts most likely to drift, use shared system language, and stay involved during implementation instead of treating handoff as a one-time export.</p>"
+        }
+      ]
+    },
+    {
+      "id": "ui-ux-architecture-system-thinking-interview-mastery",
+      "intro": "Finish with system thinking, team models, portfolio storytelling, and a broad interview bank that pressures both fundamentals and senior-level tradeoff reasoning.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "System thinking is the maturity layer",
+          "html": "<p>At the advanced level, UI/UX is not just about fixing screens. It is about seeing how research, hierarchy, accessibility, systems, operations, and team structure interact. Strong designers can explain not only what they would change, but why the current system produced the problem and how to improve the system itself.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Design operating models",
+          "items": [
+            {
+              "label": "Centralized",
+              "html": "<p>A centralized design team can build consistency and shared standards well, but it may become slower or farther from day-to-day product context if the collaboration loop is weak.</p>"
+            },
+            {
+              "label": "Embedded",
+              "html": "<p>Embedded designers stay close to one product area and can move quickly, but consistency often suffers unless the system and governance are strong.</p>"
+            },
+            {
+              "label": "Hybrid",
+              "html": "<p>A hybrid model tries to balance local speed with shared standards through product alignment plus a cross-team system layer.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How to answer a UI/UX case question",
+          "steps": [
+            "Restate the user goal and the business goal in plain language.",
+            "Clarify assumptions, constraints, and success metrics before proposing screens.",
+            "Describe the flow, states, hierarchy, and accessibility implications of your approach.",
+            "Surface tradeoffs and explain why you are choosing one option over another.",
+            "Close with how you would validate the solution and iterate after release."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: portfolio storytelling as a screen tour",
+          "html": "<p>Interviewers usually learn less from a visual tour than from your reasoning. If a case study never explains the problem, evidence, tradeoffs, and impact, it feels like decoration rather than design judgment.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: critique a checkout flow",
+          "prompt": "How would you critique a confusing checkout flow?",
+          "answerHtml": "<p>I would map the goal, identify where users lose certainty, inspect hierarchy and form friction, check error and recovery states, compare the flow against trust and heuristic principles, and recommend the smallest changes most likely to improve completion and confidence.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 14 recap",
+          "items": [
+            "Advanced UI/UX work connects interface decisions to systems and operating models.",
+            "Strong interview answers make goals, constraints, tradeoffs, and validation visible.",
+            "Portfolio stories should reveal judgment, not only polished frames.",
+            "System thinking is what turns good interface craft into durable product design leadership."
+          ]
+        }
+      ],
       "qa": [
         {
           "level": "basic",
           "question": "What is the difference between UX and UI?",
-          "answerHtml": "<p>UX (User Experience) is the analytical logic, psychology, and feel of the experience (wireframes, research, user journeys). UI (User Interface) is the visual skin, typography, colors, and layout (the aesthetic presentation).</p>"
+          "answerHtml": "<p>UX is the overall quality of the experience, including flows, clarity, and task success. UI is the visual and interactive layer that expresses that experience on screen.</p>"
         },
         {
           "level": "basic",
           "question": "What is a Call to Action (CTA)?",
-          "answerHtml": "<p>A prominent button or link designed to prompt an immediate response or encourage an immediate sale (e.g., \"Sign Up Now\" or \"Buy It\").</p>"
+          "answerHtml": "<p>A CTA is the interface element that prompts the next desired user action, such as signing up, saving changes, or completing checkout.</p>"
         },
         {
           "level": "basic",
-          "question": "What is the 60-30-10 color rule?",
-          "answerHtml": "<p>A classic design principle for creating a balanced color palette. 60% is your dominant hue (usually background), 30% is your secondary color, and 10% is your accent color (CTAs and highlights).</p>"
+          "question": "What is a wireframe?",
+          "answerHtml": "<p>A wireframe is a low-fidelity representation of structure and layout used to align on content, hierarchy, and flow before visual polish.</p>"
         },
         {
           "level": "basic",
-          "question": "What are wireframes vs mockups vs prototypes?",
-          "answerHtml": "<p>Wireframes are low-fidelity structural blueprints (gray boxes). Mockups are high-fidelity static visual designs (colors and fonts). Prototypes are interactive models simulating the final flow.</p>"
+          "question": "What is the difference between a wireframe, mockup, and prototype?",
+          "answerHtml": "<p>A wireframe focuses on structure, a mockup focuses on visual detail, and a prototype adds simulated interaction and flow.</p>"
         },
         {
           "level": "basic",
-          "question": "Why is Typography important in UI?",
-          "answerHtml": "<p>It establishes visual hierarchy, guides eye tracking, heavily impacts readability, and sets the entire emotional tone and brand identity of an application.</p>"
+          "question": "What is affordance in design?",
+          "answerHtml": "<p>Affordance is the cue that suggests how an element can be used, such as a button looking pressable or a handle looking draggable.</p>"
         },
         {
           "level": "basic",
-          "question": "What is Affordance in design?",
-          "answerHtml": "<p>A physical characteristic of an object or interface that visually hints at how it should be used. For example, a 3D shadow on a button affords clicking. A slider affords dragging.</p>"
+          "question": "What is a signifier?",
+          "answerHtml": "<p>A signifier is the explicit clue that tells users what action is possible, such as a label, icon, chevron, or visible input border.</p>"
         },
         {
           "level": "basic",
-          "question": "What is Mobile-First Design?",
-          "answerHtml": "<p>Designing the UI and UX for the smallest screen (mobile) first, focusing purely on core features, and progressively enhancing the layout for larger tablet and desktop screens.</p>"
+          "question": "Why is consistency important in UI design?",
+          "answerHtml": "<p>Consistency reduces relearning, supports recognition, and helps users predict behavior across the product.</p>"
         },
         {
           "level": "basic",
-          "question": "What does accessibility mean in UI design?",
-          "answerHtml": "<p>Ensuring your design is usable by people with disabilities. This means maintaining high color contrast, ensuring keyboard navigability, and providing screen-reader labels.</p>"
+          "question": "What is a mental model?",
+          "answerHtml": "<p>A mental model is the internal expectation a user has about how a system should work based on prior knowledge and experience.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is progressive disclosure?",
+          "answerHtml": "<p>Progressive disclosure reveals complexity gradually so users see the information or options they need now without being overwhelmed by everything at once.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is information architecture?",
+          "answerHtml": "<p>Information architecture is the structure and labeling of content, navigation, and actions so users can find things and understand where they are.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is a user journey?",
+          "answerHtml": "<p>A user journey is the broader end-to-end experience a person has across touchpoints while trying to achieve a goal.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the difference between usability and aesthetics?",
+          "answerHtml": "<p>Usability is about how easily and confidently people can use the product, while aesthetics is about how the product looks and feels visually. Strong products need both.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is mobile-first design?",
+          "answerHtml": "<p>Mobile-first design starts with the smallest context and progressively enhances the experience for larger screens, which helps teams prioritize essentials.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "Why is visible focus important?",
+          "answerHtml": "<p>Visible focus helps keyboard users track where they are and interact without guessing.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is a design token?",
+          "answerHtml": "<p>A design token is a named value that stores reusable design information such as color, spacing, typography, motion, or radius.</p>"
         },
         {
           "level": "intermediate",
-          "question": "Explain Fitts's Law.",
-          "answerHtml": "<p>The time required to move to a target is a function of the distance to the target and the size of the target. Therefore, primary actions should be large and close to the user's natural starting position.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "Explain Hick's Law.",
-          "answerHtml": "<p>The time it takes to make a decision increases with the number and complexity of choices. In UX, this means you should minimize the number of options (e.g. navigation links) presented at once to prevent paralysis.</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "What is the Gestalt Principle of Proximity?",
-          "answerHtml": "<p>Items physically close to each other are perceived as being grouped or related to one another. It is the strongest way to establish relationships without drawing literal bounding boxes.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What is the Aesthetic-Usability Effect?",
-          "answerHtml": "<p>A psychological phenomenon where users perceive more aesthetically pleasing designs to be more intuitive and easier to use than less pleasing designs, even if the actual usability is identical.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "Describe Skeleton Screens vs Spinners.",
-          "answerHtml": "<p>Skeleton screens display a blank version of a page into which information is gradually loaded, reducing the user's *perceived* wait time. Spinners just show a loading wheel and increase frustration for long loads.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "What are Dark Patterns?",
-          "answerHtml": "<p>UI and UX design choices specifically engineered to trick users into doing things they did not intend to do, like sneaking items into a cart or making the \"Cancel Subscription\" button invisible.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is Cognitive Load in UX?",
-          "answerHtml": "<p>The total amount of mental effort being used in the working memory. Extraneous cognitive load generated by cluttered UI, unclear labels, and disruptive pop-ups severely degrades user success rates.</p>"
-        },
-        {
-          "level": "advanced",
-          "question": "Explain Heuristic Evaluation.",
-          "answerHtml": "<p>A usability engineering method where evaluators examine the UI and judge its compliance with recognized usability principles (the \"heuristics\"), such as Nielsen's 10 Usability Heuristics.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "How do you design for the \"Fat Finger\" problem?",
-          "answerHtml": "<p>Touch targets on mobile devices must be a minimum of 44x44 CSS pixels (according to Apple/WCAG) to ensure users can accurately tap them without hitting adjacent interactive elements.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is a Design System vs a UI Library?",
-          "answerHtml": "<p>A UI Library is purely a collection of coded components. A Design System is a complete set of standards, documentation, design tokens, voice & tone guidelines, and the UI library, intended to manage design at scale.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is the \"Paradox of Choice\" in UX?",
-          "answerHtml": "<p>An observation that providing too many options can lead to anxiety and decision paralysis, eventually leading users to abandon the task entirely. Mitigation: Categorization, progressive disclosure, and smart defaults.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "Explain \"Mental Models\" and \"Conceptual Models\".",
-          "answerHtml": "<p>A mental model is what the user *thinks* they know about how a system works. A conceptual model is the actual design as implemented. UX friction occurs when these two models do not align.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Emotional Design\" (Don Norman)?",
-          "answerHtml": "<p>Designing for three levels of processing: Visceral (automatic response to aesthetics), Behavioral (satisfaction with usability), and Reflective (conscious thought about brand and meaning).</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What are \"Micro-interactions\" and why do they matter?",
-          "answerHtml": "<p>Tiny functional movements (like a button ripple or a success checkmark animation) that provide instant feedback. They humanize the interface and prevent user uncertainty.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "Explain the \"Peak-End Rule\" in UX Research.",
-          "answerHtml": "<p>Users judge an experience largely based on how they felt at its peak (most intense point) and at its end, rather than the average of every moment of the experience.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Service Design\" vs \"Product Design\"?",
-          "answerHtml": "<p>Product design focuses on a specific software artifact. Service design maps the entire end-to-end journey across all touchpoints (digital, physical, human) to improve the overall service quality.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "Compare Contextual Inquiry vs User Interviews.",
-          "answerHtml": "<p>User interviews are semi-structured conversations. Contextual Inquiry involves observing the user in their actual environment doing their actual work, uncovering behaviors that users might not mention in an interview.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is a \"Card Sort\" test?",
-          "answerHtml": "<p>A research method where users organize information into groups that make sense to them. Generative: users create their own categories. Closed: users sort into predefined categories. Used to design Information Architecture.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "Explain \"Affordance\" vs \"Signifiers\".",
-          "answerHtml": "<p>Affordance is the *possibility* of an action (a chair affords sitting). A signifier is the visual signal that tells the user the action is possible (a button's shadow is a signifier of its affordance to be clicked).</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Design Debt\"?",
-          "answerHtml": "<p>The accrued cost of poor design decisions (shortcuts, inconsistencies) that result in a more difficult user experience and slower development speed over time.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"System Usability Scale\" (SUS)?",
-          "answerHtml": "<p>A quick, reliable 10-item questionnaire used to measure the perceived usability of a system. It provides a score from 0-100 that can be benchmarked against industry averages.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "Explain \"Atomic Design\" methodology.",
-          "answerHtml": "<p>A system for building interfaces by Brad Frost: Atoms (labels, inputs) -> Molecules (search form) -> Organisms (header) -> Templates (page structure) -> Pages (real content).</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is \"Eye Tracking\" and when should it be used?",
-          "answerHtml": "<p>A research tool that measures where users look on a screen. Used to identify \"blind spots\", verify visual hierarchy, and see if critical CTAs are actually being noticed.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What are \"User Journey Maps\" vs \"User Flows\"?",
-          "answerHtml": "<p>A User Flow is a linear diagram of steps a user takes through the UI. A Journey Map is a high-level visualization of the user's emotions, motivations, and pain points across the entire experience.</p>"
-        },
-        {
-          "level": "expert",
-          "question": "What is the \"Doherty Threshold\"?",
-          "answerHtml": "<p>The observation that productivity skyrockets when a computer and its users interact at a pace (< 400ms) that ensures neither has to wait on the other. It defines the UX requirement for \"instant\" feedback.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is UX vs UI?",
-          "answerHtml": "<p><strong>UX (User Experience):</strong> How the product feels — the entire journey. Includes research, information architecture, user flows, wireframes, usability testing. <strong>UI (User Interface):</strong> How it looks — visual design. Colors, typography, icons, spacing, animations. UX is the blueprint; UI is the paint and furnishing. Both are essential; UX without good UI feels clunky, UI without good UX is pretty but unusable.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What are design tokens?",
-          "answerHtml": "<p>Named design decisions stored as data: colors, spacing, typography, shadows, border radius, animation durations. They're the atomic values of a design system. Stored as CSS custom properties, JSON, or JS constants. Benefits: single source of truth, enable theming, sync between Figma and code, platform-agnostic (same tokens → CSS, iOS, Android).</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is a design system?",
-          "answerHtml": "<p>A collection of reusable components, design tokens, guidelines, and patterns that ensure consistency across products. Includes: <strong>1)</strong> Design tokens (colors, spacing). <strong>2)</strong> Component library (buttons, inputs, cards). <strong>3)</strong> Documentation (usage guidelines, do's and don'ts). <strong>4)</strong> Patterns (forms, navigation, data display). Examples: Material Design (Google), Carbon (IBM), Radix + shadcn/ui.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is visual hierarchy?",
-          "answerHtml": "<p>Guiding the user's eye to the most important content first. Achieved through: <strong>Size</strong> (larger = more important), <strong>Color</strong> (high contrast = attention), <strong>Weight</strong> (bold text stands out), <strong>Spacing</strong> (whitespace isolates important elements), <strong>Position</strong> (top-left is read first in LTR), <strong>Depth</strong> (shadows/elevation). Primary CTA should be the most visually prominent element.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is whitespace (negative space)?",
-          "answerHtml": "<p>Empty space between and around elements. NOT wasted space — it's a design tool. Benefits: improves readability, creates visual grouping (related items closer together), reduces cognitive load, feels premium/clean. Apple's design is famous for generous whitespace. Rule: when in doubt, add more space.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is the difference between wireframe, mockup, and prototype?",
-          "answerHtml": "<p><strong>Wireframe:</strong> Low-fidelity layout showing structure/content placement. No colors, real content, or interactivity. Focuses on information architecture. <strong>Mockup:</strong> High-fidelity static design with real colors, typography, images. Shows final visual appearance. <strong>Prototype:</strong> Interactive simulation of the product. Clickable flows, animations, real interactions. Tools: wireframe (Balsamiq), mockup/prototype (Figma).</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is color contrast and why does it matter?",
-          "answerHtml": "<p>The difference in luminance between foreground and background. WCAG AA requires 4.5:1 for normal text, 3:1 for large text. Low contrast = hard to read for everyone, impossible for visually impaired users. Test with Chrome DevTools (inspect element → color picker shows ratio). About 8% of men and 0.5% of women have color vision deficiency — never rely on color alone.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is the F-pattern?",
-          "answerHtml": "<p>How users scan web pages: two horizontal sweeps at the top, then a vertical scan down the left side — forming an 'F'. Important content should be in: the first line (headline), the second line (subheadline/key info), and the left side of the page. This is why left-aligned text and top-loaded content work best.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is responsive design?",
-          "answerHtml": "<p>Designing one product that works on all screen sizes. Principles: fluid layouts (%, fr, flex), media queries for breakpoints, responsive images (srcset), mobile-first approach (design for small screens first, enhance for larger). Modern: container queries (components adapt to their container), clamp() for fluid values, auto-fit/auto-fill grid columns.</p>"
-        },
-        {
-          "level": "basic",
-          "question": "What is a CTA (Call to Action)?",
-          "answerHtml": "<p>The element that prompts the user to take the desired action — sign up, buy, subscribe, start trial. Should be: visually prominent (contrasting color, large), clearly worded (action verb: 'Get Started' not 'Submit'), placed where users naturally look (above fold, end of content). One primary CTA per view — too many choices = no choice (Hick's Law).</p>"
-        },
-        {
-          "level": "intermediate",
-          "question": "Explain Fitts's Law and its UX implications.",
-          "answerHtml": "<p>The time to reach a target is a function of the distance to the target and the size of the target. <strong>Larger targets + closer placement = faster interaction.</strong> Implications: make primary buttons bigger, place frequent actions near cursor/thumb position, increase clickable area (padding on links/buttons), corners/edges of screen are 'infinite' targets (easy to reach). Mobile: bottom nav is faster than top nav (thumb zone).</p>"
+          "question": "What is Jakob's Law?",
+          "answerHtml": "<p>Jakob's Law says users spend most of their time in other products, so they expect your interface to follow familiar conventions unless there is a strong reason not to.</p>"
         },
         {
           "level": "intermediate",
           "question": "What is Hick's Law?",
-          "answerHtml": "<p>Decision time increases with the number of choices. More options = longer to decide = higher chance of abandoning. Implications: limit nav items (5-7 max), progressive disclosure (show basic options first, advanced behind 'more'), categorize long lists, recommend a default option, reduce form fields to essentials. Amazon's 1-Click Buy is Hick's Law in action — zero decisions.</p>"
+          "answerHtml": "<p>Hick's Law says decision time increases as the number and complexity of choices increase, so reducing or structuring choices can improve usability.</p>"
         },
         {
           "level": "intermediate",
-          "question": "What is Gestalt theory in design?",
-          "answerHtml": "<p>How humans perceive visual groups: <strong>Proximity:</strong> Close items seem related. <strong>Similarity:</strong> Similar items seem grouped. <strong>Continuity:</strong> Eyes follow lines/curves. <strong>Closure:</strong> Brain completes incomplete shapes. <strong>Figure/Ground:</strong> Distinguishing foreground from background. Used in: card layouts (proximity), icon sets (similarity), progress indicators (continuity), logos (closure).</p>"
+          "question": "What is Fitts's Law?",
+          "answerHtml": "<p>Fitts's Law explains that targets are easier and faster to hit when they are larger and closer, which matters for buttons, menus, and touch interactions.</p>"
         },
         {
           "level": "intermediate",
-          "question": "How do you implement dark mode properly?",
-          "answerHtml": "<p><strong>1) Token-based:</strong> All colors via CSS variables, swap token values per theme. <strong>2) Three-way toggle:</strong> Light / Dark / System (respects prefers-color-scheme). <strong>3) Persist choice:</strong> localStorage + cookie (for SSR). <strong>4) Design adjustments:</strong> Lower saturation, use off-white not pure white, lighter surfaces = elevated, reduce shadows. <strong>5) Separate contrast checks:</strong> Colors that pass in light may fail in dark. <strong>6) Flash prevention:</strong> Set theme in script before body renders (inline blocking script).</p>"
+          "question": "What are Nielsen's usability heuristics used for?",
+          "answerHtml": "<p>They provide a practical framework for evaluating interface quality, spotting likely usability issues, and structuring design critique.</p>"
         },
         {
           "level": "intermediate",
-          "question": "What is a component library vs design system?",
-          "answerHtml": "<p><strong>Component library:</strong> A collection of reusable UI components (buttons, inputs, modals). Code only. <strong>Design system:</strong> A component library PLUS: design tokens, usage guidelines, design principles, accessibility standards, interaction patterns, documentation, Figma components, and a governance process. A design system is a product that serves your product teams.</p>"
+          "question": "What is recognition over recall?",
+          "answerHtml": "<p>It means interfaces should make options and context visible so users can identify the right action without remembering hidden rules or earlier details.</p>"
         },
         {
           "level": "intermediate",
-          "question": "What is the token hierarchy (primitive → semantic → component)?",
-          "answerHtml": "<p><strong>Primitive/Global:</strong> Raw values with no meaning: <code>--blue-500: #3b82f6</code>. <strong>Semantic/Alias:</strong> Purpose-driven names: <code>--color-primary: var(--blue-600)</code>. <strong>Component:</strong> Usage-specific: <code>--button-bg: var(--color-primary)</code>. This layering lets you: change the blue shade globally (primitive), change what 'primary' means (semantic), or customize one component (component) — without touching other layers.</p>"
+          "question": "What is a heuristic evaluation?",
+          "answerHtml": "<p>It is a structured review of an interface against known usability principles to find likely design problems quickly.</p>"
         },
         {
           "level": "intermediate",
-          "question": "How do you handle icon systems?",
-          "answerHtml": "<p><strong>SVG sprites:</strong> Define icons in a single SVG with <code>&lt;symbol&gt;</code> elements, reference with <code>&lt;use href='#icon-name'&gt;</code>. <strong>React icon components:</strong> Each icon is a component with props for size, color, title (accessibility). <strong>Icon fonts:</strong> Legacy approach (Font Awesome) — harder to style, poor accessibility. Modern: use SVG inline or sprite. <strong>Sizing:</strong> Token-based (16px, 20px, 24px). <strong>Color:</strong> <code>currentColor</code> inherits text color.</p>"
+          "question": "What is a usability test?",
+          "answerHtml": "<p>A usability test is a research session where realistic users attempt realistic tasks while the team observes friction, confusion, and workarounds.</p>"
         },
         {
           "level": "intermediate",
-          "question": "What is progressive disclosure?",
-          "answerHtml": "<p>Show only what's necessary at each step, revealing more as needed. Examples: 'Advanced settings' toggle, accordion FAQ, tooltip help text, multi-step wizard instead of one massive form, 'Show more' on long lists. Benefits: reduces cognitive load, focuses attention, doesn't overwhelm beginners while still serving power users.</p>"
+          "question": "What is card sorting?",
+          "answerHtml": "<p>Card sorting is a research method used to understand how users naturally group and label information, which helps with IA and navigation design.</p>"
         },
         {
           "level": "intermediate",
-          "question": "How do you design accessible forms?",
-          "answerHtml": "<p><strong>Labels:</strong> Every input needs a visible <code>&lt;label&gt;</code> linked with <code>for=</code>. <strong>Errors:</strong> Inline below field, linked with <code>aria-describedby</code>, announced with <code>aria-live</code>. <strong>Required fields:</strong> <code>required</code> attribute + visual indicator (asterisk in label, not just color). <strong>Field groups:</strong> <code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code>. <strong>Keyboard:</strong> Tab order matches visual order, Enter submits. <strong>Autocomplete:</strong> Set <code>autocomplete</code> attributes for browser autofill.</p>"
+          "question": "What is tree testing?",
+          "answerHtml": "<p>Tree testing evaluates whether users can find information in a proposed navigation structure without the full interface influencing the result.</p>"
         },
         {
           "level": "intermediate",
-          "question": "What are skeleton screens and when to use them?",
-          "answerHtml": "<p>Grey placeholder shapes that mimic the layout of content being loaded. Better than spinners because they: set expectations for content layout, reduce perceived load time (users feel the page loaded faster), prevent layout shift (CLS). Use for: card lists, dashboards, profile pages — anything with a predictable layout. Don't use for: content with unpredictable layout, or very fast loads (&lt;200ms).</p>"
+          "question": "How is a persona different from a target segment?",
+          "answerHtml": "<p>A persona is a narrative synthesis of behavior, goals, and context used to keep design decisions concrete, while a segment is a broader analytical grouping of users.</p>"
         },
         {
           "level": "intermediate",
-          "question": "What is the difference between Material Design and Human Interface Guidelines?",
-          "answerHtml": "<p><strong>Material Design (Google):</strong> Paper metaphor, elevation with shadows, bold colors, ripple animations, 8dp grid, density levels. Platform: Android + web. <strong>HIG (Apple):</strong> Clarity (readable text, clear icons), deference (content first, chrome minimal), depth (layers, blur, translucency). Platform: iOS + macOS. Both are comprehensive but opinionated differently. Web apps often create their own design language drawing from both.</p>"
+          "question": "When would you use qualitative research over quantitative research?",
+          "answerHtml": "<p>Use qualitative research when you need to understand why behavior happens or how people think, and use quantitative research when you need scale, prevalence, or measurement.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is first-click testing useful for?",
+          "answerHtml": "<p>It helps evaluate whether the initial information scent and hierarchy point users toward the right first action for a goal.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why are empty states important?",
+          "answerHtml": "<p>Empty states explain what the space is for, why it is empty, and what the user should do next, so they can turn confusion into momentum.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why are error states part of the UX, not just validation logic?",
+          "answerHtml": "<p>Error states shape trust and recovery, so the design needs to explain what went wrong, how to fix it, and whether user progress was preserved.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What makes a form feel high friction?",
+          "answerHtml": "<p>Too many fields, weak labels, poor grouping, unclear validation, hidden costs, and low trust cues all make forms feel heavier than they need to be.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When is inline validation useful?",
+          "answerHtml": "<p>Inline validation is useful when it prevents predictable mistakes or confirms success at the right time without interrupting natural entry.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why should color not be the only signal?",
+          "answerHtml": "<p>Because many users may not perceive or interpret color reliably, so meaning needs backup cues such as text, icons, or pattern changes.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the 60-30-10 color rule?",
+          "answerHtml": "<p>It is a classic visual-balance guideline where a dominant color takes most of the interface, a secondary color supports it, and a smaller accent color highlights key actions.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why are touch target size and spacing important?",
+          "answerHtml": "<p>Because small or crowded targets increase accidental taps and effort, especially on touch devices and for users with motor variance.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between responsive and adaptive design?",
+          "answerHtml": "<p>Responsive design fluidly adapts within a shared system, while adaptive design may use distinct layouts or behaviors for specific contexts.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is inclusive design?",
+          "answerHtml": "<p>Inclusive design intentionally reduces exclusion by considering different abilities, contexts, and constraints from the start of the design process.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is a design system?",
+          "answerHtml": "<p>A design system is a shared framework of tokens, components, patterns, documentation, and governance used to build consistent products at scale.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between primitive and semantic tokens?",
+          "answerHtml": "<p>Primitive tokens store raw values, while semantic tokens map those values to meaning and intended usage such as action-primary or text-muted.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why are micro-interactions useful?",
+          "answerHtml": "<p>They provide lightweight feedback that makes actions feel responsive, understandable, and less ambiguous.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is perceived performance?",
+          "answerHtml": "<p>Perceived performance is how fast and responsive the interface feels to the user, which is shaped by clarity, continuity, and feedback in addition to technical speed.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why can skeleton screens feel better than spinners?",
+          "answerHtml": "<p>Skeletons preserve layout expectation and reduce uncertainty by showing where content will appear, while spinners only indicate waiting.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is a critique in UI/UX?",
+          "answerHtml": "<p>A critique is a structured evaluation of design quality against user goals, business goals, heuristics, and evidence.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How do you measure whether a design change worked?",
+          "answerHtml": "<p>You compare the change against the intended outcomes using a mix of task success, conversion, error rate, support signals, qualitative feedback, and behavioral metrics.</p>"
         },
         {
           "level": "advanced",
-          "question": "How do you build a theming system that supports multiple brands?",
-          "answerHtml": "<p><strong>Architecture:</strong> Three-layer tokens: global primitives → brand-specific semantic tokens → component tokens. Each brand overrides the semantic layer: <code>[data-brand='acme']</code> maps <code>--color-primary</code> to their blue, while <code>[data-brand='globex']</code> maps it to their purple. Components only reference semantic tokens. <strong>Build:</strong> Style Dictionary transforms one JSON source per brand into CSS. <strong>Runtime:</strong> Load brand CSS dynamically via media/data attribute. <strong>Testing:</strong> Storybook with brand selector addon for visual comparison.</p>"
+          "question": "How do you decide between a modal, drawer, and inline edit flow?",
+          "answerHtml": "<p>I would compare task complexity, required context, interruption cost, reversibility, and device constraints. Inline edits are best for lightweight changes, drawers work well when users need surrounding context, and modals fit contained tasks that require focused attention.</p>"
         },
         {
           "level": "advanced",
-          "question": "How would you design and maintain a design system for a large organization?",
-          "answerHtml": "<p><strong>Team:</strong> Dedicated design system team (designers + engineers). <strong>Process:</strong> RFC for new components, design review + code review + a11y audit before merge. <strong>Versioning:</strong> Semver, changelog, deprecation warnings (one major version before removal). <strong>Documentation:</strong> Storybook with usage guidelines, do's/don'ts, API reference. <strong>Adoption:</strong> Codemods for breaking changes, migration guides, office hours for teams. <strong>Metrics:</strong> Track adoption rate, bug reports, satisfaction surveys. <strong>Governance:</strong> Clear contribution guidelines, regular audits, design/code token sync.</p>"
+          "question": "How would you critique a confusing checkout flow?",
+          "answerHtml": "<p>I would inspect hierarchy, form burden, trust cues, cost visibility, error handling, and recovery paths, then map which moments are creating uncertainty or abandonment.</p>"
         },
         {
           "level": "advanced",
-          "question": "Explain the concept of design tokens pipeline (from Figma to code).",
-          "answerHtml": "<p><strong>1) Figma:</strong> Designers define tokens using Figma Variables (colors, spacing, typography). <strong>2) Export:</strong> Tokens plugin exports to JSON/YAML format. <strong>3) Transform:</strong> Style Dictionary or Tokens Studio processes JSON into platform outputs: CSS variables, SCSS, JS/TS constants, iOS Swift, Android Kotlin. <strong>4) Publish:</strong> Token package published to npm (or CDN). <strong>5) Consume:</strong> Apps import tokens. <strong>6) Sync:</strong> CI/CD triggers on token changes → auto-PR to consuming repos. Key: the JSON is the single source of truth, everything downstream is generated.</p>"
+          "question": "How do you justify a design decision when research is incomplete?",
+          "answerHtml": "<p>I would state the assumptions openly, explain the principles or prior evidence supporting the choice, describe the tradeoff, and define how we will validate it quickly after release.</p>"
         },
         {
           "level": "advanced",
-          "question": "How do you measure and improve usability?",
-          "answerHtml": "<p><strong>Quantitative:</strong> Task success rate, time on task, error rate, SUS (System Usability Scale) score, NPS. Measured via analytics and A/B tests. <strong>Qualitative:</strong> Usability testing (5 users find 85% of issues), user interviews, heuristic evaluation (Nielsen's 10), cognitive walkthrough. <strong>Continuous:</strong> Session replay (Hotjar, FullStory), heatmaps, click maps, rage click detection. <strong>Process:</strong> Test early (wireframe testing), test often (every sprint), test with real users (not just team members). Iterate based on data, not opinions.</p>"
+          "question": "How would you improve the UX of a dashboard for first-time users?",
+          "answerHtml": "<p>I would simplify the first scan, anchor the primary tasks, reduce initial density, explain the most important cards, and use empty or onboarding states that help users form a clear mental model fast.</p>"
         },
         {
           "level": "advanced",
-          "question": "How do you handle design system versioning and breaking changes?",
-          "answerHtml": "<p><strong>Semver:</strong> Major (breaking), minor (new features), patch (fixes). <strong>Deprecation policy:</strong> Mark deprecated in current major, remove in next major (minimum 3 months). Visual deprecation warnings in Storybook and console. <strong>Codemods:</strong> Auto-transform old API to new: <code>npx @myds/codemod button-v2</code>. <strong>Migration guide:</strong> Step-by-step with before/after code. <strong>Canary releases:</strong> Let teams test before stable. <strong>Version dashboard:</strong> Track which teams are on which version.</p>"
+          "question": "How do you decide what belongs above the fold?",
+          "answerHtml": "<p>I prioritize what the user needs for orientation and the next meaningful action, not whatever stakeholders find most exciting. The fold should reduce uncertainty, not hold every message at once.</p>"
         },
         {
           "level": "advanced",
-          "question": "What is the Radix/shadcn approach and why has it become popular?",
-          "answerHtml": "<p><strong>Radix:</strong> Unstyled, accessible primitive components (Dialog, Dropdown, Tabs, etc.) with complete keyboard/ARIA support. You add your own styles. <strong>shadcn/ui:</strong> Copy-paste components built on Radix + Tailwind. Not a dependency — code lives in your project. <strong>Why popular:</strong> Full control over styling (no fighting a library's CSS), components are yours to modify, accessible by default, works with any styling approach. This 'headless UI + local components' pattern has replaced installed component libraries for many teams.</p>"
+          "question": "What is the risk of overusing dark patterns for conversion?",
+          "answerHtml": "<p>They may improve a local metric temporarily, but they damage trust, increase churn and support burden, and often hurt long-term product health.</p>"
         },
         {
           "level": "advanced",
-          "question": "How do you ensure design-engineering consistency?",
-          "answerHtml": "<p><strong>Shared tokens:</strong> Designers and engineers use the SAME token values (Figma Variables synced to CSS variables). <strong>Component parity:</strong> Every Figma component has a code counterpart with matching props/variants. <strong>Design reviews:</strong> Engineers review designs for feasibility; designers review implementations for accuracy. <strong>Storybook:</strong> Living documentation that both teams reference. <strong>Visual regression:</strong> Chromatic catches unintended visual changes. <strong>Handoff:</strong> Figma Dev Mode provides exact specs, not PDF mocks.</p>"
+          "question": "How do you balance business goals with user goals?",
+          "answerHtml": "<p>I look for alignment first, then make the tradeoff explicit where tension exists. The best solutions move the business goal without forcing users through manipulative or confusing flows.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you design for expert users without overwhelming beginners?",
+          "answerHtml": "<p>I preserve a clear default path for everyone, then add accelerators such as shortcuts, saved views, and advanced controls that experts can discover progressively.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you present a redesign to skeptical stakeholders?",
+          "answerHtml": "<p>I would frame the problem, show the evidence, explain the tradeoffs, connect the proposal to business outcomes, and highlight what we will measure after launch.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What should be included in a strong portfolio case study?",
+          "answerHtml": "<p>A strong case study shows the problem, constraints, your role, evidence, options considered, the chosen direction, tradeoffs, collaboration, and measurable impact.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you know when a design system needs governance changes?",
+          "answerHtml": "<p>When teams are forking components, creating unofficial patterns, or losing trust in the shared system, governance needs to become clearer and more responsive.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the difference between local optimization and system optimization in design?",
+          "answerHtml": "<p>Local optimization improves one screen or flow, while system optimization improves the shared patterns, language, and decision quality that affect many screens over time.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you respond when engineering says a design is too expensive to build?",
+          "answerHtml": "<p>I would clarify the real constraint, identify which part of the user value matters most, and collaborate on a lower-cost version that preserves the outcome even if some expression changes.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you handle stakeholder requests that conflict with accessibility?",
+          "answerHtml": "<p>I explain the accessibility impact in concrete terms, tie it to user harm and product risk, and propose alternatives that preserve the stakeholder intent without excluding people.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When should a team run an A/B test versus usability testing?",
+          "answerHtml": "<p>Use usability testing to understand behavior and friction before or during design, and A/B testing when you need to compare live alternatives at scale for a measurable product outcome.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you reduce cognitive load in a complex workflow?",
+          "answerHtml": "<p>I would group related tasks, simplify choices, reveal advanced paths progressively, strengthen labels and hierarchy, and preserve user context so they do not need to remember unnecessary information.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you choose success metrics for a UX initiative?",
+          "answerHtml": "<p>I choose metrics that reflect the intended user and business outcome, such as task completion, time to value, error rate, support burden, retention, or satisfaction, rather than vanity engagement alone.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you redesign a noisy settings page?",
+          "answerHtml": "<p>I would identify primary versus advanced settings, group by mental model, improve labels, add defaults and explanations, and reduce the number of simultaneous decisions shown at once.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a good way to critique your own work before review?",
+          "answerHtml": "<p>I check whether the design supports the core task, whether hierarchy and states are clear, whether accessibility and recovery are built in, and whether the tradeoffs are something I can explain out loud.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you decide whether to add a new pattern or reuse an existing one?",
+          "answerHtml": "<p>I compare the user problem and behavior to the existing pattern library first. If the behavior is fundamentally the same, reuse is usually stronger than novelty.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you improve onboarding for a complex product?",
+          "answerHtml": "<p>I would shorten the time to the first meaningful success, reduce setup burden, guide only the critical next steps, and avoid teaching every feature before the user has context for it.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the role of content design in UX?",
+          "answerHtml": "<p>Content design shapes clarity, trust, guidance, and error recovery through labels, microcopy, explanations, and tone, so it is a core UX discipline rather than decoration.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you know if a label is weak?",
+          "answerHtml": "<p>If users hesitate, misinterpret where it leads, or rely on trial and error instead of confident prediction, the label likely has weak information scent.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you evaluate whether a redesign actually improved trust?",
+          "answerHtml": "<p>I would combine user feedback, behavior such as completion and abandonment, support signals, and qualitative responses around clarity, confidence, and predictability.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common mistake in enterprise UX?",
+          "answerHtml": "<p>A common mistake is mirroring internal structure instead of user tasks, which creates navigation and workflow logic that make sense to the organization but not to the user.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you design with uncertainty in early-stage products?",
+          "answerHtml": "<p>I focus on assumptions, lightweight evidence, flexible system choices, and designs that can be validated quickly rather than pretending early certainty is higher than it is.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you decide between centralized, embedded, and hybrid design team models?",
+          "answerHtml": "<p>I look at product breadth, coordination cost, system maturity, and the need for local speed. Centralized models help consistency, embedded models help depth and speed, and hybrid models work when the organization can maintain both local context and shared standards.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How would you build a design system for three product teams that already work differently?",
+          "answerHtml": "<p>I would start with shared foundations and pain points, align on token and component language, define contribution and review rules, and roll out the system around the highest-value shared patterns first.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you prevent a design system from becoming a bottleneck?",
+          "answerHtml": "<p>Make governance clear, response times predictable, extension paths documented, and contribution flows collaborative so the system enables teams instead of blocking them.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How would you argue for research investment to leadership?",
+          "answerHtml": "<p>I would connect research to lower product risk, better prioritization, fewer expensive reworks, and more confident decisions instead of presenting it as a nice-to-have ritual.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is system thinking in UI/UX?",
+          "answerHtml": "<p>System thinking means understanding how research, hierarchy, accessibility, operations, governance, and delivery structure shape interface quality over time.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you design for multiple user types with conflicting needs?",
+          "answerHtml": "<p>I segment the jobs and constraints clearly, look for shared foundations first, then branch where necessary through permissions, views, defaults, or tailored flows rather than forcing one mode to fit everyone badly.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you critique a feature request from a systems perspective?",
+          "answerHtml": "<p>I ask which user problem it solves, what patterns it will reuse or break, what governance or maintenance burden it adds, and how it affects the product beyond the local screen.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you talk about failure in a UI/UX interview?",
+          "answerHtml": "<p>I describe the decision context, the assumption that proved wrong, what evidence exposed it, how the team corrected course, and what operating lesson changed afterward.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How would you improve collaboration between design and engineering at scale?",
+          "answerHtml": "<p>I would align on system language, define clearer acceptance criteria, normalize earlier reviews, document state and behavior more explicitly, and treat repeated drift as a workflow issue rather than an individual mistake.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you evaluate whether a portfolio piece shows senior-level thinking?",
+          "answerHtml": "<p>It should show judgment under constraints, cross-functional reasoning, evidence, tradeoffs, system impact, and measurable outcomes instead of only polished deliverables.</p>"
         }
-      ],
-      "hasFilterBar": true
+      ]
     }
   ]
 }
