@@ -742,21 +742,288 @@
       "id": "transforms-transitions-animations-motion-systems",
       "intro": "Add motion thoughtfully with transforms, transitions, animations, and motion tokens.",
       "blocks": [
-        { "type": "scaffold", "title": "Motion foundations", "body": "Keep the motion chapter as a roadmap for later examples and patterns." }
+        {
+          "type": "richText",
+          "title": "Motion starts with intent, not decoration",
+          "html": "<p>Motion in CSS should explain change, guide attention, and confirm state. The browser can animate transforms and opacity cheaply, but it will happily animate expensive properties too, so the real question is not whether motion is possible but whether it is the right signal for the job.</p><ul><li>Use motion to clarify state changes, not to fill empty space.</li><li>Prefer transform and opacity for frequent interaction states.</li><li>Treat reduced-motion preferences as a first-class requirement.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Transforms, transitions, and keyframes",
+          "items": [
+            {
+              "label": "Transforms",
+              "html": "<p><code>transform</code> changes how an element is visually moved, scaled, rotated, or skewed without changing document flow. It is the cheapest place to start when you need motion that feels responsive.</p>"
+            },
+            {
+              "label": "Transitions",
+              "html": "<p><code>transition</code> animates the change between two states when a property value changes. It is ideal for hover, focus, pressed, and toggle feedback.</p>"
+            },
+            {
+              "label": "Keyframes",
+              "html": "<p><code>@keyframes</code> define named animation timelines for more complex choreography, looping motion, or multi-step sequences that do not map cleanly to a simple before and after state.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How the browser applies motion",
+          "steps": [
+            "The browser computes the starting and ending values for the animated property.",
+            "It creates an interpolation curve based on duration, easing, and delay.",
+            "Transforms and opacity can often stay on the compositor once the layers are ready.",
+            "Properties that affect geometry or paint may trigger layout or painting work as the animation progresses.",
+            "Animation timing can be changed with custom properties, but the browser still evaluates the final interpolated values each frame."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Motion system example",
+          "language": "css",
+          "code": ":root {\n  --motion-fast: 160ms;\n  --motion-normal: 240ms;\n  --motion-ease: cubic-bezier(0.2, 0, 0, 1);\n}\n\n.card {\n  transition: transform var(--motion-fast) var(--motion-ease),\n    box-shadow var(--motion-fast) var(--motion-ease);\n}\n\n.card:hover {\n  transform: translateY(-2px) scale(1.01);\n}\n\n@keyframes pulse-ring {\n  from {\n    transform: scale(0.95);\n    opacity: 0.7;\n  }\n  to {\n    transform: scale(1.15);\n    opacity: 0;\n  }\n}\n\n.badge::after {\n  animation: pulse-ring 1.2s ease-out infinite;\n}",
+          "caption": "A motion token system keeps durations and easing consistent while still letting components own their local choreography."
+        },
+        {
+          "type": "trap",
+          "title": "Trap: motion that fights the user",
+          "tone": "warning",
+          "html": "<p>Busy animations can make interfaces feel slower even when they are technically fast. If motion repeats constantly, moves unexpectedly, or ignores reduced-motion settings, it becomes noise instead of guidance.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: choose the right motion tool",
+          "prompt": "A dismissible toast should slide in, fade out, and respect reduced-motion preferences. Which CSS primitives would you use, and why would you avoid animating top or left?",
+          "answerHtml": "<p>Use <code>transform</code> and <code>opacity</code> with a transition or keyframe animation depending on whether the toast has a simple state change or a choreographed entrance and exit. Avoid animating <code>top</code> or <code>left</code> because they affect layout and can force extra work on the main thread.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 9 recap",
+          "items": [
+            "Transforms and opacity are the safest default motion properties.",
+            "Transitions are best for state changes and keyframes are best for sequences.",
+            "Motion tokens keep timing consistent across a system.",
+            "Reduced-motion support should be built into the motion model, not added later."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the difference between a transition and an animation?",
+          "answerHtml": "<p>A transition reacts to a property change between two states, while an animation can run through a named timeline with multiple keyframes and timing controls.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "Why are transforms often preferred for motion?",
+          "answerHtml": "<p>Transforms usually avoid layout work and can be handled efficiently by the browser, which makes them a better default for interactive motion.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the role of reduced-motion preferences?",
+          "answerHtml": "<p>They let users ask for less motion, so the interface should reduce or simplify nonessential animation instead of forcing the full experience.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When should keyframes be used?",
+          "answerHtml": "<p>Use keyframes when a motion sequence needs named stages, looping behavior, or more than a simple transition between two values.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can animating layout properties be expensive?",
+          "answerHtml": "<p>Animating properties like width, height, top, or left can force the browser to recalculate layout and repaint parts of the page on each frame.</p>"
+        }
       ]
     },
     {
       "id": "modern-css-architecture-resets-tokens-scalable-design-systems",
       "intro": "Organize CSS for scale using resets, tokens, layers, and system-level conventions.",
       "blocks": [
-        { "type": "scaffold", "title": "System architecture", "body": "Reserve space for resets, token design, and scalable conventions." }
+        {
+          "type": "richText",
+          "title": "Architecture is how CSS stays readable at scale",
+          "html": "<p>Good CSS architecture makes the next override easy to understand. That usually means a small reset, a deliberate token layer, predictable naming, and component composition rules that keep local styles local. The goal is not to make CSS abstract for its own sake, but to make it boring to extend.</p><ul><li>Reset only the browser defaults you truly need to normalize.</li><li>Centralize design tokens so the system has shared language.</li><li>Keep names and layers consistent so selectors do not become policy.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Resets, tokens, naming, and composition",
+          "items": [
+            {
+              "label": "Resets",
+              "html": "<p>Resets remove or tame browser defaults so components start from a predictable baseline. A reset should be small and intentional, not a blunt rewrite of every element.</p>"
+            },
+            {
+              "label": "Tokens",
+              "html": "<p>Tokens are shared values for color, spacing, type, radius, and motion. They give the system a stable vocabulary that can be reused across components and themes.</p>"
+            },
+            {
+              "label": "Naming and composition",
+              "html": "<p>Naming conventions such as BEM, utility classes, or a hybrid system make ownership visible. Composition keeps styles modular by combining small, reusable patterns instead of duplicating one-off rules.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How scalable CSS systems are organized",
+          "steps": [
+            "The browser applies reset styles first, establishing a predictable baseline for markup.",
+            "Tokens define the shared values that components read through custom properties or utility classes.",
+            "Layout, component, and state layers separate broad concerns so overrides stay understandable.",
+            "Naming conventions clarify which rules are structural, which are cosmetic, and which are temporary states.",
+            "Composition lets the same building block appear in different contexts without copy-pasting the whole declaration set."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Architecture example",
+          "language": "css",
+          "code": "@layer reset, tokens, base, components, utilities;\n\n@layer reset {\n  *, *::before, *::after {\n    box-sizing: border-box;\n  }\n\n  body, h1, h2, p {\n    margin: 0;\n  }\n}\n\n@layer tokens {\n  :root {\n    --space-2: 0.5rem;\n    --space-4: 1rem;\n    --radius-2: 0.5rem;\n    --color-surface: #0f172a;\n  }\n}\n\n@layer components {\n  .card {\n    padding: var(--space-4);\n    border-radius: var(--radius-2);\n    background: var(--color-surface);\n  }\n}",
+          "caption": "A small reset plus explicit tokens and layers gives the codebase a stable architecture without overengineering the stylesheet."
+        },
+        {
+          "type": "trap",
+          "title": "Trap: architecture that only exists in a slide deck",
+          "tone": "warning",
+          "html": "<p>If naming rules, token tables, and layer order are not actually used by the team, they become extra ceremony. The best architecture is the one the codebase can apply consistently day after day.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: fix the system structure",
+          "prompt": "A large app has one gigantic stylesheet, repeated spacing values, and selectors like .page .content .card .title everywhere. What three architectural changes would you make first?",
+          "answerHtml": "<p>I would add a minimal reset, introduce a token layer for shared values, and move the repeated component styles into a naming and layering convention that keeps selectors short and local. That reduces duplication and makes overrides easier to predict.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 10 recap",
+          "items": [
+            "Resets should calm browser defaults, not erase the platform.",
+            "Tokens are the shared vocabulary of a design system.",
+            "Naming and composition are how large teams keep styles understandable.",
+            "Layering and local ownership prevent specificity from becoming the architecture."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the purpose of a CSS reset?",
+          "answerHtml": "<p>A reset creates a more predictable starting point by reducing inconsistent default styles across browsers.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What are design tokens?",
+          "answerHtml": "<p>Design tokens are shared values for things like spacing, color, type, radius, and motion that keep the system consistent.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why do naming conventions matter in CSS?",
+          "answerHtml": "<p>They make ownership, intent, and reuse visible, which helps teams avoid selector collisions and duplicated patterns.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What does composition mean in CSS architecture?",
+          "answerHtml": "<p>Composition means building interfaces from small, reusable style pieces instead of repeating large blocks of component-specific CSS.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why are cascade layers helpful in a design system?",
+          "answerHtml": "<p>Layers let the team define broad precedence rules up front, which reduces the need for selector escalation and makes the stylesheet easier to reason about.</p>"
+        }
       ]
     },
     {
       "id": "performance-rendering-cost-browser-optimization",
       "intro": "Understand rendering cost so we can make CSS faster without premature micro-optimization.",
       "blocks": [
-        { "type": "scaffold", "title": "Performance model", "body": "Introduce layout, paint, and composite cost as the basis for later tuning." }
+        {
+          "type": "richText",
+          "title": "Rendering cost has a real shape",
+          "html": "<p>CSS performance is not a mystery if you break rendering into stages. Style calculation decides which declarations apply, layout decides geometry, paint turns boxes into pixels, and compositing assembles the final frame. The cheapest optimization is usually the one that prevents extra work in an earlier stage.</p><ul><li>Layout work is often more expensive than transform-only updates.</li><li>Paint work grows when large areas or complex effects need to be redrawn.</li><li>Compositing is useful, but too many layers can also carry cost.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Style, layout, paint, and composite",
+          "items": [
+            {
+              "label": "Style",
+              "html": "<p>Style calculation resolves the cascade and inheritance so the browser knows the final property values. A selector change can force style recalculation on the affected elements.</p>"
+            },
+            {
+              "label": "Layout",
+              "html": "<p>Layout determines box sizes and positions. Anything that changes geometry, flow, or intrinsic sizing can trigger layout work.</p>"
+            },
+            {
+              "label": "Paint and composite",
+              "html": "<p>Paint draws pixels for visible boxes and effects, while compositing combines layers into the final frame. Containment and content-visibility can reduce how much of the page participates in these steps.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How optimization changes browser work",
+          "steps": [
+            "A style change may stay local if the affected subtree is small.",
+            "A layout change can propagate to siblings and descendants when geometry shifts.",
+            "Paint invalidation expands to the areas that visually depend on the changed element.",
+            "Composite-only changes can move work onto the GPU-friendly compositing stage when the browser promotes layers.",
+            "Containment and content-visibility reduce how much of the page the browser has to consider."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Performance containment example",
+          "language": "css",
+          "code": ".feed-card {\n  contain: layout paint;\n  content-visibility: auto;\n  contain-intrinsic-size: 16rem;\n}\n\n.feed-card .thumbnail {\n  aspect-ratio: 16 / 9;\n  object-fit: cover;\n}\n\n.status-chip {\n  will-change: transform;\n  transform: translateZ(0);\n}",
+          "caption": "Containment and content-visibility let the browser skip work for offscreen or isolated content, while transform-only motion stays on the cheap path."
+        },
+        {
+          "type": "trap",
+          "title": "Trap: accidental performance folklore",
+          "tone": "warning",
+          "html": "<p>Not every render cost needs a hack. Applying will-change everywhere, turning on containment indiscriminately, or sprinkling content-visibility without understanding the layout can make debugging harder and sometimes reduce quality instead of improving it.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: reduce the cost of a long feed",
+          "prompt": "A scrolling feed contains many below-the-fold cards with images, and the page feels sluggish on first load. What CSS techniques should you reach for before trying more exotic optimization tricks?",
+          "answerHtml": "<p>Use <code>content-visibility: auto</code> on isolated cards, add <code>contain</code> where layout and paint boundaries are safe, reserve space with <code>contain-intrinsic-size</code>, and keep animated effects to transform and opacity when possible.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 11 recap",
+          "items": [
+            "Rendering cost moves through style, layout, paint, and compositing.",
+            "Earlier-stage changes are usually more expensive than composite-only changes.",
+            "Containment and content-visibility can dramatically reduce work for large surfaces.",
+            "Optimization should be targeted, not sprayed across the whole stylesheet."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is layout in browser rendering?",
+          "answerHtml": "<p>Layout is the stage where the browser calculates the size and position of boxes.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the difference between paint and composite?",
+          "answerHtml": "<p>Paint draws pixels for an element, while compositing combines rendered layers into the final frame.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What does content-visibility: auto do?",
+          "answerHtml": "<p>It lets the browser skip rendering work for offscreen content until it is needed, which can speed up large pages.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why is containment useful?",
+          "answerHtml": "<p>Containment limits how far style, layout, and paint changes can spread, which helps the browser avoid unnecessary work.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is will-change risky when overused?",
+          "answerHtml": "<p>It can encourage the browser to allocate extra resources for elements that never animate, which wastes memory and can complicate rendering behavior.</p>"
+        }
       ]
     },
     {
