@@ -27,30 +27,375 @@
   "sections": [
     {
       "id": "origins-cascade-browser-styling-pipeline",
-      "intro": "Start with the browser's styling pipeline and the cascade rules that decide which declarations win.",
+      "intro": "Start with the browser styling pipeline and the cascade rules that decide which declarations survive to computed style.",
       "blocks": [
-        { "type": "scaffold", "title": "Cascade mental model", "body": "Map origin, importance, layer, specificity, and source order before writing selectors." }
+        {
+          "type": "richText",
+          "title": "The browser styling pipeline",
+          "html": "<p>The browser does not jump straight from CSS text to pixels. It parses stylesheets, builds the CSSOM, matches selectors against elements, resolves the cascade, computes values, lays out boxes, paints pixels, and then composites the result. When you know where a decision happens, you know what kind of bug you are fixing.</p><ul><li>Parsing and selector matching decide which declarations are eligible.</li><li>The cascade decides which declaration wins.</li><li>Computed, used, and actual values are resolved later in the pipeline.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Cascade dimensions",
+          "items": [
+            {
+              "label": "Origin",
+              "html": "<p>Declarations can come from the user agent, the user, the author, or inline style. Origin is the first broad bucket the cascade uses before it looks at anything finer.</p>"
+            },
+            {
+              "label": "Importance",
+              "html": "<p>Normal declarations and <code>!important</code> declarations live in separate precedence groups. Importance can flip an otherwise obvious winner.</p>"
+            },
+            {
+              "label": "Order",
+              "html": "<p>When origin, importance, layers, and specificity all tie, the later declaration wins by source order. That is the last tie-breaker, not the first one.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How the browser resolves a declaration",
+          "steps": [
+            "The browser gathers all declarations that match the element and property.",
+            "It sorts them by origin and importance before comparing anything else.",
+            "Cascade layers are checked next, which can override specificity expectations.",
+            "Specificity breaks ties within the same layer and origin bucket.",
+            "If everything still ties, source order decides the winner."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Layered cascade example",
+          "language": "css",
+          "code": "@layer reset, base, components;\n\n@layer reset {\n  * { box-sizing: border-box; }\n}\n\n@layer base {\n  button { font: inherit; }\n}\n\n@layer components {\n  .button { background: #123; color: white; }\n}\n\nbutton[aria-pressed=\"true\"] { color: gold; }",
+          "caption": "Layers give you an earlier control point than selector strength, so a deliberate layer order can prevent specificity arms races."
+        },
+        {
+          "type": "drill",
+          "title": "Drill: which rule wins?",
+          "prompt": "A button is styled in @layer components with .button { color: white; }, then a later unlayered rule says button[aria-pressed=\"true\"] { color: gold; }, and the element also has inline style color: teal. Which color wins, and why?",
+          "answerHtml": "<p><code>teal</code> wins if the inline style is a normal declaration, because inline author styles sit above stylesheet author rules in the cascade. If one of the declarations is marked <code>!important</code>, that can change the ordering, so the exact answer still depends on importance before specificity or source order are considered.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 1 recap",
+          "items": [
+            "The browser styling pipeline moves from parsing and matching to cascade, computation, layout, paint, and compositing.",
+            "The cascade considers origin, importance, layers, specificity, and source order in that order.",
+            "Layers are a structural tool for avoiding accidental selector wars.",
+            "If a style surprise feels mysterious, identify which pipeline stage actually made the decision."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the CSS cascade?",
+          "answerHtml": "<p>The cascade is the browser's decision process for choosing which declaration wins when multiple rules target the same property on the same element.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the browser styling pipeline?",
+          "answerHtml": "<p>It is the sequence from CSS parsing and selector matching through the cascade, computed values, layout, paint, and compositing.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the difference between computed and used values?",
+          "answerHtml": "<p>Computed values are the values after cascade and inheritance have been resolved. Used values are the values after the browser finishes layout and turns percentages, lengths, and other formulas into concrete geometry.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why do CSS layers matter?",
+          "answerHtml": "<p>Layers let you control broad override order before specificity gets involved, which makes large codebases easier to reason about and reduces the need for selector escalation.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can inline styles be hard to override?",
+          "answerHtml": "<p>Inline styles sit high in the author origin precedence, so they often beat stylesheet rules unless a stronger cascade condition such as <code>!important</code> is used.</p>"
+        }
       ]
     },
     {
       "id": "selectors-combinators-pseudo-classes-pseudo-elements",
       "intro": "Use selectors precisely so styles stay expressive without becoming fragile.",
       "blocks": [
-        { "type": "scaffold", "title": "Selector toolkit", "body": "Cover combinators, attribute selectors, pseudo-classes, and pseudo-elements in one pass." }
+        {
+          "type": "richText",
+          "title": "Selector precision",
+          "html": "<p>Selectors are contracts between your CSS and the DOM. A good selector says exactly what relationship matters: a direct child, a hovered state, a selected attribute, or a generated fragment like the first line of a paragraph. The more precise the contract, the less likely you are to break it when the markup changes.</p><ul><li>Use combinators to describe structural relationships.</li><li>Use pseudo-classes for state and position.</li><li>Use pseudo-elements for generated parts of an element.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Combinators and pseudo types",
+          "items": [
+            {
+              "label": "Descendant vs child",
+              "html": "<p><code>.card h2</code> matches any heading anywhere inside the card, while <code>.card &gt; h2</code> only matches direct children. The child combinator is narrower and usually safer when the markup structure is known.</p>"
+            },
+            {
+              "label": "Adjacent vs general sibling",
+              "html": "<p><code>h2 + p</code> only matches the paragraph immediately after the heading, while <code>h2 ~ p</code> matches every later sibling paragraph. Use the narrower version when order is the actual requirement.</p>"
+            },
+            {
+              "label": "Pseudo-class vs pseudo-element",
+              "html": "<p>Pseudo-classes describe state or position, such as <code>:hover</code> and <code>:nth-child()</code>. Pseudo-elements describe a part of the element or generated content, such as <code>::before</code> and <code>::first-line</code>.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Selector examples",
+          "language": "css",
+          "code": ".card > h2 + p::first-line {\n  font-weight: 700;\n}\n\nbutton:is(:hover, :focus-visible) {\n  outline: 2px solid currentColor;\n}\n\n[aria-expanded=\"true\"] > .chevron {\n  transform: rotate(180deg);\n}\n\n:where(nav a) {\n  text-decoration: none;\n}",
+          "caption": "The examples mix structure, state, and generated fragments without making the selector pattern overly broad."
+        },
+        {
+          "type": "mechanics",
+          "title": "How selector matching works",
+          "steps": [
+            "The browser starts from the rightmost simple selector and looks for matching elements.",
+            "If the rightmost selector fails, the whole selector fails immediately.",
+            "Combinators then walk upward, sideways, or both to test the rest of the relationship.",
+            "Pseudo-classes inspect state or position, while pseudo-elements target generated pieces of the matched element."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: selectors that know too much",
+          "tone": "warning",
+          "html": "<p>Selectors like <code>.page .sidebar ul li a</code> feel descriptive, but they are brittle because they encode too much of the current markup shape. A tiny DOM refactor can break them even when the actual styling intent has not changed.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: identify the match",
+          "prompt": "Given <code>&lt;article class=\"card\"&gt;&lt;h2&gt;Title&lt;/h2&gt;&lt;p&gt;Lead&lt;/p&gt;&lt;button aria-expanded=\"true\"&gt;&lt;span class=\"chevron\"&gt;&lt;/span&gt;&lt;/button&gt;&lt;/article&gt;</code>, which of the selectors in the code block match the paragraph and which match the chevron span?",
+          "answerHtml": "<p><code>.card &gt; h2 + p::first-line</code> matches the paragraph, because the paragraph is the direct sibling after the heading. <code>[aria-expanded=\"true\"] &gt; .chevron</code> matches the span inside the button only if the span is a direct child of the expanded element. The state selector and structural selector each have to be satisfied for the rule to apply.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 2 recap",
+          "items": [
+            "Selectors describe structure, state, and generated fragments.",
+            "Combinators should express the narrowest relationship that really matters.",
+            "Pseudo-classes and pseudo-elements solve different jobs.",
+            "Brittle selectors usually mean the CSS knows too much about the DOM."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the difference between a pseudo-class and a pseudo-element?",
+          "answerHtml": "<p>A pseudo-class targets state or position, while a pseudo-element targets a generated part of an element or a specific fragment of its rendered box.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What does the child combinator do?",
+          "answerHtml": "<p>The child combinator <code>&gt;</code> matches only direct children, not deeper descendants.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When should you use :where()?",
+          "answerHtml": "<p><code>:where()</code> is useful when you want a selector to be expressive but intentionally low specificity, which makes it easier to override later.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why can overqualified selectors become a maintenance problem?",
+          "answerHtml": "<p>They encode too much DOM detail, so even harmless markup refactors can break styling intent and force unnecessary CSS rewrites.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the right-to-left matching strategy in selector engines?",
+          "answerHtml": "<p>The engine usually starts at the rightmost selector because it is the most specific local filter, then walks outward through combinators only for elements that already matched the final part.</p>"
+        }
       ]
     },
     {
       "id": "specificity-inheritance-custom-properties-layers-scope",
       "intro": "Control reuse and override behavior with specificity, inheritance, custom properties, layers, and scope.",
       "blocks": [
-        { "type": "scaffold", "title": "Token flow", "body": "Define how values inherit, cascade, and override across nested UI boundaries." }
+        {
+          "type": "richText",
+          "title": "Specificity is not a strategy",
+          "html": "<p>Specificity decides ties, but healthy CSS systems try not to lean on it as the main design tool. A stronger mental model is to set up layers, tokens, and scoped boundaries so the right rule wins naturally instead of by accident. When you do that, specificity becomes a final detail instead of the architecture.</p><ul><li>Specificity compares selector weight inside the same cascade bucket.</li><li>Inheritance lets some properties flow from parent to child.</li><li>Custom properties carry values through the tree until they are resolved by <code>var()</code>.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Specificity, inheritance, and layers",
+          "items": [
+            {
+              "label": "Specificity",
+              "html": "<p>Specificity is a numeric tie-breaker for matching selectors. It does not tell you whether a rule is a good architectural choice, only whether it outranks another rule in the same context.</p>"
+            },
+            {
+              "label": "Inheritance",
+              "html": "<p>Inheritance is about property value flow from parent to child. It is useful for typographic and token-driven values, but many layout properties do not inherit and must be set explicitly.</p>"
+            },
+            {
+              "label": "Layers",
+              "html": "<p>Cascade layers let you order whole groups of rules before selector weight is even considered. That makes broad system decisions easier to control than selector escalation.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How custom properties resolve",
+          "steps": [
+            "The browser computes the cascaded value of a custom property on the element.",
+            "If the property is not defined there, inheritance may supply a value from an ancestor.",
+            "When a normal property uses var(), the browser substitutes the custom property value at computed-value time.",
+            "If the substituted value is invalid for the target property, the declaration becomes invalid and the browser falls back according to the property rules.",
+            "Layer order is decided before selector strength, so token layers can stay simple while component layers override them deliberately."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Tokens, layers, and scope",
+          "language": "css",
+          "code": "@layer tokens, base, components;\n\n@layer tokens {\n  :root {\n    --surface: #111827;\n    --surface-elevated: #1f2937;\n    --text: #f9fafb;\n  }\n}\n\n@layer base {\n  body {\n    background: var(--surface);\n    color: var(--text);\n  }\n}\n\n@layer components {\n  .panel {\n    background: var(--surface-elevated);\n    color: var(--text);\n  }\n}\n\n@scope (.panel) {\n  button {\n    color: inherit;\n  }\n}",
+          "caption": "Tokens carry values, layers control broad precedence, and scope keeps component rules local without pushing specificity upward."
+        },
+        {
+          "type": "trap",
+          "title": "Trap: specificity wars",
+          "tone": "warning",
+          "html": "<p>When teams answer every override problem with a longer selector, an ID, or <code>!important</code>, the stylesheet starts to fight itself. The code may still work, but it becomes difficult to predict, hard to refactor, and painful to extend.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: which value is used?",
+          "prompt": "A card sets <code>--surface: #111827</code> in a tokens layer, a component layer sets <code>--surface: #0f172a</code> on .card, and the child uses <code>background: var(--surface, pink)</code>. Which value does the child use if both declarations are valid?",
+          "answerHtml": "<p>The child uses <code>#0f172a</code> because the component-layer declaration wins over the token-layer declaration before <code>var()</code> is resolved. The fallback only matters if the custom property is missing or invalid at the point where it is used.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 3 recap",
+          "items": [
+            "Specificity is a tie-breaker, not a design system.",
+            "Inheritance and custom properties are different mechanisms with different jobs.",
+            "Layers give you a calmer override structure than selector escalation.",
+            "Scope helps keep component styling local without relying on heavier selectors."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is specificity in CSS?",
+          "answerHtml": "<p>Specificity is the weight the browser uses to break ties between competing selectors in the same cascade context.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is inheritance?",
+          "answerHtml": "<p>Inheritance is the process by which certain CSS property values flow from a parent element to its children when those children do not specify their own value.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How do custom properties differ from Sass variables?",
+          "answerHtml": "<p>Custom properties are resolved by the browser at runtime and can inherit, cascade, and be changed per element. Preprocessor variables are static at build time.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why are CSS layers useful?",
+          "answerHtml": "<p>Layers let you separate broad concerns such as tokens, base rules, and components so the intended override order is explicit before selector weight matters.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What problem does @scope solve?",
+          "answerHtml": "<p><code>@scope</code> keeps rules local to a subtree, which reduces the need for high-specificity selectors and makes component styles easier to reason about.</p>"
+        }
       ]
     },
     {
       "id": "box-model-sizing-overflow-positioning",
       "intro": "Build strong layout intuition around the box model, sizing rules, overflow, and positioning.",
       "blocks": [
-        { "type": "scaffold", "title": "Spatial primitives", "body": "Keep the chapter scaffold focused on the geometry that every layout depends on." }
+        {
+          "type": "richText",
+          "title": "Geometry before decoration",
+          "html": "<p>The box model turns CSS into geometry. Every element has content, padding, border, and margin, and layout bugs often come from forgetting which part of that box a rule is actually changing. Positioning then decides where that box sits relative to its containing block, its normal flow, or the viewport.</p><ul><li>Padding changes internal space.</li><li>Border adds visible thickness around the content box.</li><li>Margin creates external separation between boxes.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "content-box and border-box",
+          "items": [
+            {
+              "label": "content-box",
+              "html": "<p>The declared width applies to the content box, so padding and border add to the final rendered size. This is the default, but it is often awkward for app layout.</p>"
+            },
+            {
+              "label": "border-box",
+              "html": "<p>The declared width includes padding and border, which usually makes component sizing easier to predict. Many codebases apply it globally for that reason.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How used size and positioning are resolved",
+          "steps": [
+            "The browser starts with the specified width and height, then applies box-sizing, padding, and border rules.",
+            "Min and max constraints can clamp the size after the initial value is considered.",
+            "Intrinsic content size can influence auto sizes when the element is allowed to shrink or grow.",
+            "Positioned elements establish or use a containing block so offsets like top and left have a reference frame.",
+            "Sticky positioning responds to scroll position, but only within the element's scroll container and containment rules."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Sizing and positioning example",
+          "language": "css",
+          "code": ".card {\n  box-sizing: border-box;\n  width: min(100%, 28rem);\n  padding: 1rem;\n  border: 1px solid #374151;\n  position: relative;\n  overflow: clip;\n}\n\n.card .badge {\n  position: absolute;\n  top: 0.75rem;\n  right: 0.75rem;\n}\n\n.card .sticky-note {\n  position: sticky;\n  top: 0;\n}",
+          "caption": "Box sizing, offsets, and overflow all interact. A card can be perfectly sized and still clip or misplace its children if the containing block is wrong."
+        },
+        {
+          "type": "trap",
+          "title": "Trap: overflow that hides the real bug",
+          "tone": "warning",
+          "html": "<p><code>overflow: hidden</code> can make a layout look tidy, but it can also clip tooltips, focus rings, sticky elements, and popovers. If the overflow rule is just hiding a positioning bug, the bug will come back in the next component.</p>"
+        },
+        {
+          "type": "drill",
+          "title": "Drill: why is the tooltip clipped?",
+          "prompt": "A tooltip is absolutely positioned inside a card, but part of it disappears when the card scrolls into a smaller container. The card has overflow: hidden and position: relative. What is happening, and what is the cleaner fix?",
+          "answerHtml": "<p>The tooltip is being clipped by the card's overflow boundary because the card is acting as the containing block and the overflow setting is cutting off anything that extends outside the box. A cleaner fix is usually to move the overlay to a higher layer or portal it outside the clipping container instead of hiding the overflow symptom.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Chapter 4 recap",
+          "items": [
+            "The box model is content, padding, border, and margin.",
+            "<code>border-box</code> usually makes component sizing easier to reason about.",
+            "Positioning depends on containing blocks and scroll containers.",
+            "Overflow can fix one layout symptom while creating another."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the box model?",
+          "answerHtml": "<p>The box model is the set of boxes that make up an element: content, padding, border, and margin.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What does box-sizing: border-box do?",
+          "answerHtml": "<p>It makes the declared width and height include padding and border, which usually makes sizing more predictable.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is a containing block?",
+          "answerHtml": "<p>A containing block is the reference box used to resolve offsets and percentages for positioned elements.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why can overflow create bugs?",
+          "answerHtml": "<p>Overflow can clip content, hide focus indicators, interfere with sticky positioning, and mask the fact that the element was sized or placed incorrectly.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is sticky positioning tricky?",
+          "answerHtml": "<p>Sticky depends on both normal flow and scroll container behavior, so it only works as expected when the ancestor overflow and containment rules support it.</p>"
+        }
       ]
     },
     {
