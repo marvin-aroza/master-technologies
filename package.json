@@ -12,6 +12,7 @@
     "test:nextjs-topic": "node scripts/test-nextjs-topic.mjs",
     "test:react-topic": "node scripts/test-react-topic.mjs",
     "test:javascript-topic": "node scripts/test-javascript-topic.mjs",
+    "test:css-topic": "node scripts/test-css-topic.mjs",
     "test:renderer": "node scripts/test-content-block-renderer.mjs"
   },
   "dependencies": {
