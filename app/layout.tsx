@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "@/components/renderer/renderer.css";
-import { TopNav } from "@/components/TopNav";
+import { Sidebar } from "@/components/Sidebar";
 
 export const metadata: Metadata = {
-  title: "Web Mastery Encyclopedia",
+  title: "DevLore — The Complete Developer Encyclopedia",
   description:
-    "The complete frontend mastery guide — Angular, React, Next.js, JavaScript, HTML, CSS, System Design & UX/UI. Every concept, every interview question.",
+    "Deep knowledge across HTML, CSS, JavaScript, React, Next.js, Angular, Git, Docker, AWS, Terraform, System Design & UX/UI. 1,592 interview questions, 168 chapters.",
 };
 
 export default function RootLayout({
@@ -17,8 +17,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <TopNav />
-        <main className="main-content">{children}</main>
+        <div className="app-shell">
+          <Sidebar />
+          <div className="main-wrapper">
+            <main className="main-content">{children}</main>
+          </div>
+        </div>
       </body>
     </html>
   );
