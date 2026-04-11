@@ -15,6 +15,7 @@ import mongodbData from "@/data/topics/mongodb.json";
 import nextjsData from "@/data/topics/nextjs.json";
 import nodejsData from "@/data/topics/nodejs.json";
 import npmData from "@/data/topics/npm.json";
+import oopsData from "@/data/topics/oops.json";
 import postgresqlData from "@/data/topics/postgresql.json";
 import pythonData from "@/data/topics/python.json";
 import reactData from "@/data/topics/react.json";
@@ -47,6 +48,12 @@ const TOPICS: Record<string, TopicConfig> = {
     accentColor: "#14b8a6",
     title: "Data Structures & Algorithms - DevLore Encyclopedia",
     description: "Complexity, core structures, algorithm design, and 100+ interview Q&A across 14 mastery chapters.",
+  },
+  "oops": {
+    data: oopsData as TopicData,
+    accentColor: "#f59e0b",
+    title: "OOPS - DevLore Encyclopedia",
+    description: "Object-oriented design, SOLID tradeoffs, patterns, refactoring, and 100+ interview Q&A across 14 mastery chapters.",
   },
   css: {
     data: cssData as TopicData,

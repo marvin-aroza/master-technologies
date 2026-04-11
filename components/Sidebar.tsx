@@ -26,6 +26,7 @@ const groups = [
     label: "Computer Science",
     topics: [
       { href: "/data-structures-algorithms", icon: "DS", name: "Data Structures & Algorithms", color: "#14b8a6" },
+      { href: "/oops", icon: "OO", name: "OOPS", color: "#f59e0b" },
     ],
   },
   {

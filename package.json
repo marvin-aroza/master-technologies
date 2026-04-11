@@ -19,6 +19,7 @@
     "test:npm-nodejs-cheatsheet": "node scripts/test-npm-nodejs-cheatsheet.mjs",
     "test:python-postgresql-mongodb": "node scripts/test-python-postgresql-mongodb.mjs",
     "test:data-structures-algorithms": "node scripts/test-data-structures-algorithms.mjs",
+    "test:oops-topic": "node scripts/test-oops-topic.mjs",
     "test:renderer": "node scripts/test-content-block-renderer.mjs"
   },
   "dependencies": {

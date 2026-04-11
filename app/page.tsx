@@ -74,7 +74,7 @@ const groups = [
   {
     id: "computer-science",
     label: "Computer Science",
-    desc: "Algorithmic reasoning, complexity, data structures, and interview-grade problem solving.",
+    desc: "Algorithmic reasoning, object modeling, and interview-grade engineering foundations.",
     topics: [
       {
         href: "/data-structures-algorithms",
@@ -83,6 +83,14 @@ const groups = [
         desc: "Complexity, arrays, trees, graphs, dynamic programming, debugging, and interview synthesis.",
         tags: ["2026", "100 Q&A"],
         color: "#14b8a6",
+      },
+      {
+        href: "/oops",
+        icon: "OO",
+        title: "OOPS",
+        desc: "Object modeling, encapsulation, composition, SOLID tradeoffs, patterns, and design interview mastery.",
+        tags: ["2026", "100 Q&A"],
+        color: "#f59e0b",
       }
     ],
   },
@@ -215,9 +223,9 @@ export default function Home() {
         <div className="home-hero-row">
           <h1><span className="gradient-text">DevLore</span> Encyclopedia</h1>
           <div className="home-stats">
-            <div className="home-stat"><b>19</b><span>Topics</span></div>
-            <div className="home-stat"><b>2,352</b><span>Q&amp;A</span></div>
-            <div className="home-stat"><b>262</b><span>Chapters</span></div>
+            <div className="home-stat"><b>20</b><span>Topics</span></div>
+            <div className="home-stat"><b>2,452</b><span>Q&amp;A</span></div>
+            <div className="home-stat"><b>276</b><span>Chapters</span></div>
             <div className="home-stat"><b>2026</b><span>Edition</span></div>
           </div>
         </div>

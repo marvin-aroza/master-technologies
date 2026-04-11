@@ -1,0 +1,508 @@
+{
+  "id": "oops",
+  "title": "OOPS Mastery Encyclopedia",
+  "subtitle": "Object-oriented design, modeling, tradeoffs, patterns, and interview-ready reasoning for 2026.",
+  "heroStats": [
+    { "label": "Chapters", "value": "14" },
+    { "label": "Core Q&A", "value": "100" },
+    { "label": "Coverage", "value": "Design+Interviews" },
+    { "label": "Updated", "value": "2026" }
+  ],
+  "tabs": [
+    { "id": "what-oop-is-why-it-exists", "label": "What OOP Is" },
+    { "id": "objects-classes-identity-state-behavior", "label": "Objects & Classes" },
+    { "id": "encapsulation-abstraction", "label": "Encapsulation" },
+    { "id": "inheritance-polymorphism-subtyping", "label": "Inheritance & Polymorphism" },
+    { "id": "composition-over-inheritance", "label": "Composition" },
+    { "id": "interfaces-contracts-api-design", "label": "Interfaces & Contracts" },
+    { "id": "cohesion-coupling-responsibility-design", "label": "Cohesion & Coupling" },
+    { "id": "solid-principles-real-tradeoffs", "label": "SOLID Tradeoffs" },
+    { "id": "relationships-domain-modeling", "label": "Domain Modeling" },
+    { "id": "patterns-reusable-design-moves", "label": "Patterns" },
+    { "id": "testing-refactoring-debugging-oop-systems", "label": "Testing & Refactoring" },
+    { "id": "performance-memory-runtime-tradeoffs", "label": "Performance & Runtime" },
+    { "id": "oop-across-languages", "label": "Across Languages" },
+    { "id": "interview-mastery-system-design-with-oop", "label": "Interview Mastery" }
+  ],
+  "sections": [
+    {
+      "id": "what-oop-is-why-it-exists",
+      "intro": "Start with the real purpose of OOP: modeling stateful systems with clear responsibilities, boundaries, and collaboration rules instead of treating classes as syntax trophies.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>Object-oriented programming exists to organize software around collaborating units that combine state and behavior. Good OOP is about responsibility boundaries, not about sprinkling classes everywhere.</p><ul><li>Objects model things that know, do, and protect invariants.</li><li>OOP helps when behavior travels with state.</li><li>It hurts when it adds indirection without clarity.</li></ul>" },
+        { "type": "compare", "title": "Procedural versus object-oriented thinking", "items": [
+          { "label": "Procedural design", "html": "<p>Organizes code around operations on data and often works well for pipelines, transforms, and simple workflows.</p>" },
+          { "label": "Object-oriented design", "html": "<p>Organizes code around collaborating entities that own state, expose behavior, and preserve rules over time.</p>" }
+        ] },
+        { "type": "mechanics", "title": "When OOP helps", "steps": [
+          "When state changes must remain valid over time.",
+          "When many behaviors belong naturally to the same domain concept.",
+          "When collaboration boundaries need to stay stable as the system grows.",
+          "When responsibilities can be split into objects that are cohesive and easy to test."
+        ] },
+        { "type": "code", "title": "Behavior next to state", "language": "ts", "code": "class BankAccount {\n  private balance = 0;\n\n  deposit(amount: number): void {\n    if (amount <= 0) throw new Error(\"amount must be positive\");\n    this.balance += amount;\n  }\n\n  getBalance(): number {\n    return this.balance;\n  }\n}", "caption": "The class is useful because it protects the rules around the balance, not because classes are always superior." },
+        { "type": "trap", "title": "Common anti-pattern", "html": "<p>Teams often create classes that only hold data while all real behavior lives somewhere else. That is not automatically object-oriented design; it can be procedural code wearing class syntax.</p>", "tone": "interview" },
+        { "type": "drill", "title": "Design drill", "prompt": "How would you explain when OOP is the wrong default choice?", "answerHtml": "<p>Say that OOP is weak when the work is mostly stateless transformations, simple scripts, or data pipelines where objects add ceremony but not clearer ownership.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "OOP is about responsibilities and collaboration, not class worship.",
+          "It helps most when state and behavior belong together.",
+          "If abstraction adds ceremony without clarity, it is probably the wrong tool."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "What problem was OOP trying to solve originally?", "answerHtml": "<p>It tried to make large stateful systems easier to model and evolve by grouping data and behavior into collaborating units with clearer boundaries.</p>" },
+        { "level": "advanced", "question": "Why is 'everything should be an object' a weak engineering rule?", "answerHtml": "<p>Because some problems are better expressed as stateless functions, pipelines, or data transformations. Forcing objects everywhere creates noise and indirection.</p>" },
+        { "level": "advanced", "question": "How do you explain OOP without mentioning syntax?", "answerHtml": "<p>Describe it as designing software around entities that own state, expose behavior, and collaborate through explicit contracts.</p>" },
+        { "level": "expert", "question": "What makes an OOP answer sound mature in an interview?", "answerHtml": "<p>A mature answer explains where OOP helps, where it overcomplicates design, and how responsibility boundaries matter more than keywords.</p>" }
+      ]
+    },
+    {
+      "id": "objects-classes-identity-state-behavior",
+      "intro": "This chapter teaches the actual building blocks of object-oriented systems: what an object is, what a class is, what state means, and why identity is different from value.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>An object is a runtime entity with identity, state, and behavior. A class is one possible blueprint for creating such objects, but the blueprint is not the object itself.</p><ul><li>Identity answers <em>which object is this?</em></li><li>State answers <em>what does it know right now?</em></li><li>Behavior answers <em>what can it do safely?</em></li></ul>" },
+        { "type": "compare", "title": "Class versus object", "items": [
+          { "label": "Class", "html": "<p>A class defines structure, rules, and behavior templates for future instances.</p>" },
+          { "label": "Object", "html": "<p>An object is the actual runtime instance carrying its own current state and identity.</p>" }
+        ] },
+        { "type": "mechanics", "title": "How object reasoning works", "steps": [
+          "Identify the object's stable role in the system.",
+          "List the state it must protect.",
+          "List the operations that are allowed to change that state.",
+          "Ask what invariants must remain true after every method call."
+        ] },
+        { "type": "code", "title": "Identity and state example", "language": "ts", "code": "class CartItem {\n  constructor(public readonly sku: string, private quantity: number) {}\n\n  increment(): void {\n    this.quantity += 1;\n  }\n\n  getQuantity(): number {\n    return this.quantity;\n  }\n}", "caption": "Two items can share a SKU value but still be distinct objects with different runtime identity and lifecycle." },
+        { "type": "trap", "title": "Common confusion", "html": "<p>People often confuse a class definition with the actual objects in memory. Strong reasoning keeps the runtime instances, their state, and their lifecycle distinct from the syntax that defined them.</p>", "tone": "warning" },
+        { "type": "drill", "title": "Reasoning drill", "prompt": "Why is identity important even when two objects currently hold the same field values?", "answerHtml": "<p>Because they may represent different real-world entities, lifecycles, permissions, ownership, or future state changes even if their current values match.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "Classes define structure; objects are runtime instances.",
+          "Identity and value are not the same thing.",
+          "Object design starts with state, behavior, and invariants."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "What is the difference between a class and an object?", "answerHtml": "<p>A class is a blueprint or definition, while an object is the actual runtime instance created from it.</p>" },
+        { "level": "advanced", "question": "Why is object identity a design concern?", "answerHtml": "<p>Because systems often care about lifecycle, ownership, permissions, and mutation history, not just current field values.</p>" },
+        { "level": "advanced", "question": "How do you choose what state belongs inside an object?", "answerHtml": "<p>Keep the state that the object must directly protect or evolve to maintain its responsibilities and invariants.</p>" },
+        { "level": "expert", "question": "What is the danger of treating objects as dumb bags of fields?", "answerHtml": "<p>You lose the protection of invariants and drift toward an anemic model where behavior leaks into unrelated services or utility layers.</p>" }
+      ]
+    },
+    {
+      "id": "encapsulation-abstraction",
+      "intro": "Encapsulation and abstraction are where OOP starts protecting real systems. This is the chapter that separates clean boundaries from leaky, fragile designs.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>Encapsulation hides internal representation and protects invariants. Abstraction exposes the useful idea without forcing callers to care about the internal mechanics.</p><ul><li>Encapsulation answers <em>what should stay private?</em></li><li>Abstraction answers <em>what should consumers depend on?</em></li><li>Together they reduce accidental coupling.</li></ul>" },
+        { "type": "compare", "title": "Encapsulation versus abstraction", "items": [
+          { "label": "Encapsulation", "html": "<p>Protect internal state and implementation details from direct misuse.</p>" },
+          { "label": "Abstraction", "html": "<p>Expose only the contract and mental model callers actually need.</p>" }
+        ] },
+        { "type": "mechanics", "title": "What strong boundaries do", "steps": [
+          "Hide representation details that may change later.",
+          "Expose methods that preserve invariants instead of raw write access.",
+          "Give callers a small, stable contract they can rely on.",
+          "Reduce the number of places that must change when implementation changes."
+        ] },
+        { "type": "code", "title": "Invariant-protecting API", "language": "ts", "code": "class Temperature {\n  private celsius = 0;\n\n  setCelsius(value: number): void {\n    if (Number.isNaN(value)) throw new Error(\"invalid temperature\");\n    this.celsius = value;\n  }\n\n  getFahrenheit(): number {\n    return (this.celsius * 9) / 5 + 32;\n  }\n}", "caption": "The object exposes meaningful operations instead of raw mutation of every internal detail." },
+        { "type": "trap", "title": "Leaky abstraction warning", "html": "<p>If callers must know your internal storage choices, lifecycle hacks, or sequencing tricks to use the object correctly, the abstraction is leaking and the design boundary is weak.</p>", "tone": "pitfall" },
+        { "type": "drill", "title": "Design drill", "prompt": "How do you know an object exposes too much of its internals?", "answerHtml": "<p>If callers can put it into invalid states directly or must understand private implementation details to use it safely, encapsulation has failed.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "Encapsulation protects invariants.",
+          "Abstraction gives consumers a smaller contract.",
+          "Leaky abstractions create accidental coupling and brittle code."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "Why is encapsulation more than just using private fields?", "answerHtml": "<p>Because the real goal is protecting invariants and controlling how state changes, not merely hiding syntax members.</p>" },
+        { "level": "advanced", "question": "How does abstraction reduce maintenance cost?", "answerHtml": "<p>It lets internal implementation change without forcing every caller to change too.</p>" },
+        { "level": "advanced", "question": "What is a leaky abstraction in practical terms?", "answerHtml": "<p>An API that forces callers to know too much about hidden internals, side effects, or ordering requirements.</p>" },
+        { "level": "expert", "question": "How do you explain the relationship between abstraction and coupling?", "answerHtml": "<p>Better abstractions reduce coupling by giving callers fewer unstable details to depend on.</p>" }
+      ]
+    },
+    {
+      "id": "inheritance-polymorphism-subtyping",
+      "intro": "Inheritance and polymorphism are powerful, but this is also where OOP teaching goes wrong most often. The real skill is knowing when subtyping is valid and when it creates fragile hierarchies.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>Inheritance reuses and specializes behavior across types, while polymorphism lets callers work against a common contract and rely on runtime dispatch. The critical question is whether the subtype truly preserves the parent contract.</p><ul><li>Inheritance models an <em>is-a</em> relationship only when that claim stays behaviorally true.</li><li>Polymorphism lets new behavior plug into stable contracts.</li><li>Subtyping fails when child types break parent expectations.</li></ul>" },
+        { "type": "compare", "title": "Reuse through inheritance versus substitution safety", "items": [
+          { "label": "Inheritance reuse", "html": "<p>Can reduce duplication when parent and child truly share stable structure and behavior.</p>" },
+          { "label": "Substitution safety", "html": "<p>Matters more than reuse. If callers cannot safely use the child wherever the parent is expected, the hierarchy is broken.</p>" }
+        ] },
+        { "type": "mechanics", "title": "How to test inheritance design", "steps": [
+          "Ask whether the child truly satisfies the same behavioral contract as the parent.",
+          "Check whether overrides strengthen or weaken guarantees unexpectedly.",
+          "Look for fragile parent assumptions that children must obey.",
+          "If reuse is the only reason for inheritance, consider composition instead."
+        ] },
+        { "type": "code", "title": "Polymorphism through a shared contract", "language": "ts", "code": "interface Notifier {\n  send(message: string): void;\n}\n\nclass EmailNotifier implements Notifier {\n  send(message: string): void {\n    console.log(`email: ${message}`);\n  }\n}\n\nclass SmsNotifier implements Notifier {\n  send(message: string): void {\n    console.log(`sms: ${message}`);\n  }\n}", "caption": "Callers can depend on the contract without caring which concrete implementation handles the work." },
+        { "type": "trap", "title": "The classic interview trap", "html": "<p>Many people say inheritance is mainly for code reuse. That is incomplete and often dangerous. Reuse without valid substitutability produces brittle hierarchies that are hard to reason about.</p>", "tone": "interview" },
+        { "type": "drill", "title": "Reasoning drill", "prompt": "How would you explain why a Square subclass of Rectangle is controversial in OOP interviews?", "answerHtml": "<p>Because changing width and height independently is valid for rectangles but may violate the invariant that a square must keep all sides equal, so substitutability becomes questionable.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "Inheritance is not automatically the best reuse tool.",
+          "Polymorphism is powerful when contracts are stable.",
+          "Subtyping must preserve behavioral expectations, not just method names."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "What is polymorphism in practical design terms?", "answerHtml": "<p>It lets callers depend on a stable contract while different concrete types provide different implementations of that contract.</p>" },
+        { "level": "advanced", "question": "Why is inheritance more dangerous than many tutorials suggest?", "answerHtml": "<p>Because children become tightly coupled to parent behavior and assumptions, so a fragile hierarchy can become hard to change safely.</p>" },
+        { "level": "advanced", "question": "How do you know a subtype is invalid?", "answerHtml": "<p>If callers using the parent contract would have to add special cases or lose guarantees when given the child, the subtype is likely invalid.</p>" },
+        { "level": "expert", "question": "What makes an inheritance answer sound senior in an interview?", "answerHtml": "<p>Explaining substitutability, contract preservation, and why composition is often safer when reuse is the only goal.</p>" }
+      ]
+    },
+    {
+      "id": "composition-over-inheritance",
+      "intro": "Composition is one of the healthiest habits in object-oriented design because it favors flexible collaboration over rigid hierarchy reuse.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>Composition means building behavior by combining smaller collaborators instead of inheriting everything from a parent class. It usually creates looser coupling and safer change boundaries.</p><ul><li>Inheritance says <em>is-a</em>.</li><li>Composition says <em>has-a</em> or <em>uses-a</em>.</li><li>Delegation often scales better than deep class trees.</li></ul>" },
+        { "type": "compare", "title": "Inheritance versus composition", "items": [
+          { "label": "Inheritance", "html": "<p>Can reuse structure quickly but couples children tightly to parent behavior and lifecycle assumptions.</p>" },
+          { "label": "Composition", "html": "<p>Lets objects collaborate through explicit seams that can be swapped, tested, and evolved more safely.</p>" }
+        ] },
+        { "type": "mechanics", "title": "How composition improves flexibility", "steps": [
+          "Separate stable responsibilities into focused collaborators.",
+          "Inject or compose those collaborators into higher-level objects.",
+          "Depend on contracts instead of concrete parent inheritance chains.",
+          "Swap behavior by replacing collaborators rather than rewriting hierarchies."
+        ] },
+        { "type": "code", "title": "Delegation over inheritance", "language": "ts", "code": "interface TaxPolicy {\n  calculate(amount: number): number;\n}\n\nclass Checkout {\n  constructor(private readonly taxPolicy: TaxPolicy) {}\n\n  total(subtotal: number): number {\n    return subtotal + this.taxPolicy.calculate(subtotal);\n  }\n}", "caption": "Checkout stays small because tax behavior is delegated to a focused collaborator." },
+        { "type": "trap", "title": "Common mistake", "html": "<p>Teams often replace every inheritance relationship with composition mechanically. The real goal is not dogma; it is choosing the design with better substitutability and change safety.</p>", "tone": "warning" },
+        { "type": "drill", "title": "Design drill", "prompt": "How do you explain why composition is usually safer than inheritance?", "answerHtml": "<p>Because it avoids fragile parent-child coupling and makes behavior replacement explicit through collaborators and contracts.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "Composition favors collaboration over hierarchy reuse.",
+          "Delegation usually creates cleaner seams for testing and change.",
+          "Prefer composition when inheritance is chosen only for reuse."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "What does 'composition over inheritance' really mean?", "answerHtml": "<p>Prefer building behavior from collaborators unless inheritance provides a truly valid subtype relationship with stable shared behavior.</p>" },
+        { "level": "advanced", "question": "Why does composition usually reduce change risk?", "answerHtml": "<p>Because collaborators can change or be replaced independently without forcing every subtype in a hierarchy to absorb parent changes.</p>" },
+        { "level": "advanced", "question": "When is inheritance still a good choice?", "answerHtml": "<p>When the subtype relationship is behaviorally valid, the shared abstraction is stable, and callers can safely treat children as the parent contract.</p>" },
+        { "level": "expert", "question": "What makes a composition answer sound senior?", "answerHtml": "<p>Explaining how composition improves substitutability, testing seams, and evolution safety instead of repeating the slogan mechanically.</p>" }
+      ]
+    },
+    {
+      "id": "interfaces-contracts-api-design",
+      "intro": "Interfaces and contracts are where object-oriented systems become extensible. The value is not the keyword itself, but the stable promise it gives consumers.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>An interface or contract defines what a collaborator can do without forcing consumers to depend on its internal implementation. Good API design reduces accidental coupling and makes extension safer.</p><ul><li>Contracts are promises.</li><li>Consumers should depend on capabilities, not hidden details.</li><li>Stability matters more than fancy inheritance trees.</li></ul>" },
+        { "type": "compare", "title": "Interface versus abstract base class", "items": [
+          { "label": "Interface / protocol", "html": "<p>Focuses on externally visible capability without forcing shared implementation.</p>" },
+          { "label": "Abstract base class", "html": "<p>Can combine shared behavior plus abstract requirements, but introduces stronger inheritance coupling.</p>" }
+        ] },
+        { "type": "mechanics", "title": "What strong contracts do", "steps": [
+          "Expose only what callers must rely on.",
+          "Separate capabilities cleanly instead of creating bloated contracts.",
+          "Keep behavior guarantees explicit so implementations remain interchangeable.",
+          "Change implementations behind the contract without breaking consumers."
+        ] },
+        { "type": "code", "title": "Capability-focused contract", "language": "ts", "code": "interface PaymentGateway {\n  charge(amount: number, token: string): Promise<string>;\n}\n\nclass BillingService {\n  constructor(private readonly gateway: PaymentGateway) {}\n}", "caption": "The service depends on the charging capability, not on one vendor's entire SDK surface." },
+        { "type": "trap", "title": "Fat interfaces cause fake flexibility", "html": "<p>If one contract forces implementers to support methods they do not really need, the interface is too broad and the design is already lying about cohesion.</p>", "tone": "pitfall" },
+        { "type": "drill", "title": "API drill", "prompt": "How do you know an interface is too broad?", "answerHtml": "<p>If implementers need dummy methods, throw unsupported-operation errors, or consumers depend on only small fragments of it, the contract should likely be split.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "Contracts let consumers depend on capabilities, not internals.",
+          "Good API design keeps contracts small, clear, and stable.",
+          "Wide interfaces usually signal poor responsibility design."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "Why do interfaces help testing and substitution?", "answerHtml": "<p>Because callers can work against a stable contract while implementations, fakes, or adapters can vary behind it.</p>" },
+        { "level": "advanced", "question": "When is an abstract class a better fit than a plain interface?", "answerHtml": "<p>When there is meaningful shared behavior and stable inheritance really reduces duplication without creating brittle coupling.</p>" },
+        { "level": "advanced", "question": "What makes an API contract stable?", "answerHtml": "<p>A stable contract exposes only essential capabilities and avoids leaking internal sequencing, storage, or vendor-specific details.</p>" },
+        { "level": "expert", "question": "How do you explain interface segregation in practical terms?", "answerHtml": "<p>Split contracts by real capabilities so consumers and implementers only depend on what they actually use.</p>" }
+      ]
+    },
+    {
+      "id": "cohesion-coupling-responsibility-design",
+      "intro": "This chapter is about the real health of OOP systems: whether each object has a clear job and whether collaboration boundaries are tight or tangled.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>Cohesion measures how well a module's responsibilities fit together. Coupling measures how strongly one module depends on others. Great OOP systems usually have high cohesion and controlled coupling.</p><ul><li>High cohesion means one focused reason to exist.</li><li>High coupling means change in one place spreads too widely.</li><li>Responsibility design is often the real source of maintainability.</li></ul>" },
+        { "type": "compare", "title": "Healthy versus unhealthy object boundaries", "items": [
+          { "label": "High cohesion", "html": "<p>The object's state and methods serve a tight, understandable purpose.</p>" },
+          { "label": "Low cohesion", "html": "<p>The object does many unrelated jobs and becomes a god object or dumping ground.</p>" }
+        ] },
+        { "type": "mechanics", "title": "How to evaluate object responsibilities", "steps": [
+          "Ask what one object is truly responsible for.",
+          "List the reasons it might need to change.",
+          "If those reasons come from unrelated concerns, the object is too broad.",
+          "Reduce unnecessary knowledge between collaborators."
+        ] },
+        { "type": "code", "title": "Single-purpose service split", "language": "ts", "code": "class InvoiceCalculator {\n  total(lines: number[]): number {\n    return lines.reduce((sum, line) => sum + line, 0);\n  }\n}\n\nclass InvoiceEmailer {\n  send(address: string, invoiceId: string): void {\n    console.log(address, invoiceId);\n  }\n}", "caption": "Calculation and delivery are different responsibilities and usually deserve different objects." },
+        { "type": "trap", "title": "God object warning", "html": "<p>If one class validates, calculates, persists, sends notifications, logs, and formats output, the problem is usually not missing patterns. The problem is poor responsibility boundaries.</p>", "tone": "warning" },
+        { "type": "drill", "title": "Refactoring drill", "prompt": "How would you explain low cohesion to an interviewer without sounding vague?", "answerHtml": "<p>Say that the object is serving unrelated reasons to change, which makes it harder to understand, test, and modify safely.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "High cohesion means a focused responsibility.",
+          "Low coupling limits blast radius when change happens.",
+          "Most maintainability problems are really responsibility problems."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "What is cohesion in simple terms?", "answerHtml": "<p>It describes how closely related an object's responsibilities are.</p>" },
+        { "level": "advanced", "question": "Why is low coupling valuable?", "answerHtml": "<p>It reduces the number of places that must change or be understood together when one module evolves.</p>" },
+        { "level": "advanced", "question": "How do you detect a god object early?", "answerHtml": "<p>Look for many unrelated methods, many dependencies, and many different reasons the class would need to change.</p>" },
+        { "level": "expert", "question": "What makes responsibility design harder than just splitting classes?", "answerHtml": "<p>You must choose boundaries that reflect actual domain behavior and change patterns, not just cut a large file into smaller random files.</p>" }
+      ]
+    },
+    {
+      "id": "solid-principles-real-tradeoffs",
+      "intro": "SOLID is useful when taught as a set of pressure-tested design heuristics. It becomes harmful when turned into slogans that justify needless abstraction.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>SOLID is not a checklist for adding more classes. It is a set of principles for managing responsibilities, extension, contracts, and dependency boundaries in evolving systems.</p><ul><li>SRP is about reasons to change, not file size.</li><li>OCP is about extensibility without dangerous edits, not infinite abstraction.</li><li>LSP, ISP, and DIP all depend on honest contracts.</li></ul>" },
+        { "type": "compare", "title": "Healthy principle use versus cargo-cult use", "items": [
+          { "label": "Healthy use", "html": "<p>Apply a principle when it resolves a real design tension or maintenance risk.</p>" },
+          { "label": "Cargo-cult use", "html": "<p>Add abstractions and interfaces preemptively without evidence that they improve change safety or clarity.</p>" }
+        ] },
+        { "type": "mechanics", "title": "How to use SOLID responsibly", "steps": [
+          "Start from the design problem, not from the acronym.",
+          "Ask which principle explains the current pain or fragility.",
+          "Apply the smallest change that improves the boundary.",
+          "Re-check whether the new abstraction actually simplifies the system."
+        ] },
+        { "type": "code", "title": "Dependency inversion example", "language": "ts", "code": "interface EventPublisher {\n  publish(event: string): void;\n}\n\nclass SignupService {\n  constructor(private readonly publisher: EventPublisher) {}\n}", "caption": "High-level policy depends on a publishing contract, not one messaging vendor's concrete client." },
+        { "type": "trap", "title": "The fake-SOLID smell", "html": "<p>If a small app suddenly has five interfaces, three factories, and abstraction layers for behavior that will probably never vary, SOLID is being used performatively instead of practically.</p>", "tone": "interview" },
+        { "type": "drill", "title": "Tradeoff drill", "prompt": "How do you explain why SOLID can still create over-engineering?", "answerHtml": "<p>Because principles can be applied too early or too mechanically, producing abstractions before the code has real variability or maintenance pressure.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "SOLID is a set of heuristics, not a religion.",
+          "Use principles to solve real design pain, not to decorate simple code.",
+          "Good OOP balances extensibility with simplicity."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "What is the practical meaning of SRP?", "answerHtml": "<p>A module should have one coherent reason to change, not many unrelated reasons.</p>" },
+        { "level": "advanced", "question": "How do you explain OCP without sounding vague?", "answerHtml": "<p>Design extension points so new behavior can be added without repeatedly editing fragile core code paths.</p>" },
+        { "level": "advanced", "question": "Why does LSP matter more than inheritance reuse?", "answerHtml": "<p>If substitution breaks caller expectations, the hierarchy is unsafe no matter how much code it reuses.</p>" },
+        { "level": "expert", "question": "What makes a SOLID answer sound senior?", "answerHtml": "<p>Admitting where each principle helps, where it is commonly misused, and how tradeoffs decide whether the abstraction is actually worth it.</p>" }
+      ]
+    },
+    {
+      "id": "relationships-domain-modeling",
+      "intro": "Object-oriented design gets truly useful when it models real domain relationships well instead of creating classes that look tidy but fail to reflect ownership and lifecycle.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>Domain modeling is about deciding how concepts relate, who owns what, and which objects should live or die together. The right relationship often matters more than the right method name.</p><ul><li>Association describes general relationships.</li><li>Aggregation and composition differ by ownership strength.</li><li>Lifecycle and invariants often decide the correct relationship.</li></ul>" },
+        { "type": "compare", "title": "Aggregation versus composition", "items": [
+          { "label": "Aggregation", "html": "<p>The parent references the child, but the child can often exist independently.</p>" },
+          { "label": "Composition", "html": "<p>The parent strongly owns the child and often controls its lifecycle.</p>" }
+        ] },
+        { "type": "mechanics", "title": "How to model domain relationships", "steps": [
+          "Identify the real-world concepts and their responsibilities.",
+          "Decide who owns lifecycle and invariants.",
+          "Choose association, aggregation, or composition based on that ownership.",
+          "Keep the model honest even if a flatter shortcut looks easier at first."
+        ] },
+        { "type": "code", "title": "Composition by ownership", "language": "ts", "code": "class OrderLine {\n  constructor(public readonly sku: string, public readonly quantity: number) {}\n}\n\nclass Order {\n  constructor(private readonly lines: OrderLine[]) {}\n\n  getLines(): readonly OrderLine[] {\n    return this.lines;\n  }\n}", "caption": "Order strongly owns its lines in many domains because the lines do not make sense without the order context." },
+        { "type": "trap", "title": "Flat models hide important rules", "html": "<p>If everything is reduced to IDs and helper functions too early, ownership, lifecycle, and invariants become harder to express and enforce.</p>", "tone": "warning" },
+        { "type": "drill", "title": "Modeling drill", "prompt": "How do you decide whether a relationship is composition instead of plain association?", "answerHtml": "<p>Ask whether the child concept meaningfully exists without the parent and whether the parent should own the child's lifecycle.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "Domain modeling is mostly about ownership, lifecycle, and invariants.",
+          "Composition is stronger than simple association.",
+          "A model that hides real rules will leak complexity elsewhere."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "What is the difference between association and composition?", "answerHtml": "<p>Association is a general relationship, while composition implies strong ownership and often shared lifecycle.</p>" },
+        { "level": "advanced", "question": "Why does lifecycle ownership matter in modeling?", "answerHtml": "<p>Because it determines which object should create, protect, and destroy related state safely.</p>" },
+        { "level": "advanced", "question": "How do you know a domain model is too shallow?", "answerHtml": "<p>If important rules, ownership, and state transitions are forced outside the model into scattered procedural helpers, the model is likely too weak.</p>" },
+        { "level": "expert", "question": "What makes a domain-modeling answer sound strong in an interview?", "answerHtml": "<p>Explaining responsibilities, ownership, lifecycle, and invariants instead of only naming UML relationship labels.</p>" }
+      ]
+    },
+    {
+      "id": "patterns-reusable-design-moves",
+      "intro": "Patterns are not prestige badges. They are reusable design moves that help when the same collaboration problem keeps showing up under different names.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>Design patterns capture recurring solutions to recurring collaboration problems. The value is the problem they solve, not the label itself.</p><ul><li>Strategy helps swap behavior.</li><li>Adapter helps incompatible interfaces cooperate.</li><li>Observer handles event-style updates.</li><li>Factory simplifies controlled object creation.</li></ul>" },
+        { "type": "compare", "title": "Pattern as tool versus pattern as theatre", "items": [
+          { "label": "Pattern as tool", "html": "<p>Use it when the underlying collaboration problem is real and the pattern reduces complexity.</p>" },
+          { "label": "Pattern as theatre", "html": "<p>Apply it only because the name sounds impressive, even though the codebase did not need it.</p>" }
+        ] },
+        { "type": "mechanics", "title": "How to choose a pattern responsibly", "steps": [
+          "Name the current design pain first.",
+          "Ask whether one of the classic patterns directly addresses that pain.",
+          "Adopt the smallest version of the pattern that solves the problem.",
+          "Remove the pattern if it creates more ceremony than value."
+        ] },
+        { "type": "code", "title": "Strategy example", "language": "ts", "code": "interface DiscountPolicy {\n  apply(total: number): number;\n}\n\nclass Checkout {\n  constructor(private readonly discountPolicy: DiscountPolicy) {}\n}", "caption": "The pattern matters because discount behavior varies, not because Strategy is fashionable." },
+        { "type": "trap", "title": "Pattern abuse warning", "html": "<p>If every tiny behavior gets its own pattern and class hierarchy, the codebase becomes harder to read than the original duplication would have been.</p>", "tone": "pitfall" },
+        { "type": "drill", "title": "Design drill", "prompt": "How do you explain when a design pattern is overkill?", "answerHtml": "<p>When the underlying variability is not real, the team does not need the extension point, or the pattern adds more indirection than the problem warrants.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "Patterns solve recurring collaboration problems.",
+          "The problem matters more than the pattern name.",
+          "Overusing patterns can make code less understandable, not more."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "What is a design pattern in practical terms?", "answerHtml": "<p>A reusable design move for a recurring collaboration problem, not a magical requirement for good code.</p>" },
+        { "level": "advanced", "question": "Why is Strategy often a healthy pattern example?", "answerHtml": "<p>Because it cleanly separates variable behavior behind a stable contract without forcing inheritance-heavy designs.</p>" },
+        { "level": "advanced", "question": "When is Factory useful?", "answerHtml": "<p>When object creation has meaningful rules, dependencies, or variants that you want to centralize instead of scattering through callers.</p>" },
+        { "level": "expert", "question": "How do you sound mature when discussing patterns?", "answerHtml": "<p>Start with the design problem, explain the collaboration pain, and only then mention the pattern if it clarifies the solution.</p>" }
+      ]
+    },
+    {
+      "id": "testing-refactoring-debugging-oop-systems",
+      "intro": "Well-designed OOP systems become much easier to test, refactor, and debug because their boundaries reveal where behavior lives and where seams exist.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>Testing OOP systems is mostly about controlling seams between collaborators. Good object boundaries make unit tests clearer and refactoring safer because behavior is not smeared across unrelated modules.</p><ul><li>Seams matter more than mock quantity.</li><li>Tests reveal design smells as much as bugs.</li><li>Refactoring gets safer when contracts are small and explicit.</li></ul>" },
+        { "type": "compare", "title": "Healthy tests versus brittle tests", "items": [
+          { "label": "Behavior-focused tests", "html": "<p>Verify outcomes and stable contracts instead of locking tests to internal call choreography.</p>" },
+          { "label": "Brittle interaction tests", "html": "<p>Break easily when harmless refactors change internal method calls without changing real behavior.</p>" }
+        ] },
+        { "type": "mechanics", "title": "How OOP affects testability", "steps": [
+          "Expose clean seams between collaborators.",
+          "Depend on contracts so fakes or doubles are easy to substitute.",
+          "Keep responsibilities focused so tests target one idea at a time.",
+          "Use failing tests to guide refactoring instead of protecting bad structure forever."
+        ] },
+        { "type": "code", "title": "Injectable collaborator seam", "language": "ts", "code": "interface Clock {\n  now(): Date;\n}\n\nclass SubscriptionService {\n  constructor(private readonly clock: Clock) {}\n}", "caption": "Injecting time or external services often makes object behavior much easier to test deterministically." },
+        { "type": "trap", "title": "Mocking everything is not the goal", "html": "<p>Heavy mocking can hide poor design instead of fixing it. If tests need a huge mocking setup just to create one object, the object's responsibilities may already be too broad.</p>", "tone": "warning" },
+        { "type": "drill", "title": "Refactoring drill", "prompt": "What design smell is exposed when one class requires a massive test fixture and many stubs just to verify a simple rule?", "answerHtml": "<p>It usually signals too many dependencies, low cohesion, or responsibilities that should be split into smaller collaborators.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "Good seams make tests and refactors safer.",
+          "Tests should reveal design quality, not only output correctness.",
+          "If testing an object is painful, the design may be the real bug."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "Why are seams important in OOP testing?", "answerHtml": "<p>They are the boundaries where collaborators can be replaced, isolated, or observed without pulling the whole system into a single test.</p>" },
+        { "level": "advanced", "question": "How can tests reveal design smells?", "answerHtml": "<p>When tests require too many setup steps, too many mocks, or fragile internal assertions, the production design is often too coupled or too broad.</p>" },
+        { "level": "advanced", "question": "When is a mock-heavy test suite a warning sign?", "answerHtml": "<p>When the mocks exist mainly to survive tangled dependencies rather than to isolate a genuinely external collaborator.</p>" },
+        { "level": "expert", "question": "What makes an OOP refactoring answer sound strong?", "answerHtml": "<p>Explain how smaller contracts, cleaner seams, and focused responsibilities reduce both test fragility and change risk.</p>" }
+      ]
+    },
+    {
+      "id": "performance-memory-runtime-tradeoffs",
+      "intro": "OOP has runtime costs as well as design benefits. This chapter keeps the topic honest by showing where abstraction, dispatch, and allocation help clarity and where they become too expensive.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>Object-oriented design trades some runtime simplicity for modeling clarity. Indirection, allocation, virtual dispatch, and abstraction layers can all carry costs that matter in hot paths.</p><ul><li>Objects are not free.</li><li>Dynamic dispatch can improve extensibility while adding overhead.</li><li>Performance tradeoffs must be judged in context, not from ideology.</li></ul>" },
+        { "type": "compare", "title": "Clean abstraction versus hot-path overhead", "items": [
+          { "label": "Clean abstraction", "html": "<p>Improves maintainability and change safety when the runtime cost is acceptable.</p>" },
+          { "label": "Hot-path overhead", "html": "<p>Too many tiny objects, wrapper layers, or dynamic boundaries can become expensive in memory-critical or high-throughput code.</p>" }
+        ] },
+        { "type": "mechanics", "title": "How to reason about OOP runtime cost", "steps": [
+          "Identify whether the code is actually on a hot path.",
+          "Measure allocation churn, indirection, and dispatch overhead before optimizing blindly.",
+          "Keep clear models by default, but simplify or flatten when profiling proves the cost matters.",
+          "Separate performance-sensitive internals from the public design contract when necessary."
+        ] },
+        { "type": "code", "title": "Clear policy, optimized core", "language": "ts", "code": "class PricingEngine {\n  calculate(base: number, taxRate: number): number {\n    return base + base * taxRate;\n  }\n}", "caption": "Sometimes the best optimization is keeping the hot logic direct while preserving better abstractions around the edges." },
+        { "type": "trap", "title": "Premature anti-OOP optimization", "html": "<p>Teams sometimes flatten every abstraction in advance because they assume OOP is slow. That often destroys readability long before the runtime cost is proven to matter.</p>", "tone": "pitfall" },
+        { "type": "drill", "title": "Tradeoff drill", "prompt": "How do you explain when OOP is the wrong fit for a performance-critical section?", "answerHtml": "<p>Say that if profiling shows object allocation, dispatch, or indirection dominating a hot path, a flatter or more data-oriented design may be better there while the rest of the system stays object-oriented.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "OOP has runtime costs as well as design benefits.",
+          "Measure hot paths before flattening the whole design.",
+          "Good engineers trade abstraction and performance deliberately, not ideologically."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "Why can OOP sometimes be slower than flatter designs?", "answerHtml": "<p>Because extra objects, indirection, virtual dispatch, and abstraction layers can add memory and execution overhead.</p>" },
+        { "level": "advanced", "question": "Why is profiling important before removing abstractions?", "answerHtml": "<p>Because many supposed OOP performance issues are not actually where the real bottleneck lives.</p>" },
+        { "level": "advanced", "question": "When is flattening an OOP design justified?", "answerHtml": "<p>When measured hot-path costs show that current abstractions are genuinely too expensive for the workload.</p>" },
+        { "level": "expert", "question": "What makes a performance tradeoff answer sound balanced?", "answerHtml": "<p>Explaining how readability and design safety are usually the default, but high-confidence profiling can justify a more direct structure in specific hotspots.</p>" }
+      ]
+    },
+    {
+      "id": "oop-across-languages",
+      "intro": "The same OOP ideas show up differently across languages. This chapter prevents the common mistake of confusing one language's syntax and defaults with universal OOP truth.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>Java, C++, C#, Python, and JavaScript/TypeScript all support object-oriented design, but they emphasize it differently. The principles travel better than the syntax.</p><ul><li>Java and C# make interfaces and class hierarchies explicit.</li><li>Python is more flexible and protocol-like in practice.</li><li>C++ exposes lower-level control and object lifetime details.</li><li>JavaScript/TypeScript mix prototype heritage with class syntax and composition-heavy design.</li></ul>" },
+        { "type": "compare", "title": "How OOP differs by language family", "items": [
+          { "label": "Nominal-heavy languages", "html": "<p>Java and C# emphasize explicit class and interface declarations, which makes type relationships more visible but can encourage ceremony.</p>" },
+          { "label": "Flexible or prototype-oriented languages", "html": "<p>Python and JavaScript/TypeScript often express OOP with looser contracts, duck typing, and composition-friendly design.</p>" }
+        ] },
+        { "type": "mechanics", "title": "A safe cross-language reasoning rule", "steps": [
+          "Start from the principle, not the keyword.",
+          "Ask how that language expresses contracts, extension, and ownership.",
+          "Separate runtime object model from surface syntax.",
+          "Avoid assuming one language's OOP defaults are universal best practice."
+        ] },
+        { "type": "code", "title": "Same idea, different expression", "language": "text", "code": "Java: explicit interface + class implementation\nPython: protocol-like behavior or abstract base classes\nTypeScript: interface plus composition-heavy service objects", "caption": "The design principle is the same even when the syntax and defaults differ." },
+        { "type": "trap", "title": "Language confusion trap", "html": "<p>Many learners think OOP means deep class hierarchies because they first saw it in one language. Strong engineers recognize that modern OOP often leans much more toward composition and small contracts.</p>", "tone": "interview" },
+        { "type": "drill", "title": "Comparison drill", "prompt": "How would you explain OOP differently in Java versus JavaScript/TypeScript?", "answerHtml": "<p>In Java, contracts and inheritance structures are usually more explicit. In JavaScript/TypeScript, classes exist, but composition and interface-style design are often the healthier default.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "The principles travel better than the syntax.",
+          "Different languages encourage different OOP defaults.",
+          "Never confuse one language's style with universal OOP truth."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "Why is OOP in Python often taught differently from OOP in Java?", "answerHtml": "<p>Because Python is more flexible and less ceremony-heavy, so the emphasis is often on behavior and protocols rather than rigid class/interface structure.</p>" },
+        { "level": "advanced", "question": "What is the biggest cross-language OOP mistake learners make?", "answerHtml": "<p>They assume the first language they learned defines what OOP must always look like.</p>" },
+        { "level": "advanced", "question": "Why does C++ make OOP tradeoffs feel different?", "answerHtml": "<p>Because it exposes object lifetime, memory, and low-level control more directly, which makes some runtime and ownership concerns much more visible.</p>" },
+        { "level": "expert", "question": "What makes a language-comparison answer sound strong?", "answerHtml": "<p>Explaining the shared principle first, then showing how each language expresses contracts, ownership, and extension differently.</p>" }
+      ]
+    },
+    {
+      "id": "interview-mastery-system-design-with-oop",
+      "intro": "The final chapter turns OOP principles into interview communication, modeling drills, anti-pattern diagnosis, and design tradeoff reasoning.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>OOPS interviews are rarely about reciting all four pillars. They test whether you can model responsibilities cleanly, critique poor design, choose between inheritance and composition, and explain tradeoffs clearly.</p><ul><li>Definitions are the beginning, not the finish.</li><li>Object modeling and refactoring judgment matter most.</li><li>Communication quality strongly affects interview outcomes.</li></ul>" },
+        { "type": "compare", "title": "Memorized pillar answer versus strong design answer", "items": [
+          { "label": "Memorized answer", "html": "<p>Names encapsulation, abstraction, inheritance, and polymorphism but struggles to apply them to a real system.</p>" },
+          { "label": "Strong design answer", "html": "<p>Uses those ideas to model responsibilities, explain tradeoffs, and diagnose bad object boundaries.</p>" }
+        ] },
+        { "type": "mechanics", "title": "A strong OOPS interview flow", "steps": [
+          "Clarify the domain concept and responsibilities first.",
+          "Identify the stable contracts and collaborating objects.",
+          "Explain where state should live and why.",
+          "Choose composition, inheritance, or interfaces deliberately.",
+          "Surface failure modes and refactoring moves if the design grows."
+        ] },
+        { "type": "code", "title": "Modeling narration", "language": "text", "code": "1. I would start by separating state ownership from delivery concerns.\n2. The core object should protect invariants.\n3. Integration behavior should sit behind contracts.\n4. If more behaviors vary later, I would introduce composition seams before inheritance.", "caption": "This kind of narration makes the design reasoning visible instead of leaving the interviewer to infer it." },
+        { "type": "trap", "title": "Interview trap", "html": "<p>Many candidates answer every design question by saying 'use inheritance' or 'apply SOLID'. Stronger answers start from responsibility boundaries and explain why one design move fits better than another.</p>", "tone": "interview" },
+        { "type": "drill", "title": "Mock interview drill", "prompt": "What do you say if the interviewer asks you to model a small system and you are not sure about the class boundaries yet?", "answerHtml": "<p>State the core responsibilities first, sketch likely collaborators, and explain that the boundaries can be refined as invariants and change points become clearer.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "OOPS interviews reward modeling and tradeoff reasoning more than memorized definitions.",
+          "Start from responsibilities and invariants.",
+          "Explain why the chosen object boundaries are safer than the alternatives."
+        ] }
+      ],
+      "qa": [
+        { "level": "basic", "question": "What are the classic four pillars of OOP?", "answerHtml": "<p>Encapsulation, abstraction, inheritance, and polymorphism.</p>" },
+        { "level": "basic", "question": "Why is reciting the four pillars not enough in an interview?", "answerHtml": "<p>Because interviews usually test whether you can apply those ideas to design and refactoring decisions, not just name them.</p>" },
+        { "level": "basic", "question": "What is the simplest explanation of encapsulation?", "answerHtml": "<p>Protect state and expose only the operations that should safely change it.</p>" },
+        { "level": "basic", "question": "What is the simplest explanation of polymorphism?", "answerHtml": "<p>Different concrete types can be used through the same contract while providing their own behavior.</p>" },
+        { "level": "basic", "question": "What is the danger of a god object?", "answerHtml": "<p>It accumulates too many responsibilities, becomes hard to test, and spreads change risk widely.</p>" },
+        { "level": "basic", "question": "Why is composition often preferred over inheritance?", "answerHtml": "<p>It usually creates looser coupling and safer change seams.</p>" },
+        { "level": "basic", "question": "What is an interface in practical terms?", "answerHtml": "<p>A contract describing what a collaborator can do without forcing consumers to depend on implementation details.</p>" },
+        { "level": "basic", "question": "What does low coupling mean?", "answerHtml": "<p>Modules depend on fewer unstable details from each other, so change spreads less easily.</p>" },
+        { "level": "intermediate", "question": "How do you identify whether inheritance is a bad fit?", "answerHtml": "<p>If the child does not preserve the parent contract or inheritance is being used only for convenience reuse, it is likely a bad fit.</p>" },
+        { "level": "intermediate", "question": "Why do invariants matter in OOP design?", "answerHtml": "<p>They define what must always remain true, which guides what the object should protect and expose.</p>" },
+        { "level": "intermediate", "question": "What does SRP really mean?", "answerHtml": "<p>A class or module should have one coherent reason to change, not several unrelated ones.</p>" },
+        { "level": "intermediate", "question": "Why can wide interfaces be harmful?", "answerHtml": "<p>They force consumers and implementers to depend on capabilities they may not actually need.</p>" },
+        { "level": "intermediate", "question": "What is a leaky abstraction?", "answerHtml": "<p>An abstraction that forces callers to understand hidden implementation details to use it safely.</p>" },
+        { "level": "intermediate", "question": "Why do tests often expose OOP design problems?", "answerHtml": "<p>If the object is hard to isolate or needs huge setup, the boundary is usually carrying too much responsibility.</p>" },
+        { "level": "intermediate", "question": "What is the practical value of domain modeling?", "answerHtml": "<p>It helps encode ownership, lifecycle, and rules directly into object boundaries instead of scattering them across the codebase.</p>" },
+        { "level": "intermediate", "question": "Why are design patterns not automatically good?", "answerHtml": "<p>Because they can add unnecessary indirection if the real collaboration problem is not there.</p>" },
+        { "level": "advanced", "question": "How do you explain LSP without sounding textbook?", "answerHtml": "<p>A subtype should preserve the guarantees that callers rely on from the parent contract, so callers do not need special cases.</p>" },
+        { "level": "advanced", "question": "When is DIP actually useful?", "answerHtml": "<p>When high-level policy should not depend directly on concrete low-level details that may vary or be hard to test.</p>" },
+        { "level": "advanced", "question": "How do you know an abstraction is premature?", "answerHtml": "<p>If there is no real variability yet and the abstraction only adds ceremony without protecting against likely change.</p>" },
+        { "level": "advanced", "question": "What makes a class low cohesion?", "answerHtml": "<p>It contains methods and state that serve unrelated goals and unrelated reasons to change.</p>" },
+        { "level": "advanced", "question": "Why is object collaboration more important than class count?", "answerHtml": "<p>Because design quality comes from how responsibilities interact, not from how many classes exist on paper.</p>" },
+        { "level": "advanced", "question": "When is a factory pattern a healthy choice?", "answerHtml": "<p>When object creation has real rules, variants, or dependencies that callers should not manage themselves.</p>" },
+        { "level": "advanced", "question": "How do you explain anti-pattern diagnosis in an interview?", "answerHtml": "<p>Name the smell, explain the risk it creates, then propose a smaller, more cohesive design boundary.</p>" },
+        { "level": "advanced", "question": "What is the risk of deep inheritance trees?", "answerHtml": "<p>They create fragile behavioral coupling and make change analysis much harder because parent assumptions spread widely.</p>" },
+        { "level": "advanced", "question": "Why can too many interfaces be a smell?", "answerHtml": "<p>Because they may signal defensive abstraction that was created without real variation or consumer need.</p>" },
+        { "level": "advanced", "question": "How do you justify composition in a design discussion?", "answerHtml": "<p>By showing that behavior can vary or evolve independently and that collaborators can be swapped more safely than inherited behavior can.</p>" },
+        { "level": "expert", "question": "What makes an OOPS answer sound senior instead of rehearsed?", "answerHtml": "<p>Constraint-aware tradeoffs, responsibility reasoning, and honest discussion of when principles or patterns are overused.</p>" },
+        { "level": "expert", "question": "How would you refactor an anemic domain model?", "answerHtml": "<p>Move rule-enforcing behavior back toward the objects that own the relevant state and shrink the procedural service layer accordingly.</p>" },
+        { "level": "expert", "question": "Why is object ownership often the first thing to settle in a model?", "answerHtml": "<p>Ownership clarifies lifecycle, invariants, and where behavior should live, which stabilizes the rest of the design.</p>" },
+        { "level": "expert", "question": "How do you explain the tradeoff between extensibility and simplicity?", "answerHtml": "<p>Design for the variation you have strong reason to expect, not for every hypothetical extension that would clutter today's code.</p>" },
+        { "level": "expert", "question": "When does a service class become a dumping ground?", "answerHtml": "<p>When it starts owning unrelated behaviors simply because the domain objects were left too passive or unclear.</p>" },
+        { "level": "expert", "question": "How do you talk about OOP performance without sounding anti-abstraction?", "answerHtml": "<p>Say that abstraction is usually worth it by default, but hot-path profiling can justify flatter designs in specific runtime-critical areas.</p>" },
+        { "level": "expert", "question": "Why is substitutability more important than reuse in inheritance?", "answerHtml": "<p>Because broken substitutability makes the design unsafe even if the inheritance hierarchy reduced duplication.</p>" },
+        { "level": "expert", "question": "What is a strong answer to 'interface vs abstract class'?", "answerHtml": "<p>Use interfaces or protocols for capability contracts; use abstract classes only when meaningful shared behavior and a stable parent relationship really exist.</p>" },
+        { "level": "expert", "question": "How do you know an object knows too much?", "answerHtml": "<p>If it depends on many unrelated collaborators or contains logic from multiple business concerns, it likely violates cohesion and responsibility boundaries.</p>" },
+        { "level": "expert", "question": "What makes API design object-oriented rather than procedural?", "answerHtml": "<p>The API exposes meaningful domain actions and protects invariants instead of forcing callers to manually orchestrate internal state transitions.</p>" },
+        { "level": "expert", "question": "How would you model a payment flow object system at a high level?", "answerHtml": "<p>Separate payment orchestration, gateway integration, fraud/risk rules, and state transitions into focused collaborators with clear contracts.</p>" },
+        { "level": "expert", "question": "Why can SOLID produce over-engineering?", "answerHtml": "<p>Because principles applied mechanically can create abstractions before real variability or maintenance pressure exists.</p>" },
+        { "level": "expert", "question": "How do you compare OOP in Java and JavaScript/TypeScript without confusion?", "answerHtml": "<p>Start with shared principles, then explain that Java emphasizes nominal structure while JavaScript/TypeScript often favor composition and lighter contracts.</p>" },
+        { "level": "expert", "question": "What does good refactoring preserve in an OOP system?", "answerHtml": "<p>It preserves external behavior and contracts while improving boundaries, cohesion, and change safety internally.</p>" },
+        { "level": "expert", "question": "How do you know whether a pattern is solving the right problem?", "answerHtml": "<p>Ask whether the pattern addresses a real collaboration pain that already exists, not just a hypothetical one.</p>" },
+        { "level": "expert", "question": "What is the value of explicit contracts in system design interviews?", "answerHtml": "<p>They show how components can evolve independently and how collaboration stays stable as the system grows.</p>" },
+        { "level": "expert", "question": "Why are invariants central to object design?", "answerHtml": "<p>Because invariants determine what state must stay valid and therefore what behaviors and access controls the object must enforce.</p>" },
+        { "level": "expert", "question": "How do you avoid turning every design discussion into jargon?", "answerHtml": "<p>Describe the responsibilities, risks, and tradeoffs first, then introduce principle names only if they help clarify the reasoning.</p>" },
+        { "level": "expert", "question": "When should a design stay simple instead of introducing more objects?", "answerHtml": "<p>When the domain is still small, responsibilities are already clear, and extra objects would only add ceremony without reducing risk.</p>" },
+        { "level": "expert", "question": "What is the best first move when an object hierarchy becomes painful?", "answerHtml": "<p>Identify which variation is real, then pull that variability into composition seams or smaller contracts instead of patching the hierarchy further.</p>" },
+        { "level": "expert", "question": "How would you explain coupling to a beginner without oversimplifying it?", "answerHtml": "<p>Coupling is how much one module must know about another module's unstable details in order to work correctly.</p>" },
+        { "level": "expert", "question": "What makes a strong OOPS system-design answer?", "answerHtml": "<p>Clear object responsibilities, stable contracts, explicit ownership, realistic tradeoffs, and awareness of how the model will evolve under change.</p>" }
+      ]
+    }
+  ]
+}

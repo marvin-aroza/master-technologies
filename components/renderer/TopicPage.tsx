@@ -17,6 +17,7 @@ const TOPIC_ORDER = [
   { id: "git", href: "/git", name: "Git", icon: "GT", color: "#f05032" },
   { id: "npm", href: "/npm", name: "npm", icon: "NP", color: "#cb3837" },
   { id: "data-structures-algorithms", href: "/data-structures-algorithms", name: "Data Structures & Algorithms", icon: "DS", color: "#14b8a6" },
+  { id: "oops", href: "/oops", name: "OOPS", icon: "OO", color: "#f59e0b" },
   { id: "python", href: "/python", name: "Python", icon: "PY", color: "#3776ab" },
   { id: "nodejs", href: "/nodejs", name: "Node.js", icon: "ND", color: "#5fa04e" },
   { id: "react", href: "/react", name: "React", icon: "RE", color: "#61dafb" },
