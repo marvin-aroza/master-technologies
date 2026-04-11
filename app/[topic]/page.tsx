@@ -5,6 +5,7 @@ import type { TopicData } from "@/types/topic";
 import angularData from "@/data/topics/angular.json";
 import awsData from "@/data/topics/aws.json";
 import cssData from "@/data/topics/css.json";
+import dataStructuresAlgorithmsData from "@/data/topics/data-structures-algorithms.json";
 import dockerData from "@/data/topics/docker.json";
 import frontendCheatSheetData from "@/data/topics/frontend-cheat-sheet.json";
 import gitData from "@/data/topics/git.json";
@@ -40,6 +41,12 @@ const TOPICS: Record<string, TopicConfig> = {
     accentColor: "#ff9900",
     title: "AWS - DevLore Encyclopedia",
     description: "Global infrastructure, IAM, compute, networking, and 75+ starter interview Q&A across 14 chapters.",
+  },
+  "data-structures-algorithms": {
+    data: dataStructuresAlgorithmsData as TopicData,
+    accentColor: "#14b8a6",
+    title: "Data Structures & Algorithms - DevLore Encyclopedia",
+    description: "Complexity, core structures, algorithm design, and 100+ interview Q&A across 14 mastery chapters.",
   },
   css: {
     data: cssData as TopicData,

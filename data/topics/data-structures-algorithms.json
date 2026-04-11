@@ -1,0 +1,510 @@
+{
+  "id": "data-structures-algorithms",
+  "title": "Data Structures & Algorithms Mastery Encyclopedia",
+  "subtitle": "Complexity, core structures, algorithm design, and interview-ready problem solving for 2026.",
+  "heroStats": [
+    { "label": "Chapters", "value": "14" },
+    { "label": "Core Q&A", "value": "100" },
+    { "label": "Coverage", "value": "Foundations+Interviews" },
+    { "label": "Updated", "value": "2026" }
+  ],
+  "tabs": [
+    { "id": "algorithmic-thinking-foundations", "label": "Algorithmic Thinking" },
+    { "id": "memory-models-arrays-strings", "label": "Arrays & Strings" },
+    { "id": "linked-structures-stacks-queues", "label": "Linked Structures" },
+    { "id": "hashing-sets-maps", "label": "Hashing & Maps" },
+    { "id": "recursion-backtracking-divide-conquer", "label": "Recursion & Backtracking" },
+    { "id": "sorting-searching", "label": "Sorting & Searching" },
+    { "id": "trees-binary-search-trees", "label": "Trees & BSTs" },
+    { "id": "heaps-priority-queues-selection", "label": "Heaps & Selection" },
+    { "id": "graphs-traversal", "label": "Graphs & Traversal" },
+    { "id": "greedy-algorithms-interval-reasoning", "label": "Greedy & Intervals" },
+    { "id": "dynamic-programming", "label": "Dynamic Programming" },
+    { "id": "advanced-structures-algorithm-design-tradeoffs", "label": "Advanced Structures" },
+    { "id": "implementation-debugging-real-world-performance", "label": "Implementation & Debugging" },
+    { "id": "interview-mastery-pattern-synthesis", "label": "Interview Mastery" }
+  ],
+  "sections": [
+    {
+      "id": "algorithmic-thinking-foundations",
+      "intro": "Learn how to reason from constraints, brute force, repeated work, and complexity before reaching for named patterns.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>Algorithms are procedures whose quality is measured by correctness, time, space, and fit for the input constraints.</p><ul><li>Big-O describes growth.</li><li>Space cost matters too.</li><li>Constraints decide whether optimization is necessary.</li></ul>" },
+        { "type": "compare", "title": "Two useful lenses", "items": [
+          { "label": "Asymptotic growth", "html": "<p>Use it to compare how solutions scale as <code>n</code> grows.</p>" },
+          { "label": "Real runtime cost", "html": "<p>Constant factors, allocations, and cache behavior still matter in production.</p>" }
+        ] },
+        { "type": "mechanics", "title": "A reliable reasoning loop", "steps": [
+          "Restate the input, output, and constraints.",
+          "Write the brute-force baseline first.",
+          "Find the dominant repeated work.",
+          "Choose the smallest structure that removes that repeated work.",
+          "Explain why the final time and space costs match the constraints."
+        ] },
+        { "type": "code", "title": "Brute force baseline", "language": "ts", "code": "function hasDuplicate(values: number[]): boolean {\n  for (let i = 0; i < values.length; i++) {\n    for (let j = i + 1; j < values.length; j++) {\n      if (values[i] === values[j]) return true;\n    }\n  }\n  return false;\n}", "caption": "A clear baseline makes later optimization meaningful." },
+        { "type": "trap", "title": "Classic mistake", "html": "<p>Jumping straight to the 'optimal' solution before proving correctness usually creates confusion and weak explanations.</p>", "tone": "interview" },
+        { "type": "drill", "title": "Reasoning drill", "prompt": "A prompt gives you 10 million records and tight memory. What should that change in your first solution idea?", "answerHtml": "<p>You should immediately reject quadratic scans and watch memory growth, then think in terms of hashing, heaps, streaming state, or one-pass summaries.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "Correctness comes before cleverness.",
+          "Big-O explains growth, not every machine-level cost.",
+          "Constraints decide what level of optimization is worth the complexity."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "Why is Big-O still useful if it ignores hardware?", "answerHtml": "<p>Because it reveals how cost grows with input size, which is what separates scalable solutions from ones that collapse at larger <code>n</code>.</p>" },
+        { "level": "advanced", "question": "When is brute force still acceptable?", "answerHtml": "<p>When the input is small, the constraints are loose, or the simpler solution is safer and easier to justify than a more fragile optimization.</p>" },
+        { "level": "advanced", "question": "How do you move from brute force to optimization without guessing?", "answerHtml": "<p>Find the repeated work in the baseline and choose a structure or preprocessing step that removes it.</p>" },
+        { "level": "expert", "question": "What makes a complexity explanation sound senior?", "answerHtml": "<p>A senior answer ties cost to constraints, mentions space tradeoffs, and justifies why the chosen complexity is good enough in practice.</p>" }
+      ]
+    },
+    {
+      "id": "memory-models-arrays-strings",
+      "intro": "Arrays and strings teach the first major DSA lesson: contiguous data makes some operations extremely cheap and others surprisingly expensive.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>Arrays win on direct indexing and locality. Strings usually behave like immutable arrays of characters, so many array patterns still apply.</p><ul><li>Index lookup is <code>O(1)</code>.</li><li>Middle insertions can be <code>O(n)</code>.</li><li>Two pointers and prefix summaries appear often here.</li></ul>" },
+        { "type": "compare", "title": "Contiguous memory tradeoffs", "items": [
+          { "label": "Fast reads", "html": "<p>Address calculation is direct, so random access is cheap.</p>" },
+          { "label": "Costly shifts", "html": "<p>Insertion or deletion in the middle may move many elements.</p>" }
+        ] },
+        { "type": "mechanics", "title": "How array problems improve", "steps": [
+          "Start with a scan.",
+          "Ask whether order, sorting, or prefix state helps.",
+          "Use two pointers when the solution can be maintained from boundaries or read/write positions.",
+          "Test empty, one-element, duplicate-heavy, and boundary cases."
+        ] },
+        { "type": "code", "title": "Two-pointer reversal", "language": "ts", "code": "function reverse(values: string[]): void {\n  let left = 0;\n  let right = values.length - 1;\n  while (left < right) {\n    [values[left], values[right]] = [values[right], values[left]];\n    left++;\n    right--;\n  }\n}", "caption": "Two pointers often remove unnecessary extra memory." },
+        { "type": "trap", "title": "Most bugs are boundaries", "html": "<p>Wrong loop limits, off-by-one errors, and forgotten empty inputs cause more failures here than deep algorithm mistakes.</p>", "tone": "warning" },
+        { "type": "drill", "title": "Pattern drill", "prompt": "Why does sorted order matter in the classic 'remove duplicates in place' problem?", "answerHtml": "<p>Because equal values become adjacent, so a read pointer and write pointer can compress the array in one pass.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "Arrays trade cheap indexing for expensive middle edits.",
+          "Strings reuse many array patterns but add immutability concerns.",
+          "Two pointers and boundary control solve a huge share of sequence problems."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "Why are arrays often faster than linked structures in real systems?", "answerHtml": "<p>Because contiguous memory improves cache locality and reduces pointer chasing during scans.</p>" },
+        { "level": "advanced", "question": "When is sorting first worth the <code>O(n log n)</code> cost?", "answerHtml": "<p>When sorting unlocks much simpler logic such as binary search, interval merging, or two-pointer sweeps that remove larger repeated work later.</p>" },
+        { "level": "advanced", "question": "Why do interviewers like in-place array problems?", "answerHtml": "<p>They reveal whether you understand memory tradeoffs, mutation order, and pointer movement instead of only relying on extra storage.</p>" },
+        { "level": "expert", "question": "What makes a strong answer on string optimization?", "answerHtml": "<p>Explain whether the bottleneck is repeated scanning, repeated construction, or expensive comparisons, then choose pointers, hashing, or preprocessing accordingly.</p>" }
+      ]
+    },
+    {
+      "id": "linked-structures-stacks-queues",
+      "intro": "This chapter is really about disciplined access patterns: some problems care more about what gets removed next than about random access.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>Stacks, queues, and linked structures are chosen for how work should be accessed, not because they are exotic.</p><ul><li>Stacks model last-in-first-out work.</li><li>Queues model first-in-first-out work.</li><li>Linked structures matter when pointer-local updates are the real operation.</li></ul>" },
+        { "type": "compare", "title": "Order of removal", "items": [
+          { "label": "Stack", "html": "<p>Choose it when the newest unfinished work should be processed next.</p>" },
+          { "label": "Queue", "html": "<p>Choose it when work must be processed in arrival order, such as BFS.</p>" }
+        ] },
+        { "type": "mechanics", "title": "How to pick the right access rule", "steps": [
+          "Ask whether you need random access at all.",
+          "If the most recent state matters, think stack.",
+          "If the oldest pending state matters, think queue.",
+          "If insert and delete happen around known nodes, think linked structure."
+        ] },
+        { "type": "code", "title": "Queue-driven BFS template", "language": "ts", "code": "function bfs(start: number, graph: number[][]): number[] {\n  const queue = [start];\n  const seen = new Set([start]);\n  const order: number[] = [];\n  while (queue.length) {\n    const node = queue.shift()!;\n    order.push(node);\n    for (const next of graph[node]) {\n      if (!seen.has(next)) {\n        seen.add(next);\n        queue.push(next);\n      }\n    }\n  }\n  return order;\n}", "caption": "The queue preserves level order, which is why BFS finds shortest unweighted paths." },
+        { "type": "trap", "title": "Linked lists are easy to oversell", "html": "<p>Insertion is only truly cheap when you already have the right node or predecessor. Finding the position can still cost linear time.</p>", "tone": "pitfall" },
+        { "type": "drill", "title": "Pattern drill", "prompt": "Why does a monotonic stack show up in 'next greater element' even though the input is an array?", "answerHtml": "<p>Because the unresolved comparisons behave like a stack of candidates whose answers depend on future values.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "These structures are about access discipline.",
+          "Stacks and queues often hide inside more advanced patterns.",
+          "Pointer-based structures help only when the workload actually matches them."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "Why does BFS need a queue while DFS fits a stack?", "answerHtml": "<p>BFS must process nodes in discovery order by level, while DFS keeps exploring the newest unfinished path.</p>" },
+        { "level": "advanced", "question": "When is a doubly linked list worth the extra memory?", "answerHtml": "<p>When you need efficient deletions or moves in both directions from known nodes, such as LRU cache internals.</p>" },
+        { "level": "advanced", "question": "What interview signal suggests a monotonic stack?", "answerHtml": "<p>Look for nearest greater or smaller relationships, spans, or repeated comparisons where weaker candidates become irrelevant forever.</p>" },
+        { "level": "expert", "question": "Why can <code>queue.shift()</code> be a real-world warning in JavaScript?", "answerHtml": "<p>Because repeatedly removing from the front of a plain array may be linear, so a deque-style structure can be safer for performance.</p>" }
+      ]
+    },
+    {
+      "id": "hashing-sets-maps",
+      "intro": "Hashing is one of the biggest jumps in DSA because it replaces repeated scanning with direct lookup, as long as the tradeoffs make sense.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>Hash tables trade ordered structure for fast expected lookup.</p><ul><li>Sets answer membership questions.</li><li>Maps answer association and counting questions.</li><li>You usually spend memory to save repeated time.</li></ul>" },
+        { "type": "compare", "title": "Set versus map", "items": [
+          { "label": "Set", "html": "<p>Use it when the only question is whether a value has been seen or allowed.</p>" },
+          { "label": "Map", "html": "<p>Use it when you need counts, positions, or attached metadata.</p>" }
+        ] },
+        { "type": "mechanics", "title": "How hashing improves a problem", "steps": [
+          "Find the repeated lookup in the brute-force version.",
+          "Choose the key that answers that lookup directly.",
+          "Store the minimum useful state: presence, count, index, or sum.",
+          "Be explicit about the extra memory you are spending."
+        ] },
+        { "type": "code", "title": "Frequency counting", "language": "ts", "code": "function frequencies(values: string[]): Map<string, number> {\n  const counts = new Map<string, number>();\n  for (const value of values) {\n    counts.set(value, (counts.get(value) ?? 0) + 1);\n  }\n  return counts;\n}", "caption": "Many 'clever' interview solutions are really disciplined counting problems." },
+        { "type": "trap", "title": "Expected O(1) is not magic", "html": "<p>A strong answer mentions collisions, load factor, resizing, and worst-case degradation instead of pretending hash operations are absolutely constant time.</p>", "tone": "interview" },
+        { "type": "drill", "title": "Pattern drill", "prompt": "Why is hashing the standard improvement for two-sum over nested loops?", "answerHtml": "<p>Because each value can ask whether its complement has already been seen instead of scanning the whole array again.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "Hashing turns repeated search into direct lookup.",
+          "Sets solve membership; maps solve association.",
+          "You pay memory for speed and still live with collisions."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "Why are hash maps so common in interview solutions?", "answerHtml": "<p>Because many brute-force solutions repeat the same lookup or counting work, and a map removes that repetition.</p>" },
+        { "level": "advanced", "question": "When is sorting better than hashing?", "answerHtml": "<p>When order matters, memory is tight, or sorting unlocks a cleaner two-pointer or interval strategy.</p>" },
+        { "level": "advanced", "question": "What is the common bug in map-based counting problems?", "answerHtml": "<p>Updating counts in the wrong order or storing more state than the next decision actually needs.</p>" },
+        { "level": "expert", "question": "How would you explain load factor in practical terms?", "answerHtml": "<p>It measures how full the table is. As it rises, collisions become more likely and average lookup speed can fall until resizing happens.</p>" }
+      ]
+    },
+    {
+      "id": "recursion-backtracking-divide-conquer",
+      "intro": "Recursion matters when a problem reduces naturally to smaller self-similar work, and backtracking matters when you must explore choices and undo state safely.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>Every recursive solution needs a base case, a smaller subproblem, and a reason the stack cost is justified.</p><ul><li>Plain recursion reduces one problem into smaller copies.</li><li>Backtracking explores choices and then rewinds.</li><li>Divide and conquer splits independent work and combines results.</li></ul>" },
+        { "type": "compare", "title": "Three recursive styles", "items": [
+          { "label": "Plain recursion", "html": "<p>Use it when the problem naturally shrinks without much branching.</p>" },
+          { "label": "Backtracking", "html": "<p>Use it when you must explore a search tree of choices and undo after each branch.</p>" }
+        ] },
+        { "type": "mechanics", "title": "A safe recursive design loop", "steps": [
+          "Define what one call is responsible for.",
+          "Write the base case first.",
+          "State how the problem gets smaller.",
+          "Check whether repeated subproblems suggest memoization."
+        ] },
+        { "type": "code", "title": "Backtracking skeleton", "language": "ts", "code": "function search(path: number[], choices: number[]): void {\n  if (done(path)) {\n    record(path);\n    return;\n  }\n  for (const choice of choices) {\n    if (!valid(path, choice)) continue;\n    path.push(choice);\n    search(path, nextChoices(path, choices));\n    path.pop();\n  }\n}", "caption": "Push, recurse, pop is the core rhythm of backtracking." },
+        { "type": "trap", "title": "Repeated work is the hidden tax", "html": "<p>Recursive solutions feel elegant until they revisit the same subproblems or explode through huge search trees without pruning.</p>", "tone": "warning" },
+        { "type": "drill", "title": "Reasoning drill", "prompt": "How do you know a recursive brute-force solution is secretly a dynamic programming problem?", "answerHtml": "<p>If the recursion revisits the same states repeatedly, then memoization or tabulation can usually collapse the repeated work.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "Recursion needs a real base case and a smaller subproblem.",
+          "Backtracking is DFS over choices with explicit undo.",
+          "Repeated subproblems are a signal to consider DP."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "Why is the base case the first thing to design in recursion?", "answerHtml": "<p>Because it defines where the reduction stops and prevents infinite calls.</p>" },
+        { "level": "advanced", "question": "What makes backtracking different from plain DFS?", "answerHtml": "<p>Backtracking is DFS over a choice space with deliberate state mutation and reversal after each branch.</p>" },
+        { "level": "advanced", "question": "When should recursion become iteration?", "answerHtml": "<p>When stack depth is risky, the iterative form is clearer, or the runtime makes deep recursion unsafe.</p>" },
+        { "level": "expert", "question": "What makes divide and conquer efficient instead of just recursive?", "answerHtml": "<p>The subproblems must be largely independent and the combine step must stay efficient.</p>" }
+      ]
+    },
+    {
+      "id": "sorting-searching",
+      "intro": "Sorting is a problem transformation and searching is a boundary problem. Together they unlock cleaner reasoning across a huge range of interview tasks.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>Many harder problems reduce to search and sort once you see the right structure.</p><ul><li>Linear search is the baseline when no order exists.</li><li>Binary search needs a monotonic boundary.</li><li>Sorting pays upfront to simplify later work.</li></ul>" },
+        { "type": "compare", "title": "Sorting tradeoffs", "items": [
+          { "label": "Merge sort", "html": "<p>Predictable <code>O(n log n)</code> time and stability, but usually extra memory.</p>" },
+          { "label": "Quicksort", "html": "<p>Excellent practical performance on average, but pivot choice and worst-case behavior still matter.</p>" }
+        ] },
+        { "type": "mechanics", "title": "When sorting is worth it", "steps": [
+          "Ask whether order makes adjacency meaningful.",
+          "Check whether a single sort removes repeated comparisons later.",
+          "Use binary search only when the decision boundary is monotonic."
+        ] },
+        { "type": "code", "title": "Binary search template", "language": "ts", "code": "function binarySearch(values: number[], target: number): number {\n  let left = 0;\n  let right = values.length - 1;\n  while (left <= right) {\n    const mid = left + Math.floor((right - left) / 2);\n    if (values[mid] === target) return mid;\n    if (values[mid] < target) left = mid + 1;\n    else right = mid - 1;\n  }\n  return -1;\n}", "caption": "Binary search is really an invariant-management exercise." },
+        { "type": "trap", "title": "Binary search is broader than sorted arrays", "html": "<p>Strong candidates recognize binary search on answer size, capacity, or thresholds, not only on array indices.</p>", "tone": "interview" },
+        { "type": "drill", "title": "Pattern drill", "prompt": "Why is sorting the first move in interval merge problems?", "answerHtml": "<p>Because it turns arbitrary overlap into a left-to-right sweep where only the current merged interval matters.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "Sorting often changes the shape of the problem.",
+          "Binary search needs monotonicity, not just familiarity.",
+          "Boundary mistakes are the most common failure here."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "Why can an <code>O(n log n)</code> solution still be the better answer?", "answerHtml": "<p>If it is simpler, more memory-efficient, or still easily within the constraints, it may be the better engineering tradeoff.</p>" },
+        { "level": "advanced", "question": "What does sorting stability mean in practice?", "answerHtml": "<p>A stable sort preserves the relative order of equal keys, which matters when secondary ordering carries meaning.</p>" },
+        { "level": "advanced", "question": "How do you recognize binary search on answer?", "answerHtml": "<p>When the prompt can be reframed as checking whether a candidate answer is feasible and that feasibility changes only once.</p>" },
+        { "level": "expert", "question": "Why do binary search bugs survive review so often?", "answerHtml": "<p>Because the code looks familiar while the real danger hides in inclusive versus exclusive bounds and broken invariants.</p>" }
+      ]
+    },
+    {
+      "id": "trees-binary-search-trees",
+      "intro": "Trees teach structural recursion, inherited constraints, and why shape can matter as much as ordering.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>Trees are solved by decomposing work into subtrees and combining the returned information carefully.</p><ul><li>Traversals describe when work happens.</li><li>BSTs add an ordering invariant.</li><li>Balanced shape changes the cost dramatically.</li></ul>" },
+        { "type": "compare", "title": "Traversal perspectives", "items": [
+          { "label": "DFS traversals", "html": "<p>Preorder, inorder, and postorder differ only by when the current node is processed.</p>" },
+          { "label": "Level-order traversal", "html": "<p>Use it when depth and breadth by layers matter more than subtree return values.</p>" }
+        ] },
+        { "type": "mechanics", "title": "How tree solutions emerge", "steps": [
+          "Decide what each recursive call should return for its subtree.",
+          "Solve left and right independently.",
+          "Combine those results at the current node.",
+          "Keep any inherited bounds explicit, especially in BST validation."
+        ] },
+        { "type": "code", "title": "Inorder traversal", "language": "ts", "code": "function inorder(node: TreeNode | null, out: number[]): void {\n  if (!node) return;\n  inorder(node.left, out);\n  out.push(node.value);\n  inorder(node.right, out);\n}", "caption": "In a valid BST, inorder traversal yields sorted values." },
+        { "type": "trap", "title": "Local checks do not prove a BST", "html": "<p>A node being larger than its left child and smaller than its right child is not enough. Validity depends on the full range inherited from ancestors.</p>", "tone": "pitfall" },
+        { "type": "drill", "title": "Reasoning drill", "prompt": "Why is tree height such a big deal in BST complexity?", "answerHtml": "<p>Because operations follow root-to-leaf paths. Good height gives logarithmic behavior; skewed height can degrade to linear work.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "Trees are solved through structural decomposition.",
+          "Traversals encode work timing.",
+          "BST performance depends on shape as well as ordering."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "Why does inorder traversal sort BST values?", "answerHtml": "<p>Because the BST invariant ensures left subtree values are smaller and right subtree values are larger than the current node.</p>" },
+        { "level": "advanced", "question": "What is the best first question for a recursive tree problem?", "answerHtml": "<p>Ask what one call should return for its subtree. That contract shapes the whole solution.</p>" },
+        { "level": "advanced", "question": "When is BFS a better tree traversal than DFS?", "answerHtml": "<p>When the problem depends on depth, level grouping, or nearest answer by layer.</p>" },
+        { "level": "expert", "question": "Why is balancing not just a micro-optimization detail?", "answerHtml": "<p>Because losing balance can destroy logarithmic guarantees and make the structure behave like a linear list.</p>" }
+      ]
+    },
+    {
+      "id": "heaps-priority-queues-selection",
+      "intro": "Heaps are the right tool when you repeatedly need the current best candidate, not when you need total sorted order.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>A heap only guarantees the root is the smallest or largest element according to the comparator. That is enough for many top-k, scheduling, and streaming tasks.</p><ul><li>Use heaps for repeated best-item access.</li><li>They are not fully sorted structures.</li><li>Selection problems often become simpler with bounded heaps.</li></ul>" },
+        { "type": "compare", "title": "Heap versus full sort", "items": [
+          { "label": "Heap", "html": "<p>Best when you need repeated access to the current extreme or only the top <code>k</code> items.</p>" },
+          { "label": "Sort", "html": "<p>Best when you need total ordering across the whole dataset.</p>" }
+        ] },
+        { "type": "mechanics", "title": "How heap problems reveal themselves", "steps": [
+          "Look for top-k, smallest k, running median, or repeated next-best selection.",
+          "Ask whether sorting the whole input is more work than necessary.",
+          "Store only the candidates that still matter."
+        ] },
+        { "type": "code", "title": "Bounded-heap idea", "language": "ts", "code": "function topK(values: number[], k: number): number[] {\n  const heap: number[] = [];\n  for (const value of values) {\n    pushMinHeap(heap, value);\n    if (heap.length > k) popMinHeap(heap);\n  }\n  return heap;\n}", "caption": "The heap keeps only the best candidates seen so far." },
+        { "type": "trap", "title": "A heap is not globally sorted", "html": "<p>Only parent-child order is guaranteed. If you assume sibling or subtree order, later reasoning will be wrong.</p>", "tone": "interview" },
+        { "type": "drill", "title": "Pattern drill", "prompt": "Why is a heap a better fit than sorting for merging many sorted streams?", "answerHtml": "<p>Because you only need the current smallest frontier item from each stream, not a full reorder of everything after each extraction.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "Heaps give fast access to the current extreme, not full order.",
+          "Top-k and scheduling problems often want heaps.",
+          "Sorting everything can be wasted work."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "Why are heaps natural for top-k problems?", "answerHtml": "<p>They keep only the best candidates seen so far and discard weaker ones efficiently.</p>" },
+        { "level": "advanced", "question": "When is sorting still simpler than a heap?", "answerHtml": "<p>When the full order is needed anyway or when the dataset is small enough that heap complexity adds no practical benefit.</p>" },
+        { "level": "advanced", "question": "Why do running median problems often use two heaps?", "answerHtml": "<p>One heap tracks the lower half and one tracks the upper half, making the middle boundary easy to maintain.</p>" },
+        { "level": "expert", "question": "What is the most common heap misconception in interviews?", "answerHtml": "<p>Claiming the heap is fully sorted instead of explaining the much weaker but sufficient heap invariant.</p>" }
+      ]
+    },
+    {
+      "id": "graphs-traversal",
+      "intro": "Graphs generalize routes, dependencies, network spread, state transitions, and many problems that do not mention graphs explicitly.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>A graph is any set of entities plus relationships. The important choices are representation, traversal strategy, and whether weights or direction change the meaning.</p><ul><li>BFS is about layers and shortest unweighted paths.</li><li>DFS is about structure and full exploration.</li><li>Visited rules are part of correctness, not bookkeeping.</li></ul>" },
+        { "type": "compare", "title": "BFS versus DFS", "items": [
+          { "label": "BFS", "html": "<p>Use it when edge-count distance or level structure matters.</p>" },
+          { "label": "DFS", "html": "<p>Use it when reachability, structural analysis, or recursive decomposition matters.</p>" }
+        ] },
+        { "type": "mechanics", "title": "A graph checklist", "steps": [
+          "Choose adjacency list, adjacency matrix, or implicit neighbors.",
+          "Ask whether the graph is directed, weighted, cyclic, or disconnected.",
+          "Pick BFS, DFS, or a shortest-path strategy that matches the objective.",
+          "Track visited state carefully to avoid duplicate work or loops."
+        ] },
+        { "type": "code", "title": "DFS template", "language": "ts", "code": "function dfs(node: number, graph: number[][], seen: Set<number>): void {\n  if (seen.has(node)) return;\n  seen.add(node);\n  for (const next of graph[node]) {\n    dfs(next, graph, seen);\n  }\n}", "caption": "Visited state is what makes DFS safe on cyclic graphs." },
+        { "type": "trap", "title": "Visited timing changes correctness", "html": "<p>Marking visited too late can create duplicate enqueues or repeated work. The exact timing matters, especially in BFS.</p>", "tone": "warning" },
+        { "type": "drill", "title": "Reasoning drill", "prompt": "Why does BFS find shortest paths in unweighted graphs but not weighted ones?", "answerHtml": "<p>BFS minimizes edge count, not total path cost. Once edge weights differ, the fewest edges may no longer be cheapest.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "Many dependency and route problems are graph problems in disguise.",
+          "BFS and DFS answer different questions.",
+          "Representation and visited rules are part of the algorithm."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "How do you recognize a graph problem if the prompt never says graph?", "answerHtml": "<p>If the problem involves entities plus connections, transitions, or dependencies, graph reasoning is usually relevant.</p>" },
+        { "level": "advanced", "question": "Why is topological sort only valid on DAGs?", "answerHtml": "<p>A directed cycle creates contradictory ordering requirements, so no linear dependency-respecting order exists.</p>" },
+        { "level": "advanced", "question": "When is an adjacency matrix still reasonable?", "answerHtml": "<p>When the graph is dense or constant-time edge existence checks matter more than memory efficiency.</p>" },
+        { "level": "expert", "question": "Why is marking visited on enqueue often better in BFS?", "answerHtml": "<p>It prevents the same node from being queued multiple times and keeps level accounting cleaner.</p>" }
+      ]
+    },
+    {
+      "id": "greedy-algorithms-interval-reasoning",
+      "intro": "Greedy algorithms are useful because they commit early, but they only work when the problem structure makes those local choices safe.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>Greedy means making a locally best decision and never revisiting it. That is powerful only when the local rule preserves global optimality.</p><ul><li>Greedy is not just 'pick the biggest thing'.</li><li>Interval problems often reward sorting plus a greedy sweep.</li><li>If you keep finding counterexamples, the problem may need DP.</li></ul>" },
+        { "type": "compare", "title": "Greedy versus DP", "items": [
+          { "label": "Greedy", "html": "<p>Commit early when a local rule is provably safe.</p>" },
+          { "label": "Dynamic programming", "html": "<p>Delay commitment when future consequences matter and subproblem outcomes must be compared.</p>" }
+        ] },
+        { "type": "mechanics", "title": "A safe greedy checklist", "steps": [
+          "Sort if ordering makes the choice meaningful.",
+          "State the exact local rule.",
+          "Explain why that rule cannot block the optimum later.",
+          "If the rule keeps failing on counterexamples, stop forcing greediness."
+        ] },
+        { "type": "code", "title": "Classic interval scheduling", "language": "ts", "code": "function maxNonOverlapping(intervals: Array<[number, number]>): number {\n  intervals.sort((a, b) => a[1] - b[1]);\n  let count = 0;\n  let end = -Infinity;\n  for (const [start, finish] of intervals) {\n    if (start >= end) {\n      count++;\n      end = finish;\n    }\n  }\n  return count;\n}", "caption": "Earliest finishing time leaves the most room for future intervals." },
+        { "type": "trap", "title": "Easy examples hide bad greedy rules", "html": "<p>A locally good-looking move can still destroy the optimum. If you cannot justify the rule, assume it is fragile.</p>", "tone": "warning" },
+        { "type": "drill", "title": "Reasoning drill", "prompt": "Why does earliest finishing time beat shortest interval or earliest start in interval scheduling?", "answerHtml": "<p>Because finishing early frees the future search space as soon as possible, which preserves the most room for later intervals.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "Greedy needs a proof idea, not just confidence.",
+          "Sorting often exposes interval structure.",
+          "Counterexamples are the fastest greedy stress test."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "What is the fastest way to challenge a greedy idea?", "answerHtml": "<p>Try to construct a counterexample where the local choice blocks a better global solution later.</p>" },
+        { "level": "advanced", "question": "Why are interval problems common greedy exercises?", "answerHtml": "<p>Because sorting linearizes the constraints and makes future feasibility easier to reason about.</p>" },
+        { "level": "advanced", "question": "When should failed greedy intuition push you toward DP?", "answerHtml": "<p>When the current choice changes future possibilities in ways that must be compared rather than committed to immediately.</p>" },
+        { "level": "expert", "question": "What makes a greedy proof sound mature in an interview?", "answerHtml": "<p>Explain why your choice preserves future feasibility or why any optimal solution can be transformed to use that choice without becoming worse.</p>" }
+      ]
+    },
+    {
+      "id": "dynamic-programming",
+      "intro": "Dynamic programming gets much easier once you stop memorizing famous examples and start treating state design as the real job.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>DP is recursion or iteration over overlapping subproblems. The hard part is choosing a state that is expressive enough to be correct and small enough to compute efficiently.</p><ul><li>Memoization preserves top-down reasoning.</li><li>Tabulation makes execution order explicit.</li><li>State meaning is more important than syntax.</li></ul>" },
+        { "type": "compare", "title": "Memoization versus tabulation", "items": [
+          { "label": "Memoization", "html": "<p>Easier when you can derive the solution naturally from recursion.</p>" },
+          { "label": "Tabulation", "html": "<p>Better when you want explicit control over iteration order and space optimization.</p>" }
+        ] },
+        { "type": "mechanics", "title": "A reliable DP design loop", "steps": [
+          "Write the brute-force recursion first.",
+          "Define the minimal state that determines the remaining work.",
+          "Write the recurrence and base cases.",
+          "Pick memoization or tabulation.",
+          "Compress space only after the full version is correct."
+        ] },
+        { "type": "code", "title": "Tabulation example", "language": "ts", "code": "function climbStairs(n: number): number {\n  if (n <= 2) return n;\n  const dp = new Array(n + 1).fill(0);\n  dp[1] = 1;\n  dp[2] = 2;\n  for (let i = 3; i <= n; i++) {\n    dp[i] = dp[i - 1] + dp[i - 2];\n  }\n  return dp[n];\n}", "caption": "Even simple DP shows the essentials: state, transition, and base cases." },
+        { "type": "trap", "title": "Vague state breaks DP", "html": "<p>If you cannot clearly say what <code>dp[i]</code> or <code>dp[i][j]</code> means, the recurrence is probably unstable.</p>", "tone": "pitfall" },
+        { "type": "drill", "title": "Reasoning drill", "prompt": "How do you know your DP state is missing information?", "answerHtml": "<p>If two situations sharing the same state value can require different future answers, then the state is too weak.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "DP is about overlapping subproblems plus state design.",
+          "Memoization mirrors recursion; tabulation exposes order.",
+          "State clarity matters more than memorized examples."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "What separates DP from plain divide and conquer?", "answerHtml": "<p>DP reuses overlapping subproblems, while divide and conquer usually assumes subproblems are largely independent.</p>" },
+        { "level": "advanced", "question": "Why is brute-force recursion a good starting point for DP?", "answerHtml": "<p>It reveals the real state transitions before optimization details distract you.</p>" },
+        { "level": "advanced", "question": "When can DP space be compressed?", "answerHtml": "<p>When each new state depends only on a limited window of previous states rather than the full table.</p>" },
+        { "level": "expert", "question": "What is the safest way to explain DP in an interview?", "answerHtml": "<p>Define the state precisely, give the recurrence and base cases, then explain the evaluation order that respects dependencies.</p>" }
+      ]
+    },
+    {
+      "id": "advanced-structures-algorithm-design-tradeoffs",
+      "intro": "Advanced structures matter when the workload is specialized enough that a simpler array, hash map, or tree keeps repeating too much work.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>Tries, union-find, monotonic structures, segment trees, and Fenwick trees exist because some operation mixes are too specialized for simpler tools.</p><ul><li>Tries optimize shared prefixes.</li><li>Union-find optimizes repeated connectivity merges and queries.</li><li>Range structures optimize repeated interval summaries.</li></ul>" },
+        { "type": "compare", "title": "Specialized structure versus simpler baseline", "items": [
+          { "label": "Specialized structure", "html": "<p>Worth it when the repeated operation mix clearly matches its invariant and payoff.</p>" },
+          { "label": "Simpler baseline", "html": "<p>Better when the workload is small or the extra complexity is not buying enough.</p>" }
+        ] },
+        { "type": "mechanics", "title": "How to justify an advanced structure", "steps": [
+          "Describe the repeated operation pattern precisely.",
+          "Show why the baseline repeats too much work.",
+          "State the invariant the advanced structure maintains.",
+          "Explain why the implementation complexity is worth the gain."
+        ] },
+        { "type": "code", "title": "Union-find skeleton", "language": "ts", "code": "class UnionFind {\n  parent: number[];\n  rank: number[];\n  constructor(n: number) {\n    this.parent = Array.from({ length: n }, (_, i) => i);\n    this.rank = new Array(n).fill(0);\n  }\n  find(x: number): number {\n    if (this.parent[x] !== x) this.parent[x] = this.find(this.parent[x]);\n    return this.parent[x];\n  }\n}", "caption": "Union-find is compelling when merges and connectivity queries repeat many times." },
+        { "type": "trap", "title": "Advanced does not mean appropriate", "html": "<p>Using a segment tree for one or two range queries is often a smell. Strong engineers choose the simplest structure that meets the constraints.</p>", "tone": "warning" },
+        { "type": "drill", "title": "Decision drill", "prompt": "When is a trie better than a hash map for strings?", "answerHtml": "<p>When prefix queries, autocomplete, lexicographic traversal, or shared-prefix pruning matter enough to justify the extra structure.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "Advanced structures solve repeated specialized operations.",
+          "Their invariants are why they work.",
+          "If the baseline is already good enough, complexity may not be justified."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "Why is union-find tied to connectivity problems?", "answerHtml": "<p>Because it efficiently merges components and answers whether two nodes now belong to the same connected set.</p>" },
+        { "level": "advanced", "question": "What makes a monotonic stack different from a normal stack?", "answerHtml": "<p>It preserves an order invariant so weaker candidates are discarded as soon as they can never become the answer later.</p>" },
+        { "level": "advanced", "question": "When is a Fenwick tree easier to justify than a segment tree?", "answerHtml": "<p>When point updates and prefix-style queries are enough and you want a lighter implementation.</p>" },
+        { "level": "expert", "question": "How do you sound mature when discussing advanced structures?", "answerHtml": "<p>Describe the operation mix, the invariant, and the tradeoff against simpler alternatives instead of just naming the structure.</p>" }
+      ]
+    },
+    {
+      "id": "implementation-debugging-real-world-performance",
+      "intro": "This chapter connects textbook DSA to production reality, where boundaries, mutation order, and runtime behavior often matter more than theoretical elegance.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>Implementation quality is a separate skill from algorithm design. Correct ideas still fail when code mishandles boundaries, shared state, or language-specific costs.</p><ul><li>Off-by-one bugs are structural, not beginner-only.</li><li>Allocation, copying, and recursion depth can erase theoretical wins.</li><li>A readable <code>O(n log n)</code> solution often beats a brittle 'optimal' one.</li></ul>" },
+        { "type": "compare", "title": "Paper-optimal versus production-robust", "items": [
+          { "label": "Paper-optimal", "html": "<p>May have the best asymptotic bound but be harder to implement and verify safely.</p>" },
+          { "label": "Production-robust", "html": "<p>Balances asymptotic quality with readability, testability, and predictable runtime behavior.</p>" }
+        ] },
+        { "type": "mechanics", "title": "A useful DSA debugging routine", "steps": [
+          "State the invariant before and after each loop or recursion step.",
+          "Test empty, single-element, duplicate-heavy, and already-ordered cases.",
+          "Trace the smallest failing example by hand.",
+          "Optimize only after the reference version is correct."
+        ] },
+        { "type": "code", "title": "Invariant-driven loop", "language": "ts", "code": "while (left < right) {\n  // Everything before left is already correct.\n  // Everything after right is already correct.\n  if (needToMoveLeft(values[left])) {\n    left++;\n  } else {\n    swap(values, left, right);\n    right--;\n  }\n}", "caption": "Naming the invariant is often the fastest path to a fix." },
+        { "type": "trap", "title": "Language details can invalidate good theory", "html": "<p>Queue implementations, string concatenation, recursion limits, and hidden copies can all make a theoretically good algorithm behave badly in a real runtime.</p>", "tone": "warning" },
+        { "type": "drill", "title": "Debugging drill", "prompt": "A solution fails mainly when many values are equal. What kind of bug should you suspect first?", "answerHtml": "<p>Suspect an invariant that silently assumes strict inequality, or partition logic that stops making progress on equal elements.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "Implementation bugs live in boundaries, invariants, and mutation order.",
+          "Real runtime cost includes allocation and library behavior.",
+          "Readable, testable solutions often win over fragile optimality theatre."
+        ] }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "Why do duplicates and empty inputs catch so many DSA bugs?", "answerHtml": "<p>They expose weak assumptions in loop guards, equality handling, and initialization that normal cases may hide.</p>" },
+        { "level": "advanced", "question": "What is an invariant and why does it matter?", "answerHtml": "<p>An invariant is a condition that should stay true at a particular point in the algorithm, which makes correctness and debugging much more precise.</p>" },
+        { "level": "advanced", "question": "When is it acceptable to choose a less optimal asymptotic solution?", "answerHtml": "<p>When the simpler solution still fits the constraints comfortably and offers better correctness, readability, or operational confidence.</p>" },
+        { "level": "expert", "question": "What makes performance debugging different from complexity analysis?", "answerHtml": "<p>Complexity predicts growth; performance debugging investigates real hotspots like copying, allocation churn, cache behavior, or runtime-library overhead.</p>" }
+      ]
+    },
+    {
+      "id": "interview-mastery-pattern-synthesis",
+      "intro": "The last chapter turns structure-level understanding into interview communication, pattern recognition, debugging, and tradeoff reasoning under pressure.",
+      "blocks": [
+        { "type": "richText", "title": "Core mental model", "html": "<p>Strong DSA interviews are rarely about instant recall alone. They reward a disciplined path from baseline to optimization and a clear explanation of why the chosen structure fits the constraints.</p><ul><li>Pattern names are useful only when tied to signals in the prompt.</li><li>You do not need the optimal idea instantly; you need a believable path toward it.</li><li>Communication and recovery matter almost as much as code.</li></ul>" },
+        { "type": "compare", "title": "Memorized template versus real synthesis", "items": [
+          { "label": "Template memorization", "html": "<p>Fast on familiar problems, but fragile when the constraints change.</p>" },
+          { "label": "Pattern synthesis", "html": "<p>Starts from constraints and bottlenecks, then maps them to a structure or algorithm family.</p>" }
+        ] },
+        { "type": "mechanics", "title": "A strong interview flow", "steps": [
+          "Clarify the input, output, and edge cases.",
+          "State the brute-force baseline and its cost.",
+          "Identify the repeated work or bottleneck.",
+          "Choose the structure that removes that cost.",
+          "Explain the final time and space tradeoff in plain language."
+        ] },
+        { "type": "code", "title": "Verbalizing before coding", "language": "text", "code": "1. I will start with the O(n^2) baseline so we agree on correctness.\n2. The bottleneck is repeated lookup.\n3. A hash set removes that repeated scan.\n4. That gives O(n) expected time and O(n) extra space.", "caption": "Narration like this reduces ambiguity and builds interviewer trust." },
+        { "type": "trap", "title": "Silence often reads as uncertainty", "html": "<p>Disappearing into code without explaining the baseline, bottleneck, and tradeoff usually makes an interviewer less confident even if the code eventually works.</p>", "tone": "interview" },
+        { "type": "drill", "title": "Mock interview drill", "prompt": "What do you say when you do not immediately know the optimal solution?", "answerHtml": "<p>State the brute-force baseline, the likely bottleneck, and the structures you are evaluating. Calm reasoning is usually scored better than forced confidence.</p>" },
+        { "type": "recap", "title": "Recap", "items": [
+          "Use pattern names as signals, not magic spells.",
+          "Show the path from baseline to improvement.",
+          "Communication is part of the solution."
+        ] }
+      ],
+      "qa": [
+        { "level": "basic", "question": "What is the simplest interview definition of Big-O?", "answerHtml": "<p>It describes how cost grows as input grows, focusing on the dominant work rather than exact timing.</p>" },
+        { "level": "basic", "question": "Why mention a brute-force baseline even if you know better?", "answerHtml": "<p>It proves correctness thinking and makes the optimization path visible.</p>" },
+        { "level": "basic", "question": "When do two pointers usually become a candidate?", "answerHtml": "<p>When the input is a sequence and the answer depends on boundaries, pairs, or a moving read/write position.</p>" },
+        { "level": "basic", "question": "What signal suggests hashing may help?", "answerHtml": "<p>Repeated membership checks, duplicate detection, frequency counting, or complement lookup.</p>" },
+        { "level": "basic", "question": "What makes an array problem different from a linked-structure problem?", "answerHtml": "<p>Arrays prioritize indexed access and locality, while linked structures prioritize pointer-local updates.</p>" },
+        { "level": "basic", "question": "Why is a base case mandatory in recursion?", "answerHtml": "<p>It defines where the reduction stops and prevents infinite calls.</p>" },
+        { "level": "basic", "question": "Why is visited state essential in graph traversal?", "answerHtml": "<p>It prevents duplicate work and infinite loops on cyclic graphs.</p>" },
+        { "level": "basic", "question": "What is the first question to ask before choosing a data structure?", "answerHtml": "<p>Ask what operations must be fast and how often they occur.</p>" },
+        { "level": "intermediate", "question": "How do you recognize a sliding-window problem?", "answerHtml": "<p>Look for contiguous ranges where you expand and shrink while maintaining a condition or summary.</p>" },
+        { "level": "intermediate", "question": "Why does sorted order unlock so many solutions?", "answerHtml": "<p>Because it makes adjacency meaningful and enables binary search, interval sweeps, and two-pointer logic.</p>" },
+        { "level": "intermediate", "question": "When is a heap better than sorting?", "answerHtml": "<p>When you only need repeated best-item access or the top <code>k</code> results instead of full order.</p>" },
+        { "level": "intermediate", "question": "What is the key difference between BFS and DFS?", "answerHtml": "<p>BFS explores by layers; DFS explores one path deeply before backtracking.</p>" },
+        { "level": "intermediate", "question": "Why do many tree questions start with 'what should one call return'?", "answerHtml": "<p>Because the return contract defines how parent nodes combine subtree information.</p>" },
+        { "level": "intermediate", "question": "What does it mean when a DP state is wrong?", "answerHtml": "<p>The state is missing information needed to determine the remaining work uniquely.</p>" },
+        { "level": "intermediate", "question": "Why is queue discipline important in BFS?", "answerHtml": "<p>Because it preserves level order, which is the reason BFS gives shortest unweighted distance.</p>" },
+        { "level": "intermediate", "question": "What is the most common array bug family?", "answerHtml": "<p>Off-by-one and boundary mistakes.</p>" },
+        { "level": "intermediate", "question": "Why are frequency maps so common?", "answerHtml": "<p>They collapse repeated counting or membership work into direct updates and lookups.</p>" },
+        { "level": "intermediate", "question": "Why do interval problems often start with sorting?", "answerHtml": "<p>Sorting linearizes overlap so one pass can reason about neighboring intervals.</p>" },
+        { "level": "advanced", "question": "How do you know a greedy strategy needs proof, not just intuition?", "answerHtml": "<p>Always. Without a reason the local choice is safe, the strategy is only a guess.</p>" },
+        { "level": "advanced", "question": "Why are binary search bugs so common?", "answerHtml": "<p>Because the logic depends on precise invariants about which half can still contain the answer.</p>" },
+        { "level": "advanced", "question": "When should recursion become iteration?", "answerHtml": "<p>When stack depth is risky, the iterative form is clearer, or the runtime punishes deep recursion.</p>" },
+        { "level": "advanced", "question": "What is the interview sign that a linked list problem is really about pointer discipline?", "answerHtml": "<p>Reverse, merge, split, and cycle questions are mostly about updating references in the correct order.</p>" },
+        { "level": "advanced", "question": "Why does expected O(1) matter when discussing hash maps?", "answerHtml": "<p>Because collisions and load factor mean the guarantee is average-case, not absolute.</p>" },
+        { "level": "advanced", "question": "How do you explain a monotonic stack well?", "answerHtml": "<p>It stores unresolved candidates in an ordered way so weaker candidates can be discarded permanently.</p>" },
+        { "level": "advanced", "question": "What is the right way to recover after a failed first approach?", "answerHtml": "<p>State the flaw clearly, keep what remains valid, and pivot without pretending the broken path still works.</p>" },
+        { "level": "advanced", "question": "Why do interviewers ask for time and space after the code?", "answerHtml": "<p>They want to see whether your implementation matches the design you think you wrote.</p>" },
+        { "level": "advanced", "question": "What makes a problem a prefix-sum problem?", "answerHtml": "<p>Range values can be derived from differences between cumulative summaries.</p>" },
+        { "level": "advanced", "question": "When should you stop optimizing and start coding?", "answerHtml": "<p>Once the solution clearly satisfies the constraints and you can justify why more complexity is unnecessary.</p>" },
+        { "level": "expert", "question": "How do you distinguish a tree problem from a graph problem?", "answerHtml": "<p>If arbitrary cross edges, cycles, or multi-parent relationships exist, graph reasoning is the safer model.</p>" },
+        { "level": "expert", "question": "What makes a DSA explanation sound senior instead of rehearsed?", "answerHtml": "<p>Constraint-based reasoning, tradeoff comparisons, and clear rejection of weaker alternatives.</p>" },
+        { "level": "expert", "question": "Why is 'I know this pattern' weaker than 'the bottleneck is repeated lookup'?", "answerHtml": "<p>The second explanation proves transferable reasoning instead of exact-template memory.</p>" },
+        { "level": "expert", "question": "How would you justify <code>O(n log n)</code> over <code>O(n)</code>?", "answerHtml": "<p>Show that it is simpler, safer, and still comfortably inside the problem constraints.</p>" },
+        { "level": "expert", "question": "When does topological sort become the natural answer?", "answerHtml": "<p>When the prompt asks for an order that must respect directed dependencies.</p>" },
+        { "level": "expert", "question": "What is the difference between path compression and rank in union-find?", "answerHtml": "<p>Path compression flattens trees during find; rank or size guides how trees are merged so they stay shallow.</p>" },
+        { "level": "expert", "question": "Why do interval problems become easy after sorting by one endpoint?", "answerHtml": "<p>Because sorting turns global overlap into local left-to-right decisions.</p>" },
+        { "level": "expert", "question": "How do you know a shortest-path problem needs Dijkstra instead of BFS?", "answerHtml": "<p>When edge weights are non-uniform but non-negative, BFS no longer minimizes total cost.</p>" },
+        { "level": "expert", "question": "What is the safe way to present a DP table in an interview?", "answerHtml": "<p>Define each state precisely, give the transition, then explain the evaluation order.</p>" },
+        { "level": "expert", "question": "Why are invariants more useful than vague comments during debugging?", "answerHtml": "<p>They specify what must stay true, which gives you a concrete test for each step.</p>" },
+        { "level": "expert", "question": "When is backtracking the wrong instinct?", "answerHtml": "<p>When the search space is huge and there is no strong pruning story or repeated states suggest DP.</p>" },
+        { "level": "expert", "question": "How would you explain why heaps help with streaming data?", "answerHtml": "<p>They maintain the currently important candidates incrementally without re-sorting the whole stream.</p>" },
+        { "level": "expert", "question": "Why can an optimal algorithm still be slow in production?", "answerHtml": "<p>Because allocation churn, cache-unfriendly access, recursion overhead, or library behavior can dominate the theoretical gain.</p>" },
+        { "level": "expert", "question": "What is the cleanest way to explain two-pointer correctness?", "answerHtml": "<p>State what each pointer represents and what part of the input is already resolved after every move.</p>" },
+        { "level": "expert", "question": "How do you choose between counts, last indices, and booleans in a hash map?", "answerHtml": "<p>Store only the minimum state required for the next decision in the algorithm.</p>" },
+        { "level": "expert", "question": "Why is explaining rejected approaches useful?", "answerHtml": "<p>It shows comparison skill and makes the final choice look intentional rather than guessed.</p>" },
+        { "level": "expert", "question": "What is the difference between correctness and optimality?", "answerHtml": "<p>Correctness means the answer is valid; optimality means the resource tradeoff is as strong as needed or best possible.</p>" },
+        { "level": "expert", "question": "How should you talk through a failing test case in an interview?", "answerHtml": "<p>State the expected behavior, show where the invariant breaks, and explain the smallest fix that restores it.</p>" },
+        { "level": "expert", "question": "When is amortized complexity worth mentioning?", "answerHtml": "<p>When occasional expensive operations are balanced by many cheap ones so the average cost stays low over time.</p>" },
+        { "level": "expert", "question": "What does it mean to say a binary-search predicate is monotonic?", "answerHtml": "<p>There is a single boundary where the predicate changes from false to true or vice versa.</p>" },
+        { "level": "expert", "question": "Why do duplicate values make partition-based algorithms tricky?", "answerHtml": "<p>Because equality handling affects progress, correctness, and performance on heavily repeated inputs.</p>" },
+        { "level": "expert", "question": "What is the most reliable way to avoid getting lost in a hard DSA problem?", "answerHtml": "<p>Keep returning to the constraints, the brute-force baseline, the repeated work, and the smallest useful state.</p>" }
+      ]
+    }
+  ]
+}

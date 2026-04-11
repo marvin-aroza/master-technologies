@@ -72,6 +72,21 @@ const groups = [
     ],
   },
   {
+    id: "computer-science",
+    label: "Computer Science",
+    desc: "Algorithmic reasoning, complexity, data structures, and interview-grade problem solving.",
+    topics: [
+      {
+        href: "/data-structures-algorithms",
+        icon: "DS",
+        title: "Data Structures & Algorithms",
+        desc: "Complexity, arrays, trees, graphs, dynamic programming, debugging, and interview synthesis.",
+        tags: ["2026", "100 Q&A"],
+        color: "#14b8a6",
+      }
+    ],
+  },
+  {
     id: "frameworks",
     label: "Frameworks & Libraries",
     desc: "Modern component-driven development.",
@@ -200,14 +215,14 @@ export default function Home() {
         <div className="home-hero-row">
           <h1><span className="gradient-text">DevLore</span> Encyclopedia</h1>
           <div className="home-stats">
-            <div className="home-stat"><b>18</b><span>Topics</span></div>
-            <div className="home-stat"><b>2,252</b><span>Q&amp;A</span></div>
-            <div className="home-stat"><b>248</b><span>Chapters</span></div>
+            <div className="home-stat"><b>19</b><span>Topics</span></div>
+            <div className="home-stat"><b>2,352</b><span>Q&amp;A</span></div>
+            <div className="home-stat"><b>262</b><span>Chapters</span></div>
             <div className="home-stat"><b>2026</b><span>Edition</span></div>
           </div>
         </div>
         <p className="home-sub">
-          Language, tooling, runtime, framework, cloud, architecture, design, and revision mastery - zero fluff.
+          Language, tooling, computer science, runtime, framework, cloud, architecture, design, and revision mastery - zero fluff.
         </p>
       </section>
 
