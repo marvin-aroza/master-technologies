@@ -14,6 +14,7 @@
     "test:javascript-topic": "node scripts/test-javascript-topic.mjs",
     "test:css-topic": "node scripts/test-css-topic.mjs",
     "test:uxui-topic": "node scripts/test-uxui-topic.mjs",
+    "test:system-design-topic": "node scripts/test-system-design-topic.mjs",
     "test:renderer": "node scripts/test-content-block-renderer.mjs"
   },
   "dependencies": {
