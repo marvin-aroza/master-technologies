@@ -1,0 +1,1259 @@
+{
+  "id": "docker",
+  "title": "Docker Mastery Bible",
+  "subtitle": "Images, containers, runtime behavior, persistence, networking, security, and production-friendly delivery",
+  "heroStats": [
+    {
+      "label": "Chapters",
+      "value": "14"
+    },
+    {
+      "label": "Interview",
+      "value": "75 Q&A"
+    },
+    {
+      "label": "Coverage",
+      "value": "Core Docker"
+    },
+    {
+      "label": "Updated",
+      "value": "2026"
+    }
+  ],
+  "tabs": [
+    {
+      "id": "containers-images-why-docker-exists",
+      "label": "Containers & Images"
+    },
+    {
+      "id": "images-layers-dockerfiles-build-mechanics",
+      "label": "Dockerfiles & Layers"
+    },
+    {
+      "id": "containers-processes-runtime-behavior",
+      "label": "Runtime Behavior"
+    },
+    {
+      "id": "volumes-bind-mounts-data-persistence",
+      "label": "Volumes & Persistence"
+    },
+    {
+      "id": "networking-service-communication",
+      "label": "Networking"
+    },
+    {
+      "id": "compose-local-multi-service-systems",
+      "label": "Compose"
+    },
+    {
+      "id": "registries-tagging-image-distribution",
+      "label": "Registries & Tagging"
+    },
+    {
+      "id": "security-secrets-least-privilege-containers",
+      "label": "Security & Secrets"
+    },
+    {
+      "id": "performance-caching-image-optimization",
+      "label": "Performance & Optimization"
+    },
+    {
+      "id": "debugging-introspection",
+      "label": "Debugging"
+    },
+    {
+      "id": "cicd-production-image-workflows",
+      "label": "CI/CD & Production"
+    },
+    {
+      "id": "orchestration-context-swarm-kubernetes-mental-model",
+      "label": "Orchestration Context"
+    },
+    {
+      "id": "container-architecture-patterns-anti-patterns",
+      "label": "Patterns & Anti-Patterns"
+    },
+    {
+      "id": "interview-mastery-production-troubleshooting",
+      "label": "Interviews & Troubleshooting"
+    }
+  ],
+  "sections": [
+    {
+      "id": "containers-images-why-docker-exists",
+      "intro": "Docker starts making sense when you separate images from containers and connect both to the host kernel.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Docker packages processes, not tiny virtual machines",
+          "html": "<p>An image is a packaged filesystem plus metadata. A container is a running process created from that image with isolation boundaries.</p><p>Containers feel lightweight because they share the host kernel instead of booting a guest OS for each workload.</p><ul><li>Images are immutable artifacts.</li><li>Containers are runtime instances of images.</li><li>Isolation uses kernel features such as namespaces and cgroups.</li><li>Docker improves packaging consistency, not the laws of operating systems.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Image vs container vs virtual machine",
+          "items": [
+            {
+              "label": "Image",
+              "html": "<p>Read-only packaged artifact with layers and metadata.</p>"
+            },
+            {
+              "label": "Container",
+              "html": "<p>Running instance with runtime state and process isolation.</p>"
+            },
+            {
+              "label": "Virtual machine",
+              "html": "<p>Machine abstraction with its own guest OS kernel and more overhead.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "What happens when you run a container",
+          "steps": [
+            "Resolve the image locally or pull it.",
+            "Create a writable layer on top of the image.",
+            "Configure runtime isolation.",
+            "Start the configured main process."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Drill: why are containers lightweight?",
+          "prompt": "Why are containers usually lighter than virtual machines?",
+          "answerHtml": "<p>Because they share the host kernel instead of each booting a full guest operating system.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Images are packaged artifacts.",
+            "Containers are running instances.",
+            "Containers isolate processes, not full machines.",
+            "The host kernel is still a shared dependency."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the difference between an image and a container?",
+          "answerHtml": "<p>An image is a packaged artifact, while a container is a running instance created from that image.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is a container not just a tiny VM?",
+          "answerHtml": "<p>Because the isolation model and shared-kernel runtime behavior are fundamentally different from a full virtual machine.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What problem does Docker solve better than many VM-first workflows for app teams?",
+          "answerHtml": "<p>It packages application runtime intent into a portable image that can move consistently across development, CI, and deployment environments.</p>"
+        }
+      ]
+    },
+    {
+      "id": "images-layers-dockerfiles-build-mechanics",
+      "intro": "Dockerfiles define build intent, and layers decide how cache reuse and image size actually behave.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Image builds are layer pipelines",
+          "html": "<p>Each meaningful Dockerfile step can create a cached layer, so order affects rebuild speed and final image size.</p><p>A good Dockerfile is both packaging logic and a performance decision about what changes often versus what stays stable.</p><ul><li>Stable steps should appear early.</li><li>Dependency manifests are often copied before application source.</li><li>Multi-stage builds keep build tooling out of the final runtime image.</li><li>The final image should contain only what the runtime needs.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Layer-friendly build choices",
+          "items": [
+            {
+              "label": "Copy everything early",
+              "html": "<p>Simple, but invalidates cache more often.</p>"
+            },
+            {
+              "label": "Copy manifests first",
+              "html": "<p>Improves cache reuse for dependency installation.</p>"
+            },
+            {
+              "label": "Multi-stage build",
+              "html": "<p>Separates build tooling from the runtime artifact.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How build caching works",
+          "steps": [
+            "Read the Dockerfile in order.",
+            "Check whether each step can reuse a cached layer.",
+            "Invalidate later dependent steps when one step changes.",
+            "Reuse stable early layers to keep builds fast."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Multi-stage Node image",
+          "language": "dockerfile",
+          "code": "FROM node:22-alpine AS build\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\nCOPY . .\nRUN npm run build\n\nFROM node:22-alpine AS runtime\nWORKDIR /app\nCOPY --from=build /app/.next ./.next\nCOPY --from=build /app/package*.json ./\nRUN npm ci --omit=dev\nCMD [\"npm\", \"start\"]",
+          "caption": "Multi-stage builds keep the runtime image smaller and cleaner."
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Dockerfile order affects cache reuse.",
+            "Layer invalidation cascades downward.",
+            "Multi-stage builds shrink runtime images.",
+            "A Dockerfile is also a performance design document."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is a Docker layer?",
+          "answerHtml": "<p>A filesystem snapshot created by build steps and reused through caching when possible.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why copy dependency manifests before application source?",
+          "answerHtml": "<p>So dependency installation can stay cached when only application code changes.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why does Dockerfile order matter so much for build speed?",
+          "answerHtml": "<p>Because one early layer change can invalidate every later dependent layer and destroy cache reuse.</p>"
+        }
+      ]
+    },
+    {
+      "id": "containers-processes-runtime-behavior",
+      "intro": "Container runtime behavior is mostly Linux process behavior inside an isolation boundary.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Containers live as long as their main process lives",
+          "html": "<p>A container stops when its main process exits. That is why entrypoint design and signal handling matter so much.</p><p>PID 1 has special responsibilities, so bad entrypoints can break graceful shutdown or child-process cleanup.</p><ul><li>PID 1 matters.</li><li>Foreground processes keep the container alive.</li><li>Background-daemon assumptions often clash with container expectations.</li><li>Graceful shutdown is a runtime contract.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Runtime behavior choices",
+          "items": [
+            {
+              "label": "One foreground process",
+              "html": "<p>The cleanest and most container-native pattern.</p>"
+            },
+            {
+              "label": "Shell wrapper without exec",
+              "html": "<p>Often causes signal forwarding problems.</p>"
+            },
+            {
+              "label": "Process supervisor",
+              "html": "<p>Sometimes justified, but only with a real multi-process need.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Why PID 1 matters",
+          "steps": [
+            "Docker starts the configured entrypoint.",
+            "That process becomes PID 1 inside the container.",
+            "PID 1 receives stop signals and reaps children.",
+            "Bad entrypoint design can break clean shutdown."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Drill: immediate exit",
+          "prompt": "A container starts and exits instantly even though the image built correctly. What is the first conceptual explanation?",
+          "answerHtml": "<p>The main process probably finished, and the container had nothing left to keep running.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Container lifecycle follows the main process.",
+            "PID 1 behavior affects shutdown quality.",
+            "Foreground execution is the container-native model.",
+            "Entrypoint choices matter."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why does a container stop when its main process exits?",
+          "answerHtml": "<p>Because the container lifecycle is tied to the main foreground process.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can shell-based entrypoints be problematic?",
+          "answerHtml": "<p>They can intercept signals and prevent the actual app process from handling shutdown cleanly.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why should entrypoints usually use exec form instead of shell form?",
+          "answerHtml": "<p>Because exec form makes signal handling and process lifecycle behavior more predictable by avoiding an extra shell layer.</p>"
+        }
+      ]
+    },
+    {
+      "id": "volumes-bind-mounts-data-persistence",
+      "intro": "Data persistence is where many newcomers discover that images, containers, volumes, and bind mounts have different lifetimes for a reason.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Ephemeral containers need deliberate persistence",
+          "html": "<p>Container writable layers are not the right place for durable application data.</p><p>Volumes and bind mounts exist so data can outlive a container instance or map to host-managed files intentionally.</p><ul><li>Named volumes are Docker-managed.</li><li>Bind mounts map host paths directly.</li><li>Writable layers are usually ephemeral.</li><li>Persistence choice affects portability and permissions.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Volume vs bind mount vs writable layer",
+          "items": [
+            {
+              "label": "Named volume",
+              "html": "<p>Good for durable Docker-managed data.</p>"
+            },
+            {
+              "label": "Bind mount",
+              "html": "<p>Good for direct host-path access, especially in development.</p>"
+            },
+            {
+              "label": "Writable layer",
+              "html": "<p>Fine for ephemeral state, usually wrong for important durable data.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Choosing a persistence method",
+          "steps": [
+            "Ask whether data must survive container replacement.",
+            "Decide whether host visibility matters.",
+            "Choose volumes for durable Docker-managed data.",
+            "Choose bind mounts when direct host mapping is the goal."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: storing durable data in the writable layer",
+          "tone": "warning",
+          "html": "<p>If you recreate the container, the writable layer can disappear with it. Durable data belongs in a proper persistence mechanism.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Container writable layers are usually ephemeral.",
+            "Volumes and bind mounts solve different goals.",
+            "Host coupling matters with bind mounts.",
+            "Durable data design should be explicit."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is a Docker volume?",
+          "answerHtml": "<p>A Docker-managed storage mechanism for persistent data outside the container's writable layer.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is container-local writable storage risky for databases?",
+          "answerHtml": "<p>Because container replacement can discard that writable layer and with it the data.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What makes a bind mount a bad production default?",
+          "answerHtml": "<p>It couples the container too tightly to host filesystem details and often creates portability and permission surprises.</p>"
+        }
+      ]
+    },
+    {
+      "id": "networking-service-communication",
+      "intro": "Docker networking defines how containers reach each other, the host, and the outside world.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Container networking is namespacing plus routing",
+          "html": "<p>Docker creates network abstractions that let containers talk on user-defined bridges, publish ports, and discover each other in some modes.</p><p>The key design question is how much of that connectivity should be exposed outside the host.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Common networking choices",
+          "items": [
+            {
+              "label": "Bridge networking",
+              "html": "<p>Common default for one-host multi-container communication.</p>"
+            },
+            {
+              "label": "Host networking",
+              "html": "<p>Removes some isolation and increases coupling.</p>"
+            },
+            {
+              "label": "Published ports",
+              "html": "<p>Expose selected container ports to the host.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How a published port works",
+          "steps": [
+            "The container listens inside its own network namespace.",
+            "Docker publishes a selected host port.",
+            "Traffic reaching the host port is forwarded to the container port.",
+            "Containers on the same network may talk without host publishing."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Drill: localhost confusion",
+          "prompt": "Why does localhost inside one container not reach another container's service?",
+          "answerHtml": "<p>Because localhost refers to that same container's network namespace, not a sibling container.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Container localhost is local to that container.",
+            "Bridge networks are the common default.",
+            "Published ports expose services outward.",
+            "Networking decisions are also exposure decisions."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What does -p 8080:80 do?",
+          "answerHtml": "<p>It publishes host port 8080 to container port 80.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why should you avoid publishing every internal port by default?",
+          "answerHtml": "<p>Because it expands exposure and is often unnecessary when services can talk on private Docker networks.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can exposing ports broadly be risky even on internal platforms?",
+          "answerHtml": "<p>Because every exposed path widens the network surface area and makes least-privilege communication harder to maintain.</p>"
+        }
+      ]
+    },
+    {
+      "id": "compose-local-multi-service-systems",
+      "intro": "Compose turns multiple local containers into a repeatable local system instead of a pile of manual commands.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Compose is local system wiring",
+          "html": "<p>Docker Compose expresses services, networks, volumes, and local environment wiring in one file.</p><p>That makes it especially valuable for development, testing, and simple deployment scenarios.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Compose value",
+          "items": [
+            {
+              "label": "Manual docker run",
+              "html": "<p>Fine for quick experiments but hard to keep consistent.</p>"
+            },
+            {
+              "label": "Compose services",
+              "html": "<p>Capture service wiring and environment declaratively.</p>"
+            },
+            {
+              "label": "Production orchestration",
+              "html": "<p>A different class of problem than local service wiring.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "What Compose standardizes",
+          "steps": [
+            "Service definitions and build or image references.",
+            "Network relationships.",
+            "Volume bindings and persistent local state.",
+            "Environment variables and startup ordering hints."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Simple Compose example",
+          "language": "yaml",
+          "code": "services:\n  api:\n    build: .\n    ports:\n      - \"3000:3000\"\n    depends_on:\n      - redis\n  redis:\n    image: redis:7-alpine",
+          "caption": "Compose makes the local system shape explicit."
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Compose describes local multi-service systems.",
+            "It improves local consistency.",
+            "It is not the same as cluster orchestration.",
+            "Service wiring clarity is a big win."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is Docker Compose used for?",
+          "answerHtml": "<p>It defines and runs multi-container applications more consistently.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why should Compose not be confused with large-scale orchestration?",
+          "answerHtml": "<p>Because cluster scheduling, self-healing, and fleet management are different concerns.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What does Compose solve that several docker run commands do not?",
+          "answerHtml": "<p>It captures the local system shape declaratively so services, networks, and volumes are reproducible across machines.</p>"
+        }
+      ]
+    },
+    {
+      "id": "registries-tagging-image-distribution",
+      "intro": "Registries and tagging determine how images move from build systems to environments without losing traceability.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Image distribution is a supply chain problem",
+          "html": "<p>Registries store and distribute images, while tags and digests identify what should be pulled.</p><p>Tags are human-friendly, but digests are immutable, and that difference matters in production provenance.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Tag vs digest",
+          "items": [
+            {
+              "label": "Tag",
+              "html": "<p>Human-friendly label that can move over time.</p>"
+            },
+            {
+              "label": "Digest",
+              "html": "<p>Immutable content-addressed identifier for a specific image.</p>"
+            },
+            {
+              "label": "Registry",
+              "html": "<p>Shared storage and distribution system for images.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Healthy image promotion flow",
+          "steps": [
+            "Build from a known source revision.",
+            "Push to a trusted registry.",
+            "Record both a tag and, ideally, a digest.",
+            "Promote the exact artifact you intended."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Drill: latest is not a strategy",
+          "prompt": "Why is deploying latest in production usually a weak practice?",
+          "answerHtml": "<p>Because latest is mutable, which weakens provenance, rollback clarity, and confidence that every environment runs the same artifact.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Registries are part of the delivery chain.",
+            "Tags are convenient; digests are immutable.",
+            "Artifact traceability matters in production.",
+            "Promotion should move trusted artifacts, not rebuild them."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is a Docker registry?",
+          "answerHtml": "<p>A service that stores and serves container images.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why are immutable image references valuable in production?",
+          "answerHtml": "<p>They improve rollback reliability, auditability, and confidence that each environment runs the intended artifact.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why are image digests stronger than tags for production deployment?",
+          "answerHtml": "<p>Because a digest identifies one immutable artifact, while a tag can be retargeted later.</p>"
+        }
+      ]
+    },
+    {
+      "id": "security-secrets-least-privilege-containers",
+      "intro": "Container security starts with the reality that containers share a kernel and run code from images that came from somewhere.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Least privilege matters inside and around containers",
+          "html": "<p>Container security includes image provenance, runtime privilege, secret handling, user permissions, and network exposure.</p><p>Running as root and baking secrets into images are common shortcuts that become expensive later.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Security choices that matter",
+          "items": [
+            {
+              "label": "Run as root",
+              "html": "<p>Convenient but often too much privilege.</p>"
+            },
+            {
+              "label": "Non-root runtime",
+              "html": "<p>Safer default when the workload allows it.</p>"
+            },
+            {
+              "label": "Baked-in secrets",
+              "html": "<p>Easy during prototyping, dangerous in distributed image layers.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Basic container hardening",
+          "steps": [
+            "Start from a minimal trusted base image.",
+            "Drop unnecessary packages and privileges.",
+            "Run as a non-root user where possible.",
+            "Inject secrets at runtime rather than baking them into images."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: secrets in Dockerfiles",
+          "tone": "warning",
+          "html": "<p>If a secret lands in a layer or cache, cleanup becomes much harder than rotating and injecting it correctly at runtime.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Container security spans build, image, runtime, and distribution.",
+            "Non-root execution is a strong default.",
+            "Secrets should not live permanently in layers.",
+            "Smaller images often improve both security and operations."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why is running a container as root risky?",
+          "answerHtml": "<p>Because a compromised process has more privilege inside the container context.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is a minimal base image valuable?",
+          "answerHtml": "<p>It reduces attack surface, dependency sprawl, and often image size and maintenance burden.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is running as non-root still important inside a container?",
+          "answerHtml": "<p>Because a containerized process can still do damage if compromised, and unnecessary privilege expands that risk.</p>"
+        }
+      ]
+    },
+    {
+      "id": "performance-caching-image-optimization",
+      "intro": "Image performance is mostly build performance, pull performance, and startup efficiency shaped by how you build and ship the artifact.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Faster containers usually come from cleaner images",
+          "html": "<p>Large images pull slowly, rebuild slowly, and often contain more than production needs.</p><p>Build cache discipline and multi-stage design are therefore performance tools, not only hygiene.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Performance levers",
+          "items": [
+            {
+              "label": "Build cache",
+              "html": "<p>Stable Dockerfile order speeds rebuilds.</p>"
+            },
+            {
+              "label": "Image size",
+              "html": "<p>Smaller images move faster through registries and deployments.</p>"
+            },
+            {
+              "label": "Runtime constraints",
+              "html": "<p>CPU and memory settings affect runtime behavior under load.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Optimizing a Docker image",
+          "steps": [
+            "Audit the final image contents.",
+            "Separate build tooling from runtime artifacts.",
+            "Order Dockerfile steps to maximize cache reuse.",
+            "Measure build, pull, and startup behavior after each change."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Drill: first optimization",
+          "prompt": "A Node image is huge and still contains compilers, test files, and caches. What is the first high-value move?",
+          "answerHtml": "<p>Use a multi-stage build so only the runtime artifacts and production dependencies land in the final image.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Image size affects delivery speed.",
+            "Build cache strategy is a performance tool.",
+            "Multi-stage builds are high leverage.",
+            "Measure both build-time and runtime effects."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why do smaller images matter?",
+          "answerHtml": "<p>They usually build, transfer, and start more efficiently.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why should you measure after optimizing a Dockerfile?",
+          "answerHtml": "<p>Because some changes help build speed, some help pull speed, and some affect runtime behavior differently.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the relationship between image size and delivery speed?",
+          "answerHtml": "<p>Smaller images usually build, transfer, and start faster, which improves developer loops and deployment speed.</p>"
+        }
+      ]
+    },
+    {
+      "id": "debugging-introspection",
+      "intro": "Debugging containers is mostly about making process state, configuration, filesystem, and networking visible.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Debugging starts with observation, not rebuilding blindly",
+          "html": "<p>docker ps, logs, exec, inspect, stats, and top each expose a different part of container reality.</p><p>The goal is to determine whether the issue lives in the image, the runtime config, the process, the network, or the surrounding environment.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Debugging lenses",
+          "items": [
+            {
+              "label": "logs",
+              "html": "<p>Best when the app already emits useful runtime information.</p>"
+            },
+            {
+              "label": "exec",
+              "html": "<p>Useful for inspecting filesystem, environment, and process state live.</p>"
+            },
+            {
+              "label": "inspect",
+              "html": "<p>Useful for ports, mounts, commands, and networking metadata.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "A clean debugging flow",
+          "steps": [
+            "Confirm whether the container is running, restarting, or exiting.",
+            "Inspect logs and recent exit behavior.",
+            "Check config, mounts, ports, and environment.",
+            "Only then rebuild or change the image if evidence points there."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Common debugging commands",
+          "language": "bash",
+          "code": "docker ps -a\ndocker logs my-app\ndocker inspect my-app\ndocker exec -it my-app sh",
+          "caption": "These commands reveal lifecycle, output, configuration, and live runtime state."
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Debugging is about choosing the right visibility lens.",
+            "Inspect logs and config before rebuilding.",
+            "Image, runtime, and network issues are different categories.",
+            "A structured flow saves time."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What does docker logs show?",
+          "answerHtml": "<p>Stdout and stderr from the container's main process.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is rebuilding too early often wasteful?",
+          "answerHtml": "<p>Because many issues are runtime configuration problems that inspection would reveal faster.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is docker inspect often more useful than rebuilding during an incident?",
+          "answerHtml": "<p>Because many failures come from runtime config, mounts, ports, or environment assumptions rather than a fundamentally bad image build.</p>"
+        }
+      ]
+    },
+    {
+      "id": "cicd-production-image-workflows",
+      "intro": "Production image workflows connect source code, CI, registries, scanning, and deployment provenance.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Containers are release artifacts in CI/CD",
+          "html": "<p>A mature pipeline builds images from versioned source, tests them, scans them, pushes them, and deploys known artifacts.</p><p>That keeps provenance clean and makes rollback much more reliable.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Healthy image delivery",
+          "items": [
+            {
+              "label": "Build once",
+              "html": "<p>Create the artifact once from a known commit.</p>"
+            },
+            {
+              "label": "Scan and test",
+              "html": "<p>Validate the image before promotion.</p>"
+            },
+            {
+              "label": "Promote, do not rebuild",
+              "html": "<p>Reuse the same artifact across environments.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Container release pipeline basics",
+          "steps": [
+            "Build from a specific source revision.",
+            "Run tests and scanning.",
+            "Push to a trusted registry with clear version labels.",
+            "Deploy and keep rollback references available."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: rebuilding per environment",
+          "tone": "pitfall",
+          "html": "<p>If every environment rebuilds the image separately, it becomes harder to prove staging and production ran the same artifact.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Images are release artifacts, not byproducts.",
+            "Build once, validate, then promote.",
+            "Scanning and provenance improve trust.",
+            "Rebuilding per environment weakens artifact integrity."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why is build-once, deploy-many valuable for containers?",
+          "answerHtml": "<p>It ensures each environment runs the same tested artifact.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why does provenance matter in container delivery?",
+          "answerHtml": "<p>Because teams need to know exactly which source revision and artifact reached production and how to roll it back.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why does build-once promote-many improve rollback quality?",
+          "answerHtml": "<p>Because every environment receives the same known artifact, so rollback targets stay precise and comparable.</p>"
+        }
+      ]
+    },
+    {
+      "id": "orchestration-context-swarm-kubernetes-mental-model",
+      "intro": "Docker alone is one-host container management. Orchestration begins when scheduling and recovery span more than one host.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Containers and orchestration are separate layers",
+          "html": "<p>Docker teaches image and container fundamentals. Orchestration systems solve scheduling, self-healing, scaling, and service coordination across fleets.</p><p>That is why Docker knowledge still matters even when the production environment is orchestrated by something else.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Docker vs orchestration",
+          "items": [
+            {
+              "label": "Docker runtime",
+              "html": "<p>Packages and runs containers, mainly with host-level scope.</p>"
+            },
+            {
+              "label": "Swarm-style mental model",
+              "html": "<p>Adds cluster-style scheduling ideas closer to Docker workflows.</p>"
+            },
+            {
+              "label": "Kubernetes mental model",
+              "html": "<p>Adds declarative cluster state and controller-driven reconciliation at larger scale.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "When orchestration becomes necessary",
+          "steps": [
+            "Need to schedule across multiple hosts.",
+            "Need automated restarts and rollout control.",
+            "Need cluster-wide service discovery and scaling.",
+            "Need fleet-level operational patterns beyond one host."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Drill: Docker vs Kubernetes",
+          "prompt": "Are Docker and Kubernetes competitors?",
+          "answerHtml": "<p>They operate at different layers. Docker is about packaging and running containers, while Kubernetes orchestrates many containerized workloads across a cluster.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Docker fundamentals and orchestration are related but different.",
+            "One-host container management is not full orchestration.",
+            "Good Docker knowledge still matters underneath orchestration.",
+            "Cluster scheduling introduces a new operational layer."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What problem does orchestration solve that Docker alone does not fully solve?",
+          "answerHtml": "<p>Multi-host scheduling, service coordination, and fleet-level lifecycle management.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is Docker knowledge still useful in Kubernetes environments?",
+          "answerHtml": "<p>Because images, process model, runtime behavior, and debugging fundamentals still matter underneath the orchestration layer.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why does orchestration not replace the need to understand Docker fundamentals?",
+          "answerHtml": "<p>Because images, entrypoints, filesystem layout, and process behavior still shape how workloads behave under the orchestrator.</p>"
+        }
+      ]
+    },
+    {
+      "id": "container-architecture-patterns-anti-patterns",
+      "intro": "Good container architecture keeps images purposeful, services cohesive, and runtime assumptions explicit.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Containers are healthiest when they stay boring",
+          "html": "<p>A clean container architecture usually means one clear service responsibility, one clean build pipeline, and deliberate configuration injection.</p><p>Anti-patterns often appear when teams use containers to hide messy host assumptions instead of simplifying deployment.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Container design patterns",
+          "items": [
+            {
+              "label": "Cohesive service image",
+              "html": "<p>One service, one startup path, one clear runtime responsibility.</p>"
+            },
+            {
+              "label": "Kitchen-sink image",
+              "html": "<p>Too many tools and responsibilities bundled together.</p>"
+            },
+            {
+              "label": "Host-coupled image",
+              "html": "<p>Works only because of hidden assumptions about one environment.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Container architecture review questions",
+          "steps": [
+            "Does this image package one clear responsibility?",
+            "Are config and secrets injected cleanly at runtime?",
+            "Can the image start and stop predictably?",
+            "Is the artifact small and understandable enough to operate confidently?"
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: using containers to hide bad deployment discipline",
+          "tone": "warning",
+          "html": "<p>A container can still be brittle if it depends on implicit host files, manual runtime fixes, or undocumented environment setup.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Cohesion is a strong design signal.",
+            "Hidden host assumptions weaken portability.",
+            "Smaller clearer images are easier to operate.",
+            "Containers package systems; they do not excuse messy systems."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is a container anti-pattern?",
+          "answerHtml": "<p>A choice that makes the image or runtime harder to understand, secure, or operate safely.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is host-coupled container design risky?",
+          "answerHtml": "<p>Because portability and reproducibility suffer when the image only works because of one machine or one environment.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a sign a container image is hiding a bad deployment model?",
+          "answerHtml": "<p>If it only works because of undocumented host setup, manual fixes, or bundled unrelated tools, the image is masking architectural debt.</p>"
+        }
+      ]
+    },
+    {
+      "id": "interview-mastery-production-troubleshooting",
+      "intro": "This capstone chapter turns Docker mechanics into interview-grade reasoning about builds, runtime failures, security, and delivery.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Strong Docker answers combine build, runtime, and operations",
+          "html": "<p>Interviewers want more than command recall. They want to hear how you think about images, runtime lifecycle, debugging, security, and production-safe delivery.</p><p>Troubleshooting answers are strongest when they separate image problems from runtime configuration and environment problems.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Answer quality ladder",
+          "items": [
+            {
+              "label": "Command-only",
+              "html": "<p>Names docker run or docker exec without explaining why.</p>"
+            },
+            {
+              "label": "Reasoned",
+              "html": "<p>Explains the relevant layer such as image, process, volume, or network.</p>"
+            },
+            {
+              "label": "Senior",
+              "html": "<p>Adds security, provenance, risk, and rollback thinking.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Structure of a strong Docker answer",
+          "steps": [
+            "Confirm whether the problem is build-time, startup-time, runtime, or networking related.",
+            "Use logs, inspect, and process-state checks first.",
+            "Choose the smallest safe fix at the correct layer.",
+            "Preserve artifact traceability through CI/CD."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Capstone drill",
+          "prompt": "A container works locally but fails in production with permission denied when writing uploaded files. Where do you reason first?",
+          "answerHtml": "<p>Check runtime user identity, mounted volume permissions, and whether the image assumed root access locally. This is likely a runtime filesystem and permissions issue, not a pure build problem.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Docker interviews reward layer-by-layer reasoning.",
+            "Build, runtime, network, volume, and security issues are different problem classes.",
+            "Good production answers mention provenance and rollback.",
+            "Small evidence-driven fixes beat random rebuilds."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is Docker used for?",
+          "answerHtml": "<p>It packages and runs applications in containers with consistent images and runtime behavior.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the difference between a volume and a bind mount?",
+          "answerHtml": "<p>A volume is Docker-managed persistent storage, while a bind mount maps a host path directly.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "Why does a container stop when its main process stops?",
+          "answerHtml": "<p>Because the container lifecycle is tied to the main foreground process.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is an image tag?",
+          "answerHtml": "<p>A human-friendly label that identifies an image version in a registry.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why do multi-stage builds matter?",
+          "answerHtml": "<p>They keep build dependencies out of the final runtime image.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why is latest a weak production tag?",
+          "answerHtml": "<p>Because it is mutable and weakens provenance and rollback clarity.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What does docker inspect help confirm?",
+          "answerHtml": "<p>Ports, mounts, environment variables, commands, and networking configuration.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why is localhost networking confusing in containers?",
+          "answerHtml": "<p>Because localhost inside a container refers only to that same container.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why should secrets not be baked into images?",
+          "answerHtml": "<p>Because image layers are durable distributed artifacts and hard to clean later.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why is build-once, promote-many valuable?",
+          "answerHtml": "<p>Because each environment runs the same tested artifact instead of separate rebuilds.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you explain container security in one sentence?",
+          "answerHtml": "<p>Trusted images, minimal privilege, clean secret handling, and controlled exposure.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is a huge image usually a smell?",
+          "answerHtml": "<p>It often includes unnecessary tooling or files that slow delivery and widen attack surface.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When would you choose a bind mount over a volume?",
+          "answerHtml": "<p>When direct host-path access is intentional, especially in local development.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can an image work locally but fail in production?",
+          "answerHtml": "<p>Because runtime environment, permissions, networking, or injected configuration can differ.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What makes a strong Dockerfile?",
+          "answerHtml": "<p>A small, clear, cache-friendly build that produces a production-ready runtime image.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you decide whether a problem is image or container related?",
+          "answerHtml": "<p>If the packaged filesystem or startup intent is wrong, it is an image issue. If runtime config or environment is wrong, it is a container or deployment issue.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Why is PID 1 important in container interviews?",
+          "answerHtml": "<p>It reveals whether you understand signal handling, shutdown, and child-process behavior.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What would you inspect first if a container restarts in a loop?",
+          "answerHtml": "<p>Logs, exit behavior, restart policy, command, and any missing configuration or dependency.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you keep Docker from becoming only a works-on-my-machine wrapper?",
+          "answerHtml": "<p>Use clean images, reproducible builds, explicit runtime config, CI validation, and immutable artifacts.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you explain Docker versus Kubernetes briefly but accurately?",
+          "answerHtml": "<p>Docker handles packaging and running containers, while Kubernetes manages many containerized workloads across a cluster.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What makes a Docker answer sound senior?",
+          "answerHtml": "<p>It distinguishes build from runtime, includes security and provenance, and chooses debugging steps based on evidence.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Why do containers not remove the need to understand Linux process behavior?",
+          "answerHtml": "<p>Because containers are still processes running on a host kernel.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Why should verification be part of every Docker troubleshooting answer?",
+          "answerHtml": "<p>Because the fix is not complete until the artifact or runtime now behaves as intended in the target environment.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is one fast sign of a healthy container workflow?",
+          "answerHtml": "<p>Teams can trace an image back to source, rebuild it reproducibly, and roll it back safely.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain image immutability in practical delivery terms?",
+          "answerHtml": "<p>It means the packaged artifact should not mutate after build, which improves reproducibility, promotion safety, and rollback clarity.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can containers still fail because of host-level realities?",
+          "answerHtml": "<p>Because they still depend on the host kernel, filesystem, runtime limits, and surrounding network environment.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What makes a container image production-ready rather than only locally convenient?",
+          "answerHtml": "<p>A small trusted base, clear entrypoint, minimal privilege, clean config injection, and traceable build provenance.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why do teams sometimes misuse Docker as a packaging bandage?",
+          "answerHtml": "<p>Because it can hide poor deployment discipline or hidden host assumptions without actually simplifying the underlying system.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you talk about startup failures without blaming Docker too quickly?",
+          "answerHtml": "<p>Separate image content, entrypoint behavior, runtime configuration, and dependency availability before deciding where the fault really lives.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the relationship between container logs and application logging quality?",
+          "answerHtml": "<p>Docker can surface stdout and stderr, but the application still has to emit useful, structured, and actionable logs.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is container provenance a supply-chain concern?",
+          "answerHtml": "<p>Because images are distributed artifacts, so teams need to know where they came from, what they contain, and which source produced them.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How should you think about container limits and resource pressure?",
+          "answerHtml": "<p>As part of runtime design, because memory and CPU constraints influence stability, latency, and how the app fails under load.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can a successful docker build still produce a bad deployment artifact?",
+          "answerHtml": "<p>Because a build can succeed while still packaging unnecessary files, unsafe defaults, poor permissions, or the wrong startup assumptions.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What makes local Docker development healthy instead of fragile?",
+          "answerHtml": "<p>Clean Compose wiring, clear volume usage, explicit environment setup, and minimal hidden host assumptions.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you keep container debugging from turning into guesswork?",
+          "answerHtml": "<p>Use logs, inspect output, runtime metadata, and process-state checks first so each next step is evidence-driven.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is the senior mistake in saying 'Docker solves deployment'?",
+          "answerHtml": "<p>It ignores that Docker solves packaging and consistency, while secure delivery, orchestration, observability, and rollback are still system design problems.</p>"
+        }
+      ]
+    }
+  ]
+}

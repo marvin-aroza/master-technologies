@@ -1,0 +1,1258 @@
+{
+  "id": "aws",
+  "title": "AWS Mastery Bible",
+  "subtitle": "Global infrastructure, IAM, compute, networking, storage, resilience, and real architecture tradeoffs",
+  "heroStats": [
+    {
+      "label": "Chapters",
+      "value": "14"
+    },
+    {
+      "label": "Interview",
+      "value": "75 Q&A"
+    },
+    {
+      "label": "Coverage",
+      "value": "Core AWS"
+    },
+    {
+      "label": "Updated",
+      "value": "2026"
+    }
+  ],
+  "tabs": [
+    {
+      "id": "cloud-foundations-global-infrastructure",
+      "label": "Cloud Foundations"
+    },
+    {
+      "id": "iam-identities-accounts-security-boundaries",
+      "label": "IAM & Accounts"
+    },
+    {
+      "id": "compute-ec2-lambda-containers-runtimes",
+      "label": "Compute Services"
+    },
+    {
+      "id": "networking-vpc-subnets-routing-dns",
+      "label": "Networking & VPC"
+    },
+    {
+      "id": "storage-s3-ebs-efs-glacier",
+      "label": "Storage Services"
+    },
+    {
+      "id": "databases-rds-dynamodb-elasticache-redshift",
+      "label": "Databases"
+    },
+    {
+      "id": "messaging-integration-sqs-sns-eventbridge-step-functions",
+      "label": "Messaging & Integration"
+    },
+    {
+      "id": "observability-operations-cloudwatch-cloudtrail-config",
+      "label": "Observability & Ops"
+    },
+    {
+      "id": "deployment-delivery-cloudformation-cdk-cicd",
+      "label": "Deployment & Delivery"
+    },
+    {
+      "id": "high-availability-scaling-resilience",
+      "label": "Scaling & Resilience"
+    },
+    {
+      "id": "cost-performance-architecture-tradeoffs",
+      "label": "Cost & Tradeoffs"
+    },
+    {
+      "id": "multi-account-governance-enterprise-patterns",
+      "label": "Governance & Enterprise"
+    },
+    {
+      "id": "real-world-aws-architecture-case-studies",
+      "label": "AWS Case Studies"
+    },
+    {
+      "id": "interview-mastery-troubleshooting",
+      "label": "Interviews & Troubleshooting"
+    }
+  ],
+  "sections": [
+    {
+      "id": "cloud-foundations-global-infrastructure",
+      "intro": "AWS gets easier when you start with regions, Availability Zones, and service scope.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "AWS is a platform of regional and global services",
+          "html": "<p>Not every AWS service lives at the same scope. Some are regional, some zonal, and some global or edge-oriented.</p><p>That distinction changes latency, resilience, compliance, and disaster recovery choices.</p><ul><li>Regions are geographic deployments.</li><li>Availability Zones are isolated locations within a region.</li><li>Edge locations reduce user-facing latency.</li><li>Service scope affects architecture decisions.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Region, AZ, and edge",
+          "items": [
+            {
+              "label": "Region",
+              "html": "<p>A geographic deployment area with multiple Availability Zones.</p>"
+            },
+            {
+              "label": "Availability Zone",
+              "html": "<p>An isolated location inside a region used for resilience.</p>"
+            },
+            {
+              "label": "Edge location",
+              "html": "<p>A proximity layer for low-latency delivery patterns.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How location affects architecture",
+          "steps": [
+            "Choose region by latency, compliance, and service support.",
+            "Spread critical workloads across multiple AZs.",
+            "Use edge or global services where user proximity matters.",
+            "Design failover according to the real scope of each service."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Drill: Multi-AZ vs multi-region",
+          "prompt": "Why is deploying in two Availability Zones not the same as a multi-region strategy?",
+          "answerHtml": "<p>Because both AZs still belong to one region and share some regional dependencies. Multi-region adds a wider failure boundary.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "AWS services have different scopes.",
+            "Multi-AZ is not multi-region.",
+            "Location decisions affect latency and resilience.",
+            "Scope awareness is a foundation skill."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is an AWS Region?",
+          "answerHtml": "<p>A geographic deployment area containing multiple Availability Zones.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is service scope important in AWS design?",
+          "answerHtml": "<p>Because zonal, regional, and global services imply different failure and latency assumptions.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is region selection also a product decision?",
+          "answerHtml": "<p>Because latency, compliance, disaster recovery expectations, and even user trust can all be shaped by where the workload runs.</p>"
+        }
+      ]
+    },
+    {
+      "id": "iam-identities-accounts-security-boundaries",
+      "intro": "IAM and account boundaries decide who can do what, from where, and with which blast radius.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Identity is one of the first architecture decisions",
+          "html": "<p>IAM governs principals, permissions, and trust relationships. Every later AWS action depends on the identity model.</p><p>Strong foundations rely on roles, temporary credentials, least privilege, and clear account boundaries.</p><ul><li>Users, roles, and policies solve different identity problems.</li><li>Roles are central to modern AWS access.</li><li>Accounts are strong security and governance boundaries.</li><li>Trust policies decide who may assume a role.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "User, role, and account boundary",
+          "items": [
+            {
+              "label": "IAM user",
+              "html": "<p>Usually minimized in modern practice because long-lived credentials are risky.</p>"
+            },
+            {
+              "label": "IAM role",
+              "html": "<p>Preferred for temporary credentials and assumed access.</p>"
+            },
+            {
+              "label": "AWS account",
+              "html": "<p>A strong blast-radius and governance boundary.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How role assumption works",
+          "steps": [
+            "Authenticate as one principal.",
+            "Match a trust policy that allows role assumption.",
+            "Receive temporary credentials.",
+            "Use the role's permissions for authorization."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Check active identity",
+          "language": "bash",
+          "code": "aws sts get-caller-identity",
+          "caption": "This is one of the fastest ways to verify which account and identity context you are actually using."
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Roles are the core access primitive.",
+            "Trust and permission policies solve different questions.",
+            "Accounts are powerful boundaries.",
+            "Temporary credentials are safer than shared long-lived keys."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is an IAM role?",
+          "answerHtml": "<p>An identity with permissions that trusted principals can assume to receive temporary credentials.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why do mature AWS organizations use multiple accounts?",
+          "answerHtml": "<p>Because accounts provide strong separation for security, billing, governance, and blast radius.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why are IAM roles usually preferred over long-lived users?",
+          "answerHtml": "<p>Roles support temporary credentials and clearer trust boundaries, which lowers long-term credential risk and improves access hygiene.</p>"
+        }
+      ]
+    },
+    {
+      "id": "compute-ec2-lambda-containers-runtimes",
+      "intro": "AWS compute is a tradeoff between control, operational burden, runtime shape, and scaling model.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Compute choice is workload fit",
+          "html": "<p>EC2 gives host-level control, Lambda gives event-driven serverless execution, and containers sit between them with different tradeoffs.</p><p>The right compute choice depends on runtime behavior, latency tolerance, team skill set, and operational appetite.</p><ul><li>EC2 offers flexibility and control.</li><li>Lambda removes server management for suitable workloads.</li><li>Containers package services consistently.</li><li>Managed orchestration shifts operational burden rather than eliminating it.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "EC2 vs Lambda vs containers",
+          "items": [
+            {
+              "label": "EC2",
+              "html": "<p>Best when you need operating-system control or long-lived processes.</p>"
+            },
+            {
+              "label": "Lambda",
+              "html": "<p>Best for event-driven and stateless-enough workloads.</p>"
+            },
+            {
+              "label": "Containers",
+              "html": "<p>Best when packaging portability and service consistency matter.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Choosing a compute platform",
+          "steps": [
+            "Profile the workload shape.",
+            "Estimate scaling and cold-start tolerance.",
+            "Decide how much control is truly needed.",
+            "Match the team's operational capacity to the platform burden."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Drill: justify EC2",
+          "prompt": "When would EC2 still be a better answer than Lambda?",
+          "answerHtml": "<p>When you need long-lived processes, custom runtime or OS control, or a workload pattern that does not fit Lambda well.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Compute choice is a workload tradeoff.",
+            "Control and convenience usually move in opposite directions.",
+            "Containers are a packaging and runtime consistency tool.",
+            "Good answers connect platform fit to workload shape."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the main difference between EC2 and Lambda?",
+          "answerHtml": "<p>EC2 gives server-level control, while Lambda runs code in an event-driven serverless model.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What makes Lambda a poor fit?",
+          "answerHtml": "<p>Workloads that need long-lived stateful behavior, deep OS control, or runtime patterns that do not align with event-driven execution.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What would push you toward containers over Lambda?",
+          "answerHtml": "<p>A need for packaging portability, longer-lived processes, or runtime patterns that benefit from consistent containerized deployment rather than event-style execution.</p>"
+        }
+      ]
+    },
+    {
+      "id": "networking-vpc-subnets-routing-dns",
+      "intro": "Networking is where AWS architecture becomes concrete: who can talk to what, through which path, and under what assumptions.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "VPC design is topology plus policy",
+          "html": "<p>A VPC defines a private network boundary, but the real design emerges from subnets, route tables, security controls, and DNS.</p><p>Good networking makes reachability explicit and keeps public exposure narrow and intentional.</p><ul><li>Subnets often separate public and private tiers.</li><li>Route tables control traffic direction.</li><li>Security groups and network ACLs are different layers.</li><li>DNS affects both usability and architecture clarity.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Key networking boundaries",
+          "items": [
+            {
+              "label": "Public subnet",
+              "html": "<p>A subnet with internet-facing routing patterns.</p>"
+            },
+            {
+              "label": "Private subnet",
+              "html": "<p>A subnet without direct public exposure for sensitive tiers.</p>"
+            },
+            {
+              "label": "Security group",
+              "html": "<p>A stateful virtual firewall attached to resources.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How a request reaches a private tier",
+          "steps": [
+            "Enter through a controlled public entry point.",
+            "Pass routing and security checks.",
+            "Reach the private application tier.",
+            "Use outbound paths only where needed."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: flat networks everywhere",
+          "tone": "warning",
+          "html": "<p>A flat network with broad rules is easy to start and hard to secure or reason about later.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "VPC design is reachability design.",
+            "Subnets, routes, and security groups work together.",
+            "Private tiers should stay private by default.",
+            "Networking clarity reduces outages and security mistakes."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is a VPC?",
+          "answerHtml": "<p>A logically isolated virtual network in AWS.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why do teams use private subnets for application and data tiers?",
+          "answerHtml": "<p>To reduce direct internet exposure and force access through controlled network paths.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why are security groups easier to reason about than very broad flat access?",
+          "answerHtml": "<p>Because they describe allowed traffic relationships directly around resources instead of relying on wide implicit trust inside one large network.</p>"
+        }
+      ]
+    },
+    {
+      "id": "storage-s3-ebs-efs-glacier",
+      "intro": "AWS storage is not one thing. Object, block, and file storage solve different problems.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Choose storage by access pattern",
+          "html": "<p>S3, EBS, EFS, and archival tiers exist because workloads read, write, mount, and retain data differently.</p><p>Storage choice affects cost, availability, backup design, and workload behavior.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Object vs block vs file",
+          "items": [
+            {
+              "label": "S3",
+              "html": "<p>Object storage for durable API-based access.</p>"
+            },
+            {
+              "label": "EBS",
+              "html": "<p>Block storage attached to EC2 instances.</p>"
+            },
+            {
+              "label": "EFS",
+              "html": "<p>Shared file storage for workloads that need file semantics across multiple clients.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Selecting the right storage type",
+          "steps": [
+            "Ask whether the workload needs objects, blocks, or files.",
+            "Estimate latency and durability needs.",
+            "Consider attachment model and backup flow.",
+            "Use lifecycle or archive tiers deliberately."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Drill: pick the service",
+          "prompt": "A service needs a shared writable filesystem across multiple instances. Is S3 the right default?",
+          "answerHtml": "<p>No. S3 is object storage. A shared file service such as EFS is usually the closer fit for filesystem semantics.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Storage service choice starts with access semantics.",
+            "S3, EBS, and EFS solve different jobs.",
+            "Durability and attachment model matter.",
+            "Lifecycle management is part of architecture."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the difference between S3 and EBS?",
+          "answerHtml": "<p>S3 is object storage, while EBS is block storage attached to instances.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is access pattern the first storage question?",
+          "answerHtml": "<p>Because object, block, and file services expose different semantics and operational models.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When is S3 the wrong default storage choice?",
+          "answerHtml": "<p>When the workload expects a mounted disk or shared filesystem semantics rather than API-driven object access.</p>"
+        }
+      ]
+    },
+    {
+      "id": "databases-rds-dynamodb-elasticache-redshift",
+      "intro": "Database selection in AWS is always about data model, access pattern, and operational complexity.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "AWS offers database families, not one default answer",
+          "html": "<p>RDS, DynamoDB, ElastiCache, and Redshift exist because transactional, key-value, caching, and analytics workloads are different.</p><p>Good database choices align the service with the workload instead of forcing every problem into one engine.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Database service fit",
+          "items": [
+            {
+              "label": "RDS",
+              "html": "<p>Managed relational database infrastructure.</p>"
+            },
+            {
+              "label": "DynamoDB",
+              "html": "<p>Managed key-value and document database designed around explicit access patterns.</p>"
+            },
+            {
+              "label": "ElastiCache and Redshift",
+              "html": "<p>One accelerates hot-path access, the other targets analytical workloads.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Database selection questions",
+          "steps": [
+            "Define the access pattern.",
+            "Estimate read and write scale.",
+            "Separate primary data from cache and analytics needs.",
+            "Choose the service that matches the workload."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: choosing DynamoDB before knowing the key model",
+          "tone": "pitfall",
+          "html": "<p>DynamoDB can be excellent, but only when access patterns and key design are intentional.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Database choice follows access pattern.",
+            "RDS, DynamoDB, cache, and analytics solve different jobs.",
+            "Caching is not primary storage.",
+            "The wrong database choice becomes operational pain later."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is RDS used for?",
+          "answerHtml": "<p>Managed relational databases such as PostgreSQL or MySQL.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is cache design separate from primary database design?",
+          "answerHtml": "<p>Because caching improves hot paths but does not replace the durability and correctness responsibilities of the primary store.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can DynamoDB design fail long before scale arrives?",
+          "answerHtml": "<p>Because weak key design and unclear access patterns create functional pain even at small traffic levels.</p>"
+        }
+      ]
+    },
+    {
+      "id": "messaging-integration-sqs-sns-eventbridge-step-functions",
+      "intro": "Messaging and integration services let systems decouple, fan out, retry, and coordinate work.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Asynchronous architecture reduces direct coupling",
+          "html": "<p>SQS, SNS, EventBridge, and Step Functions each solve different problems in delivery, routing, and orchestration.</p><p>Choosing the right async primitive affects resilience, observability, and failure behavior.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Messaging service roles",
+          "items": [
+            {
+              "label": "SQS",
+              "html": "<p>Buffers work and decouples producers from consumers.</p>"
+            },
+            {
+              "label": "SNS and EventBridge",
+              "html": "<p>Distribute events to interested consumers.</p>"
+            },
+            {
+              "label": "Step Functions",
+              "html": "<p>Make multi-step workflow state explicit.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Designing an async flow",
+          "steps": [
+            "Choose buffering, fan-out, or orchestration based on the need.",
+            "Match the service to retry and subscriber behavior.",
+            "Design idempotent consumers.",
+            "Instrument the flow for visibility."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Drill: why add a queue?",
+          "prompt": "Why can adding a queue improve resilience even if it adds eventual consistency?",
+          "answerHtml": "<p>Because the queue absorbs spikes, decouples producer availability from consumer speed, and provides a retry boundary.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Async services decouple producers and consumers.",
+            "Queues, pub/sub, and orchestration solve different problems.",
+            "Idempotency matters.",
+            "Failure handling is part of architecture."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is SQS used for?",
+          "answerHtml": "<p>Queueing messages so producers and consumers can operate asynchronously.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is idempotency important in event-driven systems?",
+          "answerHtml": "<p>Because retries and duplicate delivery are normal, so consumers must handle the same logical event safely.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the tradeoff of moving a workflow behind a queue?",
+          "answerHtml": "<p>You gain decoupling and spike absorption, but you also accept asynchronous behavior, retry complexity, and eventual consistency concerns.</p>"
+        }
+      ]
+    },
+    {
+      "id": "observability-operations-cloudwatch-cloudtrail-config",
+      "intro": "Observability and operations determine whether teams can understand and trust their AWS systems under load and failure.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "You cannot operate what you cannot observe",
+          "html": "<p>CloudWatch, CloudTrail, Config, logs, metrics, and alarms answer different operational questions.</p><p>Mature AWS operations connect visibility to action through clear ownership and response paths.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Operational visibility tools",
+          "items": [
+            {
+              "label": "CloudWatch",
+              "html": "<p>Metrics, logs, dashboards, and alarms.</p>"
+            },
+            {
+              "label": "CloudTrail",
+              "html": "<p>AWS API activity for audit and investigation.</p>"
+            },
+            {
+              "label": "AWS Config",
+              "html": "<p>Resource configuration state and compliance tracking over time.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "From signal to response",
+          "steps": [
+            "Instrument useful metrics and logs.",
+            "Create alarms tied to real risk or user impact.",
+            "Route alerts to humans or automation with ownership.",
+            "Use audit trails during investigations."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: alerts without owners",
+          "tone": "warning",
+          "html": "<p>An alarm no one understands or owns becomes noise instead of safety.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Operations need logs, metrics, and audit trails.",
+            "CloudWatch, CloudTrail, and Config solve different questions.",
+            "Alarms should map to clear ownership.",
+            "Observability quality shows up during incidents."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is CloudWatch used for?",
+          "answerHtml": "<p>Metrics, logs, dashboards, and alarms.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is observability an architecture concern?",
+          "answerHtml": "<p>Because visibility shapes detection speed, recovery quality, compliance posture, and operational trust.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why do alerts without ownership fail operations?",
+          "answerHtml": "<p>Because a signal no one understands or owns becomes background noise instead of a reliable trigger for action.</p>"
+        }
+      ]
+    },
+    {
+      "id": "deployment-delivery-cloudformation-cdk-cicd",
+      "intro": "Deployment and delivery in AWS combine infrastructure definition, release mechanics, and safe promotion.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Delivery pipelines connect code change to cloud change",
+          "html": "<p>CloudFormation, CDK, CI/CD pipelines, and artifact systems form the release backbone of AWS platforms.</p><p>The design question is not only how to deploy, but how to review, promote, roll back, and audit changes safely.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Infrastructure delivery choices",
+          "items": [
+            {
+              "label": "CloudFormation",
+              "html": "<p>Declarative infrastructure service with deep AWS integration.</p>"
+            },
+            {
+              "label": "CDK",
+              "html": "<p>Higher-level code that synthesizes to CloudFormation.</p>"
+            },
+            {
+              "label": "CI/CD pipelines",
+              "html": "<p>Validate, package, promote, and deploy change through environments.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "A safe delivery path",
+          "steps": [
+            "Validate application and infrastructure changes.",
+            "Package known artifacts.",
+            "Promote through environments intentionally.",
+            "Keep rollback and audit evidence available."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Delivery mindset checklist",
+          "language": "bash",
+          "code": "# validate\n# package\n# synth or plan\n# deploy to lower env\n# verify\n# promote\n# monitor and rollback if needed",
+          "caption": "Good pipelines make the safe path easy and the risky path hard."
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Delivery includes validation, promotion, and rollback.",
+            "Infrastructure and app changes both need review.",
+            "CDK still lands in CloudFormation semantics.",
+            "Good pipelines improve repeatability and auditability."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is AWS CDK?",
+          "answerHtml": "<p>A framework for defining cloud infrastructure in code and synthesizing it into CloudFormation.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is delivery design part of system design?",
+          "answerHtml": "<p>Because release flow affects risk, recovery speed, and the ability to evolve systems safely.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why should infrastructure deployment and app deployment share provenance thinking?",
+          "answerHtml": "<p>Because both change live systems, and both need traceability, rollback confidence, and auditable release intent.</p>"
+        }
+      ]
+    },
+    {
+      "id": "high-availability-scaling-resilience",
+      "intro": "Resilience on AWS is about architecture choices that continue to work when instances fail, zones degrade, or load spikes harder than expected.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Availability is designed, not purchased",
+          "html": "<p>AWS gives you primitives for scaling and resilience, but the system becomes resilient only when your design uses them deliberately.</p><p>Scaling and high availability are related but not identical ideas.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Scale vs resilience",
+          "items": [
+            {
+              "label": "Scaling",
+              "html": "<p>Helps a system handle more load.</p>"
+            },
+            {
+              "label": "High availability",
+              "html": "<p>Keeps the system usable during failures or maintenance.</p>"
+            },
+            {
+              "label": "Disaster recovery",
+              "html": "<p>Handles broader failure scenarios such as region loss or corruption.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Designing resilient traffic handling",
+          "steps": [
+            "Spread critical workloads across AZs.",
+            "Use health checks and replacement paths.",
+            "Keep stateful bottlenecks explicit.",
+            "Test failover assumptions instead of trusting diagrams."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Drill: challenge the diagram",
+          "prompt": "An architecture claims high availability because it uses auto scaling, but every instance depends on one zonal bottleneck. What is wrong?",
+          "answerHtml": "<p>Scaling the compute tier does not remove the single failure concentration in the dependency chain.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Scaling is not the same as resilience.",
+            "Availability depends on the whole dependency chain.",
+            "Multi-AZ helps only when bottlenecks are addressed too.",
+            "Failover assumptions should be tested."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is high availability?",
+          "answerHtml": "<p>The ability of a system to stay usable through component failures or maintenance.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can auto scaling exist without true resilience?",
+          "answerHtml": "<p>Because extra instances do not fix single points of failure in data stores, networks, or zonal dependencies.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the difference between auto scaling and actual availability?",
+          "answerHtml": "<p>Auto scaling adds capacity, but actual availability depends on whether dependencies and failure domains are also resilient.</p>"
+        }
+      ]
+    },
+    {
+      "id": "cost-performance-architecture-tradeoffs",
+      "intro": "Cost and performance are architecture signals that tell you whether the design matches the workload.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Cost is feedback on architecture quality",
+          "html": "<p>AWS bills along many dimensions, so cost optimization is inseparable from service selection, scaling, and data movement design.</p><p>The best answer is rarely cheapest or fastest in isolation. It is the design that matches the real business and user need.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Cheap, fast, and safe",
+          "items": [
+            {
+              "label": "Cheapest",
+              "html": "<p>Can still be wrong if it harms reliability or user experience.</p>"
+            },
+            {
+              "label": "Fastest",
+              "html": "<p>Can overspend badly if the workload does not need it.</p>"
+            },
+            {
+              "label": "Balanced",
+              "html": "<p>Aligns performance, cost, and operational simplicity with real requirements.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Cost-performance review questions",
+          "steps": [
+            "Identify the real requirement first.",
+            "Measure the biggest cost drivers.",
+            "Optimize the highest-impact bottlenecks.",
+            "Re-check resilience after tuning."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: optimizing cost without knowing traffic shape",
+          "tone": "pitfall",
+          "html": "<p>A cheaper component can become more expensive overall if it increases latency, retries, or operational toil elsewhere.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Cost and performance should be evaluated together.",
+            "The right design is workload-dependent.",
+            "User experience and operational safety matter.",
+            "Measure before and after tuning."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why is AWS cost optimization not only a finance problem?",
+          "answerHtml": "<p>Because cost is shaped directly by architecture choices.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What makes a good AWS cost-performance answer?",
+          "answerHtml": "<p>It connects user requirements, measurement, service tradeoffs, and operational consequences instead of chasing one metric blindly.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can cost optimization increase risk if done naively?",
+          "answerHtml": "<p>Because cheaper components or narrower redundancy can degrade performance or resilience in ways that cost more elsewhere.</p>"
+        }
+      ]
+    },
+    {
+      "id": "multi-account-governance-enterprise-patterns",
+      "intro": "Enterprise AWS design is mostly a question of boundaries, governance, and platform consistency.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Governance should reduce risk without freezing delivery",
+          "html": "<p>As organizations grow, multi-account structure, central identity, logging, and guardrails become platform concerns rather than team-specific choices.</p><p>Strong governance means safe defaults and clear boundaries, not only manual gatekeeping.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Governance layers",
+          "items": [
+            {
+              "label": "Account structure",
+              "html": "<p>The backbone of enterprise separation and control.</p>"
+            },
+            {
+              "label": "Guardrails",
+              "html": "<p>Policies and controls that keep teams inside safe operating boundaries.</p>"
+            },
+            {
+              "label": "Platform enablement",
+              "html": "<p>Reusable paved roads that make compliant delivery easier.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Building an enterprise AWS foundation",
+          "steps": [
+            "Define the account strategy.",
+            "Centralize identity and audit visibility.",
+            "Apply preventive and detective guardrails.",
+            "Offer reusable platform patterns."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Drill: why many accounts?",
+          "prompt": "Why might a growing company move from one AWS account to many before scale becomes huge?",
+          "answerHtml": "<p>Because separate accounts improve security isolation, billing clarity, sandboxing, and blast-radius control long before traffic scale forces the issue.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Enterprise AWS starts with boundaries and guardrails.",
+            "Accounts are strong control points.",
+            "Good governance should support delivery.",
+            "Consistency comes from automation and reusable patterns."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why do enterprises use multiple AWS accounts?",
+          "answerHtml": "<p>To separate environments, teams, workloads, and governance boundaries more safely.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What makes governance effective without slowing teams too much?",
+          "answerHtml": "<p>Safe defaults, reusable platform patterns, clear boundaries, and automated guardrails.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What does multi-account governance buy you beyond billing separation?",
+          "answerHtml": "<p>It gives stronger security isolation, clearer permissions, better blast-radius control, and a cleaner enterprise operating model.</p>"
+        }
+      ]
+    },
+    {
+      "id": "real-world-aws-architecture-case-studies",
+      "intro": "Case studies are where service names turn into real architecture decisions and tradeoffs.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Good architecture answers are structured, not service-shopping",
+          "html": "<p>Real AWS architecture is a set of choices about latency, availability, cost, operational burden, and team capability.</p><p>Case studies force you to justify those choices under realistic constraints instead of listing favorite services.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Common architecture tensions",
+          "items": [
+            {
+              "label": "Speed vs control",
+              "html": "<p>Managed services remove work but reduce some low-level control.</p>"
+            },
+            {
+              "label": "Availability vs cost",
+              "html": "<p>More redundancy usually increases cost and complexity.</p>"
+            },
+            {
+              "label": "Simplicity vs specialization",
+              "html": "<p>Specialized services improve fit but widen the platform surface area.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How to talk through an AWS case study",
+          "steps": [
+            "State the workload and user assumptions.",
+            "Choose services that fit those assumptions.",
+            "Explain failure handling and scaling.",
+            "Name cost and operational tradeoffs honestly."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: service-shopping without a workload model",
+          "tone": "pitfall",
+          "html": "<p>Naming many AWS services without stating workload shape and constraints is architecture theater, not architecture reasoning.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Case studies reward clear assumptions.",
+            "Service choice is meaningful only in context.",
+            "Failure and cost belong in every serious answer.",
+            "Good architecture narratives are structured."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What should you clarify first in an AWS system-design question?",
+          "answerHtml": "<p>Users, traffic shape, latency expectations, data characteristics, and reliability goals.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What makes an AWS case-study answer strong?",
+          "answerHtml": "<p>Clear assumptions, service fit, and honest tradeoffs in resilience, cost, and operations.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do case studies expose weak architecture reasoning quickly?",
+          "answerHtml": "<p>They force you to tie service choices to assumptions, tradeoffs, and failure handling instead of listing popular AWS services.</p>"
+        }
+      ]
+    },
+    {
+      "id": "interview-mastery-troubleshooting",
+      "intro": "This capstone chapter pressures your AWS judgment under troubleshooting and interview conditions.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Strong AWS answers are layered and evidence-driven",
+          "html": "<p>Good AWS interview answers explain why a service fits, what the blast radius is, and how failure would be detected and mitigated.</p><p>Troubleshooting answers become strong when they narrow the problem space by identity, network path, dependency, and recent change.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Troubleshooting answer quality",
+          "items": [
+            {
+              "label": "Weak",
+              "html": "<p>Lists random services to inspect with no failure boundary.</p>"
+            },
+            {
+              "label": "Better",
+              "html": "<p>Starts from symptoms and narrows by layer.</p>"
+            },
+            {
+              "label": "Strong",
+              "html": "<p>Adds recent change, blast radius, mitigation, and evidence order.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "A clean AWS troubleshooting structure",
+          "steps": [
+            "Confirm symptom and impact radius.",
+            "Check recent changes first.",
+            "Narrow by layer: identity, network, compute, storage, data, or async dependency.",
+            "Choose the lowest-risk mitigation while gathering more evidence."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Capstone drill",
+          "prompt": "Users report intermittent 503s only in one Availability Zone behind a load balancer. Where do you start?",
+          "answerHtml": "<p>Start with target health by zone, recent deploys, zonal dependencies, and any network or scaling events that differ in that AZ.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Strong AWS answers are layered.",
+            "Troubleshooting starts with impact and recent change.",
+            "Service definitions are not enough without fit and failure reasoning.",
+            "Mitigation safety matters during incidents."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the difference between a Region and an Availability Zone?",
+          "answerHtml": "<p>A Region is a geographic deployment area, while an Availability Zone is an isolated location inside it.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is IAM used for?",
+          "answerHtml": "<p>Identity, permissions, and trust relationships in AWS.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is S3?",
+          "answerHtml": "<p>AWS object storage for durable scalable object access.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is CloudWatch used for?",
+          "answerHtml": "<p>Metrics, logs, dashboards, and alarms.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When is Lambda a good fit?",
+          "answerHtml": "<p>When the workload is event-driven and benefits from managed scaling with less server ownership.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why are private subnets useful?",
+          "answerHtml": "<p>They reduce direct internet exposure and force traffic through controlled paths.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the value of SQS?",
+          "answerHtml": "<p>It decouples producers from consumers and absorbs spikes or downstream slowness.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is CloudTrail useful for during an incident?",
+          "answerHtml": "<p>It helps trace recent AWS API activity and changes.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why are multiple accounts common in AWS?",
+          "answerHtml": "<p>They improve separation for security, billing, and governance.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why is Multi-AZ not full disaster recovery?",
+          "answerHtml": "<p>Because it still depends on one region.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you choose between EC2 and containers?",
+          "answerHtml": "<p>By comparing control needs, packaging model, scaling shape, and team operational capacity.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is IAM often a first-week architecture topic?",
+          "answerHtml": "<p>Because every later service interaction depends on identity and permission assumptions.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What makes a good AWS networking answer?",
+          "answerHtml": "<p>It explains reachability, segmentation, traffic path, and security boundaries.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is cost optimization inseparable from architecture?",
+          "answerHtml": "<p>Because service selection, scaling, storage, and transfer patterns all shape cost directly.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you narrow an intermittent AWS outage?",
+          "answerHtml": "<p>Start with scope, recent change, and the specific failing layer, then inspect metrics, logs, health checks, and audit trails.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you talk about blast radius in AWS?",
+          "answerHtml": "<p>By naming the boundary that contains failure or change: instance, subnet, zone, region, account, or organization.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What makes an AWS answer sound senior?",
+          "answerHtml": "<p>It connects service choice to workload fit, names tradeoffs, and includes failure handling and operational ownership.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How would you critique one giant VPC for everything?",
+          "answerHtml": "<p>Question segmentation, policy clarity, and whether stronger boundaries such as separate accounts or VPCs are needed.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you decide whether a managed service is worth adopting?",
+          "answerHtml": "<p>Compare the operational work it removes against control limits, cost, integration constraints, and team familiarity.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is a strong answer to 'How would you design for high availability in AWS?'",
+          "answerHtml": "<p>Spread critical workloads across zones, remove single points of failure, and test failover assumptions under realistic traffic.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Why should verification be part of an AWS troubleshooting answer?",
+          "answerHtml": "<p>Because mitigation is not complete until you know the symptom is resolved and the blast radius is contained.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you avoid turning AWS into a memorization exercise?",
+          "answerHtml": "<p>Organize it by scope, identity, compute, data, network, operations, and tradeoffs so service names stay attached to reasoning.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What would you inspect first if a problem affects users in only one geography?",
+          "answerHtml": "<p>Edge, DNS, routing, and regional path differences before assuming the whole application stack is down.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Why do AWS case-study questions reward assumptions first?",
+          "answerHtml": "<p>Because service choice only makes sense when workload, latency, scale, and reliability expectations are stated clearly.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain the shared responsibility model in practical architecture terms?",
+          "answerHtml": "<p>AWS secures the underlying cloud services, but you still own how identities, data, network exposure, and application behavior are designed and operated.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is account strategy often one of the most important AWS design decisions?",
+          "answerHtml": "<p>Because accounts define strong boundaries for security, blast radius, billing, and organizational ownership.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What makes a good answer to 'Why not just use Lambda for everything?'",
+          "answerHtml": "<p>A good answer compares workload shape, operational needs, runtime control, latency behavior, and packaging complexity instead of treating one service as universally best.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you think about AWS service limits in design interviews?",
+          "answerHtml": "<p>As part of capacity planning and risk management, because quotas and service characteristics shape what is safe at scale.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why do edge and CDN layers matter even when the origin stack is healthy?",
+          "answerHtml": "<p>Because user experience is shaped by geography, latency, and caching behavior before requests ever reach the origin application tier.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the difference between designing for high availability and designing for disaster recovery?",
+          "answerHtml": "<p>High availability focuses on surviving common local failures, while disaster recovery prepares for broader failures such as region loss or severe data events.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How should you talk about managed services in AWS interviews?",
+          "answerHtml": "<p>As tradeoffs that reduce operational burden while introducing different control, cost, or integration constraints.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is IAM debugging often a first-class troubleshooting skill?",
+          "answerHtml": "<p>Because many AWS failures are really identity, trust, or permission failures that surface as service-level problems.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What makes a cloud cost conversation sound senior?",
+          "answerHtml": "<p>Connecting spend to architecture boundaries, workload shape, and operational choices instead of chasing discounts without context.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you keep AWS architecture from turning into service memorization?",
+          "answerHtml": "<p>Organize it by identity, network, compute, data, operations, and tradeoffs so each service stays attached to a system-design reason.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the operational value of clear tagging and resource metadata?",
+          "answerHtml": "<p>It improves cost attribution, ownership, automation, governance, and incident response across large AWS estates.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is the senior mistake in saying 'AWS is just a bunch of services'?",
+          "answerHtml": "<p>It ignores that real AWS mastery is about boundaries, failure domains, and operating models, not only service definitions.</p>"
+        }
+      ]
+    }
+  ]
+}
