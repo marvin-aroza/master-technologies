@@ -19,6 +19,7 @@ import oopsData from "@/data/topics/oops.json";
 import postgresqlData from "@/data/topics/postgresql.json";
 import pythonData from "@/data/topics/python.json";
 import reactData from "@/data/topics/react.json";
+import sqlData from "@/data/topics/sql.json";
 import systemDesignData from "@/data/topics/system-design.json";
 import terraformData from "@/data/topics/terraform.json";
 import uxuiData from "@/data/topics/uxui.json";
@@ -132,6 +133,12 @@ const TOPICS: Record<string, TopicConfig> = {
     accentColor: "#61dafb",
     title: "React - DevLore Encyclopedia",
     description: "Hooks, patterns, performance and 100+ interview Q&A. 8 chapters.",
+  },
+  "sql": {
+    data: sqlData as TopicData,
+    accentColor: "#2563eb",
+    title: "SQL - DevLore Encyclopedia",
+    description: "Portable SQL, joins, reporting, analytical queries, business scenarios, and 116+ interview Q&A across 14 mastery chapters.",
   },
   "system-design": {
     data: systemDesignData as TopicData,

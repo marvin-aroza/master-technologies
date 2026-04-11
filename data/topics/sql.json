@@ -1,0 +1,972 @@
+{
+  "id": "sql",
+  "title": "SQL Mastery Encyclopedia",
+  "subtitle": "Database-agnostic SQL from basics to advanced query design, analytics, business systems, and interview-ready reasoning for 2026.",
+  "heroStats": [
+    { "label": "Chapters", "value": "14" },
+    { "label": "Core Q&A", "value": "116" },
+    { "label": "Coverage", "value": "Queries+Analytics" },
+    { "label": "Updated", "value": "2026" }
+  ],
+  "tabs": [
+    { "id": "what-sql-is-relational-data-works", "label": "SQL Foundations" },
+    { "id": "select-filtering-sorting-shaping-results", "label": "SELECT & Filtering" },
+    { "id": "joins-multi-table-reasoning", "label": "Joins" },
+    { "id": "aggregation-grouping-reporting-queries", "label": "Aggregation & Reporting" },
+    { "id": "subqueries-ctes-query-composition", "label": "Subqueries & CTEs" },
+    { "id": "window-functions-analytical-sql", "label": "Window Functions" },
+    { "id": "insert-update-delete-data-modification-patterns", "label": "Data Modification" },
+    { "id": "transactions-consistency-concurrency-basics", "label": "Transactions" },
+    { "id": "schema-design-constraints-data-integrity", "label": "Schema & Integrity" },
+    { "id": "indexes-query-performance-execution-behavior", "label": "Indexes & Performance" },
+    { "id": "real-world-query-patterns-business-systems", "label": "Business Query Patterns" },
+    { "id": "sql-across-engines-dialect-differences", "label": "Dialects" },
+    { "id": "debugging-refactoring-safe-production-sql", "label": "Debugging & Safety" },
+    { "id": "interview-mastery-query-problem-solving", "label": "Interview Mastery" }
+  ],
+  "sections": [
+    {
+      "id": "what-sql-is-relational-data-works",
+      "intro": "Start with the real mental model: SQL is the language used to ask precise questions about structured relational data, not just a bag of keywords to memorize.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>SQL works best when you think in rows, tables, keys, and result shape. A table is not just a spreadsheet; it represents one kind of entity at a chosen grain such as one row per order, one row per ledger entry, or one row per support ticket.</p><ul><li>Primary keys identify rows.</li><li>Foreign keys connect related entities.</li><li>The quality of the query depends on understanding the grain of the source tables.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Relational thinking versus sheet thinking",
+          "items": [
+            {
+              "label": "Relational model",
+              "html": "<p>Normalizes related facts into connected tables so updates, joins, and integrity rules stay consistent.</p>"
+            },
+            {
+              "label": "Spreadsheet thinking",
+              "html": "<p>Often repeats data across columns and rows, which feels simple at first but quickly creates drift and update problems.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How to read any schema",
+          "steps": [
+            "Ask what one row represents in each table.",
+            "Find the primary key that identifies each row.",
+            "Find foreign keys that connect the tables.",
+            "Decide which table should be the starting row set for the question you want to answer.",
+            "Only then start writing the query."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "A simple commerce schema",
+          "language": "sql",
+          "code": "CREATE TABLE customers (\\n  customer_id BIGINT PRIMARY KEY,\\n  email VARCHAR(255) NOT NULL UNIQUE,\\n  created_at TIMESTAMP NOT NULL\\n);\\n\\nCREATE TABLE orders (\\n  order_id BIGINT PRIMARY KEY,\\n  customer_id BIGINT NOT NULL,\\n  status VARCHAR(40) NOT NULL,\\n  ordered_at TIMESTAMP NOT NULL,\\n  total_cents BIGINT NOT NULL,\\n  FOREIGN KEY (customer_id) REFERENCES customers(customer_id)\\n);",
+          "caption": "This schema models one row per customer and one row per order. That row grain is what every later query depends on."
+        },
+        {
+          "type": "trap",
+          "title": "Common beginner mistake",
+          "html": "<p>People often ask a business question before identifying the row grain they need. That is how teams end up joining the wrong tables, duplicating facts, and trusting wrong numbers.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Reasoning drill",
+          "prompt": "If one table is one row per order and another is one row per order item, what risk appears the moment you join them?",
+          "answerHtml": "<p>The order-level rows can multiply into one row per item, which changes totals, counts, and averages unless you handle the new grain carefully.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "SQL starts with understanding row grain, not clause order alone.",
+            "Keys define identity and relationships.",
+            "Wrong mental models produce wrong numbers even when the syntax is valid."
+          ]
+        }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "What is the first thing you should understand before writing a query?", "answerHtml": "<p>Understand what one row represents in each table and which table should be the starting grain for the answer you want.</p>" },
+        { "level": "advanced", "question": "Why is a table not just a spreadsheet?", "answerHtml": "<p>Because tables participate in keys, constraints, and relationships that let the database enforce structure and support correct joins.</p>" },
+        { "level": "advanced", "question": "How would you explain a foreign key in an interview?", "answerHtml": "<p>A foreign key ties rows in one table to valid rows in another table so relationships stay consistent and queries can reason across entities safely.</p>" },
+        { "level": "expert", "question": "Why does row grain matter so much in analytics SQL?", "answerHtml": "<p>Because counts, sums, and averages are only correct when you know whether the current rows represent customers, orders, items, payments, or something else.</p>" },
+        { "level": "expert", "question": "What production symptom often points to a row-grain mistake?", "answerHtml": "<p>Dashboards showing inflated revenue, duplicated counts, or impossible averages are classic signs that the join shape changed the grain unexpectedly.</p>" }
+      ]
+    },
+    {
+      "id": "select-filtering-sorting-shaping-results",
+      "intro": "Great SQL starts by shaping the exact answer you need instead of pulling everything and hoping the application layer cleans it up later.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>`SELECT` is about result shape. `WHERE` narrows rows, `ORDER BY` controls presentation, and expressions let you derive useful values directly in the query. Strong SQL asks for exactly the columns and rows the business question requires.</p><ul><li>Explicit projection improves readability.</li><li>Filters belong as early as possible for correctness and usually for performance.</li><li>Sorting should be intentional, not accidental.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Focused projection versus lazy projection",
+          "items": [
+            {
+              "label": "Explicit columns",
+              "html": "<p>Makes the intent obvious, reduces network transfer, and protects callers from accidental schema drift.</p>"
+            },
+            {
+              "label": "SELECT *",
+              "html": "<p>Feels fast in development but usually creates hidden coupling, over-fetching, and review friction in production queries.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "A simple query-writing flow",
+          "steps": [
+            "Start from the source table at the correct grain.",
+            "Filter to the rows that matter.",
+            "Project only the columns or expressions the answer needs.",
+            "Sort only if consumers need a stable order.",
+            "Limit results intentionally when browsing or building ranked views."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Recent paid orders for a shopping site",
+          "language": "sql",
+          "code": "SELECT\\n  order_id,\\n  customer_id,\\n  total_cents,\\n  ordered_at,\\n  total_cents / 100.0 AS total_amount\\nFROM orders\\nWHERE status = 'paid'\\n  AND ordered_at >= DATE '2026-04-01'\\nORDER BY ordered_at DESC\\nFETCH FIRST 20 ROWS ONLY;",
+          "caption": "This query is easy to review because the result shape, filters, and ordering are all explicit."
+        },
+        {
+          "type": "trap",
+          "title": "Common mistake",
+          "html": "<p>Using application code to filter large unfiltered result sets is usually a correctness and performance smell. If the database can narrow the answer safely, let the database do it.</p>",
+          "tone": "pitfall"
+        },
+        {
+          "type": "drill",
+          "title": "Business drill",
+          "prompt": "A product manager asks for the 50 newest refunded orders with customer id and refund amount. What should you think about before writing the query?",
+          "answerHtml": "<p>Identify the source table, the refund status or refund event column, the exact fields needed, the date ordering, and whether refund amount lives on the order row or in a related payments table.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "Think in result shape, not just syntax.",
+            "Prefer explicit columns over SELECT *.",
+            "Use filters and ordering intentionally."
+          ]
+        }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "Why is SELECT * usually discouraged in production SQL?", "answerHtml": "<p>Because it hides intent, over-fetches data, and couples consumers to every column whether they need it or not.</p>" },
+        { "level": "advanced", "question": "What is the practical difference between filtering in SQL and filtering in application code?", "answerHtml": "<p>SQL filtering reduces the row set at the source, which usually makes the result safer, cheaper to transfer, and easier to reason about.</p>" },
+        { "level": "advanced", "question": "How do aliases improve query quality?", "answerHtml": "<p>Aliases make derived expressions and renamed fields easier to read, especially when a query feeds reports or application responses.</p>" },
+        { "level": "expert", "question": "Why can ORDER BY be dangerous if used casually?", "answerHtml": "<p>Sorting large result sets can be expensive, and ordering by the wrong column can hide bugs or produce unstable business views.</p>" },
+        { "level": "expert", "question": "What makes a simple SELECT answer sound senior in an interview?", "answerHtml": "<p>A strong answer explains result shape, correctness, projection discipline, and how the query would behave in a real dataset.</p>" }
+      ]
+    },
+    {
+      "id": "joins-multi-table-reasoning",
+      "intro": "Joins are where SQL becomes genuinely powerful and genuinely dangerous, because this is where row multiplication and wrong business results begin.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>A join combines related rows from multiple tables. The hard part is not remembering join keywords; it is predicting the shape of the combined rows after the relationship is applied.</p><ul><li>An inner join keeps only matching rows.</li><li>A left join preserves all rows from the left side even when matches are missing.</li><li>One-to-many joins can multiply rows and change aggregates.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "INNER JOIN versus LEFT JOIN",
+          "items": [
+            {
+              "label": "INNER JOIN",
+              "html": "<p>Use when you only care about rows that have a valid match in the related table.</p>"
+            },
+            {
+              "label": "LEFT JOIN",
+              "html": "<p>Use when every left-side row matters even if the related table has no match yet.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How to reason about joins safely",
+          "steps": [
+            "State the row grain before the join.",
+            "State the relationship cardinality between the tables.",
+            "Predict what one row can become after the join.",
+            "Only then aggregate, filter, or count."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Orders joined to customers",
+          "language": "sql",
+          "code": "SELECT\\n  o.order_id,\\n  o.ordered_at,\\n  c.email,\\n  o.total_cents\\nFROM orders AS o\\nINNER JOIN customers AS c\\n  ON c.customer_id = o.customer_id\\nWHERE o.status = 'paid';",
+          "caption": "This join is safe because each order belongs to one customer, so the row grain stays one row per order."
+        },
+        {
+          "type": "trap",
+          "title": "Common join bug",
+          "html": "<p>Joining orders to order_items and then summing order totals inflates revenue because one order row can repeat once per item.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Debugging drill",
+          "prompt": "A revenue dashboard doubled after adding a join to order_items. What is the first thing you should inspect?",
+          "answerHtml": "<p>Inspect the new row grain. If the join changed one row per order into one row per item, order-level totals will duplicate unless you regroup or aggregate at the right level.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "Join keywords are easy; join reasoning is the real skill.",
+            "Always predict row multiplication before aggregating.",
+            "LEFT JOIN is for preserving unmatched left-side rows."
+          ]
+        }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "When would you choose LEFT JOIN over INNER JOIN?", "answerHtml": "<p>Use LEFT JOIN when all rows from the left table must remain visible even if related rows are missing.</p>" },
+        { "level": "advanced", "question": "Why do joins create duplicate-looking rows so often?", "answerHtml": "<p>Because the relationship may be one-to-many, so one source row legitimately matches many related rows after the join.</p>" },
+        { "level": "advanced", "question": "How do you explain join cardinality in an interview?", "answerHtml": "<p>Describe how many rows on one side can match a single row on the other side and how that changes the result-set grain.</p>" },
+        { "level": "expert", "question": "What is an accidental cartesian product?", "answerHtml": "<p>It is a result where rows combine without a valid join condition, causing every relevant row from one side to pair with many rows from the other side.</p>" },
+        { "level": "expert", "question": "What makes a join answer production-ready?", "answerHtml": "<p>A production-ready answer names the row grain before and after the join, the relationship cardinality, and the downstream effect on counts and sums.</p>" }
+      ]
+    },
+    {
+      "id": "aggregation-grouping-reporting-queries",
+      "intro": "Aggregation turns row-level data into business answers like revenue totals, order counts, conversion rates, and operational reports.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>Aggregation changes the grain of a result set. Instead of returning one row per order or payment, you return one row per group such as one row per customer, one row per day, or one row per region.</p><ul><li>GROUP BY defines the new grain.</li><li>Aggregate functions summarize the rows inside each group.</li><li>HAVING filters groups after aggregation happens.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "WHERE versus HAVING",
+          "items": [
+            {
+              "label": "WHERE",
+              "html": "<p>Filters raw rows before grouping. Use it to narrow input data.</p>"
+            },
+            {
+              "label": "HAVING",
+              "html": "<p>Filters grouped results after aggregation. Use it when the filter depends on aggregate values.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How grouped queries change grain",
+          "steps": [
+            "Start with row-level input.",
+            "Filter raw rows with WHERE.",
+            "Choose the columns that define one output group.",
+            "Aggregate everything else per group.",
+            "Use HAVING only for aggregate-based conditions."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Monthly paid-order report",
+          "language": "sql",
+          "code": "SELECT\\n  DATE_TRUNC('month', ordered_at) AS order_month,\\n  COUNT(*) AS paid_orders,\\n  SUM(total_cents) / 100.0 AS gross_revenue\\nFROM orders\\nWHERE status = 'paid'\\nGROUP BY DATE_TRUNC('month', ordered_at)\\nHAVING COUNT(*) >= 100\\nORDER BY order_month;",
+          "caption": "This query intentionally changes the grain from one row per order to one row per month."
+        },
+        {
+          "type": "trap",
+          "title": "Common mistake",
+          "html": "<p>Mixing non-grouped columns into a grouped query usually means you have not decided the output grain clearly enough. If the output is one row per month, a random order_id does not belong there.</p>",
+          "tone": "pitfall"
+        },
+        {
+          "type": "drill",
+          "title": "Reporting drill",
+          "prompt": "How would you write a report for customers with more than 5 paid orders this quarter, and why is HAVING involved?",
+          "answerHtml": "<p>You would group rows by customer and use HAVING on the aggregated order count, because the filter depends on the summary value after grouping.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "Aggregation changes the result grain.",
+            "WHERE filters rows; HAVING filters groups.",
+            "Strong reporting queries make the output grain explicit."
+          ]
+        }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "What does GROUP BY really do?", "answerHtml": "<p>It changes the output from raw rows to grouped summaries at the grain defined by the grouped columns.</p>" },
+        { "level": "advanced", "question": "Why is HAVING not a replacement for WHERE?", "answerHtml": "<p>Because HAVING runs after grouping and is for aggregate-based conditions, while WHERE filters the raw input rows first.</p>" },
+        { "level": "advanced", "question": "How do you explain output grain in a grouped query?", "answerHtml": "<p>Say that each unique combination of GROUP BY columns becomes one row in the output.</p>" },
+        { "level": "expert", "question": "Why do grouped queries often break when people add more columns to SELECT?", "answerHtml": "<p>Because extra columns may not match the grouped output grain, which makes the query logically inconsistent or forces unwanted regrouping.</p>" },
+        { "level": "expert", "question": "What makes an aggregation answer sound senior?", "answerHtml": "<p>Explaining how the grouping changes result shape, where filters belong, and how joins can distort the aggregates if row grain is wrong.</p>" }
+      ]
+    },
+    {
+      "id": "subqueries-ctes-query-composition",
+      "intro": "As SQL grows more complex, the real challenge becomes composition and readability, not just whether the database accepts the query.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>Subqueries and CTEs help break complex logic into smaller understandable pieces. Good query composition makes the business logic visible instead of hiding it inside one giant unreadable statement.</p><ul><li>Subqueries are useful when a query needs another query's result as input.</li><li>CTEs name intermediate logic and often make review easier.</li><li>Correlated subqueries can be powerful but are easy to misuse.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "CTE versus nested subquery",
+          "items": [
+            {
+              "label": "CTE",
+              "html": "<p>Usually better when the intermediate step has business meaning and should be named clearly for humans reading the query.</p>"
+            },
+            {
+              "label": "Nested subquery",
+              "html": "<p>Fine for short local logic, but can become hard to debug if the nesting becomes deep.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How to decompose a complex query",
+          "steps": [
+            "Write down the final answer shape first.",
+            "List the intermediate business concepts needed to reach that answer.",
+            "Turn those concepts into subqueries or CTEs with clear names.",
+            "Join or filter the steps together carefully at the right grain."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "CTE for recent high-value customers",
+          "language": "sql",
+          "code": "WITH recent_paid_orders AS (\\n  SELECT customer_id, total_cents\\n  FROM orders\\n  WHERE status = 'paid'\\n    AND ordered_at >= CURRENT_DATE - INTERVAL '30' DAY\\n)\\nSELECT\\n  customer_id,\\n  SUM(total_cents) / 100.0 AS spend_last_30_days\\nFROM recent_paid_orders\\nGROUP BY customer_id\\nHAVING SUM(total_cents) >= 50000\\nORDER BY spend_last_30_days DESC;",
+          "caption": "The CTE names the intermediate business concept first, which makes the main query easier to review."
+        },
+        {
+          "type": "trap",
+          "title": "Common mistake",
+          "html": "<p>Developers often use a correlated subquery because it feels quick, then discover later that a clearer join or window function would have been easier to optimize and review.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Composition drill",
+          "prompt": "When should you introduce a CTE instead of adding another nested layer to the FROM clause?",
+          "answerHtml": "<p>Introduce a CTE when an intermediate result has clear business meaning, needs reuse, or is making the final query too hard to understand inline.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "Query composition is as much about readability as syntax.",
+            "CTEs are excellent for naming business logic.",
+            "Not every complex query should become a deeply correlated subquery."
+          ]
+        }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "What is a CTE used for?", "answerHtml": "<p>A CTE gives a name to an intermediate query step so the overall logic becomes easier to read and reason about.</p>" },
+        { "level": "advanced", "question": "What is a correlated subquery?", "answerHtml": "<p>It is a subquery that depends on values from the outer query row currently being processed.</p>" },
+        { "level": "advanced", "question": "Why do complex SQL reviews often prefer CTEs?", "answerHtml": "<p>Because named intermediate steps make business meaning and debugging easier for humans reading the query later.</p>" },
+        { "level": "expert", "question": "What is the danger of overusing CTEs?", "answerHtml": "<p>Too many tiny CTEs can make a query feel fragmented, so they should clarify the logic rather than scatter it.</p>" },
+        { "level": "expert", "question": "How do you explain query composition maturity in an interview?", "answerHtml": "<p>Talk about balancing correctness, readability, reuse, and performance instead of treating any single SQL construct as always superior.</p>" }
+      ]
+    },
+    {
+      "id": "window-functions-analytical-sql",
+      "intro": "Window functions are where SQL graduates from simple reporting to serious analytical work without losing detail rows.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>Window functions compute values across related rows while still returning the original detail rows. That makes them ideal for rankings, running totals, comparison to previous rows, and many product or finance analytics questions.</p><ul><li>Partitioning defines the group of related rows.</li><li>Ordering defines the sequence inside that partition.</li><li>The original rows stay visible while analytical values are added.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "GROUP BY versus window functions",
+          "items": [
+            {
+              "label": "GROUP BY",
+              "html": "<p>Collapses detail rows into one row per group.</p>"
+            },
+            {
+              "label": "Window functions",
+              "html": "<p>Keep detail rows while adding analytical calculations across related rows.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How to reason about windows",
+          "steps": [
+            "Choose the rows that belong together with PARTITION BY.",
+            "Choose their sequence with ORDER BY.",
+            "Pick the analytical calculation such as rank, lag, running sum, or moving average.",
+            "Remember that the original detail rows still remain in the output."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Running balance for a banking ledger",
+          "language": "sql",
+          "code": "SELECT\\n  account_id,\\n  posted_at,\\n  amount_cents,\\n  SUM(amount_cents) OVER (\\n    PARTITION BY account_id\\n    ORDER BY posted_at\\n    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW\\n  ) AS running_balance_cents\\nFROM ledger_entries\\nORDER BY account_id, posted_at;",
+          "caption": "Window functions let finance teams compute a running balance without collapsing the underlying ledger rows."
+        },
+        {
+          "type": "trap",
+          "title": "Common mistake",
+          "html": "<p>People often reach for GROUP BY when they really need the detail rows to stay visible. That usually means the correct tool is a window function instead.</p>",
+          "tone": "pitfall"
+        },
+        {
+          "type": "drill",
+          "title": "Analytical drill",
+          "prompt": "How would you find the most recent order per customer without losing the order row details?",
+          "answerHtml": "<p>Use a window function such as ROW_NUMBER partitioned by customer and ordered by order date descending, then keep only the row number 1 records.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "Window functions keep detail rows while adding analytics.",
+            "PARTITION BY defines the group; ORDER BY defines the sequence.",
+            "They solve many ranking and running-total problems more cleanly than grouped queries."
+          ]
+        }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "What problem do window functions solve that GROUP BY does not?", "answerHtml": "<p>They let you calculate across related rows while still returning the original detail rows instead of collapsing them.</p>" },
+        { "level": "advanced", "question": "What is PARTITION BY doing in a window function?", "answerHtml": "<p>It defines which rows belong to the same analytical group for the calculation.</p>" },
+        { "level": "advanced", "question": "When would you use ROW_NUMBER over RANK?", "answerHtml": "<p>Use ROW_NUMBER when every row needs a unique sequence number even if values tie. Use RANK when tied rows should share rank positions.</p>" },
+        { "level": "expert", "question": "Why are window functions common in product analytics and finance?", "answerHtml": "<p>Because those domains often need running totals, retention sequences, most recent events, and comparisons to previous records without losing the detailed event rows.</p>" },
+        { "level": "expert", "question": "What makes a window-function answer sound strong in an interview?", "answerHtml": "<p>Explain the partition, the order, the frame when relevant, and why grouped output would lose information the business still needs.</p>" }
+      ]
+    },
+    {
+      "id": "insert-update-delete-data-modification-patterns",
+      "intro": "Writing data is where SQL starts affecting real customers, balances, and inventory counts, so safety matters more than cleverness.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>`INSERT`, `UPDATE`, and `DELETE` change business reality. Strong mutation SQL is careful, scoped, reversible when needed, and easy for teammates to review.</p><ul><li>Always know exactly which rows will change.</li><li>Prefer explicit predicates and reviewable statements.</li><li>Production write paths should protect correctness first.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Safe write habits versus dangerous write habits",
+          "items": [
+            {
+              "label": "Safe writes",
+              "html": "<p>Preview row scope, use clear predicates, and often pair the change with a transaction or audit strategy.</p>"
+            },
+            {
+              "label": "Dangerous writes",
+              "html": "<p>Run broad updates or deletes without verifying row count, keys, or rollback options.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Reserve inventory for a paid order",
+          "language": "sql",
+          "code": "UPDATE inventory\\nSET reserved_units = reserved_units + 1\\nWHERE sku = 'SKU-4488'\\n  AND available_units - reserved_units > 0;",
+          "caption": "A mutation should describe the exact business rule it is enforcing, not just change values blindly."
+        },
+        {
+          "type": "trap",
+          "title": "Common mistake",
+          "html": "<p>The classic disaster is a missing WHERE clause on UPDATE or DELETE. The more subtle disaster is a WHERE clause that is syntactically valid but semantically too broad.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Write-path drill",
+          "prompt": "What should you do before running a production UPDATE that changes customer subscription status?",
+          "answerHtml": "<p>Confirm the predicate with a SELECT first, understand expected row count, use a transaction where appropriate, and make sure rollback or audit recovery is possible.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "Write statements affect real business state.",
+            "Verify row scope before mutating data.",
+            "Correctness and recoverability matter more than brevity."
+          ]
+        }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "Why should you preview a write query with SELECT first?", "answerHtml": "<p>It confirms which rows match the predicate before you mutate real data.</p>" },
+        { "level": "advanced", "question": "What makes an UPDATE production-safe?", "answerHtml": "<p>A clear predicate, known row scope, transaction awareness, and usually some recovery path if the change is wrong.</p>" },
+        { "level": "advanced", "question": "Why are broad deletes especially risky in business systems?", "answerHtml": "<p>Because they can remove customer, payment, or audit-critical data that may be difficult or impossible to reconstruct accurately.</p>" },
+        { "level": "expert", "question": "How do you explain idempotent write patterns in SQL-backed systems?", "answerHtml": "<p>Design the write path so repeated execution does not create duplicate or inconsistent state, often through keys, constraints, or status guards.</p>" },
+        { "level": "expert", "question": "What makes a write-path answer sound senior?", "answerHtml": "<p>Name the row scope, correctness rule, transaction boundary, and recovery strategy instead of focusing only on syntax.</p>" }
+      ]
+    },
+    {
+      "id": "transactions-consistency-concurrency-basics",
+      "intro": "Transactions are where SQL meets business correctness directly, especially in flows like account transfers, order placement, and payment reconciliation.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>A transaction groups related statements so the system sees them as one consistent unit of work. That matters when partial success would leave balances, stock levels, or workflow state incorrect.</p><ul><li>Atomicity means all or nothing.</li><li>Consistency means rules still hold after the transaction.</li><li>Concurrency means many transactions may overlap in time.</li></ul>"
+        },
+        {
+          "type": "mechanics",
+          "title": "Transaction thinking in a bank transfer",
+          "steps": [
+            "Start the transfer transaction.",
+            "Debit one account.",
+            "Credit the other account.",
+            "Validate that the combined business rule still holds.",
+            "Commit only if the full unit of work is correct."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Transfer pattern",
+          "language": "sql",
+          "code": "BEGIN;\\n\\nUPDATE accounts\\nSET balance_cents = balance_cents - 5000\\nWHERE account_id = 10;\\n\\nUPDATE accounts\\nSET balance_cents = balance_cents + 5000\\nWHERE account_id = 22;\\n\\nCOMMIT;",
+          "caption": "The point of the transaction is that the system should not see the debit without the matching credit."
+        },
+        {
+          "type": "trap",
+          "title": "Common mistake",
+          "html": "<p>Running logically connected statements outside one transaction can create partial business state if one step succeeds and the next fails.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Concurrency drill",
+          "prompt": "Why do transactions matter for inventory reservations during a flash sale?",
+          "answerHtml": "<p>Because many buyers may try to reserve the same stock at once, and the system must avoid overselling or partially applied inventory updates.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "Transactions protect multi-step business correctness.",
+            "Partial success is often unacceptable in finance and order flows.",
+            "Concurrency is why transaction design matters even more at scale."
+          ]
+        }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "What problem does a transaction solve?", "answerHtml": "<p>It ensures that related data changes happen as one unit instead of leaving partial business state behind.</p>" },
+        { "level": "advanced", "question": "Why are transactions critical in banking systems?", "answerHtml": "<p>Because balances, transfers, and ledger correctness cannot tolerate half-applied operations.</p>" },
+        { "level": "advanced", "question": "What does rollback give you?", "answerHtml": "<p>It lets the database discard the partial work of a transaction if something goes wrong before commit.</p>" },
+        { "level": "expert", "question": "How do concurrency problems appear even when every single SQL statement is valid?", "answerHtml": "<p>Two valid statements can still interleave in ways that violate business rules unless the transaction strategy and isolation model handle the overlap.</p>" },
+        { "level": "expert", "question": "What makes a transaction answer sound mature in an interview?", "answerHtml": "<p>Connecting the transaction boundary to a real business invariant such as balance correctness, inventory integrity, or idempotent payment processing.</p>" }
+      ]
+    },
+    {
+      "id": "schema-design-constraints-data-integrity",
+      "intro": "Good SQL starts before the query. It starts with schemas and constraints that make correct data easier to store and bad data harder to create.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>Schema design is where business rules become structural rules. Constraints turn assumptions into enforcement so application bugs have less power to corrupt data.</p><ul><li>Primary keys protect identity.</li><li>Foreign keys protect relationships.</li><li>Unique and check constraints protect domain rules.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Application-only validation versus database-backed integrity",
+          "items": [
+            {
+              "label": "Application-only validation",
+              "html": "<p>Useful but insufficient on its own because multiple services or scripts can still write inconsistent data.</p>"
+            },
+            {
+              "label": "Database-backed integrity",
+              "html": "<p>Adds a final line of defense so invalid relationships or duplicate values are rejected at the source of truth.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Constraints for subscription billing",
+          "language": "sql",
+          "code": "CREATE TABLE subscriptions (\\n  subscription_id BIGINT PRIMARY KEY,\\n  customer_id BIGINT NOT NULL,\\n  plan_code VARCHAR(50) NOT NULL,\\n  status VARCHAR(30) NOT NULL,\\n  started_at TIMESTAMP NOT NULL,\\n  ended_at TIMESTAMP,\\n  UNIQUE (customer_id, plan_code, started_at),\\n  CHECK (status IN ('trial', 'active', 'past_due', 'cancelled')),\\n  CHECK (ended_at IS NULL OR ended_at >= started_at)\\n);",
+          "caption": "Constraints keep impossible states out of the table instead of hoping every writer always remembers the rules."
+        },
+        {
+          "type": "trap",
+          "title": "Common mistake",
+          "html": "<p>Teams often skip constraints to move faster, then spend far more time cleaning duplicate, orphaned, or logically impossible data later.</p>",
+          "tone": "pitfall"
+        },
+        {
+          "type": "drill",
+          "title": "Modeling drill",
+          "prompt": "Why might a banking ledger avoid updating historical entry rows directly and instead append new rows?",
+          "answerHtml": "<p>Because append-only ledger models preserve auditability, reduce ambiguity, and make historical reconstruction safer than destructive rewrites of past facts.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "Schema design is part of query quality because bad data produces bad answers.",
+            "Constraints protect invariants at the source of truth.",
+            "Strong integrity rules reduce cleanup work later."
+          ]
+        }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "Why are constraints part of SQL mastery and not just schema setup?", "answerHtml": "<p>Because query correctness depends on the integrity of the underlying rows, keys, and relationships.</p>" },
+        { "level": "advanced", "question": "What does a check constraint protect?", "answerHtml": "<p>It enforces a domain rule such as allowed statuses, valid ranges, or valid relationships between columns.</p>" },
+        { "level": "advanced", "question": "Why are foreign keys valuable even when the application already validates?", "answerHtml": "<p>They protect the data from bugs, scripts, backfills, or other writers that might bypass application checks.</p>" },
+        { "level": "expert", "question": "What makes schema design difficult in real systems?", "answerHtml": "<p>Balancing integrity, flexibility, historical accuracy, performance, and future change without baking in the wrong assumptions too early.</p>" },
+        { "level": "expert", "question": "How do you explain data integrity in an interview beyond definitions?", "answerHtml": "<p>Connect each constraint type to a real failure it prevents such as duplicate billing, orphaned rows, or impossible date ranges.</p>" }
+      ]
+    },
+    {
+      "id": "indexes-query-performance-execution-behavior",
+      "intro": "Performance matters after correctness, and SQL performance starts with understanding why the database reads the rows it reads.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>Indexes help the database find relevant rows faster, but they are not magic. Good performance reasoning asks what the query filters on, how selective those filters are, and whether the result must still inspect many rows anyway.</p><ul><li>Indexes can accelerate lookup, filtering, joins, and sorting.</li><li>They also cost storage and write overhead.</li><li>The best index depends on workload, not folklore.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Helpful index versus wasteful index",
+          "items": [
+            {
+              "label": "Helpful index",
+              "html": "<p>Matches frequent predicates, join keys, or ordering patterns that matter in production.</p>"
+            },
+            {
+              "label": "Wasteful index",
+              "html": "<p>Exists only because someone guessed it might help, but it rarely serves the real workload and still slows writes.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Index for a support queue",
+          "language": "sql",
+          "code": "CREATE INDEX idx_tickets_status_priority_created_at\\n  ON tickets (status, priority, created_at);\\n\\nSELECT ticket_id, customer_id, priority, created_at\\nFROM tickets\\nWHERE status = 'open'\\nORDER BY priority DESC, created_at ASC\\nFETCH FIRST 50 ROWS ONLY;",
+          "caption": "A good index mirrors the real filter and ordering pattern of the workload."
+        },
+        {
+          "type": "trap",
+          "title": "Common mistake",
+          "html": "<p>Adding indexes without measuring real workload often creates write slowdowns and maintenance cost without fixing the slow query that actually matters.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Performance drill",
+          "prompt": "A query on orders by customer_id is still slow after adding an index on status. What should you inspect next?",
+          "answerHtml": "<p>Inspect the actual predicates and ordering of the slow query. The new index may not align with the columns the workload really filters or sorts by.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "Indexes help when they match real workload patterns.",
+            "Correctness comes first, then measured tuning.",
+            "Every index has a write and maintenance cost."
+          ]
+        }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "Why do indexes speed up many queries?", "answerHtml": "<p>They reduce the amount of data the database must scan to find matching rows or produce a useful order.</p>" },
+        { "level": "advanced", "question": "Why is every slow query not automatically solved by adding an index?", "answerHtml": "<p>Because the bottleneck may come from poor query shape, low-selectivity filters, row multiplication, or an index that does not match the workload.</p>" },
+        { "level": "advanced", "question": "What is the tradeoff cost of indexes?", "answerHtml": "<p>They consume storage and usually make inserts, updates, and deletes more expensive because the index structures must be maintained.</p>" },
+        { "level": "expert", "question": "How would you explain selectivity in an interview?", "answerHtml": "<p>Selectivity is how effectively a predicate narrows rows. Highly selective filters usually benefit more from indexing than filters that match most of the table.</p>" },
+        { "level": "expert", "question": "What makes a SQL performance answer sound senior?", "answerHtml": "<p>Explaining workload shape, filter selectivity, join pattern, and why a particular index would or would not serve the real query.</p>" }
+      ]
+    },
+    {
+      "id": "real-world-query-patterns-business-systems",
+      "intro": "This chapter brings the language together in the places interviewers and real teams care about most: shopping, banking, subscriptions, support, and analytics.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>Real systems do not ask abstract textbook questions. They ask things like: which customers are churning, which orders are delayed, which accounts are overdrawn, which SKUs are at risk, and which agents are missing SLA targets.</p><ul><li>Business queries are about domain meaning plus SQL mechanics.</li><li>The best query mirrors the business process clearly.</li><li>Naming and readability matter when many teams reuse the logic.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Real business domains and their SQL shape",
+          "items": [
+            {
+              "label": "Shopping systems",
+              "html": "<p>Common patterns include order history, cart abandonment, inventory availability, refund rates, and repeat customer metrics.</p>"
+            },
+            {
+              "label": "Banking systems",
+              "html": "<p>Common patterns include ledger balances, suspicious transfer patterns, delinquency views, and transaction reconciliation.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Returning customers with repeat paid orders",
+          "language": "sql",
+          "code": "SELECT\\n  customer_id,\\n  COUNT(*) AS paid_order_count,\\n  SUM(total_cents) / 100.0 AS lifetime_spend\\nFROM orders\\nWHERE status = 'paid'\\nGROUP BY customer_id\\nHAVING COUNT(*) >= 2\\nORDER BY lifetime_spend DESC;",
+          "caption": "This is a common shopping-site question because it mixes retention thinking with business reporting."
+        },
+        {
+          "type": "trap",
+          "title": "Common mistake",
+          "html": "<p>Domain-blind SQL can answer the wrong question precisely. For example, counting authorization attempts as successful payments or mixing refunded orders into net revenue is a business-definition bug, not a syntax bug.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Business drill",
+          "prompt": "How would you find accounts with three or more failed transfer attempts in the last hour?",
+          "answerHtml": "<p>Start from the transfer-attempt event table, filter the last hour and failure status, group by account, and use HAVING on the failure count.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "Real SQL must reflect real business definitions.",
+            "Domain understanding is part of query correctness.",
+            "Shopping, banking, and analytics queries often differ more in semantics than syntax."
+          ]
+        }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "Why are real-world SQL examples more valuable than abstract toy tables?", "answerHtml": "<p>Because they teach how domain rules affect query correctness, not just how syntax works in isolation.</p>" },
+        { "level": "advanced", "question": "What is a business-definition bug in SQL?", "answerHtml": "<p>It is a query that is syntactically valid but answers the wrong business question because the statuses, events, or metrics were defined incorrectly.</p>" },
+        { "level": "advanced", "question": "Why do shopping-site queries often need careful status filtering?", "answerHtml": "<p>Because paid, pending, refunded, cancelled, and partially fulfilled orders mean different things for revenue and operations.</p>" },
+        { "level": "expert", "question": "What makes banking SQL especially sensitive to correctness?", "answerHtml": "<p>Because balances, transfers, and fraud-related queries can have regulatory and financial consequences if the logic is wrong.</p>" },
+        { "level": "expert", "question": "How do you explain business-query maturity in an interview?", "answerHtml": "<p>Show that you ask clarifying questions about event meaning, row grain, status definitions, and edge cases before writing the query.</p>" }
+      ]
+    },
+    {
+      "id": "sql-across-engines-dialect-differences",
+      "intro": "Portable SQL matters, but production teams also need to know where engines diverge in syntax, functions, and capabilities.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>Most core SQL ideas transfer across engines, but details differ: date functions, limit syntax, common table expression behavior, string helpers, and advanced features are not always identical. Strong engineers separate the universal SQL idea from the engine-specific syntax.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Common engine differences",
+          "items": [
+            {
+              "label": "Portable SQL",
+              "html": "<p>SELECT, joins, grouping, core aggregates, and many window functions are conceptually portable even when exact syntax varies.</p>"
+            },
+            {
+              "label": "Dialect-specific SQL",
+              "html": "<p>Date math, pagination style, string functions, upsert patterns, and advanced types often differ between engines.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Pagination syntax example",
+          "language": "sql",
+          "code": "-- Portable style in many modern engines\\nSELECT order_id, customer_id\\nFROM orders\\nORDER BY ordered_at DESC\\nFETCH FIRST 25 ROWS ONLY;\\n\\n-- Another common style\\nSELECT order_id, customer_id\\nFROM orders\\nORDER BY ordered_at DESC\\nLIMIT 25;",
+          "caption": "The business query is the same, but the exact syntax can vary by engine."
+        },
+        {
+          "type": "trap",
+          "title": "Common mistake",
+          "html": "<p>People sometimes learn one engine first and assume every function or convenience feature is universal. That creates fragile migrations and misleading interview answers.</p>",
+          "tone": "interview"
+        },
+        {
+          "type": "drill",
+          "title": "Adaptation drill",
+          "prompt": "How do you keep SQL portable when your team supports multiple engines?",
+          "answerHtml": "<p>Use standard constructs where practical, isolate engine-specific features behind well-named views or data-access layers, and document any non-portable assumptions explicitly.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "Learn SQL ideas separately from one engine's syntax.",
+            "Dialect differences matter most around functions and advanced features.",
+            "Portability is a design choice, not an accident."
+          ]
+        }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "Why is database-agnostic SQL worth learning first?", "answerHtml": "<p>Because the core reasoning about joins, grouping, and result shape transfers across engines even when syntax details differ.</p>" },
+        { "level": "advanced", "question": "What kinds of SQL features differ most by dialect?", "answerHtml": "<p>Date handling, pagination syntax, upsert semantics, string functions, JSON support, and some analytical helpers vary a lot between engines.</p>" },
+        { "level": "advanced", "question": "How do you explain portability tradeoffs in an interview?", "answerHtml": "<p>Portable SQL improves flexibility, but engine-specific features can be worth it when the business benefit is strong and the dependency is explicit.</p>" },
+        { "level": "expert", "question": "Why is relying on one engine's convenience functions risky?", "answerHtml": "<p>It can make migrations harder, confuse teammates who know another engine, and hide which parts of the query are truly universal SQL logic.</p>" },
+        { "level": "expert", "question": "What makes a dialect answer sound senior?", "answerHtml": "<p>Separate the universal relational idea from the engine-specific syntax and explain when portability matters versus when engine features are justified.</p>" }
+      ]
+    },
+    {
+      "id": "debugging-refactoring-safe-production-sql",
+      "intro": "Debugging SQL is often about proving what result shape you actually produced and why it differs from the one the business expected.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>Most SQL bugs are not syntax bugs. They are logic bugs: wrong join shape, wrong grain, bad status definitions, null handling, or an unsafe write path. Debugging SQL means isolating each assumption one layer at a time.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Readable SQL versus fragile SQL",
+          "items": [
+            {
+              "label": "Readable SQL",
+              "html": "<p>Uses clear aliases, intentional steps, and intermediate checks that make wrong results easier to spot.</p>"
+            },
+            {
+              "label": "Fragile SQL",
+              "html": "<p>Hides logic in giant statements where no one can tell which clause changed the result incorrectly.</p>"
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Spotting a duplicate-row bug",
+          "language": "sql",
+          "code": "-- Risky: order totals duplicate after joining to item rows\\nSELECT o.order_id, o.total_cents\\nFROM orders AS o\\nJOIN order_items AS oi\\n  ON oi.order_id = o.order_id;\\n\\n-- Safer debugging question\\nSELECT o.order_id, COUNT(*) AS joined_rows\\nFROM orders AS o\\nJOIN order_items AS oi\\n  ON oi.order_id = o.order_id\\nGROUP BY o.order_id\\nORDER BY joined_rows DESC;",
+          "caption": "A good debugging move is to measure how the join changed row counts before trusting any totals built on top of it."
+        },
+        {
+          "type": "trap",
+          "title": "Common mistake",
+          "html": "<p>Trying random query edits without first stating the expected row grain and the suspected source of error usually makes SQL debugging slower, not faster.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Production drill",
+          "prompt": "A DELETE statement is correct but scary. How do you make it safer to run in production?",
+          "answerHtml": "<p>Preview the exact row set with SELECT, use a transaction if supported by the workflow, capture expected row count, and make sure recovery or audit information exists.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "Most SQL failures are logic failures, not parser failures.",
+            "Debug row shape, row counts, and business definitions explicitly.",
+            "Production-safe SQL is reviewable, scoped, and recoverable."
+          ]
+        }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "Why can a SQL query be valid but still wrong?", "answerHtml": "<p>Because the syntax can be legal while the result shape, join logic, or business definition is incorrect.</p>" },
+        { "level": "advanced", "question": "What is a good first debugging step for a suspicious aggregate query?", "answerHtml": "<p>Inspect the pre-aggregation row set and row counts to see whether joins or filters changed the grain unexpectedly.</p>" },
+        { "level": "advanced", "question": "Why are NULLs a frequent SQL bug source?", "answerHtml": "<p>Because NULL interacts differently with comparison logic, joins, and aggregates than many developers expect.</p>" },
+        { "level": "expert", "question": "What makes SQL refactoring safe?", "answerHtml": "<p>Preserving the intended result shape, checking row counts and sample outputs, and introducing readability improvements without changing business meaning accidentally.</p>" },
+        { "level": "expert", "question": "How do you explain safe production SQL in an interview?", "answerHtml": "<p>Talk about reviewability, transaction boundaries, row-scope verification, and recoverability rather than just writing shorter statements.</p>" }
+      ]
+    },
+    {
+      "id": "interview-mastery-query-problem-solving",
+      "intro": "This final chapter turns the full topic into interview-ready query problem solving: clarifying the question, modeling the schema, choosing the SQL approach, and explaining tradeoffs out loud.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Interview mental model",
+          "html": "<p>Strong SQL interview performance is not just about remembering syntax. It is about clarifying the grain, naming assumptions, choosing the right query shape, and explaining why the query is correct before talking about optimization.</p><ul><li>Clarify schema and business meaning first.</li><li>Start with correctness, then optimize.</li><li>Explain joins, grouping, and edge cases out loud.</li></ul>"
+        },
+        {
+          "type": "mechanics",
+          "title": "A strong interview workflow",
+          "steps": [
+            "Restate what one row should represent in the final answer.",
+            "Clarify missing schema assumptions before writing.",
+            "Choose the source table and join path deliberately.",
+            "State whether the answer is detail-level, grouped, or analytical.",
+            "Explain correctness before performance tuning."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Classic interview pattern",
+          "language": "sql",
+          "code": "WITH ranked_orders AS (\\n  SELECT\\n    customer_id,\\n    order_id,\\n    ordered_at,\\n    ROW_NUMBER() OVER (\\n      PARTITION BY customer_id\\n      ORDER BY ordered_at DESC\\n    ) AS rn\\n  FROM orders\\n)\\nSELECT customer_id, order_id, ordered_at\\nFROM ranked_orders\\nWHERE rn = 1;",
+          "caption": "This pattern is common because it tests whether you understand partitions, ordering, and preserving the full detail row."
+        },
+        {
+          "type": "trap",
+          "title": "Interview trap",
+          "html": "<p>Jumping straight into syntax without clarifying assumptions often leads to a technically polished query that answers the wrong business question.</p>",
+          "tone": "interview"
+        },
+        {
+          "type": "drill",
+          "title": "Pressure drill",
+          "prompt": "When an interviewer asks for the top 3 products by revenue per category, what should you say before typing?",
+          "answerHtml": "<p>Clarify whether revenue comes from paid orders only, whether refunded items count, what row grain the sales table uses, and whether ties should share rank or be cut off at three rows.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "Interview SQL is about reasoning plus syntax.",
+            "Clarify assumptions before you write.",
+            "Correctness first, optimization second."
+          ]
+        }
+      ],
+      "qa": [
+        { "level": "intermediate", "question": "What is the difference between WHERE and HAVING?", "answerHtml": "<p>WHERE filters raw rows before grouping. HAVING filters grouped results after aggregation.</p>" },
+        { "level": "intermediate", "question": "When would you use LEFT JOIN instead of INNER JOIN?", "answerHtml": "<p>Use LEFT JOIN when the left-side rows must stay visible even if no related row exists on the right.</p>" },
+        { "level": "intermediate", "question": "Why is SELECT * usually weak in interview answers?", "answerHtml": "<p>It hides intent and ignores the importance of shaping the result explicitly.</p>" },
+        { "level": "intermediate", "question": "What does GROUP BY do to row grain?", "answerHtml": "<p>It changes the output to one row per unique combination of grouped columns.</p>" },
+        { "level": "intermediate", "question": "What problem do aggregate functions solve?", "answerHtml": "<p>They summarize many rows into counts, sums, averages, mins, maxes, and similar grouped answers.</p>" },
+        { "level": "intermediate", "question": "Why is row grain the first concept to clarify in SQL interviews?", "answerHtml": "<p>Because everything else in the query depends on what one output row is supposed to represent.</p>" },
+        { "level": "intermediate", "question": "What is a foreign key useful for in query reasoning?", "answerHtml": "<p>It tells you how entities connect, which informs the join path and expected cardinality.</p>" },
+        { "level": "intermediate", "question": "What is the usual purpose of ORDER BY?", "answerHtml": "<p>It gives a deliberate output order for ranking, presentation, or stable pagination.</p>" },
+        { "level": "intermediate", "question": "Why can COUNT(*) change after a join?", "answerHtml": "<p>Because one source row may match multiple related rows, which changes the number of output rows.</p>" },
+        { "level": "intermediate", "question": "What does a CTE help with during an interview?", "answerHtml": "<p>It lets you name intermediate logic clearly so the interviewer can follow your reasoning.</p>" },
+        { "level": "advanced", "question": "How do you get the latest order per customer?", "answerHtml": "<p>Use ROW_NUMBER partitioned by customer ordered by order date descending, then keep row number 1.</p>" },
+        { "level": "advanced", "question": "What is the risk of joining orders to order_items before summing order totals?", "answerHtml": "<p>Order totals can duplicate once per item unless you regroup or sum the right measure at the new grain.</p>" },
+        { "level": "advanced", "question": "Why might HAVING COUNT(*) > 1 be used in customer analysis?", "answerHtml": "<p>It filters grouped customers down to those with repeat activity after the rows are aggregated.</p>" },
+        { "level": "advanced", "question": "How do you find duplicate emails in a users table?", "answerHtml": "<p>Group by email and use HAVING COUNT(*) > 1.</p>" },
+        { "level": "advanced", "question": "When is a window function better than GROUP BY?", "answerHtml": "<p>When you need analytical values such as rankings or running totals but still need each detail row in the output.</p>" },
+        { "level": "advanced", "question": "Why should you ask about refunded orders in a revenue interview question?", "answerHtml": "<p>Because revenue definitions differ, and including refunded orders can make a mathematically correct query answer the wrong business question.</p>" },
+        { "level": "advanced", "question": "What is the benefit of previewing a DELETE with SELECT first?", "answerHtml": "<p>It verifies which rows match before destructive changes happen.</p>" },
+        { "level": "advanced", "question": "How do you explain COUNT(DISTINCT customer_id)?", "answerHtml": "<p>It counts unique customers rather than total rows, which is often needed after joins or repeated events.</p>" },
+        { "level": "advanced", "question": "What is a correlated subquery?", "answerHtml": "<p>It is a subquery that depends on values from the current row of the outer query.</p>" },
+        { "level": "advanced", "question": "Why do interviewers ask top-N-per-group questions so often?", "answerHtml": "<p>Because those questions reveal whether you understand partitions, ordering, ranking, and keeping the right detail row.</p>" },
+        { "level": "advanced", "question": "How would you find customers who ordered in two different months?", "answerHtml": "<p>Group customer activity by truncated month, count distinct months per customer, and keep those with at least two.</p>" },
+        { "level": "advanced", "question": "Why is NULL tricky in SQL comparisons?", "answerHtml": "<p>Because NULL represents unknown or missing information and does not behave like ordinary values in equality checks.</p>" },
+        { "level": "advanced", "question": "What is an accidental cartesian product?", "answerHtml": "<p>It is a join result where rows multiply broadly because the join condition is missing or incomplete.</p>" },
+        { "level": "advanced", "question": "What should you clarify before solving a subscription churn query?", "answerHtml": "<p>Clarify what counts as churn, whether pauses count, and whether the data is one row per subscription, invoice, or event.</p>" },
+        { "level": "advanced", "question": "How do you explain why a query is correct before optimizing it?", "answerHtml": "<p>State the intended row grain, join path, filters, and grouping, then show how the result matches the business question exactly.</p>" },
+        { "level": "expert", "question": "How would you compute a running balance per account?", "answerHtml": "<p>Use SUM(amount) OVER (PARTITION BY account_id ORDER BY posted_at ... ) so each ledger row keeps its detail plus cumulative total.</p>" },
+        { "level": "expert", "question": "What index would you consider for a query filtering by customer_id and ordering by ordered_at?", "answerHtml": "<p>A composite index beginning with customer_id and then ordered_at is often a reasonable candidate if that workload is frequent and selective enough.</p>" },
+        { "level": "expert", "question": "Why can adding more columns to a grouped SELECT break the query logic?", "answerHtml": "<p>Because the new columns may not belong to the grouped output grain and can force invalid or misleading results.</p>" },
+        { "level": "expert", "question": "How do you answer an optimization question when you do not know the engine-specific plan output?", "answerHtml": "<p>Explain the workload shape, likely filter selectivity, join order concerns, and candidate indexes without pretending to know a plan you have not inspected.</p>" },
+        { "level": "expert", "question": "How would you find the second-highest salary without using LIMIT 1 OFFSET 1?", "answerHtml": "<p>Use ranking with DENSE_RANK over salary descending and keep rows where the rank is 2.</p>" },
+        { "level": "expert", "question": "Why might a CTE improve a complex analytics query?", "answerHtml": "<p>It can name intermediate business logic clearly, making the final aggregation easier to verify and review.</p>" },
+        { "level": "expert", "question": "How do you detect join-driven inflation in a report?", "answerHtml": "<p>Compare row counts before and after the join, inspect cardinality, and test aggregates at each stage.</p>" },
+        { "level": "expert", "question": "What makes a safe bulk UPDATE workflow?", "answerHtml": "<p>Preview scope first, use explicit predicates, track expected row count, and execute within a recoverable process.</p>" },
+        { "level": "expert", "question": "How would you write top 3 products by revenue per category?", "answerHtml": "<p>Aggregate revenue by category and product, then rank products within each category using a window function and keep ranks up to 3.</p>" },
+        { "level": "expert", "question": "Why are business definitions as important as syntax in SQL interviews?", "answerHtml": "<p>Because an elegant query that measures the wrong event or status is still a wrong answer.</p>" },
+        { "level": "expert", "question": "How would you identify customers whose last order was more than 90 days ago?", "answerHtml": "<p>Find each customer's most recent order date with MAX or ROW_NUMBER, then filter those dates older than 90 days.</p>" },
+        { "level": "expert", "question": "What is a common retention-analysis pattern in SQL?", "answerHtml": "<p>Group users by first activity period, then compare later activity windows by cohort using joins or window-friendly analytics.</p>" },
+        { "level": "expert", "question": "How do you explain LIMIT versus FETCH FIRST in dialect discussions?", "answerHtml": "<p>They often serve the same purpose but appear in different dialect styles, so the idea is portable even if the syntax differs.</p>" },
+        { "level": "expert", "question": "Why might DISTINCT hide a deeper join bug?", "answerHtml": "<p>Because it can remove duplicate-looking rows without proving that the underlying join logic was correct in the first place.</p>" },
+        { "level": "expert", "question": "What is a strong answer for finding users with no orders?", "answerHtml": "<p>Use a LEFT JOIN from users to orders and filter rows where the order side is missing, or use NOT EXISTS.</p>" },
+        { "level": "expert", "question": "How would you compare NOT EXISTS and LEFT JOIN IS NULL conceptually?", "answerHtml": "<p>Both can express anti-joins, but the best choice depends on readability and engine behavior for the specific workload.</p>" },
+        { "level": "expert", "question": "Why do support-queue queries often need both ordering and filtering discipline?", "answerHtml": "<p>Because teams care about the exact next items to handle, often by status, SLA state, priority, and age together.</p>" },
+        { "level": "expert", "question": "How would you find days with revenue lower than the previous day?", "answerHtml": "<p>Aggregate revenue per day, then compare each day to the previous one with LAG.</p>" },
+        { "level": "expert", "question": "What makes a query explanation sound structured under interview pressure?", "answerHtml": "<p>Walk through source tables, join shape, filters, output grain, edge cases, and then performance thoughts in that order.</p>" },
+        { "level": "expert", "question": "How do you answer how would you optimize this query if the result is currently wrong?", "answerHtml": "<p>Say you would fix correctness first because optimizing a wrong result only makes the wrong answer faster.</p>" },
+        { "level": "expert", "question": "What is a good SQL answer for detecting repeated failed login attempts?", "answerHtml": "<p>Filter recent failed attempts, group by user or account, and use HAVING on the count threshold the security rule requires.</p>" },
+        { "level": "expert", "question": "How would you explain a multi-step SQL solution cleanly?", "answerHtml": "<p>Break it into named phases: source rows, intermediate logic, final grouping or ranking, and verification of edge cases.</p>" },
+        { "level": "expert", "question": "What is the danger of assuming one engine's convenience syntax is universal in an interview?", "answerHtml": "<p>It can make you sound engine-specific rather than SQL-literate and may lead to incorrect claims about portability.</p>" },
+        { "level": "expert", "question": "What is a strong final habit for any SQL interview question?", "answerHtml": "<p>Restate assumptions and the intended row grain before committing to the final query.</p>" },
+        { "level": "expert", "question": "How would you talk through a slow business query without database access?", "answerHtml": "<p>Explain likely hot spots: row count, join cardinality, predicate selectivity, grouping cost, and whether the current indexes probably match the workload.</p>" },
+        { "level": "expert", "question": "Why is SQL interview strength not the same as memorizing 20 canned queries?", "answerHtml": "<p>Because real success comes from reasoning about schemas, result shape, correctness, and tradeoffs when the question changes slightly.</p>" }
+      ]
+    }
+  ]
+}

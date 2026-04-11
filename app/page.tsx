@@ -128,8 +128,16 @@ const groups = [
   {
     id: "data",
     label: "Data & Databases",
-    desc: "Relational and document-database design, querying, performance, and operational reasoning.",
+    desc: "SQL language, relational and document-database design, querying, performance, and operational reasoning.",
     topics: [
+      {
+        href: "/sql",
+        icon: "SQ",
+        title: "SQL",
+        desc: "Portable query writing, joins, analytics, real business reporting, debugging, and interview-grade problem solving.",
+        tags: ["2026", "116 Q&A"],
+        color: "#2563eb",
+      },
       {
         href: "/postgresql",
         icon: "PG",
@@ -223,9 +231,9 @@ export default function Home() {
         <div className="home-hero-row">
           <h1><span className="gradient-text">DevLore</span> Encyclopedia</h1>
           <div className="home-stats">
-            <div className="home-stat"><b>20</b><span>Topics</span></div>
-            <div className="home-stat"><b>2,452</b><span>Q&amp;A</span></div>
-            <div className="home-stat"><b>276</b><span>Chapters</span></div>
+            <div className="home-stat"><b>21</b><span>Topics</span></div>
+            <div className="home-stat"><b>2,570</b><span>Q&amp;A</span></div>
+            <div className="home-stat"><b>290</b><span>Chapters</span></div>
             <div className="home-stat"><b>2026</b><span>Edition</span></div>
           </div>
         </div>

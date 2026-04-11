@@ -23,6 +23,7 @@ const TOPIC_ORDER = [
   { id: "react", href: "/react", name: "React", icon: "RE", color: "#61dafb" },
   { id: "nextjs", href: "/nextjs", name: "Next.js", icon: "NX", color: "#e0e0e0" },
   { id: "angular", href: "/angular", name: "Angular", icon: "NG", color: "#dd0031" },
+  { id: "sql", href: "/sql", name: "SQL", icon: "SQ", color: "#2563eb" },
   { id: "postgresql", href: "/postgresql", name: "PostgreSQL", icon: "PG", color: "#336791" },
   { id: "mongodb", href: "/mongodb", name: "MongoDB", icon: "MG", color: "#13aa52" },
   { id: "docker", href: "/docker", name: "Docker", icon: "DK", color: "#2496ed" },
