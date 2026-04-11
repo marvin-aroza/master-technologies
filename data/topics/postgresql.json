@@ -1,0 +1,1469 @@
+{
+  "id": "postgresql",
+  "title": "PostgreSQL Mastery Encyclopedia",
+  "subtitle": "PostgreSQL 18 relational design, MVCC, query planning, performance, operations, and interview readiness for 2026.",
+  "heroStats": [
+    {
+      "label": "Chapters",
+      "value": "14"
+    },
+    {
+      "label": "Core Q&A",
+      "value": "110"
+    },
+    {
+      "label": "Coverage",
+      "value": "SQL+Ops"
+    },
+    {
+      "label": "Updated",
+      "value": "2026"
+    }
+  ],
+  "tabs": [
+    {
+      "id": "relational-foundations-postgresql-architecture",
+      "label": "Foundations & Architecture"
+    },
+    {
+      "id": "sql-querying-fundamentals-result-shaping",
+      "label": "SQL Querying"
+    },
+    {
+      "id": "schema-design-constraints-normalization",
+      "label": "Schema Design"
+    },
+    {
+      "id": "joins-subqueries-ctes-query-reasoning",
+      "label": "Joins & Query Reasoning"
+    },
+    {
+      "id": "indexes-query-planning",
+      "label": "Indexes & Planner"
+    },
+    {
+      "id": "transactions-mvcc-isolation-levels",
+      "label": "Transactions & MVCC"
+    },
+    {
+      "id": "locks-contention-concurrency-behavior",
+      "label": "Locks & Concurrency"
+    },
+    {
+      "id": "jsonb-arrays-full-text-extensions",
+      "label": "Advanced Features"
+    },
+    {
+      "id": "functions-procedures-triggers-server-side-logic",
+      "label": "Server-Side Logic"
+    },
+    {
+      "id": "partitioning-replication-backups-operational-design",
+      "label": "Replication & Operations"
+    },
+    {
+      "id": "performance-tuning-query-optimization",
+      "label": "Performance Tuning"
+    },
+    {
+      "id": "security-roles-permissions-safe-production-usage",
+      "label": "Security & Roles"
+    },
+    {
+      "id": "architecture-patterns-anti-patterns",
+      "label": "Architecture Patterns"
+    },
+    {
+      "id": "interview-mastery-production-troubleshooting",
+      "label": "Interviews & Troubleshooting"
+    }
+  ],
+  "sections": [
+    {
+      "id": "relational-foundations-postgresql-architecture",
+      "intro": "Understand what PostgreSQL actually is: a relational engine with planner logic, MVCC, and serious production behavior.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>PostgreSQL is much more than a place to send SQL strings. It is a mature relational engine whose planner, concurrency model, extensions, and operational story all matter in production.</p><ul><li>Server, database, schema, and table are different layers.</li><li>The planner chooses execution strategies based on cost and statistics.</li><li>Architecture and operations matter as much as query syntax.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Foundations & Architecture tradeoffs",
+          "items": [
+            {
+              "label": "Relational engine",
+              "html": "<p>Strong when constraints, joins, transactions, and explicit structure matter.</p>"
+            },
+            {
+              "label": "Loose persistence bucket",
+              "html": "<p>A weak mental model that ignores planner behavior, integrity guarantees, and operational realities.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "What actually happens",
+          "steps": [
+            "The client sends a SQL statement.",
+            "PostgreSQL parses and plans the statement.",
+            "The planner chooses an execution strategy based on statistics and cost.",
+            "The executor runs the plan under transaction and MVCC rules.",
+            "Results return through the connection context."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Schemas and tables",
+          "language": "sql",
+          "code": "CREATE SCHEMA billing;\n\nCREATE TABLE billing.invoices (\n  id bigserial PRIMARY KEY,\n  customer_id bigint NOT NULL,\n  total_cents bigint NOT NULL\n);",
+          "caption": "Schemas are namespaces that help organize large databases clearly."
+        },
+        {
+          "type": "trap",
+          "title": "Common mistake",
+          "html": "<p>Calling PostgreSQL ?just SQL? is a shallow answer because it ignores the planner, MVCC, indexes, locks, replication, and extensions.</p>",
+          "tone": "interview"
+        },
+        {
+          "type": "drill",
+          "title": "Debugging / interview drill",
+          "prompt": "How would you explain the difference between PostgreSQL the product and SQL the language?",
+          "answerHtml": "<p>SQL is the query language. PostgreSQL is the database engine that parses, plans, executes, stores, replicates, and protects the data behind those statements.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "PostgreSQL is a relational engine, not just SQL syntax.",
+            "Planner behavior matters.",
+            "Production success depends on architecture and operations too."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "intermediate",
+          "question": "What problem does Foundations & Architecture solve in PostgreSQL?",
+          "answerHtml": "<p>Foundations & Architecture helps teams reason about relational architecture and planner-driven execution with stronger guarantees and clearer tradeoffs.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain Foundations & Architecture in an interview?",
+          "answerHtml": "<p>Define the mechanism, explain what guarantee or capability it gives, and connect it to a real production tradeoff.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When would you choose Relational engine over Loose persistence bucket?",
+          "answerHtml": "<p>Choose Relational engine when it better fits the workload and keeps correctness or operational cost under control.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What breaks when teams misuse Foundations & Architecture?",
+          "answerHtml": "<p>Misuse usually creates calling postgresql ?just sql? is a shallow answer because it ignores the planner, mvcc, indexes, locks, replication, and extensions., which is why strong answers name failure modes as well as features.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What production signal says Foundations & Architecture needs attention?",
+          "answerHtml": "<p>Plan regressions, lock pain, slow queries, operational surprises, or unclear guarantees around relational architecture and planner-driven execution all suggest it deserves attention.</p>"
+        }
+      ]
+    },
+    {
+      "id": "sql-querying-fundamentals-result-shaping",
+      "intro": "Build SQL from result shape outward instead of memorizing syntax fragments in isolation.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>Strong SQL starts from the answer shape you need, then works backward to sources, filters, grouping, and ordering. That mental model scales better than memorized clause order alone.</p><ul><li>WHERE filters rows before grouping.</li><li>HAVING filters groups after aggregation.</li><li>Explicit projection makes queries easier to review and optimize.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "SQL Querying tradeoffs",
+          "items": [
+            {
+              "label": "WHERE",
+              "html": "<p>Filters raw rows before grouping or aggregation.</p>"
+            },
+            {
+              "label": "HAVING",
+              "html": "<p>Filters aggregated groups after grouping has happened.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "What actually happens",
+          "steps": [
+            "Pick the row sources first.",
+            "Apply row-level filters.",
+            "Decide whether the result stays row-level or becomes grouped.",
+            "Select only the columns you need.",
+            "Sort and limit intentionally."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Grouped query",
+          "language": "sql",
+          "code": "SELECT customer_id, COUNT(*) AS invoice_count\nFROM billing.invoices\nWHERE created_at >= date_trunc('month', now())\nGROUP BY customer_id\nHAVING COUNT(*) > 0\nORDER BY invoice_count DESC;",
+          "caption": "A query should tell a clean story about source rows, filters, groups, and final ordering."
+        },
+        {
+          "type": "trap",
+          "title": "Common mistake",
+          "html": "<p>SELECT * is an easy habit that hides intent, increases coupling, and often transfers more data than the application needs.</p>",
+          "tone": "interview"
+        },
+        {
+          "type": "drill",
+          "title": "Debugging / interview drill",
+          "prompt": "How would you explain WHERE vs HAVING to someone who keeps mixing them up?",
+          "answerHtml": "<p>WHERE narrows the raw input rows; HAVING narrows the grouped result after aggregation is already done.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "Think from result shape outward.",
+            "WHERE and HAVING are not interchangeable.",
+            "Explicit projection improves correctness and performance reasoning."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "intermediate",
+          "question": "What problem does SQL Querying solve in PostgreSQL?",
+          "answerHtml": "<p>SQL Querying helps teams reason about query result shape, filtering, grouping, and ordering with stronger guarantees and clearer tradeoffs.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain SQL Querying in an interview?",
+          "answerHtml": "<p>Define the mechanism, explain what guarantee or capability it gives, and connect it to a real production tradeoff.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When would you choose WHERE over HAVING?",
+          "answerHtml": "<p>Choose WHERE when it better fits the workload and keeps correctness or operational cost under control.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What breaks when teams misuse SQL Querying?",
+          "answerHtml": "<p>Misuse usually creates select * is an easy habit that hides intent, increases coupling, and often transfers more data than the application needs., which is why strong answers name failure modes as well as features.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What production signal says SQL Querying needs attention?",
+          "answerHtml": "<p>Plan regressions, lock pain, slow queries, operational surprises, or unclear guarantees around query result shape, filtering, grouping, and ordering all suggest it deserves attention.</p>"
+        }
+      ]
+    },
+    {
+      "id": "schema-design-constraints-normalization",
+      "intro": "Use the schema to protect data quality instead of pretending the application is the only writer that matters.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>Relational databases are strongest when constraints live close to the data. Strong schema design is one of the biggest advantages PostgreSQL gives you over looser persistence models.</p><ul><li>Primary keys define row identity.</li><li>Foreign keys protect relationships.</li><li>CHECK and UNIQUE constraints protect important invariants.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Schema Design tradeoffs",
+          "items": [
+            {
+              "label": "Normalized design",
+              "html": "<p>Reduces duplicated truth and keeps updates safer across related data.</p>"
+            },
+            {
+              "label": "Undisciplined denormalization",
+              "html": "<p>Can speed a read path, but often increases integrity and migration pain if used carelessly.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "What actually happens",
+          "steps": [
+            "Design entity boundaries around real facts.",
+            "Add constraints that reflect invariant rules.",
+            "Normalize until duplication and update anomalies are controlled.",
+            "Denormalize only for clear workload reasons."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Constraint-driven schema",
+          "language": "sql",
+          "code": "CREATE TABLE accounts (\n  id bigserial PRIMARY KEY,\n  email text NOT NULL UNIQUE,\n  status text NOT NULL CHECK (status IN ('active', 'suspended'))\n);",
+          "caption": "Constraints document and enforce business rules right where the data lives."
+        },
+        {
+          "type": "trap",
+          "title": "Common mistake",
+          "html": "<p>Application-only integrity rules fail as soon as another writer, script, or migration path bypasses the service layer.</p>",
+          "tone": "interview"
+        },
+        {
+          "type": "drill",
+          "title": "Debugging / interview drill",
+          "prompt": "Why are foreign keys still valuable when the app ?already knows? the relationship?",
+          "answerHtml": "<p>Because the database enforces the relationship no matter which process, script, or service writes the data.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "Schema design is product design for data.",
+            "Constraints are part of correctness.",
+            "Denormalization is a tradeoff, not a default shortcut."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "intermediate",
+          "question": "What problem does Schema Design solve in PostgreSQL?",
+          "answerHtml": "<p>Schema Design helps teams reason about constraints, normalization, and database-enforced integrity with stronger guarantees and clearer tradeoffs.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain Schema Design in an interview?",
+          "answerHtml": "<p>Define the mechanism, explain what guarantee or capability it gives, and connect it to a real production tradeoff.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When would you choose Normalized design over Undisciplined denormalization?",
+          "answerHtml": "<p>Choose Normalized design when it better fits the workload and keeps correctness or operational cost under control.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What breaks when teams misuse Schema Design?",
+          "answerHtml": "<p>Misuse usually creates application-only integrity rules fail as soon as another writer, script, or migration path bypasses the service layer., which is why strong answers name failure modes as well as features.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What production signal says Schema Design needs attention?",
+          "answerHtml": "<p>Plan regressions, lock pain, slow queries, operational surprises, or unclear guarantees around constraints, normalization, and database-enforced integrity all suggest it deserves attention.</p>"
+        }
+      ]
+    },
+    {
+      "id": "joins-subqueries-ctes-query-reasoning",
+      "intro": "Reason about joins through row preservation and cardinality instead of relying on syntax memory alone.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>Joins are not mysterious. They are about how relations combine, which rows are preserved, and what cardinality assumptions are actually true.</p><ul><li>Inner joins keep only matches.</li><li>Outer joins preserve one side even without a match.</li><li>CTEs and subqueries help when naming intermediate steps improves clarity.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Joins & Query Reasoning tradeoffs",
+          "items": [
+            {
+              "label": "Inner join",
+              "html": "<p>Keeps only rows that match the join condition on both sides.</p>"
+            },
+            {
+              "label": "Left join",
+              "html": "<p>Keeps all rows from the left side and fills missing right-side values with nulls.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "What actually happens",
+          "steps": [
+            "Confirm the real relationship cardinality first.",
+            "Choose whether unmatched rows should be preserved.",
+            "Place filters carefully relative to the join type.",
+            "Reduce complex queries into named steps when that improves reasoning."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Join reasoning",
+          "language": "sql",
+          "code": "SELECT o.id, c.email\nFROM orders o\nJOIN customers c ON c.id = o.customer_id\nLEFT JOIN refunds r ON r.order_id = o.id\nWHERE r.id IS NULL;",
+          "caption": "Think about what rows are preserved and what each join contributes."
+        },
+        {
+          "type": "trap",
+          "title": "Common mistake",
+          "html": "<p>The fastest way to get duplicate-looking or missing rows is to join without understanding one-to-many or many-to-many cardinality.</p>",
+          "tone": "interview"
+        },
+        {
+          "type": "drill",
+          "title": "Debugging / interview drill",
+          "prompt": "Why do joins create duplicate rows when the SQL syntax looks fine?",
+          "answerHtml": "<p>Because the relationship often is one-to-many or many-to-many, so each additional match multiplies rows in the result.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "Joins are about relationships and row preservation.",
+            "Cardinality mistakes create many query bugs.",
+            "CTEs can make complex logic easier to reason about."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "intermediate",
+          "question": "What problem does Joins & Query Reasoning solve in PostgreSQL?",
+          "answerHtml": "<p>Joins & Query Reasoning helps teams reason about joins, cardinality, subqueries, and row preservation with stronger guarantees and clearer tradeoffs.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain Joins & Query Reasoning in an interview?",
+          "answerHtml": "<p>Define the mechanism, explain what guarantee or capability it gives, and connect it to a real production tradeoff.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When would you choose Inner join over Left join?",
+          "answerHtml": "<p>Choose Inner join when it better fits the workload and keeps correctness or operational cost under control.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What breaks when teams misuse Joins & Query Reasoning?",
+          "answerHtml": "<p>Misuse usually creates the fastest way to get duplicate-looking or missing rows is to join without understanding one-to-many or many-to-many cardinality., which is why strong answers name failure modes as well as features.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What production signal says Joins & Query Reasoning needs attention?",
+          "answerHtml": "<p>Plan regressions, lock pain, slow queries, operational surprises, or unclear guarantees around joins, cardinality, subqueries, and row preservation all suggest it deserves attention.</p>"
+        }
+      ]
+    },
+    {
+      "id": "indexes-query-planning",
+      "intro": "Indexes and planner behavior determine whether a query merely works or keeps working at scale.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>Indexes are not free speed. They are alternative access paths that help specific workloads and cost storage, write throughput, and maintenance.</p><ul><li>B-tree is the default workhorse.</li><li>GIN, GiST, and BRIN solve different problems.</li><li>The planner decides whether an index is worth using.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Indexes & Planner tradeoffs",
+          "items": [
+            {
+              "label": "Useful targeted index",
+              "html": "<p>Matches a real query pattern and pays for its own write cost.</p>"
+            },
+            {
+              "label": "Speculative index sprawl",
+              "html": "<p>Adds write cost and confusion without helping the workload enough.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "What actually happens",
+          "steps": [
+            "Planner estimates row counts from statistics.",
+            "It compares sequential scans, index scans, and other strategies.",
+            "Index usefulness depends on selectivity and query shape.",
+            "EXPLAIN and EXPLAIN ANALYZE tell you what the engine believed and what actually happened."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common mistake",
+          "html": "<p>Adding indexes reactively without understanding the workload often bloats writes and still fails to fix the slow path.</p>",
+          "tone": "pitfall"
+        },
+        {
+          "type": "drill",
+          "title": "Debugging / interview drill",
+          "prompt": "Why might PostgreSQL choose a sequential scan even when an index exists?",
+          "answerHtml": "<p>Because the planner may estimate that reading the whole table is cheaper than using the index plus extra row lookups for that specific query.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "Indexes are workload-specific tradeoffs.",
+            "The planner chooses based on cost, not developer preference.",
+            "EXPLAIN is part of everyday PostgreSQL work."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "intermediate",
+          "question": "What problem does Indexes & Planner solve in PostgreSQL?",
+          "answerHtml": "<p>Indexes & Planner helps teams reason about access paths, planner estimates, and index tradeoffs with stronger guarantees and clearer tradeoffs.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain Indexes & Planner in an interview?",
+          "answerHtml": "<p>Define the mechanism, explain what guarantee or capability it gives, and connect it to a real production tradeoff.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When would you choose Useful targeted index over Speculative index sprawl?",
+          "answerHtml": "<p>Choose Useful targeted index when it better fits the workload and keeps correctness or operational cost under control.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What breaks when teams misuse Indexes & Planner?",
+          "answerHtml": "<p>Misuse usually creates adding indexes reactively without understanding the workload often bloats writes and still fails to fix the slow path., which is why strong answers name failure modes as well as features.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What production signal says Indexes & Planner needs attention?",
+          "answerHtml": "<p>Plan regressions, lock pain, slow queries, operational surprises, or unclear guarantees around access paths, planner estimates, and index tradeoffs all suggest it deserves attention.</p>"
+        }
+      ]
+    },
+    {
+      "id": "transactions-mvcc-isolation-levels",
+      "intro": "MVCC and isolation levels explain most PostgreSQL concurrency behavior once you stop treating transactions like magic boxes.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>PostgreSQL uses MVCC so readers can see stable snapshots while writers create new row versions. The result is strong concurrency behavior, but not ?no anomalies ever? under every isolation level.</p><ul><li>Read Committed is the default.</li><li>Repeatable Read and Serializable are stronger with different tradeoffs.</li><li>Serializable safety often requires retries.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Transactions & MVCC tradeoffs",
+          "items": [
+            {
+              "label": "Read Committed",
+              "html": "<p>Good default for many workloads, but repeated reads can observe newer committed data across statements.</p>"
+            },
+            {
+              "label": "Serializable",
+              "html": "<p>Stronger correctness guarantees, but you must be ready for serialization failures and retries.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "What actually happens",
+          "steps": [
+            "Transactions read from snapshots based on isolation rules.",
+            "Writers create new row versions rather than overwriting visibility for everyone at once.",
+            "Vacuum eventually cleans dead tuples.",
+            "Higher isolation can reject unsafe concurrent histories instead of silently allowing anomalies."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common mistake",
+          "html": "<p>A transaction is not automatically safe business logic. The isolation level and write pattern still decide which anomalies are possible.</p>",
+          "tone": "pitfall"
+        },
+        {
+          "type": "drill",
+          "title": "Debugging / interview drill",
+          "prompt": "Why can two SELECT statements inside one Read Committed transaction return different results?",
+          "answerHtml": "<p>Because Read Committed uses a fresh visibility snapshot for each statement, so later reads can see rows committed after the earlier statement started.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "MVCC is the heart of PostgreSQL concurrency.",
+            "Isolation levels are product decisions.",
+            "Serializable often means retry logic too."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "intermediate",
+          "question": "What problem does Transactions & MVCC solve in PostgreSQL?",
+          "answerHtml": "<p>Transactions & MVCC helps teams reason about snapshots, isolation guarantees, and transaction semantics with stronger guarantees and clearer tradeoffs.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain Transactions & MVCC in an interview?",
+          "answerHtml": "<p>Define the mechanism, explain what guarantee or capability it gives, and connect it to a real production tradeoff.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When would you choose Read Committed over Serializable?",
+          "answerHtml": "<p>Choose Read Committed when it better fits the workload and keeps correctness or operational cost under control.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What breaks when teams misuse Transactions & MVCC?",
+          "answerHtml": "<p>Misuse usually creates a transaction is not automatically safe business logic. the isolation level and write pattern still decide which anomalies are possible., which is why strong answers name failure modes as well as features.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What production signal says Transactions & MVCC needs attention?",
+          "answerHtml": "<p>Plan regressions, lock pain, slow queries, operational surprises, or unclear guarantees around snapshots, isolation guarantees, and transaction semantics all suggest it deserves attention.</p>"
+        }
+      ]
+    },
+    {
+      "id": "locks-contention-concurrency-behavior",
+      "intro": "MVCC reduces some blocking, but locks, contention, and deadlocks still matter in real PostgreSQL systems.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>Locking is still part of PostgreSQL design. Long transactions, hot rows, and inconsistent lock ordering can all create throughput problems or deadlocks.</p><ul><li>Row-level locks are often safer than broad locks.</li><li>Long transactions increase contention and cleanup pressure.</li><li>Deadlocks are normal failure modes that applications should handle cleanly.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Locks & Concurrency tradeoffs",
+          "items": [
+            {
+              "label": "Row-level locking",
+              "html": "<p>Targets specific contested data and usually keeps the blast radius smaller.</p>"
+            },
+            {
+              "label": "Broad locking",
+              "html": "<p>Sometimes necessary, but more disruptive and easier to misuse.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "What actually happens",
+          "steps": [
+            "Different lock modes conflict differently.",
+            "Writers can block each other on contested rows or relations.",
+            "Deadlocks happen when sessions wait in a cycle.",
+            "PostgreSQL aborts one participant so the system can continue."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common mistake",
+          "html": "<p>Long-running transactions often look harmless in code review and then become the hidden source of blocking and bloat in production.</p>",
+          "tone": "pitfall"
+        },
+        {
+          "type": "drill",
+          "title": "Debugging / interview drill",
+          "prompt": "How should an application handle deadlock errors?",
+          "answerHtml": "<p>Treat them as real but retriable failures, shorten transaction scope where possible, and review lock ordering so the pattern happens less often.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "Locks still matter in PostgreSQL.",
+            "Long transactions are often the villain.",
+            "Deadlocks are design signals, not database betrayal."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "intermediate",
+          "question": "What problem does Locks & Concurrency solve in PostgreSQL?",
+          "answerHtml": "<p>Locks & Concurrency helps teams reason about row locks, table locks, deadlocks, and contention with stronger guarantees and clearer tradeoffs.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain Locks & Concurrency in an interview?",
+          "answerHtml": "<p>Define the mechanism, explain what guarantee or capability it gives, and connect it to a real production tradeoff.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When would you choose Row-level locking over Broad locking?",
+          "answerHtml": "<p>Choose Row-level locking when it better fits the workload and keeps correctness or operational cost under control.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What breaks when teams misuse Locks & Concurrency?",
+          "answerHtml": "<p>Misuse usually creates long-running transactions often look harmless in code review and then become the hidden source of blocking and bloat in production., which is why strong answers name failure modes as well as features.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What production signal says Locks & Concurrency needs attention?",
+          "answerHtml": "<p>Plan regressions, lock pain, slow queries, operational surprises, or unclear guarantees around row locks, table locks, deadlocks, and contention all suggest it deserves attention.</p>"
+        }
+      ]
+    },
+    {
+      "id": "jsonb-arrays-full-text-extensions",
+      "intro": "PostgreSQL stays relevant partly because its relational core is paired with powerful advanced features.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>PostgreSQL is relational first, but it also supports JSONB, arrays, full-text search, and a major extension ecosystem. The key is using those features intentionally rather than as a license to skip modeling.</p><ul><li>JSONB is useful when the shape is semi-structured.</li><li>Extensions are a major strategic advantage.</li><li>Advanced types still need workload-shaped indexing and query design.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Advanced Features tradeoffs",
+          "items": [
+            {
+              "label": "JSONB with discipline",
+              "html": "<p>Helpful for semi-structured payloads inside a mostly relational system.</p>"
+            },
+            {
+              "label": "Everything-in-JSONB",
+              "html": "<p>Tempting, but often sacrifices constraints, clarity, and predictable query behavior.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "What actually happens",
+          "steps": [
+            "JSONB stores parsed binary JSON for querying.",
+            "GIN indexes often support JSONB and full-text workloads well.",
+            "Extensions add major capabilities without leaving the engine.",
+            "Advanced features are strongest when paired with deliberate access patterns."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common mistake",
+          "html": "<p>Replacing good relational modeling with giant JSONB blobs often just moves structure problems into harder-to-validate application code.</p>",
+          "tone": "pitfall"
+        },
+        {
+          "type": "drill",
+          "title": "Debugging / interview drill",
+          "prompt": "When is JSONB a good fit inside PostgreSQL?",
+          "answerHtml": "<p>When a nested or flexible payload is genuinely useful, but the system still benefits from PostgreSQL transactions, joins, and operational maturity elsewhere.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "Advanced features are strengths, not excuses to stop modeling well.",
+            "JSONB and extensions can be excellent when used intentionally.",
+            "Relational thinking still matters even with richer types."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "intermediate",
+          "question": "What problem does Advanced Features solve in PostgreSQL?",
+          "answerHtml": "<p>Advanced Features helps teams reason about JSONB, full-text search, arrays, and extensions with stronger guarantees and clearer tradeoffs.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain Advanced Features in an interview?",
+          "answerHtml": "<p>Define the mechanism, explain what guarantee or capability it gives, and connect it to a real production tradeoff.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When would you choose JSONB with discipline over Everything-in-JSONB?",
+          "answerHtml": "<p>Choose JSONB with discipline when it better fits the workload and keeps correctness or operational cost under control.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What breaks when teams misuse Advanced Features?",
+          "answerHtml": "<p>Misuse usually creates replacing good relational modeling with giant jsonb blobs often just moves structure problems into harder-to-validate application code., which is why strong answers name failure modes as well as features.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What production signal says Advanced Features needs attention?",
+          "answerHtml": "<p>Plan regressions, lock pain, slow queries, operational surprises, or unclear guarantees around JSONB, full-text search, arrays, and extensions all suggest it deserves attention.</p>"
+        }
+      ]
+    },
+    {
+      "id": "functions-procedures-triggers-server-side-logic",
+      "intro": "Server-side logic can centralize important behavior, but it needs clear boundaries and good observability.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>Functions, procedures, and triggers let PostgreSQL enforce behavior close to the data. Used well, they protect invariants. Used badly, they hide logic where application teams forget to look.</p><ul><li>Functions encapsulate reusable SQL-side logic.</li><li>Triggers can automate derived behavior or invariants.</li><li>Too much hidden trigger logic makes systems harder to reason about.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Server-Side Logic tradeoffs",
+          "items": [
+            {
+              "label": "Well-scoped database logic",
+              "html": "<p>Great for data-local guarantees and carefully-defined behavior.</p>"
+            },
+            {
+              "label": "Opaque trigger maze",
+              "html": "<p>Hard to debug because important behavior lives in hidden side effects.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "What actually happens",
+          "steps": [
+            "Functions execute inside the database context.",
+            "Triggers run on specific table events.",
+            "Procedures support more server-side workflow control.",
+            "Documentation and observability become more important as server-side logic grows."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common mistake",
+          "html": "<p>A trigger that silently rewrites values or fans out work across tables can confuse every engineer who only reviews application code.</p>",
+          "tone": "pitfall"
+        },
+        {
+          "type": "drill",
+          "title": "Debugging / interview drill",
+          "prompt": "What is a healthy use case for a trigger?",
+          "answerHtml": "<p>Audit logic, lightweight invariant enforcement, or carefully-documented synchronization behavior that truly belongs next to the data boundary.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "Server-side logic is powerful.",
+            "Hidden behavior is expensive.",
+            "Use the database layer intentionally, not accidentally."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "intermediate",
+          "question": "What problem does Server-Side Logic solve in PostgreSQL?",
+          "answerHtml": "<p>Server-Side Logic helps teams reason about functions, procedures, triggers, and data-local logic with stronger guarantees and clearer tradeoffs.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain Server-Side Logic in an interview?",
+          "answerHtml": "<p>Define the mechanism, explain what guarantee or capability it gives, and connect it to a real production tradeoff.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When would you choose Well-scoped database logic over Opaque trigger maze?",
+          "answerHtml": "<p>Choose Well-scoped database logic when it better fits the workload and keeps correctness or operational cost under control.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What breaks when teams misuse Server-Side Logic?",
+          "answerHtml": "<p>Misuse usually creates a trigger that silently rewrites values or fans out work across tables can confuse every engineer who only reviews application code., which is why strong answers name failure modes as well as features.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What production signal says Server-Side Logic needs attention?",
+          "answerHtml": "<p>Plan regressions, lock pain, slow queries, operational surprises, or unclear guarantees around functions, procedures, triggers, and data-local logic all suggest it deserves attention.</p>"
+        }
+      ]
+    },
+    {
+      "id": "partitioning-replication-backups-operational-design",
+      "intro": "Real database work includes growth management, backups, replication, and failure planning.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>Operational design determines whether a PostgreSQL system survives scale and incidents gracefully. Partitioning, replication, and backups should answer specific product and recovery needs.</p><ul><li>Partitioning helps specific table-growth and retention patterns.</li><li>Replication affects resilience and read distribution.</li><li>Backups matter only when restore is proven.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Replication & Operations tradeoffs",
+          "items": [
+            {
+              "label": "Tested recovery plan",
+              "html": "<p>Defines restore behavior, recovery time, and data-loss expectations clearly.</p>"
+            },
+            {
+              "label": "Backup checkbox",
+              "html": "<p>Feels safe, but often collapses under real incident pressure because recovery was never rehearsed.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "What actually happens",
+          "steps": [
+            "Choose backup strategy based on recovery needs.",
+            "Understand replica behavior and failover expectations.",
+            "Use partitioning for clear lifecycle or scale reasons.",
+            "Rehearse restores instead of assuming backups are enough."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common mistake",
+          "html": "<p>?We take backups? is not a recovery strategy until someone has proven restore time and integrity recently.</p>",
+          "tone": "pitfall"
+        },
+        {
+          "type": "drill",
+          "title": "Debugging / interview drill",
+          "prompt": "What is the first thing you ask about a PostgreSQL backup strategy?",
+          "answerHtml": "<p>How restore testing works, how long recovery takes, and what data-loss window the business has agreed it can tolerate.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "Operations are part of architecture.",
+            "Backups are only credible when restores are tested.",
+            "Partitioning and replication should answer real workload needs."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "intermediate",
+          "question": "What problem does Replication & Operations solve in PostgreSQL?",
+          "answerHtml": "<p>Replication & Operations helps teams reason about partitioning, replication, backups, and recovery design with stronger guarantees and clearer tradeoffs.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain Replication & Operations in an interview?",
+          "answerHtml": "<p>Define the mechanism, explain what guarantee or capability it gives, and connect it to a real production tradeoff.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When would you choose Tested recovery plan over Backup checkbox?",
+          "answerHtml": "<p>Choose Tested recovery plan when it better fits the workload and keeps correctness or operational cost under control.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What breaks when teams misuse Replication & Operations?",
+          "answerHtml": "<p>Misuse usually creates ?we take backups? is not a recovery strategy until someone has proven restore time and integrity recently., which is why strong answers name failure modes as well as features.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What production signal says Replication & Operations needs attention?",
+          "answerHtml": "<p>Plan regressions, lock pain, slow queries, operational surprises, or unclear guarantees around partitioning, replication, backups, and recovery design all suggest it deserves attention.</p>"
+        }
+      ]
+    },
+    {
+      "id": "performance-tuning-query-optimization",
+      "intro": "Tune PostgreSQL from evidence: plans, statistics, workload shape, and clear goals.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>Effective PostgreSQL tuning means learning whether the bottleneck is the query shape, the statistics, the indexes, the row width, contention, or the wider system. Guessing is expensive.</p><ul><li>Use EXPLAIN ANALYZE.</li><li>Compare estimated and actual row counts.</li><li>Fix the cheapest root cause that changes the workload materially.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Performance Tuning tradeoffs",
+          "items": [
+            {
+              "label": "Evidence-driven tuning",
+              "html": "<p>Starts from plans, measurements, and workload shape.</p>"
+            },
+            {
+              "label": "Cargo-cult tuning",
+              "html": "<p>Changes indexes or settings because someone said it usually helps.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "What actually happens",
+          "steps": [
+            "Capture the plan and actual execution details.",
+            "Look for estimate mismatches and expensive nodes.",
+            "Decide whether the fix is query, schema, statistics, or system-level.",
+            "Measure again after the change."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common mistake",
+          "html": "<p>Changing configuration knobs before understanding the query plan is one of the most common database superstition habits.</p>",
+          "tone": "pitfall"
+        },
+        {
+          "type": "drill",
+          "title": "Debugging / interview drill",
+          "prompt": "Why can a slow query be a statistics problem and not just an index problem?",
+          "answerHtml": "<p>Because bad row-count estimates can cause the planner to choose the wrong plan even if the right indexes already exist.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "Tuning starts with evidence.",
+            "Statistics quality affects planner quality.",
+            "The simplest effective fix is often the best fix."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "intermediate",
+          "question": "What problem does Performance Tuning solve in PostgreSQL?",
+          "answerHtml": "<p>Performance Tuning helps teams reason about query plans, statistics, and measured tuning with stronger guarantees and clearer tradeoffs.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain Performance Tuning in an interview?",
+          "answerHtml": "<p>Define the mechanism, explain what guarantee or capability it gives, and connect it to a real production tradeoff.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When would you choose Evidence-driven tuning over Cargo-cult tuning?",
+          "answerHtml": "<p>Choose Evidence-driven tuning when it better fits the workload and keeps correctness or operational cost under control.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What breaks when teams misuse Performance Tuning?",
+          "answerHtml": "<p>Misuse usually creates changing configuration knobs before understanding the query plan is one of the most common database superstition habits., which is why strong answers name failure modes as well as features.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What production signal says Performance Tuning needs attention?",
+          "answerHtml": "<p>Plan regressions, lock pain, slow queries, operational surprises, or unclear guarantees around query plans, statistics, and measured tuning all suggest it deserves attention.</p>"
+        }
+      ]
+    },
+    {
+      "id": "security-roles-permissions-safe-production-usage",
+      "intro": "Least privilege, ownership, and blast-radius thinking matter just as much in the database as in the application.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>Database security is not just about passwords and network rules. Roles, ownership, execution context, and operational habits all change the blast radius of mistakes and incidents.</p><ul><li>Use least privilege for apps and humans.</li><li>Separate migration authority from normal app authority when practical.</li><li>Treat superuser access as a last-resort tool, not a default account mode.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Security & Roles tradeoffs",
+          "items": [
+            {
+              "label": "Least-privilege role design",
+              "html": "<p>Reduces damage when bugs or credentials go wrong.</p>"
+            },
+            {
+              "label": "Superuser-by-default design",
+              "html": "<p>Feels convenient early but greatly increases incident blast radius.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "What actually happens",
+          "steps": [
+            "Roles and grants define capabilities.",
+            "Ownership affects who can alter or execute database objects.",
+            "Execution context matters for functions and operational tooling.",
+            "Production safety improves when routine paths never need maximum privilege."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common mistake",
+          "html": "<p>Running the production app with broad database authority means small application bugs can turn into large data incidents.</p>",
+          "tone": "pitfall"
+        },
+        {
+          "type": "drill",
+          "title": "Debugging / interview drill",
+          "prompt": "Why should a production application usually not connect as a superuser?",
+          "answerHtml": "<p>Because any bug, injection, or leaked credential then gets far more power than the application actually needs.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "Least privilege is part of architecture.",
+            "Role design affects blast radius.",
+            "Superuser convenience is expensive risk."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "intermediate",
+          "question": "What problem does Security & Roles solve in PostgreSQL?",
+          "answerHtml": "<p>Security & Roles helps teams reason about roles, grants, ownership, and safe production access with stronger guarantees and clearer tradeoffs.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain Security & Roles in an interview?",
+          "answerHtml": "<p>Define the mechanism, explain what guarantee or capability it gives, and connect it to a real production tradeoff.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When would you choose Least-privilege role design over Superuser-by-default design?",
+          "answerHtml": "<p>Choose Least-privilege role design when it better fits the workload and keeps correctness or operational cost under control.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What breaks when teams misuse Security & Roles?",
+          "answerHtml": "<p>Misuse usually creates running the production app with broad database authority means small application bugs can turn into large data incidents., which is why strong answers name failure modes as well as features.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What production signal says Security & Roles needs attention?",
+          "answerHtml": "<p>Plan regressions, lock pain, slow queries, operational surprises, or unclear guarantees around roles, grants, ownership, and safe production access all suggest it deserves attention.</p>"
+        }
+      ]
+    },
+    {
+      "id": "architecture-patterns-anti-patterns",
+      "intro": "Architecture questions are really workload questions: what to centralize, what to split, and when simplicity still wins.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core mental model",
+          "html": "<p>PostgreSQL can carry a lot of product complexity before distributed or fragmented data architecture is truly necessary. Strong teams push complexity only when the workload justifies it.</p><ul><li>Prefer one clear source of truth before inventing many.</li><li>Materialized views and read models have real maintenance cost.</li><li>Premature fragmentation is often more expensive than vertical growth and clear indexing.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Architecture Patterns tradeoffs",
+          "items": [
+            {
+              "label": "Simple central design",
+              "html": "<p>Often safest while the workload still fits inside one well-operated PostgreSQL system.</p>"
+            },
+            {
+              "label": "Premature fragmentation",
+              "html": "<p>Adds coordination and operational complexity before the product truly needs it.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "What actually happens",
+          "steps": [
+            "Model ownership and query patterns first.",
+            "Add read models or caches only for measured pressure.",
+            "Separate workloads when they genuinely fight each other.",
+            "Keep complexity proportional to real demand."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common mistake",
+          "html": "<p>Teams sometimes build distributed data architecture for prestige long before a well-operated PostgreSQL core is actually exhausted.</p>",
+          "tone": "pitfall"
+        },
+        {
+          "type": "drill",
+          "title": "Debugging / interview drill",
+          "prompt": "When is one PostgreSQL primary still the right answer?",
+          "answerHtml": "<p>When workload, team size, latency, and operational needs still fit comfortably inside one clear, well-observed relational core.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Recap",
+          "items": [
+            "Architecture should answer measured pressure.",
+            "Simplicity is a production advantage.",
+            "PostgreSQL usually stretches farther than people think."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "intermediate",
+          "question": "What problem does Architecture Patterns solve in PostgreSQL?",
+          "answerHtml": "<p>Architecture Patterns helps teams reason about data architecture, read models, and simplicity vs fragmentation with stronger guarantees and clearer tradeoffs.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain Architecture Patterns in an interview?",
+          "answerHtml": "<p>Define the mechanism, explain what guarantee or capability it gives, and connect it to a real production tradeoff.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When would you choose Simple central design over Premature fragmentation?",
+          "answerHtml": "<p>Choose Simple central design when it better fits the workload and keeps correctness or operational cost under control.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What breaks when teams misuse Architecture Patterns?",
+          "answerHtml": "<p>Misuse usually creates teams sometimes build distributed data architecture for prestige long before a well-operated postgresql core is actually exhausted., which is why strong answers name failure modes as well as features.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What production signal says Architecture Patterns needs attention?",
+          "answerHtml": "<p>Plan regressions, lock pain, slow queries, operational surprises, or unclear guarantees around data architecture, read models, and simplicity vs fragmentation all suggest it deserves attention.</p>"
+        }
+      ]
+    },
+    {
+      "id": "interview-mastery-production-troubleshooting",
+      "intro": "Use the final chapter to rehearse production incidents, architecture tradeoffs, and the interview questions that reveal whether you really understand PostgreSQL as a system.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "What strong PostgreSQL answers sound like",
+          "html": "<p>Strong PostgreSQL answers connect SQL, schema design, planner behavior, MVCC, and operations into one story. They start from guarantees and workload, not from random tuning lore.</p><ul><li>Explain the mechanism.</li><li>Name the guarantee or tradeoff.</li><li>Show how the decision changes production behavior.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Strong answer vs weak answer",
+          "items": [
+            {
+              "label": "Strong answer",
+              "html": "<p>Defines the feature, explains its mechanism, and names a production tradeoff or failure mode.</p>"
+            },
+            {
+              "label": "Weak answer",
+              "html": "<p>Recites a definition without mentioning planner behavior, isolation, or operational consequences.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How to answer PostgreSQL design questions",
+          "steps": [
+            "Describe the data model and invariants first.",
+            "Name the read and write patterns that matter most.",
+            "Choose indexes, isolation, and ops patterns that fit those workloads.",
+            "Explain what you would measure and what would make you revisit the design."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Incident drill",
+          "prompt": "Orders are timing out and the lock graph shows blocked updates on the same tenant rows. What do you say in an interview or incident room?",
+          "answerHtml": "<p>I would shorten transaction scope, inspect lock ordering and hot rows, review retry behavior, and decide whether queuing, ownership changes, or narrower locking patterns are needed.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Final recap",
+          "items": [
+            "PostgreSQL mastery combines SQL fluency, planner literacy, concurrency reasoning, and operations discipline.",
+            "Great answers tie correctness, performance, and operations together.",
+            "The database is not magic; it is a system with visible behavior and tradeoffs."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "advanced",
+          "question": "How would you explain Foundations & Architecture in one minute?",
+          "answerHtml": "<p>A strong answer on Foundations & Architecture defines the feature or concept, explains the mechanism, and ties it to relational architecture and planner-driven execution in a real workload.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common interview trap in Foundations & Architecture?",
+          "answerHtml": "<p>The most common trap is giving a syntax-only answer that skips guarantees, planner behavior, or failure modes.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What real production decision depends on understanding Foundations & Architecture?",
+          "answerHtml": "<p>Choices around relational architecture and planner-driven execution change correctness, latency, throughput, or operational safety, which is why Foundations & Architecture matters beyond theory.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain SQL Querying in one minute?",
+          "answerHtml": "<p>A strong answer on SQL Querying defines the feature or concept, explains the mechanism, and ties it to query result shape, filtering, grouping, and ordering in a real workload.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common interview trap in SQL Querying?",
+          "answerHtml": "<p>The most common trap is giving a syntax-only answer that skips guarantees, planner behavior, or failure modes.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What real production decision depends on understanding SQL Querying?",
+          "answerHtml": "<p>Choices around query result shape, filtering, grouping, and ordering change correctness, latency, throughput, or operational safety, which is why SQL Querying matters beyond theory.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain Schema Design in one minute?",
+          "answerHtml": "<p>A strong answer on Schema Design defines the feature or concept, explains the mechanism, and ties it to constraints, normalization, and database-enforced integrity in a real workload.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common interview trap in Schema Design?",
+          "answerHtml": "<p>The most common trap is giving a syntax-only answer that skips guarantees, planner behavior, or failure modes.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What real production decision depends on understanding Schema Design?",
+          "answerHtml": "<p>Choices around constraints, normalization, and database-enforced integrity change correctness, latency, throughput, or operational safety, which is why Schema Design matters beyond theory.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain Joins & Query Reasoning in one minute?",
+          "answerHtml": "<p>A strong answer on Joins & Query Reasoning defines the feature or concept, explains the mechanism, and ties it to joins, cardinality, subqueries, and row preservation in a real workload.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common interview trap in Joins & Query Reasoning?",
+          "answerHtml": "<p>The most common trap is giving a syntax-only answer that skips guarantees, planner behavior, or failure modes.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What real production decision depends on understanding Joins & Query Reasoning?",
+          "answerHtml": "<p>Choices around joins, cardinality, subqueries, and row preservation change correctness, latency, throughput, or operational safety, which is why Joins & Query Reasoning matters beyond theory.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain Indexes & Planner in one minute?",
+          "answerHtml": "<p>A strong answer on Indexes & Planner defines the feature or concept, explains the mechanism, and ties it to access paths, planner estimates, and index tradeoffs in a real workload.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common interview trap in Indexes & Planner?",
+          "answerHtml": "<p>The most common trap is giving a syntax-only answer that skips guarantees, planner behavior, or failure modes.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What real production decision depends on understanding Indexes & Planner?",
+          "answerHtml": "<p>Choices around access paths, planner estimates, and index tradeoffs change correctness, latency, throughput, or operational safety, which is why Indexes & Planner matters beyond theory.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain Transactions & MVCC in one minute?",
+          "answerHtml": "<p>A strong answer on Transactions & MVCC defines the feature or concept, explains the mechanism, and ties it to snapshots, isolation guarantees, and transaction semantics in a real workload.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common interview trap in Transactions & MVCC?",
+          "answerHtml": "<p>The most common trap is giving a syntax-only answer that skips guarantees, planner behavior, or failure modes.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What real production decision depends on understanding Transactions & MVCC?",
+          "answerHtml": "<p>Choices around snapshots, isolation guarantees, and transaction semantics change correctness, latency, throughput, or operational safety, which is why Transactions & MVCC matters beyond theory.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain Locks & Concurrency in one minute?",
+          "answerHtml": "<p>A strong answer on Locks & Concurrency defines the feature or concept, explains the mechanism, and ties it to row locks, table locks, deadlocks, and contention in a real workload.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common interview trap in Locks & Concurrency?",
+          "answerHtml": "<p>The most common trap is giving a syntax-only answer that skips guarantees, planner behavior, or failure modes.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What real production decision depends on understanding Locks & Concurrency?",
+          "answerHtml": "<p>Choices around row locks, table locks, deadlocks, and contention change correctness, latency, throughput, or operational safety, which is why Locks & Concurrency matters beyond theory.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain Advanced Features in one minute?",
+          "answerHtml": "<p>A strong answer on Advanced Features defines the feature or concept, explains the mechanism, and ties it to JSONB, full-text search, arrays, and extensions in a real workload.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common interview trap in Advanced Features?",
+          "answerHtml": "<p>The most common trap is giving a syntax-only answer that skips guarantees, planner behavior, or failure modes.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What real production decision depends on understanding Advanced Features?",
+          "answerHtml": "<p>Choices around JSONB, full-text search, arrays, and extensions change correctness, latency, throughput, or operational safety, which is why Advanced Features matters beyond theory.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain Server-Side Logic in one minute?",
+          "answerHtml": "<p>A strong answer on Server-Side Logic defines the feature or concept, explains the mechanism, and ties it to functions, procedures, triggers, and data-local logic in a real workload.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common interview trap in Server-Side Logic?",
+          "answerHtml": "<p>The most common trap is giving a syntax-only answer that skips guarantees, planner behavior, or failure modes.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What real production decision depends on understanding Server-Side Logic?",
+          "answerHtml": "<p>Choices around functions, procedures, triggers, and data-local logic change correctness, latency, throughput, or operational safety, which is why Server-Side Logic matters beyond theory.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain Replication & Operations in one minute?",
+          "answerHtml": "<p>A strong answer on Replication & Operations defines the feature or concept, explains the mechanism, and ties it to partitioning, replication, backups, and recovery design in a real workload.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common interview trap in Replication & Operations?",
+          "answerHtml": "<p>The most common trap is giving a syntax-only answer that skips guarantees, planner behavior, or failure modes.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What real production decision depends on understanding Replication & Operations?",
+          "answerHtml": "<p>Choices around partitioning, replication, backups, and recovery design change correctness, latency, throughput, or operational safety, which is why Replication & Operations matters beyond theory.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain Performance Tuning in one minute?",
+          "answerHtml": "<p>A strong answer on Performance Tuning defines the feature or concept, explains the mechanism, and ties it to query plans, statistics, and measured tuning in a real workload.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common interview trap in Performance Tuning?",
+          "answerHtml": "<p>The most common trap is giving a syntax-only answer that skips guarantees, planner behavior, or failure modes.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What real production decision depends on understanding Performance Tuning?",
+          "answerHtml": "<p>Choices around query plans, statistics, and measured tuning change correctness, latency, throughput, or operational safety, which is why Performance Tuning matters beyond theory.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain Security & Roles in one minute?",
+          "answerHtml": "<p>A strong answer on Security & Roles defines the feature or concept, explains the mechanism, and ties it to roles, grants, ownership, and safe production access in a real workload.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common interview trap in Security & Roles?",
+          "answerHtml": "<p>The most common trap is giving a syntax-only answer that skips guarantees, planner behavior, or failure modes.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What real production decision depends on understanding Security & Roles?",
+          "answerHtml": "<p>Choices around roles, grants, ownership, and safe production access change correctness, latency, throughput, or operational safety, which is why Security & Roles matters beyond theory.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain Architecture Patterns in one minute?",
+          "answerHtml": "<p>A strong answer on Architecture Patterns defines the feature or concept, explains the mechanism, and ties it to data architecture, read models, and simplicity vs fragmentation in a real workload.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common interview trap in Architecture Patterns?",
+          "answerHtml": "<p>The most common trap is giving a syntax-only answer that skips guarantees, planner behavior, or failure modes.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What real production decision depends on understanding Architecture Patterns?",
+          "answerHtml": "<p>Choices around data architecture, read models, and simplicity vs fragmentation change correctness, latency, throughput, or operational safety, which is why Architecture Patterns matters beyond theory.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is MVCC in PostgreSQL?",
+          "answerHtml": "<p>MVCC lets transactions read from snapshots of row versions instead of forcing ordinary readers and writers to block each other constantly.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Why can Read Committed still return changing answers inside one transaction?",
+          "answerHtml": "<p>Because each statement can observe a newer committed snapshot than the previous statement.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What does EXPLAIN ANALYZE give you that EXPLAIN alone does not?",
+          "answerHtml": "<p>Actual timing and row counts, which let you compare planner estimates with real execution behavior.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Why might a sequential scan be the right plan even when an index exists?",
+          "answerHtml": "<p>Because for some table sizes or row counts, scanning the whole table is genuinely cheaper than using the index.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What makes JSONB a good fit in PostgreSQL?",
+          "answerHtml": "<p>A genuine need for semi-structured nested data inside a broader relational system that still benefits from PostgreSQL transactions and ops.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Why are foreign keys worth the cost?",
+          "answerHtml": "<p>They protect referential integrity no matter which writer touches the data.</p>"
+        }
+      ]
+    }
+  ]
+}

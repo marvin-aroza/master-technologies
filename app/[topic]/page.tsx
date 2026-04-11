@@ -10,9 +10,12 @@ import frontendCheatSheetData from "@/data/topics/frontend-cheat-sheet.json";
 import gitData from "@/data/topics/git.json";
 import htmlData from "@/data/topics/html.json";
 import javascriptData from "@/data/topics/javascript.json";
+import mongodbData from "@/data/topics/mongodb.json";
 import nextjsData from "@/data/topics/nextjs.json";
 import nodejsData from "@/data/topics/nodejs.json";
 import npmData from "@/data/topics/npm.json";
+import postgresqlData from "@/data/topics/postgresql.json";
+import pythonData from "@/data/topics/python.json";
 import reactData from "@/data/topics/react.json";
 import systemDesignData from "@/data/topics/system-design.json";
 import terraformData from "@/data/topics/terraform.json";
@@ -74,6 +77,12 @@ const TOPICS: Record<string, TopicConfig> = {
     title: "JavaScript - DevLore Encyclopedia",
     description: "ES2024, async, closures, prototypes and 194+ interview Q&A.",
   },
+  "mongodb": {
+    data: mongodbData as TopicData,
+    accentColor: "#13aa52",
+    title: "MongoDB - DevLore Encyclopedia",
+    description: "Document modeling, aggregation, sharding, operations, and 105+ interview Q&A across 14 chapters.",
+  },
   nextjs: {
     data: nextjsData as TopicData,
     accentColor: "#ffffff",
@@ -91,6 +100,18 @@ const TOPICS: Record<string, TopicConfig> = {
     accentColor: "#cb3837",
     title: "npm - DevLore Encyclopedia",
     description: "Package management, semver, workspaces, publishing, security, and 90+ interview Q&A across 14 chapters.",
+  },
+  "postgresql": {
+    data: postgresqlData as TopicData,
+    accentColor: "#336791",
+    title: "PostgreSQL - DevLore Encyclopedia",
+    description: "Relational design, MVCC, query planning, operations, and 110+ interview Q&A across 14 chapters.",
+  },
+  "python": {
+    data: pythonData as TopicData,
+    accentColor: "#3776ab",
+    title: "Python - DevLore Encyclopedia",
+    description: "Python 3.14 language mastery, backend architecture, automation, and 120+ interview Q&A across 14 chapters.",
   },
   react: {
     data: reactData as TopicData,

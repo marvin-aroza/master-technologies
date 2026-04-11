@@ -13,6 +13,7 @@ const groups = [
       { href: "/javascript", icon: "JS", name: "JavaScript", color: "#f7df1e" },
       { href: "/git",        icon: "GT", name: "Git",        color: "#f05032" },
       { href: "/npm",        icon: "NP", name: "npm",        color: "#cb3837" },
+      { href: "/python",     icon: "PY", name: "Python",     color: "#3776ab" },
       { href: "/nodejs",     icon: "ND", name: "Node.js",    color: "#5fa04e" },
     ],
   },
@@ -22,6 +23,13 @@ const groups = [
       { href: "/react",   icon: "RE", name: "React",   color: "#61dafb" },
       { href: "/nextjs",  icon: "NX", name: "Next.js", color: "#e0e0e0" },
       { href: "/angular", icon: "NG", name: "Angular", color: "#dd0031" },
+    ],
+  },
+  {
+    label: "Data & Databases",
+    topics: [
+      { href: "/postgresql", icon: "PG", name: "PostgreSQL", color: "#336791" },
+      { href: "/mongodb",    icon: "MG", name: "MongoDB",    color: "#13aa52" },
     ],
   },
   {
