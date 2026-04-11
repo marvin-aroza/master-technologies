@@ -15,6 +15,8 @@ const TOPIC_ORDER = [
   { id: "css", href: "/css", name: "CSS", icon: "CS", color: "#4f7be8" },
   { id: "javascript", href: "/javascript", name: "JavaScript", icon: "JS", color: "#f7df1e" },
   { id: "git", href: "/git", name: "Git", icon: "GT", color: "#f05032" },
+  { id: "npm", href: "/npm", name: "npm", icon: "NP", color: "#cb3837" },
+  { id: "nodejs", href: "/nodejs", name: "Node.js", icon: "ND", color: "#5fa04e" },
   { id: "react", href: "/react", name: "React", icon: "RE", color: "#61dafb" },
   { id: "nextjs", href: "/nextjs", name: "Next.js", icon: "NX", color: "#e0e0e0" },
   { id: "angular", href: "/angular", name: "Angular", icon: "NG", color: "#dd0031" },
@@ -23,6 +25,7 @@ const TOPIC_ORDER = [
   { id: "terraform", href: "/terraform", name: "Terraform", icon: "TF", color: "#7b42bc" },
   { id: "system-design", href: "/system-design", name: "System Design", icon: "SD", color: "#60a5fa" },
   { id: "uxui", href: "/ui-ux", name: "UX/UI Design", icon: "UX", color: "#f472b6" },
+  { id: "frontend-cheat-sheet", href: "/frontend-cheat-sheet", name: "Frontend Cheat Sheet", icon: "FC", color: "#22c55e" },
 ];
 
 interface TopicPageProps {

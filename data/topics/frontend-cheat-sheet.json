@@ -1,0 +1,769 @@
+{
+  "id": "frontend-cheat-sheet",
+  "title": "Frontend Cheat Sheet",
+  "subtitle": "A compact revision guide for browser fundamentals, framework recall, and fast interview prep",
+  "heroStats": [
+    {
+      "label": "Sections",
+      "value": "10"
+    },
+    {
+      "label": "Quick Q&A",
+      "value": "45 Q&A"
+    },
+    {
+      "label": "Coverage",
+      "value": "Fast Recall"
+    },
+    {
+      "label": "Updated",
+      "value": "2026"
+    }
+  ],
+  "tabs": [
+    {
+      "id": "html-essentials",
+      "label": "HTML Essentials"
+    },
+    {
+      "id": "css-layout-selectors",
+      "label": "CSS Layout & Selectors"
+    },
+    {
+      "id": "javascript-essentials",
+      "label": "JavaScript Essentials"
+    },
+    {
+      "id": "browser-apis-dom-events",
+      "label": "Browser APIs & Events"
+    },
+    {
+      "id": "accessibility-quick-rules",
+      "label": "Accessibility Rules"
+    },
+    {
+      "id": "performance-quick-wins",
+      "label": "Performance Wins"
+    },
+    {
+      "id": "react-quick-reference",
+      "label": "React Quick Reference"
+    },
+    {
+      "id": "nextjs-quick-reference",
+      "label": "Next.js Quick Reference"
+    },
+    {
+      "id": "git-frontend-workflow-basics",
+      "label": "Workflow Basics"
+    },
+    {
+      "id": "interview-rapid-fire-traps",
+      "label": "Interview Rapid Fire"
+    }
+  ],
+  "sections": [
+    {
+      "id": "html-essentials",
+      "intro": "Semantic structure first. It makes styling, accessibility, and SEO easier later.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Quick scan",
+          "html": "<p>Semantic structure first. It makes styling, accessibility, and SEO easier later.</p><ul><li>Use real landmarks, headings, buttons, and labels.</li><li>Native elements give you keyboard and browser behavior for free.</li><li>Markup meaning still matters under frameworks.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Remember this",
+          "items": [
+            {
+              "label": "Focus",
+              "html": "<p>Prefer native semantic elements before generic div wrappers.</p>"
+            },
+            {
+              "label": "Why it matters",
+              "html": "<p>Because the browser, accessibility tree, SEO surface, and maintainability all depend on the actual markup you emit.</p>"
+            },
+            {
+              "label": "Watch out",
+              "html": "<p>Using headings or divs for visual styling only instead of real document meaning.</p>"
+            }
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common trap",
+          "html": "<p>Do not use ARIA or JavaScript to rebuild what native HTML already gives you well.</p>",
+          "tone": "interview"
+        },
+        {
+          "type": "recap",
+          "title": "Fast recap",
+          "items": [
+            "Use semantic elements first.",
+            "Labels beat placeholders.",
+            "Buttons are for actions.",
+            "Landmarks and headings should describe structure."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What should you remember about semantic HTML?",
+          "answerHtml": "<p>Prefer native semantic elements before generic div wrappers.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why does semantic HTML matter in real frontend work?",
+          "answerHtml": "<p>Because the browser, accessibility tree, SEO surface, and maintainability all depend on the actual markup you emit.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the interview trap around semantic HTML?",
+          "answerHtml": "<p>Using headings or divs for visual styling only instead of real document meaning.</p>"
+        }
+      ]
+    },
+    {
+      "id": "css-layout-selectors",
+      "intro": "Most CSS mistakes come from weak layout mental models, not from missing syntax.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Quick scan",
+          "html": "<p>Most CSS mistakes come from weak layout mental models, not from missing syntax.</p><ul><li>Use Flexbox for one-dimensional alignment.</li><li>Use Grid for coordinated row and column layout.</li><li>Gap is often cleaner than margin hacks.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Remember this",
+          "items": [
+            {
+              "label": "Focus",
+              "html": "<p>Know when Flexbox, Grid, gap, sizing rules, and overflow behavior are the real answer.</p>"
+            },
+            {
+              "label": "Why it matters",
+              "html": "<p>Because real UI quality depends on layout reasoning more than on memorizing random properties.</p>"
+            },
+            {
+              "label": "Watch out",
+              "html": "<p>Fighting overflow and sizing bugs with fixed heights and random widths instead of understanding intrinsic sizing.</p>"
+            }
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common trap",
+          "html": "<p>If content can grow, understand sizing and overflow before adding more CSS band-aids.</p>",
+          "tone": "interview"
+        },
+        {
+          "type": "recap",
+          "title": "Fast recap",
+          "items": [
+            "Flex is one-dimensional.",
+            "Grid is two-dimensional.",
+            "Gap is cleaner than sibling-margin hacks.",
+            "Sizing rules explain many layout surprises."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What should you remember about CSS layout?",
+          "answerHtml": "<p>Know when Flexbox, Grid, gap, sizing rules, and overflow behavior are the real answer.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why does CSS layout matter in real frontend work?",
+          "answerHtml": "<p>Because real UI quality depends on layout reasoning more than on memorizing random properties.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the interview trap around CSS layout?",
+          "answerHtml": "<p>Fighting overflow and sizing bugs with fixed heights and random widths instead of understanding intrinsic sizing.</p>"
+        }
+      ]
+    },
+    {
+      "id": "javascript-essentials",
+      "intro": "JavaScript interview misses usually come from mental-model gaps, not syntax gaps.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Quick scan",
+          "html": "<p>JavaScript interview misses usually come from mental-model gaps, not syntax gaps.</p><ul><li>Keep closures, value vs reference, and async ordering hot.</li><li>Understand modules and objects, not only syntax.</li><li>Many output puzzles are event-loop or scope questions in disguise.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Remember this",
+          "items": [
+            {
+              "label": "Focus",
+              "html": "<p>Retain the language ideas that explain most browser and framework behavior: scope, closures, async flow, identity, and modules.</p>"
+            },
+            {
+              "label": "Why it matters",
+              "html": "<p>Because those concepts explain runtime bugs and interview puzzles far better than memorized syntax alone.</p>"
+            },
+            {
+              "label": "Watch out",
+              "html": "<p>Memorizing outputs without understanding the event loop, scope, or object identity underneath them.</p>"
+            }
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common trap",
+          "html": "<p>If you cannot explain why the code runs that way, you do not really know the answer yet.</p>",
+          "tone": "interview"
+        },
+        {
+          "type": "recap",
+          "title": "Fast recap",
+          "items": [
+            "Understand scope and closures.",
+            "Know event-loop ordering basics.",
+            "Reference vs value still matters.",
+            "Strict equality is the safer default."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What should you remember about JavaScript fundamentals?",
+          "answerHtml": "<p>Retain the language ideas that explain most browser and framework behavior: scope, closures, async flow, identity, and modules.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why does JavaScript fundamentals matter in real frontend work?",
+          "answerHtml": "<p>Because those concepts explain runtime bugs and interview puzzles far better than memorized syntax alone.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the interview trap around JavaScript fundamentals?",
+          "answerHtml": "<p>Memorizing outputs without understanding the event loop, scope, or object identity underneath them.</p>"
+        }
+      ]
+    },
+    {
+      "id": "browser-apis-dom-events",
+      "intro": "Frontend work is not only frameworks. It still depends on browser events, networking, storage, and DOM behavior.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Quick scan",
+          "html": "<p>Frontend work is not only frameworks. It still depends on browser events, networking, storage, and DOM behavior.</p><ul><li>Event propagation still causes real UI bugs.</li><li>Fetch, storage, and DOM APIs are still the platform.</li><li>Framework abstractions leak during debugging.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Remember this",
+          "items": [
+            {
+              "label": "Focus",
+              "html": "<p>Remember the basics of DOM events, fetch, storage, event delegation, and browser-side state boundaries.</p>"
+            },
+            {
+              "label": "Why it matters",
+              "html": "<p>Because many real bugs only make sense once you reason at the browser API layer instead of at the framework layer.</p>"
+            },
+            {
+              "label": "Watch out",
+              "html": "<p>Confusing bubbling or browser state behavior with application-state bugs.</p>"
+            }
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common trap",
+          "html": "<p>Do not assume the framework swallowed the platform. The browser is still underneath every component tree.</p>",
+          "tone": "interview"
+        },
+        {
+          "type": "recap",
+          "title": "Fast recap",
+          "items": [
+            "Know propagation basics.",
+            "Fetch is promise-based and async.",
+            "Storage APIs have different lifetimes.",
+            "The DOM is still the platform underneath your framework."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What should you remember about browser APIs?",
+          "answerHtml": "<p>Remember the basics of DOM events, fetch, storage, event delegation, and browser-side state boundaries.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why does browser APIs matter in real frontend work?",
+          "answerHtml": "<p>Because many real bugs only make sense once you reason at the browser API layer instead of at the framework layer.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the interview trap around browser APIs?",
+          "answerHtml": "<p>Confusing bubbling or browser state behavior with application-state bugs.</p>"
+        }
+      ]
+    },
+    {
+      "id": "accessibility-quick-rules",
+      "intro": "Accessibility quick wins prevent a surprising number of product and interview mistakes.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Quick scan",
+          "html": "<p>Accessibility quick wins prevent a surprising number of product and interview mistakes.</p><ul><li>Use semantic elements and visible focus.</li><li>Every field needs a real label.</li><li>Keyboard access is a product requirement, not a bonus.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Remember this",
+          "items": [
+            {
+              "label": "Focus",
+              "html": "<p>Remember the high-frequency rules around semantic HTML, focus visibility, labeling, and keyboard access.</p>"
+            },
+            {
+              "label": "Why it matters",
+              "html": "<p>Because accessibility problems often begin with a few repeated mistakes that are cheap to prevent early.</p>"
+            },
+            {
+              "label": "Watch out",
+              "html": "<p>Using ARIA to patch wrong markup instead of starting with the correct native element and behavior.</p>"
+            }
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common trap",
+          "html": "<p>Do not remove focus indicators or replace labels with placeholders and call it done.</p>",
+          "tone": "interview"
+        },
+        {
+          "type": "recap",
+          "title": "Fast recap",
+          "items": [
+            "Use native elements first.",
+            "Visible focus matters.",
+            "Every field needs a label.",
+            "Keyboard access is non-negotiable."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What should you remember about accessibility quick rules?",
+          "answerHtml": "<p>Remember the high-frequency rules around semantic HTML, focus visibility, labeling, and keyboard access.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why does accessibility quick rules matter in real frontend work?",
+          "answerHtml": "<p>Because accessibility problems often begin with a few repeated mistakes that are cheap to prevent early.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the interview trap around accessibility quick rules?",
+          "answerHtml": "<p>Using ARIA to patch wrong markup instead of starting with the correct native element and behavior.</p>"
+        }
+      ]
+    },
+    {
+      "id": "performance-quick-wins",
+      "intro": "Frontend performance wins usually come from a handful of repeated habits.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Quick scan",
+          "html": "<p>Frontend performance wins usually come from a handful of repeated habits.</p><ul><li>Ship less JavaScript.</li><li>Optimize images and rendering strategy early.</li><li>Measure before optimizing details.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Remember this",
+          "items": [
+            {
+              "label": "Focus",
+              "html": "<p>Think first about bundle size, rendering strategy, images, and runtime work instead of random micro-optimizations.</p>"
+            },
+            {
+              "label": "Why it matters",
+              "html": "<p>Because the biggest performance wins usually come from removing major browser work rather than tweaking one hook or style rule.</p>"
+            },
+            {
+              "label": "Watch out",
+              "html": "<p>Optimizing what you have not measured or obsessing over tiny code changes while large assets and rendering choices dominate cost.</p>"
+            }
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common trap",
+          "html": "<p>Do not call something fast because it feels fast on your own laptop. Measure user-facing performance instead.</p>",
+          "tone": "interview"
+        },
+        {
+          "type": "recap",
+          "title": "Fast recap",
+          "items": [
+            "Ship less JS.",
+            "Optimize images early.",
+            "Measure before tuning.",
+            "Rendering strategy changes performance more than micro-tweaks often do."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What should you remember about frontend performance?",
+          "answerHtml": "<p>Think first about bundle size, rendering strategy, images, and runtime work instead of random micro-optimizations.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why does frontend performance matter in real frontend work?",
+          "answerHtml": "<p>Because the biggest performance wins usually come from removing major browser work rather than tweaking one hook or style rule.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the interview trap around frontend performance?",
+          "answerHtml": "<p>Optimizing what you have not measured or obsessing over tiny code changes while large assets and rendering choices dominate cost.</p>"
+        }
+      ]
+    },
+    {
+      "id": "react-quick-reference",
+      "intro": "React quick recall should focus on rendering, state, effects, refs, and boundaries.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Quick scan",
+          "html": "<p>React quick recall should focus on rendering, state, effects, refs, and boundaries.</p><ul><li>Render should stay pure.</li><li>State is a snapshot over time.</li><li>Effects are for synchronization, not ordinary calculations.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Remember this",
+          "items": [
+            {
+              "label": "Focus",
+              "html": "<p>Keep the high-frequency React ideas hot: render, state, refs, effects, Context, and component boundaries.</p>"
+            },
+            {
+              "label": "Why it matters",
+              "html": "<p>Because many React bugs and interview misses happen when developers blur render logic, state changes, and external synchronization.</p>"
+            },
+            {
+              "label": "Watch out",
+              "html": "<p>Using Effects for values that could have been derived during render or treating refs like normal reactive state.</p>"
+            }
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common trap",
+          "html": "<p>If you can derive it during render, you usually do not need an Effect for it.</p>",
+          "tone": "interview"
+        },
+        {
+          "type": "recap",
+          "title": "Fast recap",
+          "items": [
+            "Render should stay pure.",
+            "State is a snapshot.",
+            "Refs do not trigger renders.",
+            "Effects are for synchronization."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What should you remember about React quick recall?",
+          "answerHtml": "<p>Keep the high-frequency React ideas hot: render, state, refs, effects, Context, and component boundaries.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why does React quick recall matter in real frontend work?",
+          "answerHtml": "<p>Because many React bugs and interview misses happen when developers blur render logic, state changes, and external synchronization.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the interview trap around React quick recall?",
+          "answerHtml": "<p>Using Effects for values that could have been derived during render or treating refs like normal reactive state.</p>"
+        }
+      ]
+    },
+    {
+      "id": "nextjs-quick-reference",
+      "intro": "Next.js revision should focus on server-first thinking, App Router structure, rendering, and caching.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Quick scan",
+          "html": "<p>Next.js revision should focus on server-first thinking, App Router structure, rendering, and caching.</p><ul><li>Server Components are the default mental model.</li><li>Client boundaries should be intentional.</li><li>Caching and rendering are connected decisions.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Remember this",
+          "items": [
+            {
+              "label": "Focus",
+              "html": "<p>Remember App Router file conventions, server/client boundaries, rendering choices, and cache tradeoffs.</p>"
+            },
+            {
+              "label": "Why it matters",
+              "html": "<p>Because modern Next.js questions are really about where code runs and how freshness, latency, and bundle cost trade off.</p>"
+            },
+            {
+              "label": "Watch out",
+              "html": "<p>Moving components client-side by habit or talking about caching without knowing what actually needs to stay fresh.</p>"
+            }
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common trap",
+          "html": "<p>Every unnecessary client boundary increases bundle and hydration cost.</p>",
+          "tone": "interview"
+        },
+        {
+          "type": "recap",
+          "title": "Fast recap",
+          "items": [
+            "App Router uses file conventions heavily.",
+            "Server Components are the default.",
+            "Client boundaries should be intentional.",
+            "Caching and rendering are linked."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What should you remember about Next.js quick recall?",
+          "answerHtml": "<p>Remember App Router file conventions, server/client boundaries, rendering choices, and cache tradeoffs.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why does Next.js quick recall matter in real frontend work?",
+          "answerHtml": "<p>Because modern Next.js questions are really about where code runs and how freshness, latency, and bundle cost trade off.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the interview trap around Next.js quick recall?",
+          "answerHtml": "<p>Moving components client-side by habit or talking about caching without knowing what actually needs to stay fresh.</p>"
+        }
+      ]
+    },
+    {
+      "id": "git-frontend-workflow-basics",
+      "intro": "Frontend workflow basics still depend on version control, reproducible installs, and small reviewable changes.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Quick scan",
+          "html": "<p>Frontend workflow basics still depend on version control, reproducible installs, and small reviewable changes.</p><ul><li>Use focused commits and fetch before integrating when possible.</li><li>Respect the lockfile.</li><li>Run project scripts instead of hidden global tools.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Remember this",
+          "items": [
+            {
+              "label": "Focus",
+              "html": "<p>Keep Git, package-management, and review hygiene strong enough that frontend work stays reproducible and reviewable.</p>"
+            },
+            {
+              "label": "Why it matters",
+              "html": "<p>Because hidden machine state and vague Git habits make UI teams slower and create avoidable build failures.</p>"
+            },
+            {
+              "label": "Watch out",
+              "html": "<p>Normalizing force pushes, hidden global tools, or uncommitted lockfile changes in team workflows.</p>"
+            }
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common trap",
+          "html": "<p>If the build depends on your personal machine state, it is not a healthy workflow yet.</p>",
+          "tone": "interview"
+        },
+        {
+          "type": "recap",
+          "title": "Fast recap",
+          "items": [
+            "Small commits help everyone.",
+            "Fetch before integrating when possible.",
+            "Respect the lockfile.",
+            "Project-local tooling beats global drift."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What should you remember about frontend workflow basics?",
+          "answerHtml": "<p>Keep Git, package-management, and review hygiene strong enough that frontend work stays reproducible and reviewable.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why does frontend workflow basics matter in real frontend work?",
+          "answerHtml": "<p>Because hidden machine state and vague Git habits make UI teams slower and create avoidable build failures.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the interview trap around frontend workflow basics?",
+          "answerHtml": "<p>Normalizing force pushes, hidden global tools, or uncommitted lockfile changes in team workflows.</p>"
+        }
+      ]
+    },
+    {
+      "id": "interview-rapid-fire-traps",
+      "intro": "This final sheet is for fast interview pressure: quick definitions, debugging prompts, and the traps people answer too loosely.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Quick scan",
+          "html": "<p>Focus on short accurate answers first, then add the deeper tradeoff only if the interviewer asks. Clarity beats rambling.</p>"
+        },
+        {
+          "type": "code",
+          "title": "Fast interview structure",
+          "language": "text",
+          "code": "1. Define the concept clearly.\n2. Explain why it exists.\n3. Name the tradeoff or common bug.\n4. Give one concrete example.",
+          "caption": "A four-step structure keeps answers sharp under pressure."
+        },
+        {
+          "type": "compare",
+          "title": "Remember this",
+          "items": [
+            {
+              "label": "Weak answer",
+              "html": "<p>Buzzwords with no mechanism or tradeoff.</p>"
+            },
+            {
+              "label": "Better answer",
+              "html": "<p>Definition plus one real example.</p>"
+            },
+            {
+              "label": "Strong answer",
+              "html": "<p>Definition, mechanism, tradeoff, and debugging awareness.</p>"
+            }
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common trap",
+          "html": "<p>Do not answer every frontend question at the framework layer. Many interviewers are checking whether you still understand the browser and platform underneath.</p>",
+          "tone": "interview"
+        },
+        {
+          "type": "recap",
+          "title": "Fast recap",
+          "items": [
+            "Define clearly first.",
+            "Explain why it exists.",
+            "Mention the common trap.",
+            "Give one grounded example."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why is semantic HTML still an interview topic?",
+          "answerHtml": "<p>Because markup meaning still affects accessibility, SEO, browser behavior, and maintainability regardless of framework use.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "Why is shipping less JavaScript often faster?",
+          "answerHtml": "<p>The browser has less code to download, parse, compile, and execute.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is the practical difference between state and refs in React?",
+          "answerHtml": "<p>State drives rendering while refs hold mutable values without triggering a render.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "Why is fetch knowledge still important in a framework-heavy stack?",
+          "answerHtml": "<p>The browser networking model and async behavior still affect UI correctness and debugging.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why is 'just use ARIA' often a weak accessibility answer?",
+          "answerHtml": "<p>Good accessibility usually starts with the correct native element and behavior.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why can Next.js caching questions be tricky?",
+          "answerHtml": "<p>The right answer depends on what must stay fresh, what can be reused, and where the work runs.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why do interviewers ask about the event loop in frontend interviews?",
+          "answerHtml": "<p>Async ordering affects rendering, state updates, fetch handling, and debugging even in UI-heavy roles.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is the first thing to say when asked to improve a slow page?",
+          "answerHtml": "<p>Measure first, then target the real bottleneck rather than guessing.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why is a global CLI dependency a workflow smell?",
+          "answerHtml": "<p>It makes local behavior depend on hidden machine state that CI and teammates may not share.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why does layout knowledge matter beyond CSS trivia?",
+          "answerHtml": "<p>Real UI quality depends on sizing, overflow, alignment, and responsiveness, not just memorizing properties.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What makes a frontend answer sound senior?",
+          "answerHtml": "<p>It connects browser behavior, user impact, performance tradeoffs, and debugging strategy instead of naming only framework APIs.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is 'semantic HTML is good for SEO' an incomplete answer?",
+          "answerHtml": "<p>The deeper point is that semantics affect structure, accessibility, browser behavior, and maintainability too.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you avoid rambling in frontend interviews?",
+          "answerHtml": "<p>Define the concept, explain the mechanism, name the tradeoff, and give one example.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the strongest quick correction to 'frontend is mostly design now'?",
+          "answerHtml": "<p>Modern frontend still requires runtime reasoning, platform understanding, performance strategy, accessibility, and system integration.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is the cheat-sheet mindset useful even for senior engineers?",
+          "answerHtml": "<p>Fast recall under pressure still benefits from compressed mental models and recurring decision rules.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How would you define frontend mastery in one sentence?",
+          "answerHtml": "<p>Frontend mastery means understanding the browser platform, UI architecture, runtime behavior, and user experience deeply enough to make strong tradeoffs under pressure.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What does a great revision sheet optimize for?",
+          "answerHtml": "<p>Fast recall of high-frequency concepts, tradeoffs, and traps without losing technical accuracy.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Why should senior frontend engineers still revisit fundamentals?",
+          "answerHtml": "<p>Because browser semantics, async behavior, layout reasoning, and accessibility still shape real product quality under every framework.</p>"
+        }
+      ]
+    }
+  ]
+}
