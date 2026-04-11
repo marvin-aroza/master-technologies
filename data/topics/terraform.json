@@ -1,0 +1,1261 @@
+{
+  "id": "terraform",
+  "title": "Terraform Mastery Bible",
+  "subtitle": "Infrastructure as code, state, modules, environment strategy, and team-safe provisioning",
+  "heroStats": [
+    {
+      "label": "Chapters",
+      "value": "14"
+    },
+    {
+      "label": "Interview",
+      "value": "75 Q&A"
+    },
+    {
+      "label": "Coverage",
+      "value": "Core Terraform"
+    },
+    {
+      "label": "Updated",
+      "value": "2026"
+    }
+  ],
+  "tabs": [
+    {
+      "id": "iac-foundations-terraform-mental-model",
+      "label": "IaC Foundations"
+    },
+    {
+      "id": "providers-resources-data-sources-variables",
+      "label": "Providers & Resources"
+    },
+    {
+      "id": "state-plans-applies-lifecycle",
+      "label": "State, Plan & Apply"
+    },
+    {
+      "id": "modules-composition-reuse",
+      "label": "Modules & Reuse"
+    },
+    {
+      "id": "dependency-graph-execution-model",
+      "label": "Graph & Execution"
+    },
+    {
+      "id": "workspaces-environments-repo-structure",
+      "label": "Environments & Structure"
+    },
+    {
+      "id": "remote-state-locking-team-workflows",
+      "label": "Remote State & Teams"
+    },
+    {
+      "id": "drift-imports-refactors-migrations",
+      "label": "Drift & Refactors"
+    },
+    {
+      "id": "secrets-policy-governance",
+      "label": "Secrets & Governance"
+    },
+    {
+      "id": "testing-validation-automation",
+      "label": "Testing & Automation"
+    },
+    {
+      "id": "multi-account-multi-region-design",
+      "label": "Multi-Account Design"
+    },
+    {
+      "id": "performance-scale-operational-risk",
+      "label": "Scale & Risk"
+    },
+    {
+      "id": "terraform-ecosystem-opentofu-context",
+      "label": "Ecosystem & OpenTofu"
+    },
+    {
+      "id": "interview-mastery-architecture-drills",
+      "label": "Interviews & Drills"
+    }
+  ],
+  "sections": [
+    {
+      "id": "iac-foundations-terraform-mental-model",
+      "intro": "Terraform starts making sense when you treat it as a desired-state reconciler instead of a shell script runner.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Terraform is desired state plus state plus graph",
+          "html": "<p>Terraform compares declared desired state with recorded state and provider reality.</p><p>That is why it feels declarative: you describe the target and Terraform plans how to reach it.</p><ul><li>Configuration describes intent.</li><li>State maps resources to real objects.</li><li>Providers translate Terraform to platform APIs.</li><li>Plans preview graph changes before apply.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Imperative scripts vs Terraform",
+          "items": [
+            {
+              "label": "Imperative",
+              "html": "<p>You own exact call order and idempotency.</p>"
+            },
+            {
+              "label": "Terraform",
+              "html": "<p>You describe the end state and Terraform derives the operations.</p>"
+            },
+            {
+              "label": "Configuration management",
+              "html": "<p>Often focuses more on software state inside machines than infrastructure resources.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Terraform's mental loop",
+          "steps": [
+            "Parse configuration and schemas.",
+            "Read state.",
+            "Compare desired and actual reality.",
+            "Plan graph operations.",
+            "Apply them if approved."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Minimal Terraform resource",
+          "language": "hcl",
+          "code": "terraform {\n  required_version = \">= 1.6.0\"\n}\n\nprovider \"aws\" {\n  region = \"eu-west-2\"\n}\n\nresource \"aws_s3_bucket\" \"logs\" {\n  bucket = \"company-prod-logs-example\"\n}",
+          "caption": "Even a tiny example already depends on provider, state, and graph planning."
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Terraform reconciles desired and actual state.",
+            "The graph is central to execution.",
+            "State is foundational.",
+            "Declarative does not mean Terraform is simple."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What problem does Terraform solve?",
+          "answerHtml": "<p>It lets teams declare infrastructure as code and reconcile real infrastructure toward that desired state.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is state necessary?",
+          "answerHtml": "<p>It tells Terraform which real object belongs to which resource address so updates can be planned correctly.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is Terraform not just scripting with nicer syntax?",
+          "answerHtml": "<p>Because Terraform reconciles desired state through provider schemas, state, and a dependency graph instead of replaying a hand-written imperative sequence.</p>"
+        }
+      ]
+    },
+    {
+      "id": "providers-resources-data-sources-variables",
+      "intro": "Providers, resources, data sources, variables, and locals are Terraform's vocabulary.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "The provider schema defines what Terraform can model",
+          "html": "<p>Resources create or manage objects. Data sources read existing facts without taking ownership of lifecycle.</p><p>Variables and locals make configuration reusable, but they do not replace understanding the provider model.</p><ul><li>Resources are managed objects.</li><li>Data sources are read-only lookups.</li><li>Variables receive external input.</li><li>Locals derive reusable internal values.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Resource vs data source vs variable",
+          "items": [
+            {
+              "label": "Resource",
+              "html": "<p>Tracked in state and managed over time.</p>"
+            },
+            {
+              "label": "Data source",
+              "html": "<p>Read-only lookup for existing information.</p>"
+            },
+            {
+              "label": "Variable and local",
+              "html": "<p>External input versus internal derived expression.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How references flow",
+          "steps": [
+            "Load variables from callers or environment.",
+            "Compute locals.",
+            "Evaluate resources and data sources.",
+            "Create dependency edges from references."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Resources and data sources together",
+          "language": "hcl",
+          "code": "variable \"region\" {\n  type = string\n}\n\ndata \"aws_caller_identity\" \"current\" {}\n\nlocals {\n  account_id = data.aws_caller_identity.current.account_id\n}\n\nresource \"aws_s3_bucket\" \"artifacts\" {\n  bucket = \"artifacts-${local.account_id}-${var.region}\"\n}",
+          "caption": "Data lookups and locals keep configuration expressive without hard-coding everything."
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Resources own lifecycle.",
+            "Data sources read facts.",
+            "Variables are external.",
+            "Locals improve readability and reuse."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is a Terraform provider?",
+          "answerHtml": "<p>The plugin and schema that lets Terraform manage a specific platform or API.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can too many data sources be a smell?",
+          "answerHtml": "<p>They can hide important dependencies and environment assumptions that would be clearer as explicit module inputs.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When should a module input be preferred over a data source?",
+          "answerHtml": "<p>When the dependency should be explicit and stable, because module inputs reveal intent more clearly than dynamic lookups hidden inside the module.</p>"
+        }
+      ]
+    },
+    {
+      "id": "state-plans-applies-lifecycle",
+      "intro": "Planning and applying are safe only when you understand what state records and how refresh affects the diff.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "State is a mapping, not a magic truth oracle",
+          "html": "<p>State records how Terraform believes configuration addresses map to real objects.</p><p>Plan compares configuration, state, and provider reality. Apply performs the resulting graph operations.</p><ul><li>Refresh updates Terraform's picture of reality.</li><li>Plan previews change.</li><li>Apply mutates real infrastructure.</li><li>Lifecycle meta-arguments shape replacement behavior.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Refresh, plan, and apply",
+          "items": [
+            {
+              "label": "Refresh",
+              "html": "<p>Updates the known view of managed infrastructure.</p>"
+            },
+            {
+              "label": "Plan",
+              "html": "<p>Preview of proposed create, update, or destroy actions.</p>"
+            },
+            {
+              "label": "Apply",
+              "html": "<p>Execution of the graph operations.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How replacement happens",
+          "steps": [
+            "Detect an attribute change.",
+            "Check whether the provider marks it force-new.",
+            "Plan a replacement if in-place update is impossible.",
+            "Use lifecycle rules to influence order when possible."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Drill: unexpected plan",
+          "prompt": "Why can Terraform show a surprising plan even when no configuration file changed?",
+          "answerHtml": "<p>Because reality, inputs, defaults, or referenced data sources may have changed even if the files did not.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "State maps Terraform to real infrastructure.",
+            "Refresh updates Terraform's view.",
+            "Plan is a review artifact.",
+            "Lifecycle rules shape replacement order, not provider truth."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is Terraform state for?",
+          "answerHtml": "<p>It records which real objects belong to which resource addresses.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can a plan change with no code diff?",
+          "answerHtml": "<p>Because real infrastructure, inputs, provider defaults, or data-source values may have changed since the last run.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the operational risk of applying from stale assumptions?",
+          "answerHtml": "<p>You can approve a change based on an outdated picture of reality and accidentally replace, destroy, or drift critical infrastructure.</p>"
+        }
+      ]
+    },
+    {
+      "id": "modules-composition-reuse",
+      "intro": "Modules are where Terraform becomes a reusable platform tool instead of a single-stack experiment.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Modules are contracts, not just folders",
+          "html": "<p>A good module owns one clear capability and exposes a stable interface of inputs and outputs.</p><p>Bad modules are often either too thin to help or so overloaded with options that no one can reason about them.</p><ul><li>Root modules are deployment entry points.</li><li>Child modules package reusable capabilities.</li><li>Outputs should expose what callers truly need.</li><li>Shared modules need version discipline.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Module design tradeoffs",
+          "items": [
+            {
+              "label": "Too low-level",
+              "html": "<p>Callers still wire every tiny detail and get little abstraction benefit.</p>"
+            },
+            {
+              "label": "Too high-level",
+              "html": "<p>A giant boolean matrix becomes hard to evolve or test.</p>"
+            },
+            {
+              "label": "Cohesive module",
+              "html": "<p>Owns one capability with a clear interface.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Reusable module workflow",
+          "steps": [
+            "Define one owned capability.",
+            "Keep inputs small and meaningful.",
+            "Expose only useful outputs.",
+            "Version and document upgrades."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Calling a child module",
+          "language": "hcl",
+          "code": "module \"network\" {\n  source = \"../modules/network\"\n  environment = var.environment\n  cidr_block  = var.vpc_cidr\n}\n\noutput \"vpc_id\" {\n  value = module.network.vpc_id\n}",
+          "caption": "Modules should feel like deliberate building blocks, not hidden copies of big files."
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Modules are contracts.",
+            "Cohesion matters more than generic-looking inputs.",
+            "Outputs should be meaningful.",
+            "Shared modules need versioning."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is a Terraform module?",
+          "answerHtml": "<p>A reusable package of Terraform configuration.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why are option-heavy mega-modules often a smell?",
+          "answerHtml": "<p>Because they try to solve too many cases at once and become harder to understand, test, and evolve.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you know a module boundary is wrong?",
+          "answerHtml": "<p>A module boundary is usually wrong when callers either have to pass every low-level detail through or cannot safely evolve one use case without affecting many others.</p>"
+        }
+      ]
+    },
+    {
+      "id": "dependency-graph-execution-model",
+      "intro": "Terraform execution is graph-driven. If you understand the graph, you understand most ordering behavior.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "The graph is Terraform's execution engine",
+          "html": "<p>Terraform builds a dependency graph from references and selected meta-arguments.</p><p>That graph determines ordering, parallelism, and what must wait on what.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Dependency types",
+          "items": [
+            {
+              "label": "Implicit dependency",
+              "html": "<p>Created by references between resources or outputs.</p>"
+            },
+            {
+              "label": "Explicit depends_on",
+              "html": "<p>Useful only when a real dependency exists but is not visible through expressions.</p>"
+            },
+            {
+              "label": "No dependency",
+              "html": "<p>Independent nodes may plan or apply in parallel.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How execution order emerges",
+          "steps": [
+            "Parse references into graph edges.",
+            "Keep independent nodes parallel where possible.",
+            "Wait on prerequisites before downstream operations.",
+            "Stop or narrow downstream work when failures happen."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Drill: when to use depends_on",
+          "prompt": "When is depends_on actually justified?",
+          "answerHtml": "<p>When the dependency is real but cannot be expressed clearly through a normal reference. It should model true ordering, not compensate for unclear design everywhere.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "The graph determines order and parallelism.",
+            "Implicit dependencies are usually clearer.",
+            "depends_on is a precision tool.",
+            "Graph thinking explains apply behavior."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What determines Terraform apply order?",
+          "answerHtml": "<p>The dependency graph built from references and dependency rules.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can overusing depends_on hurt?",
+          "answerHtml": "<p>It reduces parallelism and hides the real design intent.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What makes a dependency explicit versus accidental in Terraform?",
+          "answerHtml": "<p>An explicit dependency models a real ordering need, while an accidental dependency often appears because configuration structure or hidden references became too coupled.</p>"
+        }
+      ]
+    },
+    {
+      "id": "workspaces-environments-repo-structure",
+      "intro": "Environment strategy is where Terraform becomes a team platform instead of one person's tool.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Environments need clear boundaries",
+          "html": "<p>Teams separate environments through root modules, directories, workspaces, accounts, or a combination of these.</p><p>The important part is making boundaries explicit and safe rather than hiding them in unclear conventions.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Environment isolation options",
+          "items": [
+            {
+              "label": "Separate roots",
+              "html": "<p>Explicit and easy to review.</p>"
+            },
+            {
+              "label": "Workspaces",
+              "html": "<p>Useful in some patterns, but can hide context if overused.</p>"
+            },
+            {
+              "label": "Separate accounts",
+              "html": "<p>Strong blast-radius and governance boundaries for serious environments.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Environment design checklist",
+          "steps": [
+            "Choose the real blast-radius boundary first.",
+            "Lay out shared modules and env-specific roots clearly.",
+            "Define how variables and secrets enter each environment.",
+            "Make plan scope obvious."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: one root pretending to be every environment",
+          "tone": "warning",
+          "html": "<p>A giant root full of conditionals makes environment differences harder to see and review.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Environment design is about blast radius and clarity.",
+            "Explicit roots are often easier to review.",
+            "Workspaces are a tool, not a full strategy.",
+            "Repository structure should communicate ownership."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is a Terraform workspace?",
+          "answerHtml": "<p>A workspace lets one configuration keep separate state instances under different names.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why are separate accounts often better than only naming-based isolation?",
+          "answerHtml": "<p>Because they give stronger security, billing, and blast-radius separation.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why are workspaces not a complete environment strategy by themselves?",
+          "answerHtml": "<p>Because they separate state, but they do not automatically solve account boundaries, secret injection, ownership clarity, or safe promotion flow.</p>"
+        }
+      ]
+    },
+    {
+      "id": "remote-state-locking-team-workflows",
+      "intro": "Once multiple people run Terraform, remote state and locking stop being optional.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Team Terraform needs a shared state system",
+          "html": "<p>Local state is fine for experiments, but teams need remote state, locking, and a repeatable plan/apply path.</p><p>The backend is part of the architecture, not an afterthought.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Local vs remote state",
+          "items": [
+            {
+              "label": "Local state",
+              "html": "<p>Fine for experiments, risky for teams.</p>"
+            },
+            {
+              "label": "Remote state",
+              "html": "<p>Centralizes access, locking, and recoverability.</p>"
+            },
+            {
+              "label": "Remote-state outputs",
+              "html": "<p>Useful for composition but also a coupling point.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Why locking matters",
+          "steps": [
+            "Two overlapping applies can plan from different assumptions.",
+            "Without locking, each may mutate the same resources independently.",
+            "Locking serializes mutating runs.",
+            "That protects both state integrity and real infrastructure."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Drill: backend importance",
+          "prompt": "Why is remote state more than just convenient storage?",
+          "answerHtml": "<p>Because it also affects locking, access control, encryption, backup, and the team's ability to collaborate safely.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Remote state is foundational for team Terraform.",
+            "Locking prevents overlapping mutating runs.",
+            "Backends are part of security and architecture.",
+            "Shared outputs create contracts across stacks."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why is remote state useful?",
+          "answerHtml": "<p>It gives the team one shared place to store and read Terraform state.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What problem does state locking solve?",
+          "answerHtml": "<p>It prevents concurrent mutating runs from racing or corrupting state.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the risk if remote state exists but locking does not?",
+          "answerHtml": "<p>Two runs can still race, producing conflicting mutations and leaving state or infrastructure reality inconsistent.</p>"
+        }
+      ]
+    },
+    {
+      "id": "drift-imports-refactors-migrations",
+      "intro": "Drift, imports, and refactors are normal operational realities, not edge cases.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Terraform must reconnect code to reality safely",
+          "html": "<p>Drift happens when infrastructure changes outside Terraform. Imports and moved mappings help Terraform reconnect code and real objects.</p><p>The goal is to restore a trustworthy mapping without accidental destruction.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Import, move, and recreate",
+          "items": [
+            {
+              "label": "Import",
+              "html": "<p>Bring an existing object under Terraform management.</p>"
+            },
+            {
+              "label": "Move",
+              "html": "<p>Preserve object identity while changing the resource address.</p>"
+            },
+            {
+              "label": "Recreate",
+              "html": "<p>Sometimes valid, but only when downtime and data risk are acceptable.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Safe refactor sequence",
+          "steps": [
+            "Decide whether to keep, move, import, or replace the object.",
+            "Back up or review state first.",
+            "Use move or import where identity should stay intact.",
+            "Confirm the resulting plan is what you intended."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: accidental destroy-create during a rename",
+          "tone": "pitfall",
+          "html": "<p>A harmless refactor in code can look like delete-and-recreate if Terraform loses the address mapping.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Drift is normal.",
+            "Import and move preserve identity.",
+            "Refactors should be treated like migrations.",
+            "The plan is the safety check."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is drift in Terraform?",
+          "answerHtml": "<p>A mismatch between Terraform's expected infrastructure state and what actually exists.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can a harmless-looking refactor cause destruction?",
+          "answerHtml": "<p>Because changing addresses without preserving the mapping can make Terraform think the old object should be destroyed and a new one created.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do moved blocks reduce migration risk?",
+          "answerHtml": "<p>They preserve the identity mapping from old resource addresses to new ones so a code refactor does not look like delete-and-recreate to Terraform.</p>"
+        }
+      ]
+    },
+    {
+      "id": "secrets-policy-governance",
+      "intro": "Secrets, policy, and governance separate safe Terraform platforms from accident-prone ones.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Terraform is part of your security surface",
+          "html": "<p>Credentials, secret values, policy checks, and review controls all matter because Terraform can change critical infrastructure quickly.</p><p>Good governance reduces risky patterns by default instead of relying only on hero reviewers.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Security layers",
+          "items": [
+            {
+              "label": "Secrets handling",
+              "html": "<p>Prefer dedicated secret systems and runtime injection over committed values.</p>"
+            },
+            {
+              "label": "Policy as code",
+              "html": "<p>Fail plans that violate tagging, encryption, or network guardrails.</p>"
+            },
+            {
+              "label": "Access control",
+              "html": "<p>Differentiate who can read, plan, and apply.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Hardening a Terraform workflow",
+          "steps": [
+            "Keep secrets out of versioned config.",
+            "Apply policy checks to plans.",
+            "Restrict apply more tightly than read or plan.",
+            "Audit backend and provider changes."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Drill: sensitive values",
+          "prompt": "Why does marking a value sensitive not solve the secret problem by itself?",
+          "answerHtml": "<p>Because the value can still live in state or provider systems. Sensitive hides output but does not eliminate the broader secret-handling problem.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Terraform is part of the control plane.",
+            "Sensitive values still need backend protection.",
+            "Policy adds guardrails before apply.",
+            "Least privilege should distinguish read, plan, and apply."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why is storing secrets directly in Terraform code risky?",
+          "answerHtml": "<p>Because secrets can leak through version control, logs, plans, or state.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is apply access more sensitive than plan access?",
+          "answerHtml": "<p>Because apply mutates real infrastructure and therefore has much larger blast radius.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is marking a value sensitive not enough for secret safety?",
+          "answerHtml": "<p>Because the value may still live in state, provider systems, or backend storage even if Terraform hides it from some CLI output.</p>"
+        }
+      ]
+    },
+    {
+      "id": "testing-validation-automation",
+      "intro": "Testing and automation keep Terraform trustworthy as team and environment count grow.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Terraform quality needs more than a successful apply",
+          "html": "<p>Formatting, validation, static analysis, plan review, and integration-style testing all contribute to Terraform quality.</p><p>Mature teams automate the repetitive safety work so human review can focus on risk and architecture.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Validation layers",
+          "items": [
+            {
+              "label": "fmt and validate",
+              "html": "<p>Great for syntax and basic schema correctness.</p>"
+            },
+            {
+              "label": "Static analysis",
+              "html": "<p>Catches policy and anti-pattern issues earlier.</p>"
+            },
+            {
+              "label": "Plan review",
+              "html": "<p>Shows exactly what infrastructure change is proposed before mutation.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "A mature CI path",
+          "steps": [
+            "Run formatting and validation.",
+            "Add linting or security scanning.",
+            "Generate reviewed plans.",
+            "Gate apply behind approved workflows."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Common validation sequence",
+          "language": "bash",
+          "code": "terraform fmt -check\nterraform validate\nterraform plan -out=tfplan",
+          "caption": "This is the minimum layer, not the whole quality story."
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Validation is a stack, not one command.",
+            "Plan review is part of testing.",
+            "CI should automate repetitive safety work.",
+            "Passing apply is not the only proof of quality."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What does terraform validate do?",
+          "answerHtml": "<p>It checks that configuration is syntactically valid and internally consistent with provider schemas.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why are fmt and validate not enough for mature teams?",
+          "answerHtml": "<p>Because infrastructure risk also includes policy, security, and environment-specific behavior.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why should a Terraform plan be reviewed like code?",
+          "answerHtml": "<p>Because the plan is the closest concrete description of the real infrastructure mutation you are about to perform.</p>"
+        }
+      ]
+    },
+    {
+      "id": "multi-account-multi-region-design",
+      "intro": "Multi-account and multi-region design is where Terraform meets real platform architecture.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Scale boundaries first, then encode them cleanly",
+          "html": "<p>Multi-account and multi-region design is really an architecture question about trust boundaries, blast radius, and rollout strategy.</p><p>Terraform structure should reflect those boundaries instead of hiding them inside one giant root.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Scaling patterns",
+          "items": [
+            {
+              "label": "Separate roots per boundary",
+              "html": "<p>Clear and explicit for account or region isolation.</p>"
+            },
+            {
+              "label": "Shared modules",
+              "html": "<p>Good for consistency but need rollout discipline.</p>"
+            },
+            {
+              "label": "One mega-root",
+              "html": "<p>Feels convenient early but makes blast radius and review much harder later.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Designing across boundaries",
+          "steps": [
+            "Identify security and failure boundaries first.",
+            "Choose shared modules and env-specific roots.",
+            "Align state and credentials with the real boundary model.",
+            "Define rollout order across accounts or regions."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: one apply touching too much",
+          "tone": "warning",
+          "html": "<p>If one apply can mutate many environments, accounts, or regions at once, review and blast-radius control are usually weaker than they should be.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Multi-account design is architecture first.",
+            "Roots should reflect blast radius.",
+            "Shared modules need version discipline.",
+            "Large apply scope increases risk."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "Why do teams use multiple cloud accounts?",
+          "answerHtml": "<p>To separate environments, teams, billing, and blast radius more safely.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is one giant root module risky at scale?",
+          "answerHtml": "<p>Because one run can affect too much infrastructure at once and make review far harder.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What makes multi-region Terraform dangerous if one root controls everything?",
+          "answerHtml": "<p>One apply can widen blast radius, bury important diffs in noise, and make rollback or partial failure handling much harder.</p>"
+        }
+      ]
+    },
+    {
+      "id": "performance-scale-operational-risk",
+      "intro": "Performance and risk become visible when plans get huge and provider calls get slow.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Scale pain is often a boundary problem",
+          "html": "<p>Large plans, deep modules, and oversized roots increase both runtime cost and review cost.</p><p>Operational risk also rises with scale because one mistake touches more infrastructure and more people.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Performance vs operational risk",
+          "items": [
+            {
+              "label": "Runtime performance",
+              "html": "<p>Provider latency and graph size affect command speed.</p>"
+            },
+            {
+              "label": "Review performance",
+              "html": "<p>Huge plans are slow for humans because important changes hide in noise.</p>"
+            },
+            {
+              "label": "Operational risk",
+              "html": "<p>Large plan scope means larger blast radius.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Reducing Terraform scale pain",
+          "steps": [
+            "Break large roots into clearer boundaries.",
+            "Reduce hidden dependencies.",
+            "Keep modules cohesive.",
+            "Design plans humans can review."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Drill: find the real scale issue",
+          "prompt": "A plan touches 1,500 resources when only one module changed. What smell should you question first?",
+          "answerHtml": "<p>The root or state boundary is probably too broad if one small change still produces a giant plan surface.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Scale pain is often a boundary issue.",
+            "Human review cost matters too.",
+            "Smaller plan surfaces are usually safer.",
+            "Large run scope raises risk quickly."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What makes a Terraform plan hard to review?",
+          "answerHtml": "<p>A huge noisy diff with too many touched resources and unclear boundaries.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is review quality part of performance?",
+          "answerHtml": "<p>Because a plan humans cannot understand quickly is operationally slow even if the command runtime is acceptable.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can giant plans be a governance problem, not just a speed problem?",
+          "answerHtml": "<p>Because humans cannot review them well, which increases the chance that high-risk changes slip through unnoticed.</p>"
+        }
+      ]
+    },
+    {
+      "id": "terraform-ecosystem-opentofu-context",
+      "intro": "The Terraform ecosystem includes more than the CLI: registries, wrappers, policy tools, and OpenTofu context all shape platform strategy.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Tooling should clarify the workflow, not hide it",
+          "html": "<p>Wrappers and adjacent tools can make workflows safer, but they can also hide the core Terraform model if teams never learn what sits underneath.</p><p>OpenTofu matters as part of ecosystem and governance strategy, not only branding discussion.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Core engine vs ecosystem layer",
+          "items": [
+            {
+              "label": "Terraform core",
+              "html": "<p>Handles configuration, graph planning, state, and providers.</p>"
+            },
+            {
+              "label": "Workflow wrappers",
+              "html": "<p>Can standardize process but sometimes hide root causes.</p>"
+            },
+            {
+              "label": "OpenTofu context",
+              "html": "<p>Relevant when teams evaluate long-term tooling and governance options.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Evaluating an ecosystem addition",
+          "steps": [
+            "State the problem the tool solves.",
+            "Check whether it clarifies or hides Terraform behavior.",
+            "Evaluate lock-in and learning cost.",
+            "Adopt only if the workflow becomes safer or clearer."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: wrapper-first understanding",
+          "tone": "pitfall",
+          "html": "<p>Teams that only know wrapper commands often struggle to debug state, graph, or provider issues because the underlying Terraform model stayed opaque.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "The ecosystem includes governance and workflow choices.",
+            "Wrappers should not replace core understanding.",
+            "OpenTofu belongs in long-term strategy discussions.",
+            "Tooling should clarify more than it obscures."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the Terraform Registry?",
+          "answerHtml": "<p>A distribution source for reusable providers and modules.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the risk of hiding Terraform behind too many wrappers?",
+          "answerHtml": "<p>Debugging gets harder because operators lose visibility into the real graph, state, and provider behavior.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the tradeoff of adding wrapper tooling around Terraform?",
+          "answerHtml": "<p>Wrappers can standardize workflows, but they can also hide the real graph, state, and provider behavior that operators need for debugging.</p>"
+        }
+      ]
+    },
+    {
+      "id": "interview-mastery-architecture-drills",
+      "intro": "This capstone chapter turns Terraform mechanics into interview-grade reasoning about state, graph, safety, and team workflow.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Strong Terraform answers connect code, state, and operations",
+          "html": "<p>Great Terraform answers explain not just the command or feature but the risk, the workflow, and the recovery path around it.</p><p>State safety, graph reasoning, module design, and blast radius show maturity quickly in interviews.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Answer quality ladder",
+          "items": [
+            {
+              "label": "Surface answer",
+              "html": "<p>Names a command or feature only.</p>"
+            },
+            {
+              "label": "Better answer",
+              "html": "<p>Explains the mechanic and when to use it.</p>"
+            },
+            {
+              "label": "Strong answer",
+              "html": "<p>Adds blast radius, rollback, review, and collaboration safety.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Structure of a strong Terraform answer",
+          "steps": [
+            "Name the Terraform concept involved.",
+            "Explain the risk or tradeoff.",
+            "Describe the safe workflow.",
+            "Connect it back to production operations."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Capstone drill",
+          "prompt": "A plan wants to destroy and recreate a production database after a module refactor. What is your response?",
+          "answerHtml": "<p>Pause the apply, decide whether the change is a moved mapping issue, a force-new attribute, or a truly intended replacement, and choose the safest correction path before mutating production.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Good answers combine mechanics and operations.",
+            "State and graph reasoning show maturity fast.",
+            "Production answers should mention blast radius and review.",
+            "Safer workflow is part of the technical answer."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the difference between plan and apply?",
+          "answerHtml": "<p>plan previews proposed changes, while apply executes them.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "Why does Terraform need state?",
+          "answerHtml": "<p>To map configuration addresses to the real objects it manages.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is a Terraform module?",
+          "answerHtml": "<p>A reusable package of Terraform configuration.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is drift?",
+          "answerHtml": "<p>A mismatch between Terraform's expected state and real infrastructure.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why is remote state important for teams?",
+          "answerHtml": "<p>It centralizes state, supports locking, and enables collaboration.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When would you use a data source instead of a resource?",
+          "answerHtml": "<p>When you need to read existing information without taking over lifecycle.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What does depends_on solve?",
+          "answerHtml": "<p>It models a real dependency that Terraform cannot infer from expressions.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why can a resource rename in code cause destruction?",
+          "answerHtml": "<p>Because Terraform may interpret the new address as a different object unless the mapping is preserved.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why is a reviewed plan valuable?",
+          "answerHtml": "<p>It shows the exact proposed infrastructure change before mutation.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What does create_before_destroy protect you from?",
+          "answerHtml": "<p>It can reduce downtime during replacement when the platform allows parallel old and new objects.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you migrate a manually created resource into Terraform?",
+          "answerHtml": "<p>Model it in code, import it into state, and review the plan until it stabilizes.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is a giant root module often a smell?",
+          "answerHtml": "<p>Because it widens blast radius and makes plans and reviews too broad.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you decide between workspaces and separate roots?",
+          "answerHtml": "<p>Choose the option that keeps environment context explicit and safe for the team.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is secret handling still a concern if a value is sensitive?",
+          "answerHtml": "<p>Because the value may still exist in state or provider systems even if CLI output hides it.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the biggest risk in concurrent applies?",
+          "answerHtml": "<p>Runs can race and corrupt the team's understanding of state or real infrastructure.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How would you explain Terraform to a team used only to scripts?",
+          "answerHtml": "<p>It is a desired-state reconciler backed by state and a dependency graph, not just a sequence of API calls.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Why is module design a platform concern?",
+          "answerHtml": "<p>Because it shapes reuse, rollout, blast radius, and the team's cognitive load.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you keep Terraform fast enough at scale?",
+          "answerHtml": "<p>Reduce root scope, keep modules cohesive, limit hidden dependencies, and design for small reviewable plan surfaces.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What makes a Terraform answer sound senior?",
+          "answerHtml": "<p>It names the mechanic, states the risk, describes the safe workflow, and connects the choice to production reliability.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you talk about OpenTofu without turning it into a branding debate?",
+          "answerHtml": "<p>Treat it as part of tooling strategy, governance, and compatibility decisions.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What would you inspect first if a plan is unexpectedly huge?",
+          "answerHtml": "<p>Root boundaries, changed inputs, data-source behavior, and whether the state scope is too broad.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Why is one huge plan often an operational smell?",
+          "answerHtml": "<p>Because humans cannot review it safely and mistakes can touch too much infrastructure.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Why should verification be part of the answer?",
+          "answerHtml": "<p>Because infrastructure changes are not safe until the resulting reality matches the intended state.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you keep Terraform from becoming only one expert's tool?",
+          "answerHtml": "<p>Use clear modules, reviewed plans, documented workflows, and automation that makes the safe path easy.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain drift detection to an interviewer who only knows CI pipelines?",
+          "answerHtml": "<p>I would say drift detection reveals when real infrastructure has changed independently of the declared Terraform intent, so code and reality are no longer aligned.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why do mature Terraform teams care so much about state backend design?",
+          "answerHtml": "<p>Because backend quality affects locking, security, recoverability, auditability, and the team's entire collaboration model.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the difference between module reuse and platform reuse?",
+          "answerHtml": "<p>Module reuse is a code mechanism, while platform reuse means teams can safely consume shared infrastructure capabilities with clear contracts and workflows.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When is it safer to replace infrastructure than to preserve it through migration?",
+          "answerHtml": "<p>When the migration risk, data sensitivity, or provider constraints make preservation more dangerous than controlled replacement.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can one enormous Terraform root become an organizational problem?",
+          "answerHtml": "<p>Because it centralizes too much ownership and too much blast radius into one review and one apply path.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you explain plan noise to leadership or non-specialists?",
+          "answerHtml": "<p>Plan noise is dangerous because meaningful infrastructure risk gets buried inside too much unrelated change, making human review less reliable.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What makes a Terraform change easy to approve?",
+          "answerHtml": "<p>Small scope, clear intent, stable module boundaries, reviewed plan output, and an obvious rollback or recovery story.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is importing resources not just a CLI trick?",
+          "answerHtml": "<p>Because import is about restoring a trustworthy mapping between code and reality without unnecessary replacement.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How should teams think about provider upgrades?",
+          "answerHtml": "<p>As controlled infrastructure changes with compatibility, plan-diff, and rollout risk, not as casual dependency bumps.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the relationship between Terraform and broader platform engineering?",
+          "answerHtml": "<p>Terraform supplies the IaC engine, but platform engineering decides the boundaries, workflows, policies, and paved roads around it.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you keep Terraform from becoming only one senior person's tool?",
+          "answerHtml": "<p>Standardize modules, reviewable plan workflows, clear backend design, documentation, and automation that makes the safe path the default.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is the senior mistake in saying 'Terraform just provisions infra'?",
+          "answerHtml": "<p>It ignores that Terraform also shapes governance, collaboration, risk management, and the operational architecture of infrastructure delivery.</p>"
+        }
+      ]
+    }
+  ]
+}

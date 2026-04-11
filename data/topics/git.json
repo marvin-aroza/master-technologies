@@ -1,0 +1,1261 @@
+{
+  "id": "git",
+  "title": "Git Mastery Bible",
+  "subtitle": "Repositories, staging, history shaping, collaboration, and safe recovery workflows",
+  "heroStats": [
+    {
+      "label": "Chapters",
+      "value": "14"
+    },
+    {
+      "label": "Interview",
+      "value": "75 Q&A"
+    },
+    {
+      "label": "Coverage",
+      "value": "Core+Advanced Git"
+    },
+    {
+      "label": "Updated",
+      "value": "2026"
+    }
+  ],
+  "tabs": [
+    {
+      "id": "origins-repositories-object-model",
+      "label": "Origins & Object Model"
+    },
+    {
+      "id": "working-tree-staging-commits",
+      "label": "Working Tree & Commits"
+    },
+    {
+      "id": "branching-merging-rebasing-history-shaping",
+      "label": "Branching & History"
+    },
+    {
+      "id": "remotes-fetch-pull-push-collaboration",
+      "label": "Remotes & Collaboration"
+    },
+    {
+      "id": "conflict-resolution-recovery",
+      "label": "Conflict Resolution"
+    },
+    {
+      "id": "tags-releases-versioning",
+      "label": "Tags & Releases"
+    },
+    {
+      "id": "advanced-history-tools-inspection",
+      "label": "History Inspection"
+    },
+    {
+      "id": "cherry-pick-revert-reset-restore-reflog",
+      "label": "Recovery Commands"
+    },
+    {
+      "id": "team-workflows-branching-strategies",
+      "label": "Team Workflows"
+    },
+    {
+      "id": "monorepos-submodules-large-repos",
+      "label": "Monorepos & Submodules"
+    },
+    {
+      "id": "hooks-automation-ci-integration",
+      "label": "Hooks & Automation"
+    },
+    {
+      "id": "security-signing-safe-collaboration",
+      "label": "Security & Signing"
+    },
+    {
+      "id": "git-internals-performance",
+      "label": "Internals & Performance"
+    },
+    {
+      "id": "interview-mastery-real-world-debugging",
+      "label": "Interviews & Debugging"
+    }
+  ],
+  "sections": [
+    {
+      "id": "origins-repositories-object-model",
+      "intro": "Learn the model behind every Git command: objects, refs, and snapshots.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Git stores objects and pointers",
+          "html": "<p>Git is a content-addressed store of blobs, trees, commits, and refs.</p><p>That model explains why branches are cheap and history rewriting is possible.</p><ul><li>Blobs store file content.</li><li>Trees store directory layout.</li><li>Commits point to trees and parents.</li><li>Refs move across commits.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Core pieces",
+          "items": [
+            {
+              "label": "Repository",
+              "html": "<p>Object database plus refs and config.</p>"
+            },
+            {
+              "label": "Working tree",
+              "html": "<p>Editable files on disk, not history.</p>"
+            },
+            {
+              "label": "HEAD",
+              "html": "<p>Pointer to a branch ref or directly to a commit.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How a commit becomes history",
+          "steps": [
+            "Hash content into blobs.",
+            "Build trees.",
+            "Write a commit with parent links.",
+            "Move the branch ref."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Inspect the object model",
+          "language": "bash",
+          "code": "git init demo\ncd demo\necho hello > note.txt\ngit add note.txt\ngit commit -m \"Initial commit\"\ngit cat-file -p HEAD",
+          "caption": "Git exposes its internals directly when you ask."
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Git stores snapshots.",
+            "Branches are refs.",
+            "HEAD is a pointer.",
+            "Internals explain later commands."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What does Git store?",
+          "answerHtml": "<p>Git stores blobs, trees, commits, tags, and refs.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why are branches lightweight?",
+          "answerHtml": "<p>Because a branch is only a movable ref to a commit.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What information changes a Git commit hash?",
+          "answerHtml": "<p>A commit hash changes when its content, metadata, tree reference, or parent relationship changes, which is why rebases and amended commits create new ids.</p>"
+        }
+      ]
+    },
+    {
+      "id": "working-tree-staging-commits",
+      "intro": "Separate working tree, staging area, and committed history.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Three everyday Git states",
+          "html": "<p>The working tree, index, and HEAD snapshot are different layers.</p><p>git add changes the index, and git commit records the index.</p><ul><li>Working tree is editable.</li><li>Index is the next commit snapshot.</li><li>HEAD is already committed history.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Working tree vs index vs HEAD",
+          "items": [
+            {
+              "label": "Working tree",
+              "html": "<p>Safe place for edits and experiments.</p>"
+            },
+            {
+              "label": "Index",
+              "html": "<p>What the next commit will contain.</p>"
+            },
+            {
+              "label": "HEAD",
+              "html": "<p>What the branch already points to.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "What add and commit do",
+          "steps": [
+            "git add copies content into the index.",
+            "Patch staging can select hunks.",
+            "git commit writes the index as a new commit.",
+            "The branch ref advances."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: mixed commits",
+          "tone": "pitfall",
+          "html": "<p>If you never inspect the staged diff, unrelated edits and debug code are easy to commit by accident.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "git add changes the index.",
+            "git commit records the staged snapshot.",
+            "Patch staging is a core skill.",
+            "Read the staged diff before commit."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the staging area?",
+          "answerHtml": "<p>It is the snapshot Git will use for the next commit.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can one file be both staged and unstaged?",
+          "answerHtml": "<p>Because the index can differ from HEAD while the working tree differs from the index.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When is git add -p especially valuable on a fast-moving team?",
+          "answerHtml": "<p>It is valuable when one file mixes refactors, fixes, and experiments, because it lets you build a clean reviewable commit instead of shipping noisy history.</p>"
+        }
+      ]
+    },
+    {
+      "id": "branching-merging-rebasing-history-shaping",
+      "intro": "Branching becomes powerful when you understand merge, rebase, and fast-forward precisely.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "History shape is a workflow decision",
+          "html": "<p>Branches are cheap, but history choices are not.</p><p>Merge preserves topology while rebase rewrites ancestry for a cleaner story.</p><ul><li>Merge keeps the graph.</li><li>Rebase rewrites commit ancestry.</li><li>Interactive rebase reshapes local history.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Merge, rebase, and fast-forward",
+          "items": [
+            {
+              "label": "Merge",
+              "html": "<p>Joins histories without rewriting existing commits.</p>"
+            },
+            {
+              "label": "Rebase",
+              "html": "<p>Replays commits on a new base as new commit ids.</p>"
+            },
+            {
+              "label": "Fast-forward",
+              "html": "<p>Moves a ref directly when there is no divergence.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "What rebase does",
+          "steps": [
+            "Find commits unique to the branch.",
+            "Replay them on the new base.",
+            "Resolve conflicts if needed.",
+            "Move the branch to the new chain."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Drill: merge or rebase?",
+          "prompt": "A feature branch is behind main and has never been pushed. What is usually cleaner?",
+          "answerHtml": "<p>Rebasing is usually cleaner because no one else depends on the old commit ids.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Merge preserves topology.",
+            "Rebase rewrites ancestry.",
+            "Fast-forward adds no merge commit.",
+            "Shared branches need caution with rebase."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the difference between merge and rebase?",
+          "answerHtml": "<p>Merge joins histories, while rebase rewrites commits onto a new base.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why do rebased commits get new ids?",
+          "answerHtml": "<p>Because parent relationships change, and parent metadata is part of the commit id.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why does rebasing a shared branch create team pain even if the code stays correct?",
+          "answerHtml": "<p>Because the commit ids change, so teammates now have different history and must reconcile their local work against the rewritten branch.</p>"
+        }
+      ]
+    },
+    {
+      "id": "remotes-fetch-pull-push-collaboration",
+      "intro": "Remote work becomes safer when fetch, pull, and push are explicit in your head.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Remote commands update refs and move data",
+          "html": "<p>A remote is another repository Git knows how to talk to.</p><p>fetch updates remote-tracking refs, pull also integrates, and push requests remote ref updates.</p><ul><li>origin/main is a remote-tracking ref.</li><li>fetch is non-destructive to your current branch.</li><li>push can be rejected for safety or policy reasons.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Fetch, pull, and push",
+          "items": [
+            {
+              "label": "Fetch",
+              "html": "<p>Downloads objects and updates remote-tracking refs only.</p>"
+            },
+            {
+              "label": "Pull",
+              "html": "<p>Fetches and then merges or rebases.</p>"
+            },
+            {
+              "label": "Push",
+              "html": "<p>Asks the remote to accept new ref positions.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "A safe collaboration flow",
+          "steps": [
+            "Fetch first.",
+            "Inspect local vs remote-tracking history.",
+            "Integrate intentionally.",
+            "Push only after review and checks."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Inspect before you integrate",
+          "language": "bash",
+          "code": "git fetch origin\ngit log --oneline HEAD..origin/main\ngit rebase origin/main\ngit push origin feature/api-cleanup",
+          "caption": "This keeps the integration step visible instead of hidden."
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "fetch only updates tracking refs.",
+            "pull includes integration.",
+            "push updates remote refs if accepted.",
+            "force-with-lease is safer than plain force."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the difference between fetch and pull?",
+          "answerHtml": "<p>fetch updates remote-tracking refs only, while pull also integrates the changes.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is force-with-lease safer than force?",
+          "answerHtml": "<p>It refuses to overwrite remote history you have not seen.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What does pull.rebase change about daily collaboration?",
+          "answerHtml": "<p>It changes pull from fetch-plus-merge to fetch-plus-rebase, which can keep local history linear but also rewrites local commits more often.</p>"
+        }
+      ]
+    },
+    {
+      "id": "conflict-resolution-recovery",
+      "intro": "Conflicts are intent decisions, not just text-marker cleanup.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Resolve conflicts by preserving behavior",
+          "html": "<p>Git needs help when overlapping changes cannot be combined automatically.</p><p>The real task is choosing the right final behavior, not only deleting markers.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Conflict types",
+          "items": [
+            {
+              "label": "Merge conflict",
+              "html": "<p>Appears while combining histories.</p>"
+            },
+            {
+              "label": "Rebase conflict",
+              "html": "<p>Appears while replaying one commit at a time.</p>"
+            },
+            {
+              "label": "Binary conflict",
+              "html": "<p>Needs a manual decision because Git cannot merge it textually.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "A clean conflict workflow",
+          "steps": [
+            "Read surrounding context.",
+            "Identify each side's intent.",
+            "Edit the real final behavior.",
+            "Run verification before continuing."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: marker cleanup without understanding",
+          "tone": "pitfall",
+          "html": "<p>A file can be conflict-free and still wrong if you solved the markers but not the intent.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Conflicts are intent decisions.",
+            "Rebase conflicts narrow focus to one replayed commit.",
+            "Review the final file as a whole.",
+            "Verification matters."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What causes a Git conflict?",
+          "answerHtml": "<p>A conflict happens when Git cannot reconcile overlapping changes automatically.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can rebase conflicts be easier to reason about?",
+          "answerHtml": "<p>Because they are shown one replayed commit at a time.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What should you verify after resolving a conflict besides removing the markers?",
+          "answerHtml": "<p>You should verify that the resulting code preserves the intended behavior, still builds, and still passes the relevant tests or checks.</p>"
+        }
+      ]
+    },
+    {
+      "id": "tags-releases-versioning",
+      "intro": "Tags and releases turn history into stable milestones.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Tags mark immutable milestones",
+          "html": "<p>A tag points to a specific object, usually a release commit.</p><p>Annotated tags are usually better release markers than lightweight tags.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Tag choices",
+          "items": [
+            {
+              "label": "Lightweight",
+              "html": "<p>Simple ref to a commit.</p>"
+            },
+            {
+              "label": "Annotated",
+              "html": "<p>Tag object with metadata and optional signature.</p>"
+            },
+            {
+              "label": "Release branch",
+              "html": "<p>Mutable line of work, not the same as a release marker.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Release tagging flow",
+          "steps": [
+            "Choose the exact release commit.",
+            "Create an annotated tag.",
+            "Push the tag.",
+            "Use it for notes and deployment provenance."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Create a release tag",
+          "language": "bash",
+          "code": "git tag -a v1.4.0 -m \"Release v1.4.0\"\ngit push origin v1.4.0",
+          "caption": "Annotated tags are the safer default for releases."
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Tags identify specific commits.",
+            "Annotated tags are better for releases.",
+            "Branches and tags solve different problems.",
+            "Tags improve provenance."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is a Git tag?",
+          "answerHtml": "<p>A named reference to a specific object, usually a commit.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is a release tag more trustworthy than a branch name?",
+          "answerHtml": "<p>Because a branch can move, while a tag should stay on one immutable snapshot.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why might a release pipeline prefer annotated tags over lightweight tags?",
+          "answerHtml": "<p>Annotated tags preserve metadata, support signing, and behave more like durable release records than a plain movable-looking ref.</p>"
+        }
+      ]
+    },
+    {
+      "id": "advanced-history-tools-inspection",
+      "intro": "Inspection tools let you answer history questions with evidence.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Use the right lens for the question",
+          "html": "<p>git log, show, diff, blame, and pickaxe searches answer different change questions.</p><p>Strong Git users choose the inspection tool that matches the problem instead of guessing.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Inspection lenses",
+          "items": [
+            {
+              "label": "git log",
+              "html": "<p>Best for chronology and branch graphs.</p>"
+            },
+            {
+              "label": "show and diff",
+              "html": "<p>Best for patch content.</p>"
+            },
+            {
+              "label": "blame and pickaxe",
+              "html": "<p>Best for tracing lines or symbols backward.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Investigating a regression",
+          "steps": [
+            "Identify the file or symbol.",
+            "Narrow the candidate commits.",
+            "Inspect the patch and message.",
+            "Use bisect if the range stays too large."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Drill: introduction commit",
+          "prompt": "What search pattern is often useful for finding the commit that introduced a symbol?",
+          "answerHtml": "<p>Pickaxe search with git log -S is a strong starting point because it looks for commits where the string count changed.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Inspection is evidence gathering.",
+            "Different questions need different lenses.",
+            "Pickaxe and blame are tracing tools.",
+            "Bisect narrows wide search spaces."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is git blame for?",
+          "answerHtml": "<p>It shows which commit and author last changed each line.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can blame be misleading?",
+          "answerHtml": "<p>The last modifier may only have moved or reformatted the line, not introduced the behavior.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When is git bisect a better choice than manual log inspection?",
+          "answerHtml": "<p>It is better when the regression range is broad and reproducible, because bisect cuts the search space quickly by testing midpoint commits.</p>"
+        }
+      ]
+    },
+    {
+      "id": "cherry-pick-revert-reset-restore-reflog",
+      "intro": "Recovery commands are powerful because they touch different layers of Git's model.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Recovery tools are not interchangeable",
+          "html": "<p>revert, reset, restore, and reflog each solve a different problem.</p><p>Recovery gets easier when you ask whether you need to change published history, the index, or only the working tree.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Recovery tool selection",
+          "items": [
+            {
+              "label": "revert",
+              "html": "<p>Safest for undoing already shared history.</p>"
+            },
+            {
+              "label": "reset",
+              "html": "<p>Moves refs and can also change index or working tree.</p>"
+            },
+            {
+              "label": "reflog",
+              "html": "<p>Helps recover previous ref positions after mistakes.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Recover after a mistaken reset",
+          "steps": [
+            "Open reflog.",
+            "Find the previous good position.",
+            "Create a rescue branch or reset back to it.",
+            "Verify the graph before continuing."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Recover with reflog",
+          "language": "bash",
+          "code": "git reflog\ngit switch -c recover-work HEAD@{3}",
+          "caption": "Creating a rescue branch first is a low-risk move."
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "revert preserves shared history.",
+            "reset is powerful and risky.",
+            "restore is file-focused.",
+            "reflog is the emergency map."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "When should you use revert instead of reset?",
+          "answerHtml": "<p>When the bad commit is already shared and you want to undo it without rewriting published history.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is hard reset risky?",
+          "answerHtml": "<p>Because it can discard work and move history at the same time.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is revert usually safer than reset during a production incident on a shared branch?",
+          "answerHtml": "<p>Because revert creates a new undo commit without rewriting published history that other teammates and automation may already depend on.</p>"
+        }
+      ]
+    },
+    {
+      "id": "team-workflows-branching-strategies",
+      "intro": "Team workflows are agreements about branch lifetime, review, release, and rollback.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Workflow quality is a delivery choice",
+          "html": "<p>Feature-branch, trunk-based, and release-branch models reflect different tradeoffs around integration and delivery.</p><p>The best workflow is the one that reduces hidden integration cost for the team.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Workflow tradeoffs",
+          "items": [
+            {
+              "label": "Feature branches",
+              "html": "<p>Good for isolation and review, but long-lived branches drift.</p>"
+            },
+            {
+              "label": "Trunk-based",
+              "html": "<p>Promotes frequent integration and fast release flow.</p>"
+            },
+            {
+              "label": "GitFlow-style",
+              "html": "<p>Can help some release-heavy teams, but often adds ceremony modern teams no longer need.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Designing a healthy workflow",
+          "steps": [
+            "Decide expected branch lifetime.",
+            "Define review and protection rules.",
+            "Clarify release and hotfix flow.",
+            "Document recovery expectations."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: branch strategy without discipline",
+          "tone": "warning",
+          "html": "<p>No branch model can compensate for weak tests, vague release ownership, or poor review standards.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Branch strategy is a delivery choice.",
+            "Long-lived branches increase drift cost.",
+            "Trunk-based work needs strong automation.",
+            "Rollback paths should be explicit."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is a feature-branch workflow?",
+          "answerHtml": "<p>Developers build work on separate branches and merge it back after review or validation.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What makes trunk-based development succeed?",
+          "answerHtml": "<p>Frequent integration, strong automation, protected branches, and safe rollout practices.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What makes trunk-based development fail in practice?",
+          "answerHtml": "<p>It fails when teams lack strong automation, small batch habits, and safe rollout controls, because frequent integration alone is not enough.</p>"
+        }
+      ]
+    },
+    {
+      "id": "monorepos-submodules-large-repos",
+      "intro": "Large repositories and submodules introduce scale and coordination costs.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Scale changes the Git workflow",
+          "html": "<p>Monorepos can simplify coordinated changes and shared tooling, but they increase performance and ownership demands.</p><p>Submodules preserve repository separation, but they add extra cognitive overhead because the parent repo only tracks a nested commit pointer.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Repo-shape choices",
+          "items": [
+            {
+              "label": "Monorepo",
+              "html": "<p>Great for coordinated changes, but needs scale discipline.</p>"
+            },
+            {
+              "label": "Multi-repo",
+              "html": "<p>Simpler isolation, but harder cross-cutting change.</p>"
+            },
+            {
+              "label": "Submodules",
+              "html": "<p>Useful for exact pinning, but easy to misuse.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Large-repo hygiene",
+          "steps": [
+            "Keep ownership boundaries clear.",
+            "Use sparse or partial workflows only where they fit.",
+            "Maintain repository health.",
+            "Treat submodule updates as two-part changes."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Drill: submodule confusion",
+          "prompt": "Why is a parent repo commit not enough after changing code inside a submodule?",
+          "answerHtml": "<p>Because the nested repository itself must have its own new commit recorded and pushed before the parent can safely point to it.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Scale changes Git usage.",
+            "Monorepos need ownership and tooling discipline.",
+            "Submodules track commit pointers, not floating branches.",
+            "Large-repo choices are workflow choices too."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What does a Git submodule record?",
+          "answerHtml": "<p>A specific commit of another repository.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can large repositories feel slow?",
+          "answerHtml": "<p>Because object count, path count, history size, and working-tree scans all increase unless the repo is maintained carefully.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why do submodules surprise teams during deployment work?",
+          "answerHtml": "<p>Because the parent repository tracks only a nested commit pointer, so deployment can break if the referenced submodule commit was never pushed or reviewed properly.</p>"
+        }
+      ]
+    },
+    {
+      "id": "hooks-automation-ci-integration",
+      "intro": "Hooks and automation turn Git events into quality feedback loops.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Automation should make the safe path easier",
+          "html": "<p>Local hooks can catch cheap mistakes early, while CI and protected branches provide shared trusted enforcement.</p><p>The best automation is visible, predictable, and fast enough that people do not learn to bypass it.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Local hooks vs shared enforcement",
+          "items": [
+            {
+              "label": "Local hooks",
+              "html": "<p>Fast but easier to bypass or misconfigure.</p>"
+            },
+            {
+              "label": "CI",
+              "html": "<p>Trusted shared validation in a consistent environment.</p>"
+            },
+            {
+              "label": "Branch protection",
+              "html": "<p>Makes policy survive even when local automation is skipped.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Healthy automation layering",
+          "steps": [
+            "Use local hooks for cheap checks.",
+            "Run trusted validation in CI.",
+            "Protect important branches.",
+            "Keep automation visible and maintainable."
+          ]
+        },
+        {
+          "type": "code",
+          "title": "Simple pre-commit idea",
+          "language": "bash",
+          "code": "# .git/hooks/pre-commit\nnpm run lint\nnpm test -- --runInBand",
+          "caption": "Keep local checks short enough that developers do not resent them."
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Hooks are for fast feedback.",
+            "CI is the shared truth source.",
+            "Protected branches enforce policy consistently.",
+            "Automation should reduce risk without becoming opaque."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is a Git hook?",
+          "answerHtml": "<p>A script Git runs automatically on certain repository events.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why should important rules live in CI too?",
+          "answerHtml": "<p>Because local hooks can be bypassed or misconfigured, while CI runs consistently for everyone.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What belongs in a pre-push hook instead of a pre-commit hook?",
+          "answerHtml": "<p>Heavier checks such as broader test suites belong closer to pre-push or CI so local commit flow stays fast while higher-risk changes still get validated.</p>"
+        }
+      ]
+    },
+    {
+      "id": "security-signing-safe-collaboration",
+      "intro": "Security and signing strengthen trust in repository history and collaboration workflows.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Trust comes from process and cryptography",
+          "html": "<p>Commit signing, protected branches, least privilege, and secret hygiene all contribute to Git trust.</p><p>A signed commit alone is not enough if the surrounding workflow is weak.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Trust controls",
+          "items": [
+            {
+              "label": "Signing",
+              "html": "<p>Verifies provenance from a trusted key.</p>"
+            },
+            {
+              "label": "Protected branches",
+              "html": "<p>Reduce accidental or malicious history damage.</p>"
+            },
+            {
+              "label": "Secret hygiene",
+              "html": "<p>Matters because history leaks are hard to clean fully.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Hardening a shared repository",
+          "steps": [
+            "Protect important branches.",
+            "Limit who can rewrite sensitive refs.",
+            "Adopt signing where it matters.",
+            "Rotate secrets if they leak."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Trap: rewriting history after a secret leak and stopping there",
+          "tone": "warning",
+          "html": "<p>Even after rewriting history, the safer response is still credential rotation because the secret may already have been copied elsewhere.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Signing helps provenance.",
+            "Protected branches reduce blast radius.",
+            "Leaked secrets should be rotated.",
+            "Least privilege applies to Git workflows too."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is commit signing?",
+          "answerHtml": "<p>A cryptographic signature proving the commit came from a trusted key.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why should a leaked secret still be rotated?",
+          "answerHtml": "<p>Because rewriting history does not guarantee the secret was never copied or cached elsewhere.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is signed provenance not enough without protected branches?",
+          "answerHtml": "<p>Because a valid signature proves who authored a commit, but branch protection still controls whether unsafe or unreviewed history reaches critical refs.</p>"
+        }
+      ]
+    },
+    {
+      "id": "git-internals-performance",
+      "intro": "Git performance and internals matter most when repositories get large and daily commands slow down.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Performance follows repository shape",
+          "html": "<p>Packfiles, index size, path count, and filesystem behavior all influence Git speed.</p><p>You do not need plumbing mastery, but object and ref awareness helps you debug scale issues without guesswork.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Performance factors",
+          "items": [
+            {
+              "label": "Clone and fetch",
+              "html": "<p>Driven heavily by transfer and packfile behavior.</p>"
+            },
+            {
+              "label": "Status and checkout",
+              "html": "<p>Often dominated by local filesystem and index scans.</p>"
+            },
+            {
+              "label": "Garbage collection",
+              "html": "<p>Improves repository health when used thoughtfully.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Why repositories slow down",
+          "steps": [
+            "More objects mean more storage and lookup work.",
+            "Bigger indexes cost more to scan.",
+            "Huge working trees increase filesystem traversal cost.",
+            "Binary-heavy history adds weight."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Drill: locate the bottleneck",
+          "prompt": "Clone is fast from a nearby mirror, but git status is slow. Which layer should you suspect first?",
+          "answerHtml": "<p>The working-tree and index layer, not the network, because status is mostly local filesystem and index work.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Git speed depends on objects, packfiles, index size, and filesystem behavior.",
+            "Different commands have different bottlenecks.",
+            "Large-repo pain is often local too.",
+            "Internals knowledge helps target the right fix."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is a packfile?",
+          "answerHtml": "<p>A packed storage format for many Git objects that improves transfer and storage efficiency.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why does internals knowledge help performance debugging?",
+          "answerHtml": "<p>Because it helps you map a slow command to storage, refs, transfer, or filesystem causes instead of guessing.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can repository size hurt developer experience even if CI stays fast?",
+          "answerHtml": "<p>Because local commands such as status, checkout, and branch switching depend on index size, path count, and filesystem behavior on developer machines.</p>"
+        }
+      ]
+    },
+    {
+      "id": "interview-mastery-real-world-debugging",
+      "intro": "This capstone chapter pressure-tests command choice, recovery safety, and collaboration judgment.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Senior Git answers are layer-aware and safety-aware",
+          "html": "<p>Good Git interview answers explain which layer a command affects, what risk it carries, and what the recovery path would be.</p><p>The strongest answers also state assumptions about branch sharing before naming a command.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Answer quality ladder",
+          "items": [
+            {
+              "label": "Weak",
+              "html": "<p>Names a command without assumptions or rollback thinking.</p>"
+            },
+            {
+              "label": "Better",
+              "html": "<p>Explains what the command changes and when to use it.</p>"
+            },
+            {
+              "label": "Strong",
+              "html": "<p>Adds branch-sharing assumptions, blast radius, recovery, and verification thinking.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "Structure of a strong Git answer",
+          "steps": [
+            "Identify whether the issue is in the working tree, index, refs, or remote history.",
+            "Choose the least destructive tool for that layer.",
+            "Explain teammate impact and recovery.",
+            "Verify with status, log, or diff."
+          ]
+        },
+        {
+          "type": "drill",
+          "title": "Capstone drill",
+          "prompt": "You force-pushed a rebased shared branch and a teammate says their history exploded. What is your first move?",
+          "answerHtml": "<p>Pause more pushes, recover the previous tip from reflog or remote history, create rescue refs, and choose a recovery path the whole team can follow safely.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Mastery recap",
+          "items": [
+            "Good Git answers identify the changed layer.",
+            "Shared-history safety matters in every serious Git decision.",
+            "Recovery and verification are part of the answer.",
+            "Senior answers state assumptions before naming commands."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the difference between git reset and git revert?",
+          "answerHtml": "<p>reset moves refs and can rewrite local history, while revert adds a new undo commit.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What does git cherry-pick do?",
+          "answerHtml": "<p>It replays a selected commit onto the current branch as a new commit.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "Why is git fetch usually safer than git pull?",
+          "answerHtml": "<p>Because fetch updates tracking refs without changing your current branch yet.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What is reflog for?",
+          "answerHtml": "<p>It helps recover previous ref positions after resets, rebases, and similar moves.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How do you undo the last commit without losing the work?",
+          "answerHtml": "<p>Use a soft or mixed reset depending on whether you want the changes staged or unstaged afterward.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When would you use force-with-lease?",
+          "answerHtml": "<p>When you intentionally rewrite a remote branch but want protection against overwriting newer remote changes you have not seen.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why can a merge commit be preferable on a team branch?",
+          "answerHtml": "<p>Because it preserves shared history and avoids rewriting commits others may already depend on.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How would you explain the index to an interviewer?",
+          "answerHtml": "<p>It is Git's staging snapshot for the next commit, separate from the working tree and HEAD.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is detached HEAD?",
+          "answerHtml": "<p>HEAD points directly to a commit instead of a branch ref.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When should you rebase?",
+          "answerHtml": "<p>Usually on private or narrowly shared branches when you want cleaner history or a new base.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "A teammate ran git reset --hard on the wrong branch locally. What is your first recovery thought?",
+          "answerHtml": "<p>Check reflog quickly because the lost branch tip is often still reachable there.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can a clean linear history still be the wrong choice?",
+          "answerHtml": "<p>Because collaboration safety can matter more than perfect history aesthetics.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the safest way to back out a bad commit on main that already deployed?",
+          "answerHtml": "<p>Usually revert it with a new commit, verify, and redeploy.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can git blame point to the wrong person?",
+          "answerHtml": "<p>The last modifier may only have moved or reformatted the line rather than introduced the bug.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you recover from a mistaken force push on a shared branch?",
+          "answerHtml": "<p>Freeze more pushes, find the old tip, create rescue refs, communicate, and restore or realign safely.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Why do commit ids change after rebase?",
+          "answerHtml": "<p>Because commit ids include parent relationships, and rebasing changes parentage.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you decide between cherry-pick and merge for a hotfix?",
+          "answerHtml": "<p>Cherry-pick is for one isolated fix; merge is better when you want the full branch context.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What would make you suspicious of a team's Git workflow?",
+          "answerHtml": "<p>Frequent shared force pushes, weak protection, vague release provenance, and recovery that depends on one expert.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Why is 'just use hard reset' often a weak answer?",
+          "answerHtml": "<p>Because it ignores branch-sharing assumptions, data-loss risk, and published-history safety.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What would you inspect before deleting a long-lived branch?",
+          "answerHtml": "<p>Confirm it is merged or unused and that no deployment or automation still depends on it.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you talk about Git maturity in system design?",
+          "answerHtml": "<p>By connecting branching, review, release tags, rollback, automation, provenance, and recovery into one collaboration model.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What makes a Git answer sound senior?",
+          "answerHtml": "<p>It states assumptions, chooses the least risky command, explains tradeoffs, and names the recovery path.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Why is force-with-lease safer than force?",
+          "answerHtml": "<p>It protects you from overwriting remote history that moved since your last known state.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Why should verification be part of every Git answer?",
+          "answerHtml": "<p>Because the command is not done until you know the repository now says what you intended.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain the difference between restore and checkout in modern Git?",
+          "answerHtml": "<p>restore focuses on file and index state recovery, while checkout historically combined branch switching and file restoration in ways that were easier to misuse.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why is fetch-plus-inspect usually a healthier habit than blind pull?",
+          "answerHtml": "<p>Because it keeps remote change discovery separate from integration, which reduces surprise and makes history decisions more deliberate.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What makes a commit history good for future debugging, not just code review?",
+          "answerHtml": "<p>Focused commits, meaningful messages, and logical grouping make it much easier to trace regressions and understand why behavior changed.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do you talk about squash merges versus preserving full branch history?",
+          "answerHtml": "<p>Squash merges keep the target branch compact, while preserving full history retains granular commit context. The right choice depends on how much branch detail the team wants to keep.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When is cherry-pick the wrong answer for a hotfix?",
+          "answerHtml": "<p>It is the wrong answer when the fix depends on broader branch context that would be unsafe or misleading to separate.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why does force-with-lease still require team communication?",
+          "answerHtml": "<p>Because even a safer force push can still invalidate teammates' local history and workflows if they do not know it happened.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the value of signed tags beyond signed commits?",
+          "answerHtml": "<p>Signed tags strengthen release provenance because release automation and audit trails often center on tags rather than individual commits.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you recover a branch after an accidental delete?",
+          "answerHtml": "<p>Use reflog, remote hosting history, or other surviving refs to find the old tip, then recreate the branch from that commit.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can a repository with tidy branches still have a weak Git workflow?",
+          "answerHtml": "<p>Because branch names do not guarantee good automation, review discipline, rollback clarity, or safe collaboration habits.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a strong answer to 'How do you avoid Git disasters on a team?'",
+          "answerHtml": "<p>Use protected branches, clear release tagging, small focused branches, explicit recovery expectations, and automation that catches risky changes early.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How should you reason about deleting local changes during cleanup?",
+          "answerHtml": "<p>First decide whether the target is the working tree, the index, or local history, then choose the least destructive command that solves exactly that layer.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is the senior mistake in saying 'Git is just version control'?",
+          "answerHtml": "<p>It ignores that Git is also a collaboration protocol, a release-provenance tool, and a recovery system whose workflow design shapes team reliability.</p>"
+        }
+      ]
+    }
+  ]
+}

@@ -3,66 +3,98 @@ import Link from "next/link";
 const topics = [
   {
     href: "/html",
-    icon: "📄",
+    icon: "HT",
     title: "HTML",
-    desc: "Semantic HTML, forms, accessibility, media APIs, SEO best practices, and native browser features.",
-    tags: ["62 Q&A", "Deep Concepts"],
+    desc: "Semantic documents, forms, accessibility, metadata, native elements, and browser-first page architecture.",
+    tags: ["2026", "157 Q&A"],
     color: "#e44d26",
   },
   {
     href: "/css",
-    icon: "🎨",
+    icon: "CS",
     title: "CSS",
-    desc: "Flexbox, Grid, animations, responsive design, modern CSS features, custom properties & layout mastery.",
-    tags: ["70 Q&A", "Modern CSS"],
+    desc: "Cascade, layout, modern selectors, container queries, motion systems, and scalable styling architecture.",
+    tags: ["2026", "130 Q&A"],
     color: "#4f7be8",
   },
   {
     href: "/javascript",
-    icon: "📜",
+    icon: "JS",
     title: "JavaScript",
-    desc: "Core language, functions & scope, async patterns, OOP & prototypes, DOM & events, ES6+ features.",
-    tags: ["155 Q&A", "7 Topics"],
+    desc: "Language internals, async flows, runtime mechanics, platform APIs, patterns, and interview mastery.",
+    tags: ["2026", "148 Q&A"],
     color: "#f7df1e",
   },
   {
+    href: "/git",
+    icon: "GT",
+    title: "Git",
+    desc: "Repositories, staging, branching, recovery, collaboration, and history reasoning for real teams.",
+    tags: ["Starter", "75 Q&A"],
+    color: "#f05032",
+  },
+  {
     href: "/react",
-    icon: "⚛️",
+    icon: "RE",
     title: "React",
-    desc: "Fundamentals, hooks deep-dive, state management, patterns, React 19, compiler, and performance.",
-    tags: ["v19.2", "138 Q&A", "6 Chapters"],
+    desc: "Rendering, state, effects, server boundaries, performance, forms, and modern React interview depth.",
+    tags: ["React 19", "230 Q&A"],
     color: "#61dafb",
   },
   {
     href: "/nextjs",
-    icon: "▲",
+    icon: "NX",
     title: "Next.js",
-    desc: "App Router, rendering strategies, caching, server actions, middleware, and the latest v16 updates.",
-    tags: ["v16.2", "93 Q&A", "5 Chapters"],
+    desc: "App Router, rendering, caching, server-first architecture, deployment, and modern full-stack tradeoffs.",
+    tags: ["Next 16", "157 Q&A"],
     color: "#e0e0e0",
   },
   {
     href: "/angular",
-    icon: "🅰️",
+    icon: "NG",
     title: "Angular",
-    desc: "15 deep chapters — components, DI, RxJS, signals, routing, forms, testing, SSR & more.",
-    tags: ["v21", "195 Q&A", "15 Chapters"],
+    desc: "Components, DI, RxJS, signals, forms, routing, testing, and production Angular architecture.",
+    tags: ["2026", "302 Q&A"],
     color: "#dd0031",
   },
   {
+    href: "/docker",
+    icon: "DK",
+    title: "Docker",
+    desc: "Images, containers, runtime behavior, persistence, networking, security, and delivery-ready container workflows.",
+    tags: ["Starter", "75 Q&A"],
+    color: "#2496ed",
+  },
+  {
+    href: "/aws",
+    icon: "AW",
+    title: "AWS",
+    desc: "Global infrastructure, IAM, compute, networking, storage, resilience, and real architecture tradeoffs.",
+    tags: ["Starter", "75 Q&A"],
+    color: "#ff9900",
+  },
+  {
+    href: "/terraform",
+    icon: "TF",
+    title: "Terraform",
+    desc: "Infrastructure as code, state, modules, environment strategy, governance, and safe team workflows.",
+    tags: ["Starter", "75 Q&A"],
+    color: "#7b42bc",
+  },
+  {
     href: "/system-design",
-    icon: "🏗️",
+    icon: "SD",
     title: "System Design",
-    desc: "Frontend architecture, performance budgets, caching strategies, micro-frontends & scalable patterns.",
-    tags: ["62 Q&A", "Architecture"],
+    desc: "Frontend-to-distributed-systems thinking, architecture tradeoffs, scaling paths, and case-study reasoning.",
+    tags: ["2026", "124 Q&A"],
     color: "#60a5fa",
   },
   {
     href: "/ui-ux",
-    icon: "✨",
+    icon: "UX",
     title: "UX/UI Design",
-    desc: "Design principles, user research, interaction patterns, accessibility, design systems & visual hierarchy.",
-    tags: ["48 Q&A", "Design"],
+    desc: "Research, flows, interaction design, hierarchy, accessibility, critique, systems, and design interviews.",
+    tags: ["2026", "144 Q&A"],
     color: "#f472b6",
   },
 ];
@@ -70,33 +102,31 @@ const topics = [
 export default function Home() {
   return (
     <>
-      {/* Hero */}
       <section className="home-hero">
         <div className="home-eyebrow">
           <span className="home-eyebrow-dot" />
-          The Complete Reference for Frontend Engineers
+          The Complete Reference for Modern Builders
         </div>
         <h1>
-          The <span className="gradient-text">Web Mastery</span>
+          The <span className="gradient-text">Mastery</span>
           <br />Encyclopedia
         </h1>
         <p className="home-sub">
-          Every concept, every detail, every interview question —<br />
-          from beginner to master. 8 topics, 800+ Q&A, zero fluff.
+          Language, framework, cloud, tooling, architecture, and design mastery in one place.<br />
+          12 topics, 1,592 interview questions, 168 chapters, zero fluff.
         </p>
         <div className="home-stats">
-          <div className="home-stat"><b>8</b><span>Topics</span></div>
-          <div className="home-stat"><b>800+</b><span>Questions</span></div>
-          <div className="home-stat"><b>50+</b><span>Chapters</span></div>
+          <div className="home-stat"><b>12</b><span>Topics</span></div>
+          <div className="home-stat"><b>1,592</b><span>Questions</span></div>
+          <div className="home-stat"><b>168</b><span>Chapters</span></div>
           <div className="home-stat"><b>2026</b><span>Up to date</span></div>
         </div>
       </section>
 
-      {/* Topics */}
       <section className="topics-section">
         <div className="topics-section-header">
           <h2>Choose your topic</h2>
-          <p>Start from foundations or jump to what you need</p>
+          <p>Move from foundations to frameworks, cloud, architecture, and product thinking.</p>
         </div>
         <div className="topics-grid">
           {topics.map((topic) => (

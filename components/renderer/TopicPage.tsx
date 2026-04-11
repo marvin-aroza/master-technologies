@@ -11,14 +11,18 @@ import { QASection } from "./QASection";
 
 // Study order — used for cross-topic navigation at first/last chapter
 const TOPIC_ORDER = [
-  { id: "html",          href: "/html",          name: "HTML",          icon: "📄", color: "#e44d26" },
-  { id: "css",           href: "/css",            name: "CSS",           icon: "🎨", color: "#4f7be8" },
-  { id: "javascript",    href: "/javascript",     name: "JavaScript",    icon: "📜", color: "#f7df1e" },
-  { id: "react",         href: "/react",          name: "React",         icon: "⚛️", color: "#61dafb" },
-  { id: "nextjs",        href: "/nextjs",         name: "Next.js",       icon: "▲",  color: "#e0e0e0" },
-  { id: "angular",       href: "/angular",        name: "Angular",       icon: "🅰️", color: "#dd0031" },
-  { id: "system-design", href: "/system-design",  name: "System Design", icon: "🏗️", color: "#60a5fa" },
-  { id: "uxui",          href: "/ui-ux",          name: "UX/UI Design",  icon: "✨", color: "#f472b6" },
+  { id: "html", href: "/html", name: "HTML", icon: "HT", color: "#e44d26" },
+  { id: "css", href: "/css", name: "CSS", icon: "CS", color: "#4f7be8" },
+  { id: "javascript", href: "/javascript", name: "JavaScript", icon: "JS", color: "#f7df1e" },
+  { id: "git", href: "/git", name: "Git", icon: "GT", color: "#f05032" },
+  { id: "react", href: "/react", name: "React", icon: "RE", color: "#61dafb" },
+  { id: "nextjs", href: "/nextjs", name: "Next.js", icon: "NX", color: "#e0e0e0" },
+  { id: "angular", href: "/angular", name: "Angular", icon: "NG", color: "#dd0031" },
+  { id: "docker", href: "/docker", name: "Docker", icon: "DK", color: "#2496ed" },
+  { id: "aws", href: "/aws", name: "AWS", icon: "AW", color: "#ff9900" },
+  { id: "terraform", href: "/terraform", name: "Terraform", icon: "TF", color: "#7b42bc" },
+  { id: "system-design", href: "/system-design", name: "System Design", icon: "SD", color: "#60a5fa" },
+  { id: "uxui", href: "/ui-ux", name: "UX/UI Design", icon: "UX", color: "#f472b6" },
 ];
 
 interface TopicPageProps {
