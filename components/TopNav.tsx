@@ -10,6 +10,7 @@ const topics = [
   { href: "/javascript",    icon: "JS", name: "JavaScript",    color: "#f7df1e" },
   { href: "/git",           icon: "GT", name: "Git",           color: "#f05032" },
   { href: "/npm",           icon: "NP", name: "npm",           color: "#cb3837" },
+  { href: "/data-structures-algorithms", icon: "DS", name: "DSA", color: "#14b8a6" },
   { href: "/python",        icon: "PY", name: "Python",        color: "#3776ab" },
   { href: "/nodejs",        icon: "ND", name: "Node.js",       color: "#5fa04e" },
   { href: "/react",         icon: "RE", name: "React",         color: "#61dafb" },

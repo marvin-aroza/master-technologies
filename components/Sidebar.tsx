@@ -11,10 +11,21 @@ const groups = [
       { href: "/html",       icon: "HT", name: "HTML",       color: "#e44d26" },
       { href: "/css",        icon: "CS", name: "CSS",        color: "#4f7be8" },
       { href: "/javascript", icon: "JS", name: "JavaScript", color: "#f7df1e" },
+    ],
+  },
+  {
+    label: "Tooling & Runtime",
+    topics: [
       { href: "/git",        icon: "GT", name: "Git",        color: "#f05032" },
       { href: "/npm",        icon: "NP", name: "npm",        color: "#cb3837" },
       { href: "/python",     icon: "PY", name: "Python",     color: "#3776ab" },
       { href: "/nodejs",     icon: "ND", name: "Node.js",    color: "#5fa04e" },
+    ],
+  },
+  {
+    label: "Computer Science",
+    topics: [
+      { href: "/data-structures-algorithms", icon: "DS", name: "Data Structures & Algorithms", color: "#14b8a6" },
     ],
   },
   {
