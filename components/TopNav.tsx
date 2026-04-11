@@ -9,6 +9,8 @@ const topics = [
   { href: "/css",           icon: "CS", name: "CSS",           color: "#4f7be8" },
   { href: "/javascript",    icon: "JS", name: "JavaScript",    color: "#f7df1e" },
   { href: "/git",           icon: "GT", name: "Git",           color: "#f05032" },
+  { href: "/npm",           icon: "NP", name: "npm",           color: "#cb3837" },
+  { href: "/nodejs",        icon: "ND", name: "Node.js",       color: "#5fa04e" },
   { href: "/react",         icon: "RE", name: "React",         color: "#61dafb" },
   { href: "/nextjs",        icon: "NX", name: "Next.js",       color: "#e0e0e0" },
   { href: "/angular",       icon: "NG", name: "Angular",       color: "#dd0031" },
@@ -17,6 +19,7 @@ const topics = [
   { href: "/terraform",     icon: "TF", name: "Terraform",     color: "#7b42bc" },
   { href: "/system-design", icon: "SD", name: "System Design", color: "#60a5fa" },
   { href: "/ui-ux",         icon: "UX", name: "UX/UI",         color: "#f472b6" },
+  { href: "/frontend-cheat-sheet", icon: "FC", name: "Cheat Sheet", color: "#22c55e" },
 ];
 
 export function TopNav() {

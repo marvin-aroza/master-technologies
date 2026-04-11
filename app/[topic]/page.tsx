@@ -6,10 +6,13 @@ import angularData from "@/data/topics/angular.json";
 import awsData from "@/data/topics/aws.json";
 import cssData from "@/data/topics/css.json";
 import dockerData from "@/data/topics/docker.json";
+import frontendCheatSheetData from "@/data/topics/frontend-cheat-sheet.json";
 import gitData from "@/data/topics/git.json";
 import htmlData from "@/data/topics/html.json";
 import javascriptData from "@/data/topics/javascript.json";
 import nextjsData from "@/data/topics/nextjs.json";
+import nodejsData from "@/data/topics/nodejs.json";
+import npmData from "@/data/topics/npm.json";
 import reactData from "@/data/topics/react.json";
 import systemDesignData from "@/data/topics/system-design.json";
 import terraformData from "@/data/topics/terraform.json";
@@ -47,6 +50,12 @@ const TOPICS: Record<string, TopicConfig> = {
     title: "Docker - DevLore Encyclopedia",
     description: "Images, runtime behavior, networking, security, and 75+ starter interview Q&A across 14 chapters.",
   },
+  "frontend-cheat-sheet": {
+    data: frontendCheatSheetData as TopicData,
+    accentColor: "#22c55e",
+    title: "Frontend Cheat Sheet - DevLore Encyclopedia",
+    description: "Fast HTML, CSS, JavaScript, React, Next.js, accessibility, performance, and 45+ quick-recall interview prompts.",
+  },
   "git": {
     data: gitData as TopicData,
     accentColor: "#f05032",
@@ -70,6 +79,18 @@ const TOPICS: Record<string, TopicConfig> = {
     accentColor: "#ffffff",
     title: "Next.js - DevLore Encyclopedia",
     description: "App Router, RSC, deployment and 90+ interview Q&A. 8 chapters.",
+  },
+  "nodejs": {
+    data: nodejsData as TopicData,
+    accentColor: "#5fa04e",
+    title: "Node.js - DevLore Encyclopedia",
+    description: "Runtime internals, modules, event loop, APIs, production ops, and 90+ interview Q&A across 14 chapters.",
+  },
+  "npm": {
+    data: npmData as TopicData,
+    accentColor: "#cb3837",
+    title: "npm - DevLore Encyclopedia",
+    description: "Package management, semver, workspaces, publishing, security, and 90+ interview Q&A across 14 chapters.",
   },
   react: {
     data: reactData as TopicData,

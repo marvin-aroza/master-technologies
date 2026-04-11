@@ -1,0 +1,1443 @@
+{
+  "id": "npm",
+  "title": "npm Mastery Bible",
+  "subtitle": "Package management, semver, workspaces, publishing, security, and team-safe dependency workflows",
+  "heroStats": [
+    {
+      "label": "Chapters",
+      "value": "14"
+    },
+    {
+      "label": "Interview",
+      "value": "90 Q&A"
+    },
+    {
+      "label": "Coverage",
+      "value": "CLI+Registry+Workflows"
+    },
+    {
+      "label": "Updated",
+      "value": "2026"
+    }
+  ],
+  "tabs": [
+    {
+      "id": "npm-ecosystem-registries-package-management",
+      "label": "Ecosystem & Registries"
+    },
+    {
+      "id": "package-json-scripts-metadata-bootstrapping",
+      "label": "package.json & Scripts"
+    },
+    {
+      "id": "dependency-types-peer-optional-dev",
+      "label": "Dependency Types"
+    },
+    {
+      "id": "semver-version-ranges-lockfiles",
+      "label": "Semver & Lockfiles"
+    },
+    {
+      "id": "install-update-dedupe-prune-resolution",
+      "label": "Install & Resolution"
+    },
+    {
+      "id": "workspaces-monorepos-local-linking",
+      "label": "Workspaces & Monorepos"
+    },
+    {
+      "id": "npx-binaries-clis-script-orchestration",
+      "label": "npx & CLIs"
+    },
+    {
+      "id": "publishing-scopes-tags-release-flows",
+      "label": "Publishing & Releases"
+    },
+    {
+      "id": "security-audit-provenance-supply-chain",
+      "label": "Security & Provenance"
+    },
+    {
+      "id": "caching-offline-registries-mirrors",
+      "label": "Caching & Registries"
+    },
+    {
+      "id": "troubleshooting-installs-conflicts",
+      "label": "Troubleshooting"
+    },
+    {
+      "id": "performance-repo-hygiene-scale",
+      "label": "Performance & Hygiene"
+    },
+    {
+      "id": "team-workflows-ci-package-strategy",
+      "label": "Team Workflows & CI"
+    },
+    {
+      "id": "interview-mastery-real-world-debugging",
+      "label": "Interviews & Debugging"
+    }
+  ],
+  "sections": [
+    {
+      "id": "npm-ecosystem-registries-package-management",
+      "intro": "Learn the moving pieces behind every install and publish.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core idea",
+          "html": "<p>Learn the moving pieces behind every install and publish.</p><ul><li>npm is a CLI plus registry workflow.</li><li>The lockfile and cache influence results.</li><li>Registry config explains many team-specific failures.</li></ul>"
+        },
+        {
+          "type": "code",
+          "title": "Check your npm context",
+          "language": "bash",
+          "code": "npm --version\nnode --version\nnpm config get registry",
+          "caption": "Version and registry settings are part of the install story."
+        },
+        {
+          "type": "compare",
+          "title": "Focus areas",
+          "items": [
+            {
+              "label": "Scope",
+              "html": "<p>The npm CLI, registry, cache, lockfile, and local dependency tree.</p>"
+            },
+            {
+              "label": "Why it matters",
+              "html": "<p>Because those pieces decide how packages are resolved, downloaded, and reused across teams.</p>"
+            },
+            {
+              "label": "Failure mode",
+              "html": "<p>Debugging only at the command level instead of checking registry, cache, and lockfile state.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How to think about it",
+          "steps": [
+            "Read package metadata and the lockfile.",
+            "Resolve ranges into a graph.",
+            "Download artifacts from the registry or cache.",
+            "Materialize the local tree and scripts."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common trap",
+          "html": "<p>Treating npm like a black box makes install problems feel random.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill",
+          "prompt": "A teammate gets 404s for private packages. Where do you look first?",
+          "answerHtml": "<p>Check registry, scope mapping, and auth before blaming the package.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Fast recap",
+          "items": [
+            "npm resolves graphs, not only direct deps.",
+            "Registry, cache, and lockfile all matter.",
+            "Private registries are normal in teams.",
+            "Install mechanics simplify debugging."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the npm ecosystem?",
+          "answerHtml": "<p>The npm CLI, registry, cache, lockfile, and local dependency tree.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why does the npm ecosystem matter?",
+          "answerHtml": "<p>Because those pieces decide how packages are resolved, downloaded, and reused across teams.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common mistake with the npm ecosystem?",
+          "answerHtml": "<p>Debugging only at the command level instead of checking registry, cache, and lockfile state.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When should you reach for the npm ecosystem?",
+          "answerHtml": "<p>When you need reproducible installs, private package access, or safer release workflows.</p>"
+        }
+      ]
+    },
+    {
+      "id": "package-json-scripts-metadata-bootstrapping",
+      "intro": "package.json is both manifest and workflow contract.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core idea",
+          "html": "<p>package.json is both manifest and workflow contract.</p><ul><li>Scripts are executable team conventions.</li><li>type changes module interpretation.</li><li>engines and packageManager reduce ambiguity.</li></ul>"
+        },
+        {
+          "type": "code",
+          "title": "A practical package.json",
+          "language": "json",
+          "code": "{\n  \"private\": true,\n  \"type\": \"module\",\n  \"scripts\": {\n    \"build\": \"next build\",\n    \"lint\": \"eslint .\"\n  },\n  \"engines\": {\n    \"node\": \">=22\"\n  },\n  \"packageManager\": \"npm@11.8.0\"\n}",
+          "caption": "The manifest can document workflow and runtime expectations."
+        },
+        {
+          "type": "compare",
+          "title": "Focus areas",
+          "items": [
+            {
+              "label": "Scope",
+              "html": "<p>The manifest that describes package metadata, scripts, dependencies, and runtime expectations.</p>"
+            },
+            {
+              "label": "Why it matters",
+              "html": "<p>Because npm, Node, CI, and consumers all read it as a source of truth.</p>"
+            },
+            {
+              "label": "Failure mode",
+              "html": "<p>Letting scripts depend on global tools or shell-specific behavior.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How to think about it",
+          "steps": [
+            "Read dependency metadata.",
+            "Expose scripts through npm run.",
+            "Apply publish behavior.",
+            "Surface runtime expectations."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common trap",
+          "html": "<p>A manifest that only works on one laptop is not a reliable manifest.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill",
+          "prompt": "Why commit a packageManager field?",
+          "answerHtml": "<p>It documents the intended CLI family and version for humans and automation.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Fast recap",
+          "items": [
+            "package.json is executable metadata.",
+            "Scripts are a shared interface.",
+            "type and engines affect runtime.",
+            "Manifest quality affects onboarding."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is package.json?",
+          "answerHtml": "<p>The manifest that describes package metadata, scripts, dependencies, and runtime expectations.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why does package.json matter?",
+          "answerHtml": "<p>Because npm, Node, CI, and consumers all read it as a source of truth.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common mistake with package.json?",
+          "answerHtml": "<p>Letting scripts depend on global tools or shell-specific behavior.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When should you reach for package.json?",
+          "answerHtml": "<p>When you need one place to define scripts, dependencies, and publish settings.</p>"
+        }
+      ]
+    },
+    {
+      "id": "dependency-types-peer-optional-dev",
+      "intro": "Dependency fields describe ownership and runtime expectations.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core idea",
+          "html": "<p>Dependency fields describe ownership and runtime expectations.</p><ul><li>dependencies are runtime-facing.</li><li>devDependencies support local build and test work.</li><li>peerDependencies express host compatibility.</li></ul>"
+        },
+        {
+          "type": "code",
+          "title": "Dependency field examples",
+          "language": "json",
+          "code": "{\n  \"dependencies\": { \"react\": \"^19.2.4\" },\n  \"devDependencies\": { \"eslint\": \"^9.0.0\" },\n  \"peerDependencies\": { \"react-dom\": \"^19.0.0\" }\n}",
+          "caption": "Each field answers a different packaging question."
+        },
+        {
+          "type": "compare",
+          "title": "Focus areas",
+          "items": [
+            {
+              "label": "Scope",
+              "html": "<p>The dependency buckets npm uses to model runtime, development, host, and optional relationships.</p>"
+            },
+            {
+              "label": "Why it matters",
+              "html": "<p>Because the wrong field can bloat installs, break consumers, or create duplicate runtimes.</p>"
+            },
+            {
+              "label": "Failure mode",
+              "html": "<p>Using dependencies for a host framework that the consumer should provide.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How to think about it",
+          "steps": [
+            "Identify whether the package is runtime, dev-only, host-provided, or optional.",
+            "Choose the correct dependency field.",
+            "Let npm resolve the graph.",
+            "Review host compatibility when peers are involved."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common trap",
+          "html": "<p>Bad dependency classification causes runtime bugs, not only metadata mess.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill",
+          "prompt": "Why does a React library often use peerDependencies for React?",
+          "answerHtml": "<p>The consuming app should own the single React runtime.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Fast recap",
+          "items": [
+            "Dependency fields encode ownership.",
+            "Peers matter for plugin ecosystems.",
+            "Wrong classification causes real bugs.",
+            "Think about who provides the package."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is dependency types?",
+          "answerHtml": "<p>The dependency buckets npm uses to model runtime, development, host, and optional relationships.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why does dependency types matter?",
+          "answerHtml": "<p>Because the wrong field can bloat installs, break consumers, or create duplicate runtimes.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common mistake with dependency types?",
+          "answerHtml": "<p>Using dependencies for a host framework that the consumer should provide.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When should you reach for dependency types?",
+          "answerHtml": "<p>When you need to describe who installs a package and when it is needed.</p>"
+        }
+      ]
+    },
+    {
+      "id": "semver-version-ranges-lockfiles",
+      "intro": "Version ranges and lockfiles decide whether installs are flexible, reproducible, or surprising.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core idea",
+          "html": "<p>Version ranges and lockfiles decide whether installs are flexible, reproducible, or surprising.</p><ul><li>Semver expresses allowed movement.</li><li>The lockfile captures exact resolution.</li><li>Review quality depends on understanding both.</li></ul>"
+        },
+        {
+          "type": "code",
+          "title": "Common range styles",
+          "language": "json",
+          "code": "{\n  \"next\": \"^16.2.2\",\n  \"typescript\": \"~5.8.0\",\n  \"left-pad\": \"1.3.0\"\n}",
+          "caption": "Caret, tilde, and exact pins imply different upgrade flexibility."
+        },
+        {
+          "type": "compare",
+          "title": "Focus areas",
+          "items": [
+            {
+              "label": "Scope",
+              "html": "<p>The pair of tools npm uses to express compatibility intent and then pin one exact resolved graph.</p>"
+            },
+            {
+              "label": "Why it matters",
+              "html": "<p>Because reproducibility, upgrade safety, and diff review all depend on both pieces together.</p>"
+            },
+            {
+              "label": "Failure mode",
+              "html": "<p>Assuming a lockfile means updates no longer need testing or review.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How to think about it",
+          "steps": [
+            "Declare direct ranges.",
+            "Resolve and capture the exact graph.",
+            "Commit the lockfile.",
+            "Review both manifest and lockfile diffs during updates."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common trap",
+          "html": "<p>Deleting the lockfile can create a much larger dependency change than the visible manifest diff suggests.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill",
+          "prompt": "Why can CI diverge if the lockfile changed but was not committed?",
+          "answerHtml": "<p>CI rebuilds the graph from committed metadata only.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Fast recap",
+          "items": [
+            "Ranges express intent.",
+            "Lockfiles capture exact graphs.",
+            "Reproducibility depends on committing the lockfile.",
+            "Update strategy is still necessary."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is semver and lockfiles?",
+          "answerHtml": "<p>The pair of tools npm uses to express compatibility intent and then pin one exact resolved graph.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why does semver and lockfiles matter?",
+          "answerHtml": "<p>Because reproducibility, upgrade safety, and diff review all depend on both pieces together.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common mistake with semver and lockfiles?",
+          "answerHtml": "<p>Assuming a lockfile means updates no longer need testing or review.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When should you reach for semver and lockfiles?",
+          "answerHtml": "<p>When you care about repeatable installs and deliberate dependency upgrades.</p>"
+        }
+      ]
+    },
+    {
+      "id": "install-update-dedupe-prune-resolution",
+      "intro": "Install behavior is about graph resolution, tree shape, and cleanup discipline.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core idea",
+          "html": "<p>Install behavior is about graph resolution, tree shape, and cleanup discipline.</p><ul><li>install, update, dedupe, and prune are not synonyms.</li><li>The command you choose changes the tree differently.</li><li>Cleanup should follow diagnosis, not panic.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Focus areas",
+          "items": [
+            {
+              "label": "Scope",
+              "html": "<p>The npm commands that synchronize, update, and clean the installed dependency graph.</p>"
+            },
+            {
+              "label": "Why it matters",
+              "html": "<p>Because the same manifest can produce different local states depending on the command you choose.</p>"
+            },
+            {
+              "label": "Failure mode",
+              "html": "<p>Using a clean reinstall as a reflex instead of diagnosing the graph problem first.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How to think about it",
+          "steps": [
+            "Identify whether you need sync, update, dedupe, or cleanup.",
+            "Run the narrowest command that fits the goal.",
+            "Review resulting lockfile and tree changes.",
+            "Verify the app still behaves as expected."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common trap",
+          "html": "<p>Deleting node_modules without understanding the failure hides useful information.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill",
+          "prompt": "Which command might reduce duplicate copies of the same dependency?",
+          "answerHtml": "<p>npm dedupe can reduce duplicate placements when versions are compatible.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Fast recap",
+          "items": [
+            "Choose commands based on intent.",
+            "Resolution and tree shape are connected.",
+            "Dedupe and prune are hygiene tools.",
+            "Diagnose before reinstalling everything."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is install and resolution commands?",
+          "answerHtml": "<p>The npm commands that synchronize, update, and clean the installed dependency graph.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why does install and resolution commands matter?",
+          "answerHtml": "<p>Because the same manifest can produce different local states depending on the command you choose.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common mistake with install and resolution commands?",
+          "answerHtml": "<p>Using a clean reinstall as a reflex instead of diagnosing the graph problem first.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When should you reach for install and resolution commands?",
+          "answerHtml": "<p>When you need to sync the tree, move versions within range, or clean up duplicates intentionally.</p>"
+        }
+      ]
+    },
+    {
+      "id": "workspaces-monorepos-local-linking",
+      "intro": "Workspaces let one npm root manage several local packages with shared installs and scripts.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core idea",
+          "html": "<p>Workspaces let one npm root manage several local packages with shared installs and scripts.</p><ul><li>A root package owns the install and lockfile.</li><li>Workspace packages are linked automatically.</li><li>Shared scripts can run from the top level.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Focus areas",
+          "items": [
+            {
+              "label": "Scope",
+              "html": "<p>npm's built-in way to manage multiple local packages from one root install.</p>"
+            },
+            {
+              "label": "Why it matters",
+              "html": "<p>Because workspaces reduce manual linking pain and give the repo one shared install story.</p>"
+            },
+            {
+              "label": "Failure mode",
+              "html": "<p>Treating a workspace repo like unrelated folders with no shared root discipline.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How to think about it",
+          "steps": [
+            "Declare workspace paths in the root manifest.",
+            "Run one install at the root.",
+            "Let npm link workspace packages automatically.",
+            "Use root scripts to coordinate tasks."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common trap",
+          "html": "<p>Ignoring the root lockfile and workspace graph creates confusing local-state bugs.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill",
+          "prompt": "Why is a workspace cleaner than manual npm link for sibling packages?",
+          "answerHtml": "<p>The root install coordinates linking and graph consistency in one place.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Fast recap",
+          "items": [
+            "Workspaces are npm-native multi-package support.",
+            "One root install can coordinate many packages.",
+            "Auto-linking reduces manual workflows.",
+            "The root becomes an operational boundary."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is npm workspaces?",
+          "answerHtml": "<p>npm's built-in way to manage multiple local packages from one root install.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why does npm workspaces matter?",
+          "answerHtml": "<p>Because workspaces reduce manual linking pain and give the repo one shared install story.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common mistake with npm workspaces?",
+          "answerHtml": "<p>Treating a workspace repo like unrelated folders with no shared root discipline.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When should you reach for npm workspaces?",
+          "answerHtml": "<p>When one repository contains several packages that should share install and script workflows.</p>"
+        }
+      ]
+    },
+    {
+      "id": "npx-binaries-clis-script-orchestration",
+      "intro": "Running binaries through npm is about dependency locality and repeatable execution.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core idea",
+          "html": "<p>Running binaries through npm is about dependency locality and repeatable execution.</p><ul><li>Project-local tools beat hidden global state.</li><li>npm scripts inject local binaries into PATH.</li><li>One-off execution still benefits from local versions.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Focus areas",
+          "items": [
+            {
+              "label": "Scope",
+              "html": "<p>npm's helpers for running package binaries without relying on global installations.</p>"
+            },
+            {
+              "label": "Why it matters",
+              "html": "<p>Because they keep tool execution tied to the version declared by the project.</p>"
+            },
+            {
+              "label": "Failure mode",
+              "html": "<p>Assuming a global CLI version matches the repo's expectations.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How to think about it",
+          "steps": [
+            "Prefer project-local packages for shared tools.",
+            "Run common workflows through npm scripts.",
+            "Use npx or npm exec for direct one-offs.",
+            "Keep CI and local commands aligned."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common trap",
+          "html": "<p>Global CLI drift creates 'works on my machine' problems fast.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill",
+          "prompt": "Why is npm run lint safer than telling the team to install eslint globally?",
+          "answerHtml": "<p>The project controls the exact eslint version and plugin graph.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Fast recap",
+          "items": [
+            "Prefer project-local tooling.",
+            "Scripts inject local binaries into PATH.",
+            "npx helps with one-offs.",
+            "Global tool drift is operational risk."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is npx and npm exec?",
+          "answerHtml": "<p>npm's helpers for running package binaries without relying on global installations.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why does npx and npm exec matter?",
+          "answerHtml": "<p>Because they keep tool execution tied to the version declared by the project.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common mistake with npx and npm exec?",
+          "answerHtml": "<p>Assuming a global CLI version matches the repo's expectations.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When should you reach for npx and npm exec?",
+          "answerHtml": "<p>When you want one-off or script-driven execution of locally declared tooling.</p>"
+        }
+      ]
+    },
+    {
+      "id": "publishing-scopes-tags-release-flows",
+      "intro": "Publishing is a contract with consumers, not only a command.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core idea",
+          "html": "<p>Publishing is a contract with consumers, not only a command.</p><ul><li>Published contents matter as much as the version number.</li><li>dist-tags create channels such as latest or beta.</li><li>Access and scope settings affect who can consume the package.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Focus areas",
+          "items": [
+            {
+              "label": "Scope",
+              "html": "<p>npm's registry release flow for turning a package version into something consumers can install.</p>"
+            },
+            {
+              "label": "Why it matters",
+              "html": "<p>Because release metadata, published contents, and channel strategy affect downstream users directly.</p>"
+            },
+            {
+              "label": "Failure mode",
+              "html": "<p>Publishing from a dirty or unverified tree.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How to think about it",
+          "steps": [
+            "Prepare a clean tree and validated build output.",
+            "Bump the version intentionally.",
+            "Inspect the package contents.",
+            "Publish with the correct tag and access settings."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common trap",
+          "html": "<p>Publishing without checking contents can ship secrets, junk files, or missing build output.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill",
+          "prompt": "Why publish a beta package under a non-latest tag?",
+          "answerHtml": "<p>So early adopters can test it without moving every default consumer.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Fast recap",
+          "items": [
+            "Publishing is a consumer-safety concern.",
+            "dist-tags are release-channel tools.",
+            "Inspect what ships.",
+            "Versioning discipline matters downstream."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is npm publishing?",
+          "answerHtml": "<p>npm's registry release flow for turning a package version into something consumers can install.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why does npm publishing matter?",
+          "answerHtml": "<p>Because release metadata, published contents, and channel strategy affect downstream users directly.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common mistake with npm publishing?",
+          "answerHtml": "<p>Publishing from a dirty or unverified tree.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When should you reach for npm publishing?",
+          "answerHtml": "<p>When you need to ship a package version deliberately with correct contents and tags.</p>"
+        }
+      ]
+    },
+    {
+      "id": "security-audit-provenance-supply-chain",
+      "intro": "Package management is supply-chain infrastructure, so security work must be part of normal npm thinking.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core idea",
+          "html": "<p>Package management is supply-chain infrastructure, so security work must be part of normal npm thinking.</p><ul><li>Audit output is one signal, not the whole story.</li><li>Integrity metadata supports safer installs.</li><li>Publisher trust and provenance still matter.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Focus areas",
+          "items": [
+            {
+              "label": "Scope",
+              "html": "<p>The npm features and practices that help teams reason about advisories, integrity, and package trust.</p>"
+            },
+            {
+              "label": "Why it matters",
+              "html": "<p>Because npm sits on the supply-chain boundary where third-party packages enter your build and runtime.</p>"
+            },
+            {
+              "label": "Failure mode",
+              "html": "<p>Blindly running fixes without understanding reachability or compatibility risk.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How to think about it",
+          "steps": [
+            "Audit the graph for advisories.",
+            "Check whether the package is actually reachable.",
+            "Decide whether to patch, override, replace, or defer.",
+            "Record the risk and verify the outcome."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common trap",
+          "html": "<p>Automatic fixes can move versions in ways that break compatibility.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill",
+          "prompt": "Why is a reported vulnerability not automatically a production emergency?",
+          "answerHtml": "<p>You still need to ask whether the code path is reachable in your runtime.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Fast recap",
+          "items": [
+            "Audit results need context.",
+            "Lockfiles and integrity metadata support safer installs.",
+            "Provenance matters for trust.",
+            "Security fixes still need compatibility thinking."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is npm security and provenance?",
+          "answerHtml": "<p>The npm features and practices that help teams reason about advisories, integrity, and package trust.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why does npm security and provenance matter?",
+          "answerHtml": "<p>Because npm sits on the supply-chain boundary where third-party packages enter your build and runtime.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common mistake with npm security and provenance?",
+          "answerHtml": "<p>Blindly running fixes without understanding reachability or compatibility risk.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When should you reach for npm security and provenance?",
+          "answerHtml": "<p>When you are reviewing advisories, updating dependencies, or publishing packages into a shared ecosystem.</p>"
+        }
+      ]
+    },
+    {
+      "id": "caching-offline-registries-mirrors",
+      "intro": "Caching and registry strategy affect speed, reproducibility, and controlled-network reliability.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core idea",
+          "html": "<p>Caching and registry strategy affect speed, reproducibility, and controlled-network reliability.</p><ul><li>Registry choice is an operational decision.</li><li>Scope mapping and auth change outcomes.</li><li>Cache and mirrors can improve speed and resilience.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Focus areas",
+          "items": [
+            {
+              "label": "Scope",
+              "html": "<p>The combination of registry source, scope mapping, auth, and cache policy behind npm installs.</p>"
+            },
+            {
+              "label": "Why it matters",
+              "html": "<p>Because package access, speed, and reliability all depend on where npm fetches packages and how it caches them.</p>"
+            },
+            {
+              "label": "Failure mode",
+              "html": "<p>Debugging 404s as package problems when they are really auth or registry problems.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How to think about it",
+          "steps": [
+            "Check the active registry and scope mapping.",
+            "Verify the correct auth is present.",
+            "Check whether the cache or mirror should satisfy the request.",
+            "Only then assume the package itself is missing."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common trap",
+          "html": "<p>Many private package failures are configuration mismatches, not broken packages.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill",
+          "prompt": "Why would a company care about internal registries beyond speed?",
+          "answerHtml": "<p>They improve control, auditability, reliability, and often network isolation.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Fast recap",
+          "items": [
+            "Registry strategy is operational.",
+            "Scope mapping and auth are common failure points.",
+            "Caching helps speed and reliability.",
+            "Private package issues often start with configuration."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is registry and cache strategy?",
+          "answerHtml": "<p>The combination of registry source, scope mapping, auth, and cache policy behind npm installs.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why does registry and cache strategy matter?",
+          "answerHtml": "<p>Because package access, speed, and reliability all depend on where npm fetches packages and how it caches them.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common mistake with registry and cache strategy?",
+          "answerHtml": "<p>Debugging 404s as package problems when they are really auth or registry problems.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When should you reach for registry and cache strategy?",
+          "answerHtml": "<p>When a team uses private packages, proxies, mirrors, or restricted network environments.</p>"
+        }
+      ]
+    },
+    {
+      "id": "troubleshooting-installs-conflicts",
+      "intro": "npm failures get easier once you classify the failure by layer.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core idea",
+          "html": "<p>npm failures get easier once you classify the failure by layer.</p><ul><li>Most failures are resolution, access, script, or local-state issues.</li><li>The first real error is usually the best clue.</li><li>Force flags are not a substitute for diagnosis.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Focus areas",
+          "items": [
+            {
+              "label": "Scope",
+              "html": "<p>The practice of diagnosing npm failures by the exact layer that broke instead of throwing random fixes at the tree.</p>"
+            },
+            {
+              "label": "Why it matters",
+              "html": "<p>Because install problems become much more tractable once you know whether the failure is resolution, access, script execution, or drift.</p>"
+            },
+            {
+              "label": "Failure mode",
+              "html": "<p>Solving peer warnings or registry errors with random force flags and cache nukes.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How to think about it",
+          "steps": [
+            "Read the first substantive error.",
+            "Classify the issue by layer.",
+            "Check manifest and lockfile consistency.",
+            "Choose the narrowest fix and verify it."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common trap",
+          "html": "<p>The last line of output is often a symptom, not the root cause.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill",
+          "prompt": "Why is the top of npm output often more useful than the bottom?",
+          "answerHtml": "<p>The first substantive error usually identifies the real conflict or failing script.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Fast recap",
+          "items": [
+            "Classify the failure first.",
+            "Registry, auth, peers, and scripts fail differently.",
+            "Force flags are not diagnosis.",
+            "The first real error is often the clue."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is npm troubleshooting?",
+          "answerHtml": "<p>The practice of diagnosing npm failures by the exact layer that broke instead of throwing random fixes at the tree.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why does npm troubleshooting matter?",
+          "answerHtml": "<p>Because install problems become much more tractable once you know whether the failure is resolution, access, script execution, or drift.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common mistake with npm troubleshooting?",
+          "answerHtml": "<p>Solving peer warnings or registry errors with random force flags and cache nukes.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When should you reach for npm troubleshooting?",
+          "answerHtml": "<p>Whenever npm output is noisy and you need to isolate the real root cause.</p>"
+        }
+      ]
+    },
+    {
+      "id": "performance-repo-hygiene-scale",
+      "intro": "At scale, package management quality becomes part of repository performance and onboarding speed.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core idea",
+          "html": "<p>At scale, package management quality becomes part of repository performance and onboarding speed.</p><ul><li>Dependency sprawl increases maintenance and security cost.</li><li>Slow installs hurt feedback loops and CI throughput.</li><li>Weak ownership makes updates vague and slow.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Focus areas",
+          "items": [
+            {
+              "label": "Scope",
+              "html": "<p>The discipline of keeping dependency graphs, scripts, and install workflows lean as repositories grow.</p>"
+            },
+            {
+              "label": "Why it matters",
+              "html": "<p>Because package-management debt compounds into slower onboarding, noisier CI, and weaker security posture.</p>"
+            },
+            {
+              "label": "Failure mode",
+              "html": "<p>Adding packages for tiny convenience gains without long-term ownership.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How to think about it",
+          "steps": [
+            "Keep manifests and scripts intentional.",
+            "Remove stale packages and dead commands.",
+            "Review dependency additions like code changes.",
+            "Automate safe update workflows."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common trap",
+          "html": "<p>Every package adds security, upgrade, and support cost.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill",
+          "prompt": "What should a senior engineer ask before approving a new package?",
+          "answerHtml": "<p>Ask what problem it solves, how mature it is, and what long-term risk it adds.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Fast recap",
+          "items": [
+            "Dependency choices scale operational cost.",
+            "Fast installs and clear scripts help everyone.",
+            "Package review is architecture review.",
+            "Hygiene compounds into safer upgrades."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is npm hygiene at scale?",
+          "answerHtml": "<p>The discipline of keeping dependency graphs, scripts, and install workflows lean as repositories grow.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why does npm hygiene at scale matter?",
+          "answerHtml": "<p>Because package-management debt compounds into slower onboarding, noisier CI, and weaker security posture.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common mistake with npm hygiene at scale?",
+          "answerHtml": "<p>Adding packages for tiny convenience gains without long-term ownership.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When should you reach for npm hygiene at scale?",
+          "answerHtml": "<p>When install cost, package count, or CI friction starts affecting daily development speed.</p>"
+        }
+      ]
+    },
+    {
+      "id": "team-workflows-ci-package-strategy",
+      "intro": "Teams need a package-management strategy, not just individual npm commands.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Core idea",
+          "html": "<p>Teams need a package-management strategy, not just individual npm commands.</p><ul><li>Version alignment reduces drift.</li><li>CI install strategy should match local expectations.</li><li>Update policy is part of engineering operations.</li></ul>"
+        },
+        {
+          "type": "compare",
+          "title": "Focus areas",
+          "items": [
+            {
+              "label": "Scope",
+              "html": "<p>The shared package-management habits a team uses to keep installs, scripts, versions, and CI predictable.</p>"
+            },
+            {
+              "label": "Why it matters",
+              "html": "<p>Because npm discipline does not emerge naturally in busy teams unless someone makes the workflow explicit.</p>"
+            },
+            {
+              "label": "Failure mode",
+              "html": "<p>Assuming npm discipline will emerge naturally without shared script and version rules.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How to think about it",
+          "steps": [
+            "Standardize core scripts and runtime versions.",
+            "Make CI install and validate the same way the team expects locally.",
+            "Review dependency changes intentionally.",
+            "Keep release and update cadence explicit."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common trap",
+          "html": "<p>Without shared norms, teams accumulate ad-hoc scripts and mixed runtime versions.</p>",
+          "tone": "warning"
+        },
+        {
+          "type": "drill",
+          "title": "Drill",
+          "prompt": "Why is a single CI-only install failure often a process signal?",
+          "answerHtml": "<p>It often reveals a mismatch between what developers run locally and what automation expects.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Fast recap",
+          "items": [
+            "Package management is a team system.",
+            "CI and local workflows should tell the same story.",
+            "Version and script discipline reduce drift.",
+            "Update policy is operational, not optional."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is team npm workflows?",
+          "answerHtml": "<p>The shared package-management habits a team uses to keep installs, scripts, versions, and CI predictable.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why does team npm workflows matter?",
+          "answerHtml": "<p>Because npm discipline does not emerge naturally in busy teams unless someone makes the workflow explicit.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a common mistake with team npm workflows?",
+          "answerHtml": "<p>Assuming npm discipline will emerge naturally without shared script and version rules.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When should you reach for team npm workflows?",
+          "answerHtml": "<p>Whenever more than one engineer or CI system needs to trust the same dependency behavior.</p>"
+        }
+      ]
+    },
+    {
+      "id": "interview-mastery-real-world-debugging",
+      "intro": "This capstone chapter pressure-tests real npm judgment: dependency choices, install failures, publishing safety, and interview clarity.",
+      "blocks": [
+        {
+          "type": "richText",
+          "title": "Strong npm answers connect graph behavior to team risk",
+          "html": "<p>Senior npm answers do not stop at command names. They explain how metadata, lockfiles, registries, scripts, and package-manager discipline interact.</p>"
+        },
+        {
+          "type": "compare",
+          "title": "Answer quality ladder",
+          "items": [
+            {
+              "label": "Weak",
+              "html": "<p>Names a command but cannot explain why the graph behaves that way.</p>"
+            },
+            {
+              "label": "Better",
+              "html": "<p>Explains manifest, lockfile, and registry behavior clearly.</p>"
+            },
+            {
+              "label": "Strong",
+              "html": "<p>Adds team workflow, CI, security, and supply-chain implications.</p>"
+            }
+          ]
+        },
+        {
+          "type": "mechanics",
+          "title": "How to answer well",
+          "steps": [
+            "Identify whether the issue is metadata, resolution, registry, scripts, or team process.",
+            "Explain what npm is doing under the hood.",
+            "Name the least risky fix or workflow improvement.",
+            "Mention how you would verify the change safely."
+          ]
+        },
+        {
+          "type": "trap",
+          "title": "Common trap",
+          "html": "<p>Interviewers are often testing reproducibility, compatibility, and supply-chain tradeoffs, not whether you can recite CLI help output.</p>",
+          "tone": "interview"
+        },
+        {
+          "type": "drill",
+          "title": "Capstone drill",
+          "prompt": "A CI build broke after a harmless-looking dependency bump. What is your first mental model?",
+          "answerHtml": "<p>Assume the lockfile, transitive graph, peer ranges, or lifecycle scripts changed behavior, then inspect the dependency diff deliberately.</p>"
+        },
+        {
+          "type": "recap",
+          "title": "Fast recap",
+          "items": [
+            "npm questions are about graphs, workflows, and risk.",
+            "Lockfile and registry reasoning are core interview skills.",
+            "Publishing and security are part of npm maturity.",
+            "Strong answers explain both fix and verification path."
+          ]
+        }
+      ],
+      "qa": [
+        {
+          "level": "basic",
+          "question": "What is the difference between package.json and package-lock.json?",
+          "answerHtml": "<p>package.json describes intended dependencies and workflow metadata, while package-lock.json records the exact resolved graph.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What does peerDependencies communicate?",
+          "answerHtml": "<p>The consumer is expected to provide a compatible host package instead of the library bundling its own copy.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "Why is npm run usually better than relying on global CLIs?",
+          "answerHtml": "<p>It keeps tool versions local to the project and consistent with CI.</p>"
+        },
+        {
+          "level": "basic",
+          "question": "What problem does a lockfile solve in teams?",
+          "answerHtml": "<p>It reduces install drift by capturing one exact dependency graph.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why can two branches with the same package.json still install differently?",
+          "answerHtml": "<p>The lockfile or transitive graph can differ even when the direct manifest looks unchanged.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "When would you prefer a peer dependency over a normal dependency?",
+          "answerHtml": "<p>When your package integrates with a host framework that the consumer should own.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why can npm audit results need manual triage?",
+          "answerHtml": "<p>Reachability, environment, and compatibility risk determine whether a finding is urgent.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why is packageManager a useful field for teams?",
+          "answerHtml": "<p>It makes the expected package-manager family and version visible to humans and automation.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why can deleting a lockfile be risky during debugging?",
+          "answerHtml": "<p>It forces a fresh resolution that may change many transitive versions and hide the original problem.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "How would you explain dist-tags in simple terms?",
+          "answerHtml": "<p>They are named release channels that point consumers to chosen published versions.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "What is a realistic reason to use a private registry?",
+          "answerHtml": "<p>To host internal packages, enforce access control, or improve reliability.</p>"
+        },
+        {
+          "level": "intermediate",
+          "question": "Why is dependency review a security practice?",
+          "answerHtml": "<p>Every package introduces code, transitive dependencies, and supply-chain trust decisions.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "A package works locally but fails in CI because a binary is missing. What do you check first?",
+          "answerHtml": "<p>Check whether the project depends on a local package binary that only exists globally on developer machines.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why are peer dependency warnings often more important than ordinary update warnings?",
+          "answerHtml": "<p>They often signal host-package compatibility problems that can surface as runtime failures.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How do workspaces reduce local-linking friction?",
+          "answerHtml": "<p>They let the root install coordinate symlinked local packages automatically.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can npm update change more than the package you intended to bump?",
+          "answerHtml": "<p>Dependency resolution and transitive graph movement can shift multiple versions.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the senior answer to 'why did CI break after a dependency bump'?",
+          "answerHtml": "<p>Start with the resolved graph and install path, not the assumption that the change was harmless.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "When is a force flag acceptable during install troubleshooting?",
+          "answerHtml": "<p>Only after you understand the compatibility problem and are intentionally choosing a risk tradeoff.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is the hidden cost of too many tiny dependencies?",
+          "answerHtml": "<p>They increase security surface area, update noise, install cost, and maintenance obligations.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why should publish flows inspect contents before release?",
+          "answerHtml": "<p>Because what ships to consumers is the tarball, not your assumptions about the working tree.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "How would you explain integrity metadata?",
+          "answerHtml": "<p>It helps verify that the installed artifact matches what the lockfile expected.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why can auth and registry misconfiguration look like missing packages?",
+          "answerHtml": "<p>npm may be asking the wrong registry or using invalid credentials.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "What is a safer upgrade habit than random npm update runs?",
+          "answerHtml": "<p>Use deliberate dependency reviews, test-backed updates, and lockfile-aware diffs.</p>"
+        },
+        {
+          "level": "advanced",
+          "question": "Why are scripts part of package-management architecture?",
+          "answerHtml": "<p>They are the executable interface between humans, repos, and CI.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How would you distinguish a metadata bug from a registry bug?",
+          "answerHtml": "<p>A metadata bug describes the dependency graph incorrectly, while a registry bug prevents artifacts from being retrieved correctly.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What makes npm a supply-chain boundary in modern engineering?",
+          "answerHtml": "<p>It resolves, downloads, verifies, and often executes third-party package graphs inside your build and runtime pipeline.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do you explain reproducibility without overselling it?",
+          "answerHtml": "<p>Lockfiles make installs far more repeatable, but teams still need disciplined updates and trusted registries.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Why is the best npm fix sometimes a workflow change instead of a command change?",
+          "answerHtml": "<p>Broken installs often reflect weak team norms around version alignment or lockfile discipline.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What is a strong answer to 'How do you keep npm manageable at scale?'",
+          "answerHtml": "<p>Keep manifests intentional, standardize scripts and versions, review dependencies carefully, and automate safe updates.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Why does package ownership matter in monorepos?",
+          "answerHtml": "<p>Without clear ownership, dependency updates and publishing responsibility become vague and slow.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What makes a dependency conflict answer sound senior?",
+          "answerHtml": "<p>It explains host relationships, graph constraints, team risk, and safe verification.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How do dist-tags help product teams beyond library teams?",
+          "answerHtml": "<p>They let organizations stage rollouts and preview channels more intentionally.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Why can local caches both help and confuse debugging?",
+          "answerHtml": "<p>They speed installs, but they can mislead engineers if they forget the cache sits between the CLI and registry.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What does 'use fewer dependencies' miss as advice?",
+          "answerHtml": "<p>The real goal is intentional dependencies with clear value, support, and ownership.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "Why are lifecycle scripts worth discussing in interviews?",
+          "answerHtml": "<p>They are a clear way npm crosses from passive download into executable build behavior.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How would you coach a team whose npm scripts only work on one operating system?",
+          "answerHtml": "<p>Move toward project-local tooling, portable scripts, and CI validation.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "What makes a lockfile diff more important than a package.json diff during review?",
+          "answerHtml": "<p>It reveals the actual graph movement that the build and runtime will experience.</p>"
+        },
+        {
+          "level": "expert",
+          "question": "How would you define npm maturity in one sentence?",
+          "answerHtml": "<p>npm maturity means treating dependency management, scripts, releases, security, and reproducibility as one operating system for the codebase.</p>"
+        }
+      ]
+    }
+  ]
+}

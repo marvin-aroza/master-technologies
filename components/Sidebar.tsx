@@ -11,6 +11,9 @@ const groups = [
       { href: "/html",       icon: "HT", name: "HTML",       color: "#e44d26" },
       { href: "/css",        icon: "CS", name: "CSS",        color: "#4f7be8" },
       { href: "/javascript", icon: "JS", name: "JavaScript", color: "#f7df1e" },
+      { href: "/git",        icon: "GT", name: "Git",        color: "#f05032" },
+      { href: "/npm",        icon: "NP", name: "npm",        color: "#cb3837" },
+      { href: "/nodejs",     icon: "ND", name: "Node.js",    color: "#5fa04e" },
     ],
   },
   {
@@ -24,7 +27,6 @@ const groups = [
   {
     label: "DevOps & Cloud",
     topics: [
-      { href: "/git",       icon: "GT", name: "Git",       color: "#f05032" },
       { href: "/docker",    icon: "DK", name: "Docker",    color: "#2496ed" },
       { href: "/aws",       icon: "AW", name: "AWS",       color: "#ff9900" },
       { href: "/terraform", icon: "TF", name: "Terraform", color: "#7b42bc" },
@@ -35,18 +37,17 @@ const groups = [
     topics: [
       { href: "/system-design", icon: "SD", name: "System Design", color: "#60a5fa" },
       { href: "/ui-ux",         icon: "UX", name: "UX/UI Design",  color: "#f472b6" },
+      { href: "/frontend-cheat-sheet", icon: "FC", name: "Frontend Cheat Sheet", color: "#22c55e" },
     ],
   },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(
+    () => (typeof window !== "undefined" ? window.innerWidth < 900 : false)
+  );
   const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    if (window.innerWidth < 900) setCollapsed(true);
-  }, []);
 
   useEffect(() => {
     const onScroll = () => {

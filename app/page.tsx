@@ -33,6 +33,37 @@ const groups = [
     ],
   },
   {
+    id: "tooling-runtime",
+    label: "Tooling & Runtime",
+    desc: "Version control, package management, runtime internals, and day-to-day developer systems.",
+    topics: [
+      {
+        href: "/git",
+        icon: "GT",
+        title: "Git",
+        desc: "Repositories, staging, branching, recovery, collaboration, and history reasoning for real teams.",
+        tags: ["Starter", "75 Q&A"],
+        color: "#f05032",
+      },
+      {
+        href: "/npm",
+        icon: "NP",
+        title: "npm",
+        desc: "Package management, semver, workspaces, publishing, security, and team-safe dependency workflows.",
+        tags: ["2026", "90 Q&A"],
+        color: "#cb3837",
+      },
+      {
+        href: "/nodejs",
+        icon: "ND",
+        title: "Node.js",
+        desc: "Runtime internals, modules, event loop, services, performance, security, and production reasoning.",
+        tags: ["2026", "90 Q&A"],
+        color: "#5fa04e",
+      },
+    ],
+  },
+  {
     id: "frameworks",
     label: "Frameworks & Libraries",
     desc: "Modern component-driven development.",
@@ -66,16 +97,8 @@ const groups = [
   {
     id: "devops",
     label: "DevOps & Cloud",
-    desc: "Version control, containers, cloud infrastructure, and automation.",
+    desc: "Containers, cloud infrastructure, and automation.",
     topics: [
-      {
-        href: "/git",
-        icon: "GT",
-        title: "Git",
-        desc: "Repositories, staging, branching, recovery, collaboration, and history reasoning for real teams.",
-        tags: ["Starter", "75 Q&A"],
-        color: "#f05032",
-      },
       {
         href: "/docker",
         icon: "DK",
@@ -105,7 +128,7 @@ const groups = [
   {
     id: "architecture",
     label: "Architecture & Design",
-    desc: "Systems thinking, scaling patterns, and product design.",
+    desc: "Systems thinking, scaling patterns, product design, and fast revision.",
     topics: [
       {
         href: "/system-design",
@@ -123,6 +146,14 @@ const groups = [
         tags: ["2026", "144 Q&A"],
         color: "#f472b6",
       },
+      {
+        href: "/frontend-cheat-sheet",
+        icon: "FC",
+        title: "Frontend Cheat Sheet",
+        desc: "A compact revision guide for HTML, CSS, JavaScript, browser APIs, React, Next.js, and interview quick recall.",
+        tags: ["Quick Ref", "45 Q&A"],
+        color: "#22c55e",
+      },
     ],
   },
 ];
@@ -133,19 +164,19 @@ export default function Home() {
       <section className="home-hero">
         <div className="home-eyebrow">
           <span className="home-eyebrow-dot" />
-The Complete Developer Encyclopedia
+          The Complete Developer Encyclopedia
         </div>
         <div className="home-hero-row">
           <h1><span className="gradient-text">DevLore</span> Encyclopedia</h1>
           <div className="home-stats">
-            <div className="home-stat"><b>12</b><span>Topics</span></div>
-            <div className="home-stat"><b>1,592</b><span>Q&amp;A</span></div>
-            <div className="home-stat"><b>168</b><span>Chapters</span></div>
+            <div className="home-stat"><b>15</b><span>Topics</span></div>
+            <div className="home-stat"><b>1,917</b><span>Q&amp;A</span></div>
+            <div className="home-stat"><b>206</b><span>Chapters</span></div>
             <div className="home-stat"><b>2026</b><span>Edition</span></div>
           </div>
         </div>
         <p className="home-sub">
-          Language, framework, cloud, tooling, architecture, and design mastery — zero fluff.
+          Language, tooling, runtime, framework, cloud, architecture, design, and revision mastery - zero fluff.
         </p>
       </section>
 
