@@ -5,14 +5,18 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 
 const topics = [
-  { href: "/html",          icon: "📄", name: "HTML",          color: "#e44d26" },
-  { href: "/css",           icon: "🎨", name: "CSS",           color: "#4f7be8" },
-  { href: "/javascript",    icon: "📜", name: "JavaScript",    color: "#f7df1e" },
-  { href: "/react",         icon: "⚛️", name: "React",         color: "#61dafb" },
-  { href: "/nextjs",        icon: "▲",  name: "Next.js",       color: "#e0e0e0" },
-  { href: "/angular",       icon: "🅰️", name: "Angular",       color: "#dd0031" },
-  { href: "/system-design", icon: "🏗️", name: "System Design", color: "#60a5fa" },
-  { href: "/ui-ux",         icon: "✨", name: "UX/UI",         color: "#f472b6" },
+  { href: "/html",          icon: "HT", name: "HTML",          color: "#e44d26" },
+  { href: "/css",           icon: "CS", name: "CSS",           color: "#4f7be8" },
+  { href: "/javascript",    icon: "JS", name: "JavaScript",    color: "#f7df1e" },
+  { href: "/git",           icon: "GT", name: "Git",           color: "#f05032" },
+  { href: "/react",         icon: "RE", name: "React",         color: "#61dafb" },
+  { href: "/nextjs",        icon: "NX", name: "Next.js",       color: "#e0e0e0" },
+  { href: "/angular",       icon: "NG", name: "Angular",       color: "#dd0031" },
+  { href: "/docker",        icon: "DK", name: "Docker",        color: "#2496ed" },
+  { href: "/aws",           icon: "AW", name: "AWS",           color: "#ff9900" },
+  { href: "/terraform",     icon: "TF", name: "Terraform",     color: "#7b42bc" },
+  { href: "/system-design", icon: "SD", name: "System Design", color: "#60a5fa" },
+  { href: "/ui-ux",         icon: "UX", name: "UX/UI",         color: "#f472b6" },
 ];
 
 export function TopNav() {
@@ -56,8 +60,8 @@ export function TopNav() {
                 className={`topnav-link${active ? " active" : ""}`}
                 style={{ "--tc": t.color } as React.CSSProperties}
               >
-                <span className="topnav-link-icon">{t.icon}</span>
-                <span className="topnav-link-label">{t.name}</span>
+                <span className="topnav-link-dot" />
+                {t.name}
               </Link>
             );
           })}

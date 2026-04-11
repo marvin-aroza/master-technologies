@@ -32,7 +32,7 @@ export function TopicHero({
       <div className="topic-hero-glow" />
       <div className="topic-hero-content">
         <div className="topic-hero-eyebrow">
-          <span>📚</span> Mastery Encyclopedia
+          <span>📚</span> DevLore Encyclopedia
         </div>
         <h1 className="topic-hero-title">{title}</h1>
         <p className="topic-hero-sub">{subtitle}</p>

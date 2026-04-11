@@ -2,108 +2,123 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect, startTransition } from "react";
+import { useState, useEffect } from "react";
 
-const WIDE = 1100;
-
-const topics = [
+const groups = [
   {
     label: "Foundations",
-    items: [
-      { href: "/html", icon: "📄", name: "HTML", badge: "62 Q&A" },
-      { href: "/css", icon: "🎨", name: "CSS", badge: "70 Q&A" },
-      { href: "/javascript", icon: "📜", name: "JavaScript", badge: "155 Q&A" },
+    topics: [
+      { href: "/html",       icon: "HT", name: "HTML",       color: "#e44d26" },
+      { href: "/css",        icon: "CS", name: "CSS",        color: "#4f7be8" },
+      { href: "/javascript", icon: "JS", name: "JavaScript", color: "#f7df1e" },
     ],
   },
   {
     label: "Frameworks",
-    items: [
-      { href: "/react", icon: "⚛️", name: "React", badge: "138 Q&A" },
-      { href: "/nextjs", icon: "▲", name: "Next.js", badge: "93 Q&A" },
-      { href: "/angular", icon: "🅰️", name: "Angular", badge: "195 Q&A" },
+    topics: [
+      { href: "/react",   icon: "RE", name: "React",   color: "#61dafb" },
+      { href: "/nextjs",  icon: "NX", name: "Next.js", color: "#e0e0e0" },
+      { href: "/angular", icon: "NG", name: "Angular", color: "#dd0031" },
     ],
   },
   {
-    label: "Architecture & Design",
-    items: [
-      { href: "/system-design", icon: "🏗️", name: "System Design", badge: "62 Q&A" },
-      { href: "/ui-ux", icon: "✨", name: "UX/UI Design", badge: "48 Q&A" },
+    label: "DevOps & Cloud",
+    topics: [
+      { href: "/git",       icon: "GT", name: "Git",       color: "#f05032" },
+      { href: "/docker",    icon: "DK", name: "Docker",    color: "#2496ed" },
+      { href: "/aws",       icon: "AW", name: "AWS",       color: "#ff9900" },
+      { href: "/terraform", icon: "TF", name: "Terraform", color: "#7b42bc" },
+    ],
+  },
+  {
+    label: "Architecture",
+    topics: [
+      { href: "/system-design", icon: "SD", name: "System Design", color: "#60a5fa" },
+      { href: "/ui-ux",         icon: "UX", name: "UX/UI Design",  color: "#f472b6" },
     ],
   },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
-  // Default true (SSR / desktop-first) — JS corrects on mount
-  const [open, setOpen] = useState(true);
-  const [narrow, setNarrow] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const update = () => {
-      const isNarrow = window.innerWidth < WIDE;
-      setNarrow(isNarrow);
-      // Only auto-set on resize, not on every route change
-      setOpen(!isNarrow);
-    };
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
+    if (window.innerWidth < 900) setCollapsed(true);
   }, []);
 
-  // Close on route change when narrow
   useEffect(() => {
-    if (narrow) startTransition(() => setOpen(false));
-  }, [pathname, narrow])
+    const onScroll = () => {
+      const docH = document.documentElement.scrollHeight - window.innerHeight;
+      setProgress(docH > 0 ? (window.scrollY / docH) * 100 : 0);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <>
-      <aside className={`sidebar${open ? "" : " closed"}`}>
-        {/* Fixed-width inner prevents content reflow during width transition */}
-        <div className="sidebar-inner">
-          <div className="sidebar-header">
-            <Link href="/" className="sidebar-logo">
-              <span className="logo-icon">📚</span>
-              Web Mastery
-            </Link>
-            <p className="sidebar-tagline">The Complete Encyclopedia</p>
-          </div>
-          <nav className="sidebar-nav">
-            {topics.map((section) => (
-              <div key={section.label}>
-                <div className="nav-section-label">{section.label}</div>
-                {section.items.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`nav-link${pathname === item.href ? " active" : ""}`}
-                  >
-                    <span className="nav-icon">{item.icon}</span>
-                    {item.name}
-                    <span className="nav-badge">{item.badge}</span>
-                  </Link>
-                ))}
-              </div>
-            ))}
-          </nav>
+      {/* Reading progress — thin bar at very top of viewport */}
+      <div
+        className="read-progress"
+        style={{ width: `${progress}%`, opacity: progress > 0 ? 1 : 0 }}
+        aria-hidden
+      />
+
+      <aside className={`sidebar${collapsed ? " collapsed" : ""}`}>
+        {/* Logo + toggle row */}
+        <div className="sb-header">
+          <Link href="/" className="sb-logo">
+            <span className="sb-logo-mark">
+              <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
+                <path d="M3 4h12M3 9h8M3 14h10" stroke="currentColor"
+                  strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </span>
+            <span className="sb-logo-text">DevLore</span>
+          </Link>
+          <button
+            className="sb-toggle"
+            onClick={() => setCollapsed((c) => !c)}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+              {collapsed ? (
+                <path d="M4.5 1.5L9.5 6.5L4.5 11.5" stroke="currentColor"
+                  strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              ) : (
+                <path d="M8.5 1.5L3.5 6.5L8.5 11.5" stroke="currentColor"
+                  strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              )}
+            </svg>
+          </button>
         </div>
+
+        {/* Nav groups */}
+        <nav className="sb-nav" aria-label="Topics">
+          {groups.map((group) => (
+            <div className="sb-group" key={group.label}>
+              <span className="sb-group-label">{group.label}</span>
+              {group.topics.map((t) => {
+                const active = pathname === t.href || pathname.startsWith(t.href + "/");
+                return (
+                  <Link
+                    key={t.href}
+                    href={t.href}
+                    className={`sb-link${active ? " active" : ""}`}
+                    style={{ "--tc": t.color } as React.CSSProperties}
+                    title={collapsed ? t.name : undefined}
+                  >
+                    <span className="sb-icon">{t.icon}</span>
+                    <span className="sb-label">{t.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
+        </nav>
       </aside>
-
-      {/* Overlay — only shown on narrow screens when sidebar is open */}
-      {narrow && (
-        <div
-          className={`sidebar-overlay${open ? " open" : ""}`}
-          onClick={() => setOpen(false)}
-        />
-      )}
-
-      {/* Toggle — always visible */}
-      <button
-        className="mobile-toggle"
-        onClick={() => setOpen((v) => !v)}
-        aria-label="Toggle navigation"
-      >
-        {open ? "✕" : "☰"}
-      </button>
     </>
   );
 }
