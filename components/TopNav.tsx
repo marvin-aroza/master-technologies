@@ -17,6 +17,7 @@ const topics = [
   { href: "/react",         icon: "RE", name: "React",         color: "#61dafb" },
   { href: "/nextjs",        icon: "NX", name: "Next.js",       color: "#e0e0e0" },
   { href: "/angular",       icon: "NG", name: "Angular",       color: "#dd0031" },
+  { href: "/sql",           icon: "SQ", name: "SQL",           color: "#2563eb" },
   { href: "/postgresql",    icon: "PG", name: "PostgreSQL",    color: "#336791" },
   { href: "/mongodb",       icon: "MG", name: "MongoDB",       color: "#13aa52" },
   { href: "/docker",        icon: "DK", name: "Docker",        color: "#2496ed" },

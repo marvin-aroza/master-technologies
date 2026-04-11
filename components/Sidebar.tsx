@@ -40,6 +40,7 @@ const groups = [
   {
     label: "Data & Databases",
     topics: [
+      { href: "/sql",        icon: "SQ", name: "SQL",        color: "#2563eb" },
       { href: "/postgresql", icon: "PG", name: "PostgreSQL", color: "#336791" },
       { href: "/mongodb",    icon: "MG", name: "MongoDB",    color: "#13aa52" },
     ],
