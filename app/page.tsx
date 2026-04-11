@@ -54,6 +54,14 @@ const groups = [
         color: "#cb3837",
       },
       {
+        href: "/python",
+        icon: "PY",
+        title: "Python",
+        desc: "Language internals, typing, tooling, backend patterns, automation, and production-grade debugging tradeoffs.",
+        tags: ["2026", "120 Q&A"],
+        color: "#3776ab",
+      },
+      {
         href: "/nodejs",
         icon: "ND",
         title: "Node.js",
@@ -91,6 +99,29 @@ const groups = [
         desc: "Components, DI, RxJS, signals, forms, routing, testing, and production Angular architecture.",
         tags: ["2026", "302 Q&A"],
         color: "#dd0031",
+      },
+    ],
+  },
+  {
+    id: "data",
+    label: "Data & Databases",
+    desc: "Relational and document-database design, querying, performance, and operational reasoning.",
+    topics: [
+      {
+        href: "/postgresql",
+        icon: "PG",
+        title: "PostgreSQL",
+        desc: "Relational modeling, SQL, MVCC, planner literacy, operational safety, and serious production troubleshooting.",
+        tags: ["2026", "110 Q&A"],
+        color: "#336791",
+      },
+      {
+        href: "/mongodb",
+        icon: "MG",
+        title: "MongoDB",
+        desc: "Document modeling, aggregation, replication, sharding, consistency tradeoffs, and production debugging.",
+        tags: ["2026", "105 Q&A"],
+        color: "#13aa52",
       },
     ],
   },
@@ -169,9 +200,9 @@ export default function Home() {
         <div className="home-hero-row">
           <h1><span className="gradient-text">DevLore</span> Encyclopedia</h1>
           <div className="home-stats">
-            <div className="home-stat"><b>15</b><span>Topics</span></div>
-            <div className="home-stat"><b>1,917</b><span>Q&amp;A</span></div>
-            <div className="home-stat"><b>206</b><span>Chapters</span></div>
+            <div className="home-stat"><b>18</b><span>Topics</span></div>
+            <div className="home-stat"><b>2,252</b><span>Q&amp;A</span></div>
+            <div className="home-stat"><b>248</b><span>Chapters</span></div>
             <div className="home-stat"><b>2026</b><span>Edition</span></div>
           </div>
         </div>

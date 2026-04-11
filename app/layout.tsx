@@ -6,7 +6,7 @@ import { Sidebar } from "@/components/Sidebar";
 export const metadata: Metadata = {
   title: "DevLore - The Complete Developer Encyclopedia",
   description:
-    "Deep knowledge across HTML, CSS, JavaScript, Git, npm, Node.js, React, Next.js, Angular, Docker, AWS, Terraform, System Design, UX/UI, and a frontend cheat sheet. 1,917 interview questions, 206 chapters.",
+    "Deep knowledge across HTML, CSS, JavaScript, Git, npm, Python, Node.js, React, Next.js, Angular, PostgreSQL, MongoDB, Docker, AWS, Terraform, System Design, UX/UI, and a frontend cheat sheet. 2,252 interview questions, 248 chapters.",
 };
 
 export default function RootLayout({

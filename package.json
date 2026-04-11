@@ -17,6 +17,7 @@
     "test:system-design-topic": "node scripts/test-system-design-topic.mjs",
     "test:starter-topics": "node scripts/test-starter-topics.mjs",
     "test:npm-nodejs-cheatsheet": "node scripts/test-npm-nodejs-cheatsheet.mjs",
+    "test:python-postgresql-mongodb": "node scripts/test-python-postgresql-mongodb.mjs",
     "test:renderer": "node scripts/test-content-block-renderer.mjs"
   },
   "dependencies": {
